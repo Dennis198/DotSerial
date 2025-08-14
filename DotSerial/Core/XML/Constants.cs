@@ -1,0 +1,10 @@
+﻿
+namespace DotSerial.Core.XML
+{
+    public static class Constants
+    {
+        public const string MainElementName = "MainObject";
+        public const string IdAttribute = "id";
+        public const string DisplayAttribute = "display";
+    }
+}
