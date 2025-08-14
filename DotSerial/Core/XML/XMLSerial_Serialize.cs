@@ -18,7 +18,7 @@ namespace DotSerial.Core.XML
             Type typeObj = classObj.GetType();
             int objectID = Attributes.HelperMethods.GetClassID(typeObj);
 
-            var xnodeEntry = xmlDoc.CreateElement("Object");
+            var xnodeEntry = xmlDoc.CreateElement(Constants.Object);
 
             CreateAttributes(xmlDoc, xnodeEntry, objectID, typeObj.Name);
 
@@ -48,7 +48,7 @@ namespace DotSerial.Core.XML
                     }
                     else if (true == Misc.HelperMethods.ImplementsIEnumerable(value))
                     {
-                        var xnodeVersion = xmlDoc.CreateElement("List");
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.List);
 
                         CreateAttributes(xmlDoc, xnodeVersion, id, propName);
                         SerializeList(value, xmlDoc, xnodeVersion);
@@ -112,7 +112,7 @@ namespace DotSerial.Core.XML
         {
             ArgumentNullException.ThrowIfNull(value);
 
-            var xnodeParameter = xmlDoc.CreateElement("Parameter");
+            var xnodeParameter = xmlDoc.CreateElement(Constants.Parameter);
             xnodeParameter.InnerText = value.GetType().IsEnum ? Convert.ToString((int)value) : value.ToString();
 
             CreateAttributes(xmlDoc, xnodeParameter, id, displayName);

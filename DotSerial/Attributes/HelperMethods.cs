@@ -13,9 +13,9 @@ namespace DotSerial.Attributes
             object[] attrs = prop.GetCustomAttributes(true);
             foreach (object att in attrs)
             {
-                if (att is SerialzeParaIDAttribute saveAtt)
+                if (att is SerialzePropertyIDAttribute saveAtt)
                 {
-                    return (int)saveAtt.ParaID;
+                    return (int)saveAtt.PropertyID;
                 }
             }
             return -1;

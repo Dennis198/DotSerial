@@ -26,7 +26,7 @@ namespace DotSerial.Core.XML
                 {
                     foreach (XmlNode para in node.ChildNodes)
                     {
-                        var t = para.Attributes["id"]?.Value;
+                        var t = para.Attributes[Constants.IdAttribute]?.Value;
                         if (false == int.TryParse(t, out int idXML))
                         {
                             throw new NotSupportedException("ID could not be deserialized.");

@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.XML
@@ -7,13 +8,18 @@ namespace DotSerial.Core.XML
     /// </summary>
     public class XMLSerial : ISerial<XmlDocument>
     {
+        /// <summary>
+        /// Current Version
+        /// </summary>
+        public static readonly Version s_Version = new(1, 0);
+
         /// <inheritdoc/>
         public static XmlDocument CreateSerializedObject(object obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
             XmlDocument xmlDoc = new();
-            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration("1.0", "utf-8", null);
+            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(s_Version.ToString(), "utf-8", null);
             xmlDoc.AppendChild(xmlDecl);
 
             // Create root element
@@ -40,6 +46,18 @@ namespace DotSerial.Core.XML
             XMLSerial_Deserialize.Deserialize(obj, rootNode);
 
             return true;
+        }
+
+        /// <inheritdoc/>
+        public static string AsString(XmlDocument xmlDoc)
+        {
+            ArgumentNullException.ThrowIfNull(xmlDoc);
+
+            using StringWriter sw = new();
+            using XmlTextWriter tx = new(sw);
+            xmlDoc.WriteTo(tx);
+            string strXmlText = sw.ToString();
+            return strXmlText;
         }
     }
 }

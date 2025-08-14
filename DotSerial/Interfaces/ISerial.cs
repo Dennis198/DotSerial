@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Reflection;
-
+﻿
 namespace DotSerial.Interfaces
 {
     public interface ISerial<T>
@@ -17,5 +15,11 @@ namespace DotSerial.Interfaces
         /// <param name="serialObj">Serialized object</param>
         /// <returns>True, if deserialiation is succesfull.</returns>
         public abstract static bool DeserializeObject(object obj, T serialObj);
+
+        /// <summary> Converts the serialized object to a string
+        /// </summary>
+        /// <param name="serialObj">erialized object</param>
+        /// <returns>String</returns>
+        public abstract static string AsString(T serialObj);
     }
 }
