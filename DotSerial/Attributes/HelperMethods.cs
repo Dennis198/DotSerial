@@ -37,5 +37,6 @@ namespace DotSerial.Attributes
             }
             return -1;
         }
+
     }
 }

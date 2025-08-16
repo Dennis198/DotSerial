@@ -11,12 +11,17 @@ namespace DotSerial.Core.XML
         /// <param name="classObj">Object</param>
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
-        public static void Serialize(object classObj, XmlDocument xmlDoc, XmlNode xnode)
+        public static void Serialize(object classObj, XmlDocument xmlDoc, XmlNode xnode, int tmpID = -1)
         {
             ArgumentNullException.ThrowIfNull(classObj);
 
             Type typeObj = classObj.GetType();
             int objectID = Attributes.HelperMethods.GetClassID(typeObj);
+
+            if (-1 == objectID)
+            {
+                objectID = tmpID;
+            }
 
             var xnodeEntry = xmlDoc.CreateElement(Constants.Object);
 
@@ -54,6 +59,10 @@ namespace DotSerial.Core.XML
                         SerializeList(value, xmlDoc, xnodeVersion);
 
                         xnodeEntry.AppendChild(xnodeVersion);
+                    }
+                    else if (prop.PropertyType.IsClass)
+                    {
+                        Serialize(value, xmlDoc, xnodeEntry, id);
                     }
                     else
                     {
