@@ -4,6 +4,52 @@ namespace DotSerial.Core.Misc
 {
     public static class HelperMethods
     {
+        public static T CastIntToEnum<T>(object i)
+        {
+            return (T)Enum.Parse(typeof(T), i.ToString());
+        }
+
+
+        /// <summary> Returns true, if Type is a primitive
+        /// </summary>
+        /// <param name="type">Type</param>
+        /// <returns>True if primitive</returns>
+        public static bool IsPrimitive(Type type)
+        {
+            // null => false
+            if (type == null)
+                return false;
+
+            // Special Cases 
+            if (type == typeof(string) ||
+                type.IsEnum)
+            {
+                return true;
+            }
+
+            // c# Primitive class
+            if (type == typeof(bool) ||
+                type == typeof(byte) ||
+                type == typeof(sbyte) ||
+                type == typeof(char) ||
+                type == typeof(decimal) ||
+                type == typeof(double) ||
+                type == typeof(float) ||
+                type == typeof(int) ||
+                type == typeof(uint) ||
+                type == typeof(nint) ||
+                type == typeof(nuint) ||
+                type == typeof(long) ||
+                type == typeof(ulong) ||
+                type == typeof(short) ||
+                type == typeof(ushort)
+               )
+            {
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary> Gets the type of an object which implements IEnumarble
         /// </summary>
@@ -14,6 +60,12 @@ namespace DotSerial.Core.Misc
             if (false == ImplementsIEnumerable(objType))
             {
                 throw new NotSupportedException();
+            }
+
+            if (objType.IsArray)
+            {
+                var tmp = GetItemTypeOfArray(objType);
+                return tmp ?? throw new NullReferenceException();
             }
 
             return objType.GetGenericArguments().Single();
@@ -30,7 +82,41 @@ namespace DotSerial.Core.Misc
                 throw new NotSupportedException();
             }
 
+            if (obj is Array)
+            {
+                var tmp = GetItemTypeOfArray(obj);
+                return tmp ?? throw new NullReferenceException();
+            }
+
             return obj.GetType().GetGenericArguments().Single();
+        }
+
+        /// <summary> Gets the type of an object which implements IEnumarble
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>Type of object in IEnumerable.</returns>
+        public static Type? GetItemTypeOfArray(object obj)
+        {
+            if (false == ImplementsIEnumerable(obj))
+            {
+                throw new NotSupportedException();
+            }
+
+            return obj.GetType().GetElementType();
+        }
+
+        /// <summary> Gets the type of an object which implements IEnumarble
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>Type of object in IEnumerable.</returns>
+        public static Type? GetItemTypeOfArray(Type objType)
+        {
+            if (false == ImplementsIEnumerable(objType))
+            {
+                throw new NotSupportedException();
+            }
+
+            return objType.GetElementType();
         }
 
         /// <summary> Check if Object implements IEnumerable

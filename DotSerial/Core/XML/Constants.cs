@@ -9,5 +9,6 @@ namespace DotSerial.Core.XML
         public const string Parameter = "Parameter";
         public const string List = "List";
         public const string Object = "Object";
+        public const string NullString = "{null}";
     }
 }

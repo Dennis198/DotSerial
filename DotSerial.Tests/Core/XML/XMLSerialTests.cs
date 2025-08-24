@@ -1,5 +1,4 @@
 ﻿using DotSerial.Core.XML;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
 
 namespace DotSerial.Tests.Core.XML
 {
@@ -85,7 +84,9 @@ namespace DotSerial.Tests.Core.XML
                 Long = 10,
                 ULong = 11,
                 Short = 12,
-                UShort = 13
+                UShort = 13,
+                String = "HelloWorld",
+                Enum = TestEnum.Second
             };
 
             var tmp2 = new NestedClass
@@ -127,6 +128,8 @@ namespace DotSerial.Tests.Core.XML
             Assert.Equal(11, (long)output.PrimitiveClass.ULong);
             Assert.Equal(12, output.PrimitiveClass.Short);
             Assert.Equal(13, output.PrimitiveClass.UShort);
+            Assert.Equal("HelloWorld", output.PrimitiveClass.String);
+            Assert.Equal(TestEnum.Second, output.PrimitiveClass.Enum);
 
             Assert.NotNull(output.NestedClass);
             Assert.True(output.NestedClass.Boolean);
@@ -157,11 +160,381 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
+        public void CreateSerializedObject_NoAttribute()
+        {
+            var tmp = NoAttributeClass.CreateTestDefault();
+            var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
+
+            var output = new NoAttributeClass();
+            var result = XMLSerial.DeserializeObject(output, xmlDocument);
+
+            Assert.True(result);
+            Assert.NotNull(output);
+
+            AssertDefaultPrimitiveClass(output.PrimitiveClass);
+            Assert.True(output.Boolean);
+
+            Assert.False(output.BooleanNoAttribute);
+            Assert.Equal(0, output.IntNoAttribute);
+            Assert.Null(output.StringNoAttribute);
+            Assert.Null(output.SimpleClassNoAttribute);
+            Assert.Null(output.PrimitiveClassNoAttribute);
+            Assert.Equal(TestEnum.None, output.EnumNoAttribute);
+            Assert.Null(output.ArrayNoAttribute);
+            Assert.Null(output.ListNoAttribute);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_MultiDimClassIEnumarble()
+        {
+            var tmp = MultiDimClassIEnumarble.CreateTestDefault();
+            var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
+
+            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
+            xmlDocument.Save(fileStream);
+
+            var output = new MultiDimClassIEnumarble();
+            var result = XMLSerial.DeserializeObject(output, xmlDocument);
+
+            Assert.True(result);
+            Assert.NotNull(output);
+
+            Assert.NotNull(output.Int);
+            Assert.Equal(tmp.Int.Length, output.Int.Length);
+            for (int i = 0; i < output.Int.Length; i++)
+            {
+                Assert.Equal(tmp.Int[i].Length, output.Int[i].Length);
+                for (int j = 0; j < tmp.Int[i].Length; j++)
+                {
+                    Assert.Equal(tmp.Int[i][j], output.Int[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.IntList);
+            Assert.Equal(tmp.IntList.Count, output.IntList.Count);
+            for (int i = 0; i < output.IntList.Count; i++)
+            {
+                Assert.Equal(tmp.IntList[i].Count, output.IntList[i].Count);
+                for (int j = 0; j < tmp.IntList[i].Count; j++)
+                {
+                    Assert.Equal(tmp.IntList[i][j], output.IntList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.String);
+            Assert.Equal(tmp.String.Length, output.String.Length);
+            for (int i = 0; i < output.String.Length; i++)
+            {
+                Assert.Equal(tmp.String[i].Length, output.String[i].Length);
+                for (int j = 0; j < tmp.String[i].Length; j++)
+                {
+                    Assert.Equal(tmp.String[i][j], output.String[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.StringList);
+            Assert.Equal(tmp.StringList.Count, output.StringList.Count);
+            for (int i = 0; i < output.StringList.Count; i++)
+            {
+                Assert.Equal(tmp.StringList[i].Count, output.StringList[i].Count);
+                for (int j = 0; j < tmp.StringList[i].Count; j++)
+                {
+                    Assert.Equal(tmp.StringList[i][j], output.StringList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.PrimitiveClassArray);
+            Assert.Equal(tmp.PrimitiveClassArray.Length, output.PrimitiveClassArray.Length);
+            for (int i = 0; i < output.PrimitiveClassArray.Length; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassArray[i].Length, output.PrimitiveClassArray[i].Length);
+                for (int j = 0; j < tmp.PrimitiveClassArray[i].Length; j++)
+                {
+                    AssertDefaultPrimitiveClass(output.PrimitiveClassList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.PrimitiveClassList);
+            Assert.Equal(tmp.PrimitiveClassList.Count, output.PrimitiveClassList.Count);
+            for (int i = 0; i < output.PrimitiveClassList.Count; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassList[i].Count, output.PrimitiveClassList[i].Count);
+                for (int j = 0; j < tmp.PrimitiveClassList[i].Count; j++)
+                {
+                    AssertDefaultPrimitiveClass(output.PrimitiveClassList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.Enum);
+            Assert.Equal(tmp.Enum.Length, output.Enum.Length);
+            for (int i = 0; i < output.Enum.Length; i++)
+            {
+                Assert.Equal(tmp.Enum[i].Length, output.Enum[i].Length);
+                for (int j = 0; j < tmp.Enum[i].Length; j++)
+                {
+                    Assert.Equal(tmp.Enum[i][j], output.Enum[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.EnumList);
+            Assert.Equal(tmp.EnumList.Count, output.EnumList.Count);
+            for (int i = 0; i < output.EnumList.Count; i++)
+            {
+                Assert.Equal(tmp.EnumList[i].Count, output.EnumList[i].Count);
+                for (int j = 0; j < tmp.EnumList[i].Count; j++)
+                {
+                    Assert.Equal(tmp.EnumList[i][j], output.EnumList[i][j]);
+                }
+            }
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NullClass()
+        {
+            var tmp = NullClass.CreateTestDefault();
+
+            var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
+
+            var output = new NullClass();
+            var result = XMLSerial.DeserializeObject(output, xmlDocument);
+
+            Assert.True(result);
+            Assert.NotNull(output);
+
+            Assert.Null(output.SimpleClass);
+            Assert.Null(output.Array);
+            Assert.Null(output.List);
+            Assert.Null(output.String);
+            Assert.Null(output.BooleanArray);
+            Assert.Null(output.BooleanList);
+            Assert.Null(output.StringArray);
+            Assert.Null(output.StringList);
+            Assert.Null(output.EnumArray);
+            Assert.Null(output.EnumList);
+
+            Assert.NotNull(output.ArrayWithNulls);
+            Assert.Equal(tmp.ArrayWithNulls.Length, output.ArrayWithNulls.Length);
+            for (int i = 0; i < tmp.ArrayWithNulls.Length; i++)
+            {
+                Assert.Null(output.ArrayWithNulls[i]);
+            }
+
+            Assert.NotNull(output.ListWithNulls);
+            Assert.Equal(tmp.ListWithNulls.Count, output.ListWithNulls.Count);
+            for (int i = 0; i < tmp.ListWithNulls.Count; i++)
+            {
+                Assert.Null(output.ListWithNulls[i]);
+            }
+
+            Assert.NotNull(output.StringArrayWithNulls);
+            Assert.Equal(tmp.StringArrayWithNulls.Length, output.StringArrayWithNulls.Length);
+            for (int i = 0; i < tmp.StringArrayWithNulls.Length; i++)
+            {
+                Assert.Null(output.StringArrayWithNulls[i]);
+            }
+
+            Assert.NotNull(output.StringListWithNulls);
+            Assert.Equal(tmp.StringListWithNulls.Count, output.StringListWithNulls.Count);
+            for (int i = 0; i < tmp.StringListWithNulls.Count; i++)
+            {
+                Assert.Null(output.StringListWithNulls[i]);
+            }
+
+        }
+
+        [Fact]
+        public void CreateSerializedObject_PrimitiveClassIEnumarable()
+        {
+            var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
+
+            var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
+
+            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
+            xmlDocument.Save(fileStream);
+
+            var output = new PrimitiveClassIEnumarable();
+            var result = XMLSerial.DeserializeObject(output, xmlDocument);
+
+            Assert.True(result);
+            Assert.NotNull(output);
+
+            Assert.NotNull(output.Boolean);
+            Assert.Equal(tmp.Boolean.Length, output.Boolean.Length);
+            Assert.NotNull(output.BooleanList);
+            Assert.Equal(tmp.BooleanList.Count, output.BooleanList.Count);
+            for (int i = 0; i < tmp.Boolean.Length; i++)
+            {
+                Assert.Equal(tmp.Boolean[i], output.Boolean[i]);
+                Assert.Equal(tmp.BooleanList[i], output.BooleanList[i]);
+            }
+
+            Assert.NotNull(output.Byte);
+            Assert.Equal(tmp.Byte.Length, output.Byte.Length);
+            Assert.NotNull(output.ByteList);
+            Assert.Equal(tmp.ByteList.Count, output.ByteList.Count);
+            for (int i = 0; i < tmp.Byte.Length; i++)
+            {
+                Assert.Equal(tmp.Byte[i], output.Byte[i]);
+                Assert.Equal(tmp.ByteList[i], output.ByteList[i]);
+            }
+
+            Assert.NotNull(output.SByte);
+            Assert.Equal(tmp.SByte.Length, output.SByte.Length);
+            Assert.NotNull(output.SByteList);
+            Assert.Equal(tmp.SByteList.Count, output.SByteList.Count);
+            for (int i = 0; i < tmp.SByte.Length; i++)
+            {
+                Assert.Equal(tmp.SByte[i], output.SByte[i]);
+                Assert.Equal(tmp.SByteList[i], output.SByteList[i]);
+            }
+
+            Assert.NotNull(output.Char);
+            Assert.Equal(tmp.Char.Length, output.Char.Length);
+            Assert.NotNull(output.CharList);
+            Assert.Equal(tmp.CharList.Count, output.CharList.Count);
+            for (int i = 0; i < tmp.Char.Length; i++)
+            {
+                Assert.Equal(tmp.Char[i], output.Char[i]);
+                Assert.Equal(tmp.CharList[i], output.CharList[i]);
+            }
+
+            Assert.NotNull(output.Decimal);
+            Assert.Equal(tmp.Decimal.Length, output.Decimal.Length);
+            Assert.NotNull(output.DecimalList);
+            Assert.Equal(tmp.DecimalList.Count, output.DecimalList.Count);
+            for (int i = 0; i < tmp.Decimal.Length; i++)
+            {
+                Assert.Equal(tmp.Decimal[i], output.Decimal[i]);
+                Assert.Equal(tmp.DecimalList[i], output.DecimalList[i]);
+            }
+
+            Assert.NotNull(output.Double);
+            Assert.Equal(tmp.Double.Length, output.Double.Length);
+            Assert.NotNull(output.DoubleList);
+            Assert.Equal(tmp.DoubleList.Count, output.DoubleList.Count);
+            for (int i = 0; i < tmp.Double.Length; i++)
+            {
+                Assert.Equal(tmp.Double[i], output.Double[i]);
+                Assert.Equal(tmp.DoubleList[i], output.DoubleList[i]);
+            }
+
+            Assert.NotNull(output.Float);
+            Assert.Equal(tmp.Float.Length, output.Float.Length);
+            Assert.NotNull(output.FloatList);
+            Assert.Equal(tmp.FloatList.Count, output.FloatList.Count);
+            for (int i = 0; i < tmp.Float.Length; i++)
+            {
+                Assert.Equal(tmp.Float[i], output.Float[i]);
+                Assert.Equal(tmp.FloatList[i], output.FloatList[i]);
+            }
+
+            Assert.NotNull(output.Int);
+            Assert.Equal(tmp.Int.Length, output.Int.Length);
+            Assert.NotNull(output.IntList);
+            Assert.Equal(tmp.IntList.Count, output.IntList.Count);
+            for (int i = 0; i < tmp.Int.Length; i++)
+            {
+                Assert.Equal(tmp.Int[i], output.Int[i]);
+                Assert.Equal(tmp.IntList[i], output.IntList[i]);
+            }
+
+            Assert.NotNull(output.UInt);
+            Assert.Equal(tmp.UInt.Length, output.UInt.Length);
+            Assert.NotNull(output.UIntList);
+            Assert.Equal(tmp.UIntList.Count, output.UIntList.Count);
+            for (int i = 0; i < tmp.UInt.Length; i++)
+            {
+                Assert.Equal(tmp.UInt[i], output.UInt[i]);
+                Assert.Equal(tmp.UIntList[i], output.UIntList[i]);
+            }
+
+            Assert.NotNull(output.NInt);
+            Assert.Equal(tmp.NInt.Length, output.NInt.Length);
+            Assert.NotNull(output.NIntList);
+            Assert.Equal(tmp.NIntList.Count, output.NIntList.Count);
+            for (int i = 0; i < tmp.NInt.Length; i++)
+            {
+                Assert.Equal(tmp.NInt[i], output.NInt[i]);
+                Assert.Equal(tmp.NIntList[i], output.NIntList[i]);
+            }
+
+            Assert.NotNull(output.NUInt);
+            Assert.Equal(tmp.NUInt.Length, output.NUInt.Length);
+            Assert.NotNull(output.NUIntList);
+            Assert.Equal(tmp.NUIntList.Count, output.NUIntList.Count);
+            for (int i = 0; i < tmp.NUInt.Length; i++)
+            {
+                Assert.Equal(tmp.NUInt[i], output.NUInt[i]);
+                Assert.Equal(tmp.NUIntList[i], output.NUIntList[i]);
+            }
+
+            Assert.NotNull(output.Long);
+            Assert.Equal(tmp.Long.Length, output.Long.Length);
+            Assert.NotNull(output.LongList);
+            Assert.Equal(tmp.LongList.Count, output.LongList.Count);
+            for (int i = 0; i < tmp.Long.Length; i++)
+            {
+                Assert.Equal(tmp.Long[i], output.Long[i]);
+                Assert.Equal(tmp.LongList[i], output.LongList[i]);
+            }
+
+            Assert.NotNull(output.ULong);
+            Assert.Equal(tmp.ULong.Length, output.ULong.Length);
+            Assert.NotNull(output.ULongList);
+            Assert.Equal(tmp.ULongList.Count, output.ULongList.Count);
+            for (int i = 0; i < tmp.ULong.Length; i++)
+            {
+                Assert.Equal(tmp.ULong[i], output.ULong[i]);
+                Assert.Equal(tmp.ULongList[i], output.ULongList[i]);
+            }
+
+            Assert.NotNull(output.Short);
+            Assert.Equal(tmp.Short.Length, output.Short.Length);
+            Assert.NotNull(output.ShortList);
+            Assert.Equal(tmp.ShortList.Count, output.ShortList.Count);
+            for (int i = 0; i < tmp.Short.Length; i++)
+            {
+                Assert.Equal(tmp.Short[i], output.Short[i]);
+                Assert.Equal(tmp.ShortList[i], output.ShortList[i]);
+            }
+
+            Assert.NotNull(output.UShort);
+            Assert.Equal(tmp.UShort.Length, output.UShort.Length);
+            Assert.NotNull(output.UShortList);
+            Assert.Equal(tmp.UShortList.Count, output.UShortList.Count);
+            for (int i = 0; i < tmp.UShort.Length; i++)
+            {
+                Assert.Equal(tmp.UShort[i], output.UShort[i]);
+                Assert.Equal(tmp.UShortList[i], output.UShortList[i]);
+            }
+
+            Assert.NotNull(output.String);
+            Assert.Equal(tmp.String.Length, output.String.Length);
+            Assert.NotNull(output.StringList);
+            Assert.Equal(tmp.StringList.Count, output.StringList.Count);
+            for (int i = 0; i < tmp.String.Length; i++)
+            {
+                Assert.Equal(tmp.String[i], output.String[i]);
+                Assert.Equal(tmp.StringList[i], output.StringList[i]);
+            }
+
+            Assert.NotNull(output.Enum);
+            Assert.Equal(tmp.Enum.Length, output.Enum.Length);
+            Assert.NotNull(output.EnumList);
+            Assert.Equal(tmp.EnumList.Count, output.EnumList.Count);
+            for (int i = 0; i < tmp.Enum.Length; i++)
+            {
+                Assert.Equal(tmp.Enum[i], output.Enum[i]);
+                Assert.Equal(tmp.EnumList[i], output.EnumList[i]);
+            }
+        }
+
+        [Fact]
         public void CreateSerializedObject_IEnumerableClass()
         {
             var tmp = new IEnumerableClass
             {
-                //Array = new SimpleClass[10],
+                Array = new SimpleClass[10],
                 List = [],
                 Collection = []
             };
@@ -173,30 +546,27 @@ namespace DotSerial.Tests.Core.XML
                     Boolean = true
                 };
 
-                //tmp.Array[i] = d;
+                tmp.Array[i] = d;
                 tmp.List.Add(d);
                 tmp.Collection.Add(d);
             }
             
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
 
-            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
-            xmlDocument.Save(fileStream);
-
             var output = new IEnumerableClass();
             var result = XMLSerial.DeserializeObject(output, xmlDocument);
 
             Assert.True(result);
             Assert.NotNull(output);
-            //Assert.NotNull(output.Array);
-            //Assert.Equal(10, output.Array.Length);
+            Assert.NotNull(output.Array);
+            Assert.Equal(10, output.Array.Length);
             Assert.Equal(10, output.List.Count);
             Assert.Equal(10, output.Collection.Count);
 
             for (int i = 0; i < 10; i++)
             {
 
-                //Assert.True(tmp.Array[i].Boolean);
+                Assert.True(tmp.Array[i].Boolean);
                 Assert.True(tmp.List[i].Boolean);
                 Assert.True(tmp.Collection[i].Boolean);
             }
@@ -222,6 +592,8 @@ namespace DotSerial.Tests.Core.XML
             Assert.Equal((long)testDefault.ULong, (long)pClass.ULong);
             Assert.Equal(testDefault.Short, pClass.Short);
             Assert.Equal(testDefault.UShort, pClass.UShort);
+            Assert.Equal(testDefault.String, pClass.String);
+            Assert.Equal(testDefault.Enum, pClass.Enum);
         }
     }
 }

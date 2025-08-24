@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
@@ -6,6 +7,34 @@ namespace DotSerial.Core.XML
 {
     public class XMLSerial_Serialize
     {
+        public static void SerializePrimitive(object classObj, XmlDocument xmlDoc, XmlNode xnode, int tmpID = -1)
+        {
+            int objectID = tmpID;
+
+            if (null == classObj)
+            {
+                AddParaXmlNode(xmlDoc, xnode, objectID, classObj);
+                return;
+            }
+
+            Type typeObj = classObj.GetType();
+
+            if (false == Misc.HelperMethods.IsPrimitive(typeObj))
+            {
+                throw new NotSupportedException();
+            }
+
+            if (typeObj == typeof(bool))
+            {
+                int tmp = Misc.HelperMethods.BoolToInt((bool)classObj);
+                AddParaXmlNode(xmlDoc, xnode, objectID, tmp);
+            }
+            else
+            {
+                AddParaXmlNode(xmlDoc, xnode, objectID, classObj);
+            }
+        }
+
         /// <summary> Serialize object
         /// </summary>
         /// <param name="classObj">Object</param>
@@ -13,7 +42,15 @@ namespace DotSerial.Core.XML
         /// <param name="xnode">XmlNode</param>
         public static void Serialize(object classObj, XmlDocument xmlDoc, XmlNode xnode, int tmpID = -1)
         {
-            ArgumentNullException.ThrowIfNull(classObj);
+            //ArgumentNullException.ThrowIfNull(classObj);
+
+            if (classObj == null)
+            {
+                var xnodeNullEntry = xmlDoc.CreateElement(Constants.Object);
+                CreateAttributes(xmlDoc, xnodeNullEntry, tmpID, "Todo");
+                xnode.AppendChild(xnodeNullEntry);
+                return;
+            }
 
             Type typeObj = classObj.GetType();
             int objectID = Attributes.HelperMethods.GetClassID(typeObj);
@@ -39,10 +76,9 @@ namespace DotSerial.Core.XML
 
                     if (null == value)
                     {
-                        throw new NotImplementedException();
+                        AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
                     }
-
-                    if (prop.PropertyType == typeof(string))
+                    else if (prop.PropertyType == typeof(string))
                     {
                         AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
                     }
@@ -64,9 +100,13 @@ namespace DotSerial.Core.XML
                     {
                         Serialize(value, xmlDoc, xnodeEntry, id);
                     }
-                    else
+                    else if (Misc.HelperMethods.IsPrimitive(prop.PropertyType))
                     {
                         AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
                     }
 
                 }
@@ -87,14 +127,31 @@ namespace DotSerial.Core.XML
             if (list is IEnumerable castedList)
             {
                 Type type = Misc.HelperMethods.GetItemTypeOfIEnumerable(castedList);
-                if (type == typeof(string) || type == typeof(int))
+                if (Misc.HelperMethods.IsPrimitive(type))
                 {
                     int id = 0;
                     foreach (var str in castedList)
                     {
-                        AddParaXmlNode(xmlDoc, xnode, id, str);
+                        // TODO SeiralizePrimitive
+                        //AddParaXmlNode(xmlDoc, xnode, id, str);
+                        SerializePrimitive(str, xmlDoc, xnode, id);
                         id++;
                     }
+                }
+                else if (Misc.HelperMethods.ImplementsIEnumerable(type))
+                {
+
+                    int id = 0;
+                    foreach (var str in castedList)
+                    {
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.List);
+                        CreateAttributes(xmlDoc, xnodeVersion, id);
+                        SerializeList(str, xmlDoc, xnodeVersion);
+
+                        xnode.AppendChild(xnodeVersion);
+                        id++;
+                    }
+
                 }
                 else if (true == type.IsClass)
                 {
@@ -117,12 +174,21 @@ namespace DotSerial.Core.XML
         /// <param name="id">Parameter id</param>
         /// <param name="value">value</param>
         /// <param name="displayName">display</param>
-        private static void AddParaXmlNode(XmlDocument xmlDoc, XmlNode xnode, int id, object value, string? displayName = null)
+        private static void AddParaXmlNode(XmlDocument xmlDoc, XmlNode xnode, int id, object? value, string? displayName = null)
         {
-            ArgumentNullException.ThrowIfNull(value);
+            ArgumentNullException.ThrowIfNull(xmlDoc);
+            ArgumentNullException.ThrowIfNull(xnode);
 
             var xnodeParameter = xmlDoc.CreateElement(Constants.Parameter);
-            xnodeParameter.InnerText = value.GetType().IsEnum ? Convert.ToString((int)value) : value.ToString();
+
+            if (value != null)
+            {
+                xnodeParameter.InnerText = value.GetType().IsEnum ? Convert.ToString((int)value) : value.ToString();
+            }
+            else
+            {
+                xnodeParameter.InnerText = Constants.NullString;
+            }
 
             CreateAttributes(xmlDoc, xnodeParameter, id, displayName);
 
