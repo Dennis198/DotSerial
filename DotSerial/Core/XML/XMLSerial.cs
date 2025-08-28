@@ -27,7 +27,7 @@ namespace DotSerial.Core.XML
             xmlDoc.AppendChild(xnodeRoot);
 
             // Serialze Object
-            XMLSerial_Serialize.Serialize(obj, xmlDoc, xnodeRoot);
+            XMLSerial_Serialize.Serialize(obj, xmlDoc, xnodeRoot, 0);
 
             return xmlDoc;
         }

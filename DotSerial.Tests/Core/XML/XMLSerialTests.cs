@@ -190,9 +190,6 @@ namespace DotSerial.Tests.Core.XML
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
 
-            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
-            xmlDocument.Save(fileStream);
-
             var output = new MultiDimClassIEnumarble();
             var result = XMLSerial.DeserializeObject(output, xmlDocument);
 
@@ -221,6 +218,54 @@ namespace DotSerial.Tests.Core.XML
                 }
             }
 
+            Assert.NotNull(output.IntThree);
+            Assert.Equal(tmp.IntThree.Length, output.IntThree.Length);
+            for (int i = 0; i < output.IntThree.Length; i++)
+            {
+                Assert.Equal(tmp.IntThree[i].Length, output.IntThree[i].Length);
+                for (int j = 0; j < tmp.IntThree[i].Length; j++)
+                {
+                    Assert.Equal(tmp.IntThree[i][j].Length, output.IntThree[i][j].Length);
+                    for (int k = 0; k < tmp.IntThree[i][j].Length; k++)
+                        Assert.Equal(tmp.IntListThree[i][j][k], output.IntThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.IntListThree);
+            Assert.Equal(tmp.IntListThree.Count, output.IntListThree.Count);
+            for (int i = 0; i < output.IntListThree.Count; i++)
+            {
+                Assert.Equal(tmp.IntListThree[i].Count, output.IntListThree[i].Count);
+                for (int j = 0; j < tmp.IntListThree[i].Count; j++)
+                {
+                    Assert.Equal(tmp.IntListThree[i][j].Count, output.IntListThree[i][j].Count);
+                    for (int k = 0; k < tmp.IntListThree[i][j].Count; k++)
+                        Assert.Equal(tmp.IntListThree[i][j][k], output.IntListThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.IntMix);
+            Assert.Equal(tmp.IntMix.Length, output.IntMix.Length);
+            for (int i = 0; i < output.IntMix.Length; i++)
+            {
+                Assert.Equal(tmp.IntMix[i].Count, output.IntMix[i].Count);
+                for (int j = 0; j < tmp.IntMix[i].Count; j++)
+                {
+                    Assert.Equal(tmp.IntMix[i][j], output.IntMix[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.IntListMix);
+            Assert.Equal(tmp.IntListMix.Count, output.IntListMix.Count);
+            for (int i = 0; i < output.IntListMix.Count; i++)
+            {
+                Assert.Equal(tmp.IntListMix[i].Length, output.IntListMix[i].Length);
+                for (int j = 0; j < tmp.IntListMix[i].Length; j++)
+                {
+                    Assert.Equal(tmp.IntListMix[i][j], output.IntListMix[i][j]);
+                }
+            }
+
             Assert.NotNull(output.String);
             Assert.Equal(tmp.String.Length, output.String.Length);
             for (int i = 0; i < output.String.Length; i++)
@@ -240,6 +285,54 @@ namespace DotSerial.Tests.Core.XML
                 for (int j = 0; j < tmp.StringList[i].Count; j++)
                 {
                     Assert.Equal(tmp.StringList[i][j], output.StringList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.StringThree);
+            Assert.Equal(tmp.StringThree.Length, output.StringThree.Length);
+            for (int i = 0; i < output.StringThree.Length; i++)
+            {
+                Assert.Equal(tmp.StringThree[i].Length, output.StringThree[i].Length);
+                for (int j = 0; j < tmp.StringThree[i].Length; j++)
+                {
+                    Assert.Equal(tmp.StringThree[i][j].Length, output.StringThree[i][j].Length);
+                    for (int k = 0; k < tmp.StringThree[i][j].Length; k++)
+                        Assert.Equal(tmp.StringThree[i][j][k], output.StringThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.StringListThree);
+            Assert.Equal(tmp.StringListThree.Count, output.StringListThree.Count);
+            for (int i = 0; i < output.StringListThree.Count; i++)
+            {
+                Assert.Equal(tmp.StringListThree[i].Count, output.StringListThree[i].Count);
+                for (int j = 0; j < tmp.StringListThree[i].Count; j++)
+                {
+                    Assert.Equal(tmp.StringListThree[i][j].Count, output.StringListThree[i][j].Count);
+                    for (int k = 0; k < tmp.StringListThree[i][j].Count; k++)
+                        Assert.Equal(tmp.StringListThree[i][j][k], output.StringListThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.StringMix);
+            Assert.Equal(tmp.StringMix.Length, output.StringMix.Length);
+            for (int i = 0; i < output.StringMix.Length; i++)
+            {
+                Assert.Equal(tmp.StringMix[i].Count, output.StringMix[i].Count);
+                for (int j = 0; j < tmp.StringMix[i].Count; j++)
+                {
+                    Assert.Equal(tmp.StringMix[i][j], output.StringMix[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.StringListMix);
+            Assert.Equal(tmp.StringListMix.Count, output.StringListMix.Count);
+            for (int i = 0; i < output.StringListMix.Count; i++)
+            {
+                Assert.Equal(tmp.StringListMix[i].Length, output.StringListMix[i].Length);
+                for (int j = 0; j < tmp.StringListMix[i].Length; j++)
+                {
+                    Assert.Equal(tmp.StringListMix[i][j], output.StringListMix[i][j]);
                 }
             }
 
@@ -265,6 +358,54 @@ namespace DotSerial.Tests.Core.XML
                 }
             }
 
+            Assert.NotNull(output.PrimitiveClassArrayThree);
+            Assert.Equal(tmp.PrimitiveClassArrayThree.Length, output.PrimitiveClassArrayThree.Length);
+            for (int i = 0; i < output.PrimitiveClassArrayThree.Length; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassArrayThree[i].Length, output.PrimitiveClassArrayThree[i].Length);
+                for (int j = 0; j < tmp.PrimitiveClassArrayThree[i].Length; j++)
+                {
+                    Assert.Equal(tmp.PrimitiveClassArrayThree[i][j].Length, output.PrimitiveClassArrayThree[i][j].Length);
+                    for (int k = 0; k < tmp.PrimitiveClassArrayThree[i][j].Length; k++)
+                        AssertDefaultPrimitiveClass(output.PrimitiveClassArrayThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.PrimitiveClassListThree);
+            Assert.Equal(tmp.PrimitiveClassListThree.Count, output.PrimitiveClassListThree.Count);
+            for (int i = 0; i < output.PrimitiveClassListThree.Count; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassListThree[i].Count, output.PrimitiveClassListThree[i].Count);
+                for (int j = 0; j < tmp.PrimitiveClassListThree[i].Count; j++)
+                {
+                    Assert.Equal(tmp.PrimitiveClassListThree[i][j].Count, output.PrimitiveClassListThree[i][j].Count);
+                    for (int k = 0; k < tmp.PrimitiveClassListThree[i][j].Count; k++)
+                        AssertDefaultPrimitiveClass(output.PrimitiveClassListThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.PrimitiveClassArrayMix);
+            Assert.Equal(tmp.PrimitiveClassArrayMix.Length, output.PrimitiveClassArrayMix.Length);
+            for (int i = 0; i < output.PrimitiveClassArrayMix.Length; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassArrayMix[i].Count, output.PrimitiveClassArrayMix[i].Count);
+                for (int j = 0; j < tmp.PrimitiveClassArrayMix[i].Count; j++)
+                {
+                    AssertDefaultPrimitiveClass(output.PrimitiveClassArrayMix[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.PrimitiveClassListMix);
+            Assert.Equal(tmp.PrimitiveClassListMix.Count, output.PrimitiveClassListMix.Count);
+            for (int i = 0; i < output.PrimitiveClassListMix.Count; i++)
+            {
+                Assert.Equal(tmp.PrimitiveClassListMix[i].Length, output.PrimitiveClassListMix[i].Length);
+                for (int j = 0; j < tmp.PrimitiveClassListMix[i].Length; j++)
+                {
+                    AssertDefaultPrimitiveClass(output.PrimitiveClassListMix[i][j]);
+                }
+            }
+
             Assert.NotNull(output.Enum);
             Assert.Equal(tmp.Enum.Length, output.Enum.Length);
             for (int i = 0; i < output.Enum.Length; i++)
@@ -284,6 +425,54 @@ namespace DotSerial.Tests.Core.XML
                 for (int j = 0; j < tmp.EnumList[i].Count; j++)
                 {
                     Assert.Equal(tmp.EnumList[i][j], output.EnumList[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.EnumThree);
+            Assert.Equal(tmp.EnumThree.Length, output.EnumThree.Length);
+            for (int i = 0; i < output.EnumThree.Length; i++)
+            {
+                Assert.Equal(tmp.EnumThree[i].Length, output.EnumThree[i].Length);
+                for (int j = 0; j < tmp.EnumThree[i].Length; j++)
+                {
+                    Assert.Equal(tmp.EnumThree[i][j].Length, output.EnumThree[i][j].Length);
+                    for (int k = 0; k < tmp.EnumThree[i][j].Length; k++)
+                        Assert.Equal(tmp.EnumThree[i][j][k], output.EnumThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.EnumListThree);
+            Assert.Equal(tmp.EnumListThree.Count, output.EnumListThree.Count);
+            for (int i = 0; i < output.EnumListThree.Count; i++)
+            {
+                Assert.Equal(tmp.EnumListThree[i].Count, output.EnumListThree[i].Count);
+                for (int j = 0; j < tmp.EnumListThree[i].Count; j++)
+                {
+                    Assert.Equal(tmp.EnumListThree[i][j].Count, output.EnumListThree[i][j].Count);
+                    for (int k = 0; k < tmp.EnumListThree[i][j].Count; k++)
+                        Assert.Equal(tmp.EnumListThree[i][j][k], output.EnumListThree[i][j][k]);
+                }
+            }
+
+            Assert.NotNull(output.EnumMix);
+            Assert.Equal(tmp.EnumMix.Length, output.EnumMix.Length);
+            for (int i = 0; i < output.EnumMix.Length; i++)
+            {
+                Assert.Equal(tmp.EnumMix[i].Count, output.EnumMix[i].Count);
+                for (int j = 0; j < tmp.EnumMix[i].Count; j++)
+                {
+                    Assert.Equal(tmp.EnumMix[i][j], output.EnumMix[i][j]);
+                }
+            }
+
+            Assert.NotNull(output.EnumListMix);
+            Assert.Equal(tmp.EnumListMix.Count, output.EnumListMix.Count);
+            for (int i = 0; i < output.EnumListMix.Count; i++)
+            {
+                Assert.Equal(tmp.EnumListMix[i].Length, output.EnumListMix[i].Length);
+                for (int j = 0; j < tmp.EnumListMix[i].Length; j++)
+                {
+                    Assert.Equal(tmp.EnumListMix[i][j], output.EnumListMix[i][j]);
                 }
             }
         }
@@ -348,9 +537,6 @@ namespace DotSerial.Tests.Core.XML
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
-
-            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
-            xmlDocument.Save(fileStream);
 
             var output = new PrimitiveClassIEnumarable();
             var result = XMLSerial.DeserializeObject(output, xmlDocument);

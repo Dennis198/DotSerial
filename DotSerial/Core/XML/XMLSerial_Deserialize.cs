@@ -1,5 +1,5 @@
 ﻿using System.Collections;
-using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
@@ -7,14 +7,14 @@ namespace DotSerial.Core.XML
 {
     public class XMLSerial_Deserialize
     {
-        private static void DeserializeString(out string classObj, XmlNode node)
+        private static void DeserializeString(out string? classObj, XmlNode node)
         {
             if (node.ChildNodes == null || node.ChildNodes.Count != 1)
             {
                 throw new NotSupportedException();
             }
 
-            string innerText = node.ChildNodes[0].InnerText;
+            string? innerText = node.ChildNodes[0].InnerText;
 
             if (innerText.Equals(Constants.NullString))
             {
@@ -307,154 +307,10 @@ namespace DotSerial.Core.XML
 
                                 Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(prop.PropertyType);
                                 var tmpList = DeserializeList(para.ChildNodes, itemType);
-                                object? tmpValue = prop.GetValue(classObj);
+                                //object? tmpValue = prop.GetValue(classObj);
+                                object? tmpValue = DSTest(tmpList, prop.PropertyType);
+                                prop.SetValue(classObj, tmpValue);
 
-                                if (null != tmpValue)
-                                {
-                                    if (tmpList is IList castedList)
-                                    {
-                                        if (tmpValue is IList castedListTarget)
-                                        {
-                                            foreach (var entry in castedList)
-                                            {
-                                                castedListTarget.Add(entry);
-                                            }
-                                        }
-
-                                    }
-                                    else
-                                    {
-                                        throw new InvalidCastException();
-                                    }
-                                }
-                                else
-                                {
-                                    if (prop.PropertyType.IsArray)
-                                    {
-                                        tmpValue = Array.CreateInstanceFromArrayType(prop.PropertyType, tmpList.Count);
-
-                                        if (tmpList is IList castedList)
-                                        {
-                                            if (tmpValue is IList castedListTarget)
-                                            {
-                                                for (int i = 0; i < castedList.Count; i++)
-                                                {
-                                                    if (itemType == typeof(string))
-                                                    {
-                                                        //castedListTarget.Add(castedList[i]);
-                                                        castedListTarget[i] = castedList[i];
-                                                    }
-                                                    else if (Misc.HelperMethods.ImplementsIEnumerable(itemType))
-                                                    {
-                                                        int h = 0;
-                                                        if (castedList[i] is IList hhhhh)
-                                                        {
-                                                            object? tmpValue2 = Array.CreateInstanceFromArrayType(itemType, hhhhh.Count);
-                                                            
-                                                            if (tmpValue2 is IList gggg)
-                                                            {
-                                                                Type itemitemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(gggg);
-
-                                                                for (int j = 0; j < hhhhh.Count; j++)
-                                                                {
-                                                                    if (false == itemitemType.IsEnum)
-                                                                    {
-                                                                        gggg[j] = hhhhh[j];
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        gggg[j] = Enum.ToObject(itemitemType, hhhhh[j]);
-                                                                    }
-                                                                    
-                                                                }
-                                                                castedListTarget[i] = gggg;
-                                                            }
-                                                            else
-                                                            {
-                                                                throw new NotSupportedException();
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            castedListTarget[i] = null;
-                                                        }
-                                                    }
-                                                    else if (itemType.IsEnum)
-                                                    {
-                                                        castedListTarget[i] = Enum.ToObject(itemType, castedList[i]);
-                                                    }
-                                                    else
-                                                    {
-                                                        castedListTarget[i] = castedList[i];
-                                                    }
-                                                }
-
-                                                prop.SetValue(classObj, castedListTarget);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            throw new InvalidCastException();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        tmpValue = Activator.CreateInstance(prop.PropertyType);
-
-                                        if (tmpList is IList castedList)
-                                        {
-                                            if (tmpValue is IList castedListTarget)
-                                            {
-                                                for (int i = 0; i < castedList.Count; i++)
-                                                {
-                                                    if (itemType == typeof(string))
-                                                    {
-                                                        castedListTarget.Add(castedList[i]);
-                                                    }
-                                                    else if (Misc.HelperMethods.ImplementsIEnumerable(itemType))
-                                                    {
-                                                        int h = 0;
-                                                        if (castedList[i] is IList hhhhh)
-                                                        {
-                                                            object? tmpValue2 = Activator.CreateInstance(itemType);
-                                                            if (tmpValue2 is IList gggg)
-                                                            {
-                                                                for (int j = 0; j < hhhhh.Count; j++)
-                                                                {
-                                                                    gggg.Add(hhhhh[j]);
-                                                                    //gggg[j] = hhhhh[j];
-                                                                }
-                                                                //castedListTarget[i] = gggg;
-                                                                castedListTarget.Add(gggg);
-                                                            }
-                                                            else
-                                                            {
-                                                                throw new NotSupportedException();
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            castedListTarget.Add(null);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        //castedListTarget[i] = castedList[i];
-                                                        castedListTarget.Add(castedList[i]);
-                                                    }
-
-                                                }
-
-                                                prop.SetValue(classObj, castedListTarget);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            throw new InvalidCastException();
-                                        }
-                                    }
-                                        
-                                }
                             }
                             else if (prop.PropertyType.IsClass)
                             {
@@ -483,6 +339,72 @@ namespace DotSerial.Core.XML
             }
         }
 
+        private static object? DSTest(List<object> list, Type type)
+        {
+            if (null == list)
+            {
+                return null;
+            }
+
+            Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
+            object? result = null;
+            bool isArray = type.IsArray;
+
+            if (isArray)
+            {
+                result = Array.CreateInstanceFromArrayType(type, list.Count);
+            }
+            else
+            {
+                result = Activator.CreateInstance(type);
+            }
+
+            if (list is IList castedList && result is IList castedListResult)
+            {
+                for (int i = 0; i < castedList.Count; i++)
+                {
+                    if (itemType == typeof(string))
+                    {
+                        if (isArray)
+                            castedListResult[i] = castedList[i];
+                        else
+                            castedListResult.Add(castedList[i]);
+                    }
+                    else if (Misc.HelperMethods.ImplementsIEnumerable(itemType))
+                    {
+                        // todo
+                        List<object> hhh = castedList[i] as List<object>;
+                        object? itemResult = DSTest(hhh, itemType);
+                        if (itemResult != null)
+                        {
+                            if (isArray)
+                                castedListResult[i] = itemResult;
+                            else
+                                castedListResult.Add(itemResult);
+                        }
+                    }
+                    else if (itemType.IsEnum)
+                    {
+                        if (isArray)
+                            castedListResult[i] = Enum.ToObject(itemType, castedList[i]);
+                        else
+                            castedListResult.Add(Enum.ToObject(itemType, castedList[i]));
+                    }
+                    else
+                    {
+                        if (isArray)
+                            castedListResult[i] = castedList[i];
+                        else
+                            castedListResult.Add(castedList[i]);
+                    }
+                }
+
+                return castedListResult;
+            }
+
+            return null;
+        }
+
         /// <summary> Deserialize a list
         /// </summary>
         /// <param name="xnodeList">XmlNodeList</param>
@@ -493,7 +415,7 @@ namespace DotSerial.Core.XML
             ArgumentNullException.ThrowIfNull(xnodeList);
             ArgumentNullException.ThrowIfNull(type);
 
-            List<object> result = [];
+            List<object?> result = [];
 
             foreach (XmlNode node in xnodeList)
             {
@@ -517,8 +439,7 @@ namespace DotSerial.Core.XML
                     continue;
                 }
 
-                // TODO: Sonder für string
-                object tmp = Activator.CreateInstance(type);
+                object? tmp = Activator.CreateInstance(type);
                 if (null == tmp)
                 {
                     throw new NullReferenceException();

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
@@ -42,8 +41,6 @@ namespace DotSerial.Core.XML
         /// <param name="xnode">XmlNode</param>
         public static void Serialize(object classObj, XmlDocument xmlDoc, XmlNode xnode, int tmpID = -1)
         {
-            //ArgumentNullException.ThrowIfNull(classObj);
-
             if (classObj == null)
             {
                 var xnodeNullEntry = xmlDoc.CreateElement(Constants.Object);
@@ -53,16 +50,24 @@ namespace DotSerial.Core.XML
             }
 
             Type typeObj = classObj.GetType();
-            int objectID = Attributes.HelperMethods.GetClassID(typeObj);
+            int objectID = tmpID;
 
             if (-1 == objectID)
             {
-                objectID = tmpID;
+                objectID = Attributes.HelperMethods.GetClassID(typeObj);
+
+                if (objectID == -1)
+                {
+                    // TODO Überall schauen, das Wert nicht -1 ist (Constant dafür machen).
+                    throw new NotSupportedException();
+                }
             }
 
             var xnodeEntry = xmlDoc.CreateElement(Constants.Object);
 
             CreateAttributes(xmlDoc, xnodeEntry, objectID, typeObj.Name);
+
+            Dictionary<int, string> dicIdName = [];
 
             PropertyInfo[] props = typeObj.GetProperties();
             foreach (PropertyInfo prop in props)
@@ -71,8 +76,15 @@ namespace DotSerial.Core.XML
 
                 if (-1 != id)
                 {
+                    if (dicIdName.ContainsKey(id))
+                    {
+                        // TODO eigene Exception + Fehlermeldung
+                        throw new NotSupportedException();
+                    }
+
                     object? value = prop.GetValue(classObj);
                     string propName = prop.Name;
+                    dicIdName.Add(id, propName);
 
                     if (null == value)
                     {
@@ -132,8 +144,6 @@ namespace DotSerial.Core.XML
                     int id = 0;
                     foreach (var str in castedList)
                     {
-                        // TODO SeiralizePrimitive
-                        //AddParaXmlNode(xmlDoc, xnode, id, str);
                         SerializePrimitive(str, xmlDoc, xnode, id);
                         id++;
                     }
