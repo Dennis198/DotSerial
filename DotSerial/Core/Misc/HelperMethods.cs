@@ -4,11 +4,6 @@ namespace DotSerial.Core.Misc
 {
     public static class HelperMethods
     {
-        public static T CastIntToEnum<T>(object i)
-        {
-            return (T)Enum.Parse(typeof(T), i.ToString());
-        }
-
 
         /// <summary> Returns true, if Type is a primitive
         /// </summary>

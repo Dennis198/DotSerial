@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using DotSerial.Core.XML;
 
 namespace DotSerial.Attributes
 {
@@ -18,24 +19,7 @@ namespace DotSerial.Attributes
                     return (int)saveAtt.PropertyID;
                 }
             }
-            return -1;
-        }
-
-        /// <summary> Get the class ID
-        /// </summary>
-        /// <param name="t">Type</param>
-        /// <returns>ID</returns>
-        public static int GetClassID(Type t)
-        {
-            var attrs = t.GetCustomAttributes();
-            foreach (object att in attrs)
-            {
-                if (att is SerialzeClassIDAttribute classID)
-                {
-                    return (int)classID.ClassID;
-                }
-            }
-            return -1;
+            return Constants.NoAttributeID;
         }
 
     }

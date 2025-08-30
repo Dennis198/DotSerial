@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 using System.Reflection;
 using System.Xml;
 
@@ -7,155 +6,14 @@ namespace DotSerial.Core.XML
 {
     public class XMLSerial_Deserialize
     {
-        private static void DeserializeString(out string? classObj, XmlNode node)
-        {
-            if (node.ChildNodes == null || node.ChildNodes.Count != 1)
-            {
-                throw new NotSupportedException();
-            }
-
-            string? innerText = node.ChildNodes[0].InnerText;
-
-            if (innerText.Equals(Constants.NullString))
-            {
-                innerText = null;
-            }
-
-            classObj = innerText;
-        }
-
-        private static void DeserializePrimitive(ref object classObj, XmlNode node)
-        {
-            ArgumentNullException.ThrowIfNull(classObj);
-            Type typeObj = classObj.GetType();
-
-            if (!Misc.HelperMethods.IsPrimitive(typeObj))
-            {
-                throw new NotSupportedException();
-            }
-
-            if (node.ChildNodes == null || node.ChildNodes.Count != 1)
-            {
-                throw new NotSupportedException();
-            }
-
-            string innerText = node.ChildNodes[0].InnerText;
-
-            // Char
-            if (typeObj == typeof(char))
-            {
-                char tmp = char.Parse(innerText);
-                classObj = tmp;
-            }
-            // Byte
-            else if (typeObj == typeof(byte))
-            {
-                byte tmp = byte.Parse(innerText);
-                classObj = tmp;
-            }
-            // SByte
-            else if (typeObj == typeof(sbyte))
-            {
-                sbyte tmp = sbyte.Parse(innerText);
-                classObj = tmp;
-            }
-            // Decimal
-            else if (typeObj == typeof(double))
-            {
-                double tmp = double.Parse(innerText);
-                classObj = tmp;
-            }
-            // Float
-            else if (typeObj == typeof(float))
-            {
-                float tmp = float.Parse(innerText);
-                classObj = tmp;
-            }
-            // Double
-            else if (typeObj == typeof(decimal))
-            {
-                decimal tmp = decimal.Parse(innerText);
-                classObj = tmp;
-            }
-            // Int
-            else if (typeObj == typeof(int))
-            {
-                int tmp = int.Parse(innerText);
-                classObj = tmp;
-            }
-            // UInt
-            else if (typeObj == typeof(uint))
-            {
-                uint tmp = uint.Parse(innerText);
-                classObj = tmp;
-            }
-            // NInt
-            else if (typeObj == typeof(nint))
-            {
-                nint tmp = nint.Parse(innerText);
-                classObj = tmp;
-            }
-            // NUInt
-            else if (typeObj == typeof(nuint))
-            {
-                nuint tmp = nuint.Parse(innerText);
-                classObj = tmp;
-            }
-            // Long
-            else if (typeObj == typeof(long))
-            {
-                long tmp = long.Parse(innerText);
-                classObj = tmp;
-            }
-            // ULong
-            else if (typeObj == typeof(ulong))
-            {
-                ulong tmp = ulong.Parse(innerText);
-                classObj = tmp;
-            }
-            // Short
-            else if (typeObj == typeof(short))
-            {
-                short tmp = short.Parse(innerText);
-                classObj = tmp;
-            }
-            // UShort
-            else if (typeObj == typeof(ushort))
-            {
-                ushort tmp = ushort.Parse(innerText);
-                classObj = tmp;
-            }
-            // Boolean
-            else if (typeObj == typeof(bool))
-            {
-                int tmp = int.Parse(innerText);
-                bool tmpBool = Misc.HelperMethods.IntToBool(tmp);
-                classObj = tmpBool;
-            }
-            // DateTime
-            else if (typeObj == typeof(DateTime))
-            {
-                DateTime tmp = DateTime.Parse(innerText);
-                classObj = tmp;
-            }
-            // Enum
-            else if (true == typeObj.IsEnum)
-            {
-                int tmp = int.Parse(innerText);
-                classObj = tmp;
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
-        }
-
         /// <summary> Deserialize Object
         /// </summary>
         /// <param name="classObj">Object</param>
         /// <param name="node">XmlNode</param>
         public static void Deserialize(object? classObj, XmlNode node)
         {
+            // XmlNode text equals NullString
+            // => Object was null when it was serialzed.
             if (node.InnerText.Equals(Constants.NullString))
             {
                 classObj = null;
@@ -163,29 +21,45 @@ namespace DotSerial.Core.XML
             }
 
             ArgumentNullException.ThrowIfNull(classObj);
+
+            // Get type
             Type typeObj = classObj.GetType();
 
-            // Get all properties for class
+            // Get all Properties and iterate threw
             PropertyInfo[] props = typeObj.GetProperties();
 
             foreach (PropertyInfo prop in props)
             {
+                // Get ID attribute
                 int id = Attributes.HelperMethods.GetPropertyID(prop);
 
-                if (-1 != id)
+                if (Constants.NoAttributeID != id)
                 {
                     foreach (XmlNode para in node.ChildNodes)
                     {
-                        var t = para.Attributes[Constants.IdAttribute]?.Value;
+                        if (null == para || null == para.Attributes)
+                        {
+                            throw new NotSupportedException();
+                        }
+
+                        // Read AttribteID from xmlnode and cast it to int.
+                        string? t = para.Attributes[Constants.IdAttribute]?.Value;
                         if (false == int.TryParse(t, out int idXML))
                         {
                             throw new NotSupportedException("ID could not be deserialized.");
                         }
+
+                        // If AttributeID and ID from xml node match => deserialze.
                         if (id == idXML)
                         {
                             // String
                             if (prop.PropertyType == typeof(string))
                             {
+                                // Note: String case MUST become before IEnumerable
+                                // otherwise it will not be serialized correct.
+
+                                // If string equals NullString
+                                // => Object was null when it was serialzed.
                                 if (para.InnerText.Equals(Constants.NullString))
                                 {
                                     prop.SetValue(classObj, null);
@@ -280,6 +154,9 @@ namespace DotSerial.Core.XML
                             // Boolean
                             else if (prop.PropertyType == typeof(bool))
                             {
+                                // Special case bool
+                                // Was casted to int in serialze.
+
                                 int tmp = int.Parse(para.InnerText);
                                 bool tmpBool = Misc.HelperMethods.IntToBool(tmp);
                                 prop.SetValue(classObj, tmpBool);
@@ -307,8 +184,14 @@ namespace DotSerial.Core.XML
 
                                 Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(prop.PropertyType);
                                 var tmpList = DeserializeList(para.ChildNodes, itemType);
-                                //object? tmpValue = prop.GetValue(classObj);
-                                object? tmpValue = DSTest(tmpList, prop.PropertyType);
+
+                                if (null == tmpList)
+                                {
+                                    throw new NotSupportedException();
+                                }
+
+                                // Convert deserialzed list.
+                                object? tmpValue = ConvertDeserializedList(tmpList, prop.PropertyType);
                                 prop.SetValue(classObj, tmpValue);
 
                             }
@@ -317,6 +200,26 @@ namespace DotSerial.Core.XML
                                 object? tmp = Activator.CreateInstance(prop.PropertyType);
                                 if (null != tmp)
                                 {
+                                    // If xmlnode text equals NullString
+                                    // => Object was null when it was serialzed.
+                                    if (para.InnerText.Equals(Constants.NullString))
+                                    {
+                                        prop.SetValue(classObj, null);
+                                    }
+                                    else
+                                    {
+                                        Deserialize(tmp, para);
+                                        prop.SetValue(classObj, tmp);
+                                    }
+                                }
+                            }
+                            else if (prop.PropertyType.IsValueType && !prop.PropertyType.IsPrimitive && !prop.PropertyType.IsEnum && prop.PropertyType != typeof(decimal))
+                            {
+                                object? tmp = Activator.CreateInstance(prop.PropertyType);
+                                if (null != tmp)
+                                {
+                                    // If xmlnode text equals NullString
+                                    // => Object was null when it was serialzed.
                                     if (para.InnerText.Equals(Constants.NullString))
                                     {
                                         prop.SetValue(classObj, null);
@@ -339,17 +242,29 @@ namespace DotSerial.Core.XML
             }
         }
 
-        private static object? DSTest(List<object> list, Type type)
+        /// <summary> Converts the serialzed list to object so "PropertyInfo.SetValue" can
+        /// set the value properly
+        /// </summary>
+        /// <param name="list">Deserialzed List</param>
+        /// <param name="type">Type</param>
+        /// <returns>Converted list</returns>
+        private static object? ConvertDeserializedList(List<object?> list, Type type)
         {
             if (null == list)
             {
                 return null;
             }
 
+            // Get Item type of list
             Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
-            object? result = null;
+
+            // Check if type is array
             bool isArray = type.IsArray;
 
+            // result object
+            object? result;
+
+            // Create initial object to fill.
             if (isArray)
             {
                 result = Array.CreateInstanceFromArrayType(type, list.Count);
@@ -365,6 +280,9 @@ namespace DotSerial.Core.XML
                 {
                     if (itemType == typeof(string))
                     {
+                        // Note: String case MUST become before IEnumerable
+                        // otherwise it will not be serialized correct.
+
                         if (isArray)
                             castedListResult[i] = castedList[i];
                         else
@@ -372,9 +290,12 @@ namespace DotSerial.Core.XML
                     }
                     else if (Misc.HelperMethods.ImplementsIEnumerable(itemType))
                     {
-                        // todo
-                        List<object> hhh = castedList[i] as List<object>;
-                        object? itemResult = DSTest(hhh, itemType);
+                        if (castedList[i] is not List<object?> castedListItemObj)
+                        {
+                            throw new NotSupportedException();
+                        }
+
+                        object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
                         if (itemResult != null)
                         {
                             if (isArray)
@@ -385,6 +306,11 @@ namespace DotSerial.Core.XML
                     }
                     else if (itemType.IsEnum)
                     {
+                        if (null == castedList[i])
+                        {
+                            throw new NotSupportedException();
+                        }
+
                         if (isArray)
                             castedListResult[i] = Enum.ToObject(itemType, castedList[i]);
                         else
@@ -410,7 +336,7 @@ namespace DotSerial.Core.XML
         /// <param name="xnodeList">XmlNodeList</param>
         /// <param name="type">Type</param>
         /// <returns>List of objects</returns>
-        private static List<object> DeserializeList(XmlNodeList xnodeList, Type type)
+        private static List<object?> DeserializeList(XmlNodeList xnodeList, Type type)
         {
             ArgumentNullException.ThrowIfNull(xnodeList);
             ArgumentNullException.ThrowIfNull(type);
@@ -421,12 +347,16 @@ namespace DotSerial.Core.XML
             {
                 if (type == typeof(string))
                 {
-                    DeserializeString(out string tmpString, node);
+                    // Note: String case MUST become before IEnumerable
+                    // otherwise it will not be serialized correct.
+
+                    DeserializeString(out string? tmpString, node);
                     result.Add(tmpString);
-                    continue;
                 }
                 else if (Misc.HelperMethods.ImplementsIEnumerable(type))
                 {
+                    // If xml text equals NullString
+                    // => Object was null when it was serialzed.
                     if (node.InnerText.Equals(Constants.NullString))
                     {
                         result.Add(null);
@@ -436,40 +366,225 @@ namespace DotSerial.Core.XML
                     Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
                     var tmpList = DeserializeList(node.ChildNodes, itemType);
                     result.Add(tmpList);
-                    continue;
-                }
 
-                object? tmp = Activator.CreateInstance(type);
-                if (null == tmp)
-                {
-                    throw new NullReferenceException();
-                }
-
-                if (Misc.HelperMethods.IsPrimitive(type))
-                {
-                    DeserializePrimitive(ref tmp, node);
-                }
-                else if (true == type.IsClass)
-                {
-                    if (false == string.IsNullOrWhiteSpace(node.InnerText))
-                    {
-                        Deserialize(tmp, node);
-                    }
-                    else
-                    {
-                        tmp = null;
-                    }
-                    
                 }
                 else
                 {
-                    throw new NotSupportedException();
-                }
+                    object? tmp = Activator.CreateInstance(type);
+                    if (null == tmp)
+                    {
+                        throw new NullReferenceException();
+                    }
 
-                result.Add(tmp);
+                    if (Misc.HelperMethods.IsPrimitive(type))
+                    {
+                        DeserializePrimitive(ref tmp, node);
+                    }
+                    else if (true == type.IsClass)
+                    {
+                        if (false == string.IsNullOrWhiteSpace(node.InnerText))
+                        {
+                            Deserialize(tmp, node);
+                        }
+                        else
+                        {
+                            tmp = null;
+                        }
+
+                    }
+                    else if (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal))
+                    {
+                        if (false == string.IsNullOrWhiteSpace(node.InnerText))
+                        {
+                            Deserialize(tmp, node);
+                        }
+                        else
+                        {
+                            tmp = null;
+                        }
+
+                    }
+                    else
+                    {
+                        throw new NotSupportedException();
+                    }
+
+                    result.Add(tmp);
+                }
             }
 
             return result;
+        }
+
+        /// <summary> Derserialize an string
+        /// </summary>
+        /// <param name="strObj">String</param>
+        /// <param name="node">XmlNode</param>
+        private static void DeserializeString(out string? strObj, XmlNode node)
+        {
+            if (node.ChildNodes == null || node.ChildNodes.Count != 1)
+            {
+                throw new NotSupportedException();
+            }
+
+            // Get text of xmlnode
+            string? innerText = node.ChildNodes[0]?.InnerText;
+
+            if (null == innerText)
+            {
+                throw new NotSupportedException();
+            }
+
+            // If string equals NullString
+            // => Object was null when it was serialzed.
+            if (innerText.Equals(Constants.NullString))
+            {
+                innerText = null;
+            }
+
+            strObj = innerText;
+        }
+
+        /// <summary> Deserialze an primitive type
+        /// </summary>
+        /// <param name="primObj">Primitive Object</param>
+        /// <param name="node">XMLNode</param>
+        private static void DeserializePrimitive(ref object primObj, XmlNode node)
+        {
+            ArgumentNullException.ThrowIfNull(primObj);
+
+            // Get type
+            Type typeObj = primObj.GetType();
+
+            // Check if primitive type
+            if (!Misc.HelperMethods.IsPrimitive(typeObj))
+            {
+                throw new NotSupportedException();
+            }
+
+            if (node.ChildNodes == null || node.ChildNodes.Count != 1)
+            {
+                throw new NotSupportedException();
+            }
+
+            // Get text of xmlnode
+            string? innerText = node.ChildNodes[0]?.InnerText;
+
+            if (null == innerText)
+            {
+                throw new NotSupportedException();
+            }
+
+            // Char
+            if (typeObj == typeof(char))
+            {
+                char tmp = char.Parse(innerText);
+                primObj = tmp;
+            }
+            // Byte
+            else if (typeObj == typeof(byte))
+            {
+                byte tmp = byte.Parse(innerText);
+                primObj = tmp;
+            }
+            // SByte
+            else if (typeObj == typeof(sbyte))
+            {
+                sbyte tmp = sbyte.Parse(innerText);
+                primObj = tmp;
+            }
+            // Decimal
+            else if (typeObj == typeof(double))
+            {
+                double tmp = double.Parse(innerText);
+                primObj = tmp;
+            }
+            // Float
+            else if (typeObj == typeof(float))
+            {
+                float tmp = float.Parse(innerText);
+                primObj = tmp;
+            }
+            // Double
+            else if (typeObj == typeof(decimal))
+            {
+                decimal tmp = decimal.Parse(innerText);
+                primObj = tmp;
+            }
+            // Int
+            else if (typeObj == typeof(int))
+            {
+                int tmp = int.Parse(innerText);
+                primObj = tmp;
+            }
+            // UInt
+            else if (typeObj == typeof(uint))
+            {
+                uint tmp = uint.Parse(innerText);
+                primObj = tmp;
+            }
+            // NInt
+            else if (typeObj == typeof(nint))
+            {
+                nint tmp = nint.Parse(innerText);
+                primObj = tmp;
+            }
+            // NUInt
+            else if (typeObj == typeof(nuint))
+            {
+                nuint tmp = nuint.Parse(innerText);
+                primObj = tmp;
+            }
+            // Long
+            else if (typeObj == typeof(long))
+            {
+                long tmp = long.Parse(innerText);
+                primObj = tmp;
+            }
+            // ULong
+            else if (typeObj == typeof(ulong))
+            {
+                ulong tmp = ulong.Parse(innerText);
+                primObj = tmp;
+            }
+            // Short
+            else if (typeObj == typeof(short))
+            {
+                short tmp = short.Parse(innerText);
+                primObj = tmp;
+            }
+            // UShort
+            else if (typeObj == typeof(ushort))
+            {
+                ushort tmp = ushort.Parse(innerText);
+                primObj = tmp;
+            }
+            // Boolean
+            else if (typeObj == typeof(bool))
+            {
+                int tmp = int.Parse(innerText);
+
+                // Special case bool
+                // Was casted to int in serialze.
+                bool tmpBool = Misc.HelperMethods.IntToBool(tmp);
+                primObj = tmpBool;
+            }
+            // DateTime
+            else if (typeObj == typeof(DateTime))
+            {
+                DateTime tmp = DateTime.Parse(innerText);
+                primObj = tmp;
+            }
+            // Enum
+            else if (true == typeObj.IsEnum)
+            {
+                int tmp = int.Parse(innerText);
+                primObj = tmp;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }

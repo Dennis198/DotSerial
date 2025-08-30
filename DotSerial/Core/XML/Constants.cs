@@ -10,5 +10,7 @@ namespace DotSerial.Core.XML
         public const string List = "List";
         public const string Object = "Object";
         public const string NullString = "{null}";
+        public const int MainObjectID = 0;
+        public const int NoAttributeID = -1;
     }
 }

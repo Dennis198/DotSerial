@@ -17,17 +17,17 @@ namespace DotSerial.Tests.Core.XML
     {
         [SerialzePropertyID(0)]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [SerialzePropertyID(0)]
+        [SerialzePropertyID(1)]
         public bool Boolean { get; set; }
 
         public bool BooleanNoAttribute { get; set; }
         public int IntNoAttribute { get; set; }
-        public string StringNoAttribute { get; set; }
-        public SimpleClass SimpleClassNoAttribute { get; set; }
+        public string? StringNoAttribute { get; set; }
+        public SimpleClass? SimpleClassNoAttribute { get; set; }
         public PrimitiveClass? PrimitiveClassNoAttribute { get; set; }
         public TestEnum EnumNoAttribute { get; set; }
-        public int[] ArrayNoAttribute { get; set; }
-        public List<int> ListNoAttribute { get; set; }
+        public int[]? ArrayNoAttribute { get; set; }
+        public List<int>? ListNoAttribute { get; set; }
 
         public static NoAttributeClass CreateTestDefault()
         {
@@ -56,33 +56,33 @@ namespace DotSerial.Tests.Core.XML
     public class NullClass
     {
         [SerialzePropertyID(0)]
-        public SimpleClass SimpleClass { get; set; }
+        public SimpleClass? SimpleClass { get; set; }
         [SerialzePropertyID(1)]
-        public SimpleClass[] Array { get; set; }
+        public SimpleClass[]? Array { get; set; }
         [SerialzePropertyID(2)]
-        public List<SimpleClass> List { get; set; }
+        public List<SimpleClass>? List { get; set; }
         [SerialzePropertyID(3)]
-        public SimpleClass[] ArrayWithNulls { get; set; }
+        public SimpleClass?[]? ArrayWithNulls { get; set; }
         [SerialzePropertyID(4)]
-        public List<SimpleClass> ListWithNulls { get; set; }
+        public List<SimpleClass>? ListWithNulls { get; set; }
         [SerialzePropertyID(5)]
-        public string String { get; set; }
+        public string? String { get; set; }
         [SerialzePropertyID(6)]
-        public bool[] BooleanArray { get; set; }
+        public bool[]? BooleanArray { get; set; }
         [SerialzePropertyID(7)]
-        public List<bool> BooleanList { get; set; }
+        public List<bool>? BooleanList { get; set; }
         [SerialzePropertyID(8)]
-        public string[] StringArray { get; set; }
+        public string[]? StringArray { get; set; }
         [SerialzePropertyID(9)]
-        public List<string> StringList { get; set; }
+        public List<string>? StringList { get; set; }
         [SerialzePropertyID(10)]
-        public string[] StringArrayWithNulls { get; set; }
+        public string?[]? StringArrayWithNulls { get; set; }
         [SerialzePropertyID(11)]
-        public List<string> StringListWithNulls { get; set; }
+        public List<string>? StringListWithNulls { get; set; }
         [SerialzePropertyID(12)]
-        public TestEnum[] EnumArray { get; set; }
+        public TestEnum[]? EnumArray { get; set; }
         [SerialzePropertyID(13)]
-        public List<TestEnum> EnumList { get; set; }
+        public List<TestEnum>? EnumList { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -111,7 +111,6 @@ namespace DotSerial.Tests.Core.XML
     /// <summary>
     /// Simple Class
     /// </summary>
-    [SerialzeClassID(0)]
     public class SimpleClass
     {
         [SerialzePropertyID(0)]
@@ -124,11 +123,11 @@ namespace DotSerial.Tests.Core.XML
     public class IEnumerableClass
     {
         [SerialzePropertyID(0)]
-        public SimpleClass[] Array { get; set; }
+        public SimpleClass[]? Array { get; set; }
         [SerialzePropertyID(1)]
-        public List<SimpleClass> List { get; set; }
+        public List<SimpleClass>? List { get; set; }
         [SerialzePropertyID(2)]
-        public Collection<SimpleClass> Collection { get; set; }
+        public Collection<SimpleClass>? Collection { get; set; }
     }
 
     /// <summary>
@@ -158,7 +157,6 @@ namespace DotSerial.Tests.Core.XML
     /// <summary>
     /// Class with all primitives
     /// </summary>
-    [SerialzeClassID(42)]
     public class PrimitiveClass
     {
         [SerialzePropertyID(0)]
@@ -192,7 +190,7 @@ namespace DotSerial.Tests.Core.XML
         [SerialzePropertyID(14)]
         public ushort UShort { get; set; }
         [SerialzePropertyID(15)]
-        public string String { get; set; }
+        public string? String { get; set; }
         [SerialzePropertyID(16)]
         public TestEnum Enum { get; set; }
 
@@ -229,73 +227,73 @@ namespace DotSerial.Tests.Core.XML
     public class PrimitiveClassIEnumarable
     {
         [SerialzePropertyID(0)]
-        public bool[] Boolean { get; set; }
+        public bool[]? Boolean { get; set; }
         [SerialzePropertyID(1)]
-        public List<bool> BooleanList { get; set; }
+        public List<bool>? BooleanList { get; set; }
         [SerialzePropertyID(2)]
-        public byte[] Byte { get; set; }
+        public byte[]? Byte { get; set; }
         [SerialzePropertyID(3)]
-        public List<byte> ByteList { get; set; }
+        public List<byte>? ByteList { get; set; }
         [SerialzePropertyID(4)]
-        public sbyte[] SByte { get; set; }
+        public sbyte[]? SByte { get; set; }
         [SerialzePropertyID(5)]
-        public List<sbyte> SByteList { get; set; }
+        public List<sbyte>? SByteList { get; set; }
         [SerialzePropertyID(6)]
-        public char[] Char { get; set; }
+        public char[]? Char { get; set; }
         [SerialzePropertyID(7)]
-        public List<char> CharList { get; set; }
+        public List<char>? CharList { get; set; }
         [SerialzePropertyID(8)]
-        public decimal[] Decimal { get; set; }
+        public decimal[]? Decimal { get; set; }
         [SerialzePropertyID(9)]
-        public List<decimal> DecimalList { get; set; }
+        public List<decimal>? DecimalList { get; set; }
         [SerialzePropertyID(10)]
-        public double[] Double { get; set; }
+        public double[]? Double { get; set; }
         [SerialzePropertyID(11)]
-        public List<double> DoubleList { get; set; }
+        public List<double>? DoubleList { get; set; }
         [SerialzePropertyID(12)]
-        public float[] Float { get; set; }
+        public float[]? Float { get; set; }
         [SerialzePropertyID(13)]
-        public List<float> FloatList { get; set; }
+        public List<float>? FloatList { get; set; }
         [SerialzePropertyID(14)]
-        public int[] Int { get; set; }
+        public int[]? Int { get; set; }
         [SerialzePropertyID(15)]
-        public List<int> IntList { get; set; }
+        public List<int>? IntList { get; set; }
         [SerialzePropertyID(16)]
-        public uint[] UInt { get; set; }
+        public uint[]? UInt { get; set; }
         [SerialzePropertyID(17)]
-        public List<uint> UIntList { get; set; }
+        public List<uint>? UIntList { get; set; }
         [SerialzePropertyID(18)]
-        public nint[] NInt { get; set; }
+        public nint[]? NInt { get; set; }
         [SerialzePropertyID(19)]
-        public List<nint> NIntList { get; set; }
+        public List<nint>? NIntList { get; set; }
         [SerialzePropertyID(20)]
-        public nuint[] NUInt { get; set; }
+        public nuint[]? NUInt { get; set; }
         [SerialzePropertyID(21)]
-        public List<nuint> NUIntList { get; set; }
+        public List<nuint>? NUIntList { get; set; }
         [SerialzePropertyID(22)]
-        public long[] Long { get; set; }
+        public long[]? Long { get; set; }
         [SerialzePropertyID(23)]
-        public List<long> LongList { get; set; }
+        public List<long>? LongList { get; set; }
         [SerialzePropertyID(24)]
-        public ulong[] ULong { get; set; }
+        public ulong[]? ULong { get; set; }
         [SerialzePropertyID(25)]
-        public List<ulong> ULongList { get; set; }
+        public List<ulong>? ULongList { get; set; }
         [SerialzePropertyID(26)]
-        public short[] Short { get; set; }
+        public short[]? Short { get; set; }
         [SerialzePropertyID(27)]
-        public List<short> ShortList { get; set; }
+        public List<short>? ShortList { get; set; }
         [SerialzePropertyID(28)]
-        public ushort[] UShort { get; set; }
+        public ushort[]? UShort { get; set; }
         [SerialzePropertyID(29)]
-        public List<ushort> UShortList { get; set; }
+        public List<ushort>? UShortList { get; set; }
         [SerialzePropertyID(30)]
-        public string[] String { get; set; }
+        public string[]? String { get; set; }
         [SerialzePropertyID(31)]
-        public List<string> StringList { get; set; }
+        public List<string>? StringList { get; set; }
         [SerialzePropertyID(32)]
-        public TestEnum[] Enum { get; set; }
+        public TestEnum[]? Enum { get; set; }
         [SerialzePropertyID(33)]
-        public List<TestEnum> EnumList { get; set; }
+        public List<TestEnum>? EnumList { get; set; }
 
         public static PrimitiveClassIEnumarable CreateTestDefault()
         {
@@ -347,56 +345,56 @@ namespace DotSerial.Tests.Core.XML
     public class MultiDimClassIEnumarble
     {
         [SerialzePropertyID(0)]
-        public int[][] Int { get; set; }
+        public int[][]? Int { get; set; }
         [SerialzePropertyID(1)]
-        public List<List<int>> IntList{ get; set; }
+        public List<List<int>>? IntList{ get; set; }
         [SerialzePropertyID(2)]
-        public int[][][] IntThree { get; set; }
+        public int[][][]? IntThree { get; set; }
         [SerialzePropertyID(3)]
-        public List<List<List<int>>> IntListThree { get; set; }
+        public List<List<List<int>>>? IntListThree { get; set; }
         [SerialzePropertyID(4)]
-        public List<int>[] IntMix { get; set; }
+        public List<int>[]? IntMix { get; set; }
         [SerialzePropertyID(5)]
-        public List<int[]> IntListMix { get; set; }
+        public List<int[]>? IntListMix { get; set; }
 
         [SerialzePropertyID(6)]
-        public string[][] String { get; set; }
+        public string[][]? String { get; set; }
         [SerialzePropertyID(7)]
-        public List<List<string>> StringList { get; set; }
+        public List<List<string>>? StringList { get; set; }
         [SerialzePropertyID(8)]
-        public string[][][] StringThree { get; set; }
+        public string[][][]? StringThree { get; set; }
         [SerialzePropertyID(9)]
-        public List<List<List<string>>> StringListThree { get; set; }
+        public List<List<List<string>>>? StringListThree { get; set; }
         [SerialzePropertyID(10)]
-        public List<string>[] StringMix { get; set; }
+        public List<string>[]? StringMix { get; set; }
         [SerialzePropertyID(11)]
-        public List<string[]> StringListMix { get; set; }
+        public List<string[]>? StringListMix { get; set; }
 
         [SerialzePropertyID(12)]
-        public PrimitiveClass[][] PrimitiveClassArray { get; set; }
+        public PrimitiveClass[][]? PrimitiveClassArray { get; set; }
         [SerialzePropertyID(13)]
-        public List<List<PrimitiveClass>> PrimitiveClassList { get; set; }
+        public List<List<PrimitiveClass>>? PrimitiveClassList { get; set; }
         [SerialzePropertyID(14)]
-        public PrimitiveClass[][][] PrimitiveClassArrayThree { get; set; }
+        public PrimitiveClass[][][]? PrimitiveClassArrayThree { get; set; }
         [SerialzePropertyID(15)]
-        public List<List<List<PrimitiveClass>>> PrimitiveClassListThree { get; set; }
+        public List<List<List<PrimitiveClass>>>? PrimitiveClassListThree { get; set; }
         [SerialzePropertyID(16)]
-        public List<PrimitiveClass>[] PrimitiveClassArrayMix { get; set; }
+        public List<PrimitiveClass>[]? PrimitiveClassArrayMix { get; set; }
         [SerialzePropertyID(17)]
-        public List<PrimitiveClass[]> PrimitiveClassListMix { get; set; }
+        public List<PrimitiveClass[]>? PrimitiveClassListMix { get; set; }
 
         [SerialzePropertyID(18)]
-        public TestEnum[][] Enum { get; set; }
+        public TestEnum[][]? Enum { get; set; }
         [SerialzePropertyID(19)]
-        public List<List<TestEnum>> EnumList { get; set; }
+        public List<List<TestEnum>>? EnumList { get; set; }
         [SerialzePropertyID(20)]
-        public TestEnum[][][] EnumThree { get; set; }
+        public TestEnum[][][]? EnumThree { get; set; }
         [SerialzePropertyID(21)]
-        public List<List<List<TestEnum>>> EnumListThree { get; set; }
+        public List<List<List<TestEnum>>>? EnumListThree { get; set; }
         [SerialzePropertyID(22)]
-        public List<TestEnum>[] EnumMix { get; set; }
+        public List<TestEnum>[]? EnumMix { get; set; }
         [SerialzePropertyID(23)]
-        public List<TestEnum[]> EnumListMix { get; set; }
+        public List<TestEnum[]>? EnumListMix { get; set; }
 
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
@@ -628,5 +626,44 @@ namespace DotSerial.Tests.Core.XML
         First = 1,
         Second = 2,
         Fourth = 4,
+    }
+
+    public class StructClass()
+    {
+        [SerialzePropertyID(0)]
+        public TestStruct TestStruct0 { get; set; }
+        [SerialzePropertyID(1)]
+        public TestStruct TestStruct1 { get; set; }
+        [SerialzePropertyID(2)]
+        public TestStruct TestStruct2 { get; set; }
+        [SerialzePropertyID(3)]
+        public TestStruct[] TestStructArray { get; set; }
+
+        public static StructClass CreateTestDefault()
+        {
+            var tmp = new StructClass
+            {
+                TestStruct0 = new TestStruct(55, 3),
+                TestStruct1 = new TestStruct(5, 3),
+                TestStruct2 = new TestStruct(55, 32),
+                TestStructArray = [new TestStruct(6, 5), new TestStruct(4, 3), new TestStruct(2, 1)]
+            };
+
+            return tmp;
+        }
+    }
+
+    public struct TestStruct
+    {
+        [SerialzePropertyID(0)]
+        public int Value0 { get; set; }
+        [SerialzePropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestStruct(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
     }
 }

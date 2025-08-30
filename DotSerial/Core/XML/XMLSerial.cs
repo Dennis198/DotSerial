@@ -18,6 +18,11 @@ namespace DotSerial.Core.XML
         {
             ArgumentNullException.ThrowIfNull(obj);
 
+            if (false == obj.GetType().IsClass)
+            {
+                throw new NotSupportedException();
+            }
+
             XmlDocument xmlDoc = new();
             XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(s_Version.ToString(), "utf-8", null);
             xmlDoc.AppendChild(xmlDecl);
@@ -27,7 +32,7 @@ namespace DotSerial.Core.XML
             xmlDoc.AppendChild(xnodeRoot);
 
             // Serialze Object
-            XMLSerial_Serialize.Serialize(obj, xmlDoc, xnodeRoot, 0);
+            XMLSerial_Serialize.Serialize(obj, xmlDoc, xnodeRoot, Constants.MainObjectID);
 
             return xmlDoc;
         }
@@ -37,6 +42,11 @@ namespace DotSerial.Core.XML
         {
             ArgumentNullException.ThrowIfNull(obj);
             ArgumentNullException.ThrowIfNull(serialObj);
+
+            if (false == obj.GetType().IsClass)
+            {
+                throw new NotSupportedException();
+            }
 
             // Get root element
             XmlNodeList s = serialObj.GetElementsByTagName(Constants.MainElementName) ?? throw new NullReferenceException();
