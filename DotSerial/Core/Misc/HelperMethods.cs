@@ -86,6 +86,46 @@ namespace DotSerial.Core.Misc
             return obj.GetType().GetGenericArguments().Single();
         }
 
+        public static bool GetKeyValueTypeOfDictionary(object obj, out Type typeKey, out Type typeValue)
+        {
+            if (false == IsDictionary(obj))
+            {
+                throw new NotSupportedException();
+            }
+
+            Type[] arguments = obj.GetType().GetGenericArguments();
+
+            if (arguments.Length != 2)
+            {
+                throw new NotSupportedException();
+            }
+
+            typeKey = arguments[0];
+            typeValue = arguments[1];
+
+            return true;
+        }
+
+        public static bool GetKeyValueTypeOfDictionary(Type type, out Type typeKey, out Type typeValue)
+        {
+            if (false == IsDictionary(type))
+            {
+                throw new NotSupportedException();
+            }
+
+            Type[] arguments = type.GetGenericArguments();
+
+            if (arguments.Length != 2)
+            {
+                throw new NotSupportedException();
+            }
+
+            typeKey = arguments[0];
+            typeValue = arguments[1];
+
+            return true;
+        }
+
         /// <summary> Gets the type of an object which implements IEnumarble
         /// </summary>
         /// <param name="obj">Object</param>
@@ -150,6 +190,48 @@ namespace DotSerial.Core.Misc
         public static bool IntToBool(int i)
         {
             return i == 1;
+        }
+
+        public static bool IsArray(object o)
+        {
+            if (o == null) return false;
+            return o.GetType().IsArray;
+        }
+
+        public static bool IsArray(Type type)
+        {
+            if (type == null) return false;
+            return type.IsArray;
+        }
+
+        public static bool IsList(object o)
+        {
+            if (o == null) return false;
+            return o is IList &&
+                   o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+        }
+
+        public static bool IsList(Type type)
+        {
+            if (type == null) return false;
+            return type.IsGenericType &&
+                   type.GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+        }
+
+        public static bool IsDictionary(object o)
+        {
+            if (o == null) return false;
+            return o is IDictionary &&
+                   o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+        }
+
+        public static bool IsDictionary(Type type)
+        {
+            if (type == null) return false;
+            return type.IsGenericType &&
+                   type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
         }
     }
 }

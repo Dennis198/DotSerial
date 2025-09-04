@@ -8,6 +8,10 @@ namespace DotSerial.Core.XML
         public const string DisplayAttribute = "display";
         public const string Parameter = "Parameter";
         public const string List = "List";
+        public const string Dictionary = "Dictionary";
+        public const string KeyValuePair = "KeyValuePair";
+        public const string Key = "Key";
+        public const string Value = "Value";
         public const string Object = "Object";
         public const string NullString = "{null}";
         public const int MainObjectID = 0;

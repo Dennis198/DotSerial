@@ -5,20 +5,75 @@ namespace DotSerial.Tests.Core.XML
     public class XMLSerialTests
     {
 
+        // TODO Code COverage
+
         //using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
         //xmlDocument.Save(fileStream);
 
         [Fact]
         public void CreateSerializedObject_EmptyClass()
         {
+            // Arrange
             var tmp = new EmptyClass();
+            var output = new EmptyClass();
+
+            // Act
+            var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
+            var result = XMLSerial.DeserializeObject(output, xmlDocument);
+
+            // Assert
+            Assert.True(result);
+            Assert.NotNull(output);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_DictionaryClass()
+        {
+            var tmp = DictionaryClass.CreateTestDefault();
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
 
-            var output = new EmptyClass();
+            var output = new DictionaryClass();
             var result = XMLSerial.DeserializeObject(output, xmlDocument);
 
             Assert.True(result);
             Assert.NotNull(output);
+
+            Assert.NotNull(output.DicIntInt);
+            Assert.Equal(output.DicIntInt.Count, tmp.DicIntInt?.Count);
+            foreach(var keyValue in output.DicIntInt)
+            {
+                Assert.True(tmp.DicIntInt?.ContainsKey(keyValue.Key));
+                Assert.Equal(tmp.DicIntInt?[keyValue.Key], keyValue.Value);
+            }
+
+            Assert.NotNull(output.DicIntString);
+            Assert.Equal(output.DicIntString.Count, tmp.DicIntString?.Count);
+            foreach (var keyValue in output.DicIntString)
+            {
+                Assert.True(tmp.DicIntString?.ContainsKey(keyValue.Key));
+                Assert.Equal(tmp.DicIntString?[keyValue.Key], keyValue.Value);
+            }
+
+            Assert.NotNull(output.DicStringInt);
+            Assert.Equal(output.DicStringInt.Count, tmp.DicStringInt?.Count);
+            foreach (var keyValue in output.DicStringInt)
+            {
+                Assert.True(tmp.DicStringInt?.ContainsKey(keyValue.Key));
+                Assert.Equal(tmp.DicStringInt?[keyValue.Key], keyValue.Value);
+            }
+
+            Assert.NotNull(output.DicStringString);
+            Assert.Equal(output.DicStringString.Count, tmp.DicStringString?.Count);
+            foreach (var keyValue in output.DicStringString)
+            {
+                Assert.True(tmp.DicStringString?.ContainsKey(keyValue.Key));
+                Assert.Equal(tmp.DicStringString?[keyValue.Key], keyValue.Value);
+            }
+
+            Assert.NotNull(output.DicEmpty);
+            Assert.Equal(output.DicEmpty.Count, tmp.DicEmpty?.Count);
+
+            Assert.Null(output.DicNull);
         }
 
         [Fact]
@@ -26,9 +81,6 @@ namespace DotSerial.Tests.Core.XML
         {
             var tmp = StructClass.CreateTestDefault();
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
-
-            using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
-            xmlDocument.Save(fileStream);
 
             var output = new StructClass();
             var result = XMLSerial.DeserializeObject(output, xmlDocument);
@@ -755,7 +807,7 @@ namespace DotSerial.Tests.Core.XML
             {
                 Array = new SimpleClass[10],
                 List = [],
-                Collection = []
+                Dic = []
             };
 
             for (int i = 0; i < 10; i++)
@@ -767,7 +819,7 @@ namespace DotSerial.Tests.Core.XML
 
                 tmp.Array[i] = d;
                 tmp.List.Add(d);
-                tmp.Collection.Add(d);
+                tmp.Dic.Add(i, d);
             }
             
             var xmlDocument = XMLSerial.CreateSerializedObject(tmp);
@@ -778,16 +830,18 @@ namespace DotSerial.Tests.Core.XML
             Assert.True(result);
             Assert.NotNull(output);
             Assert.NotNull(output.Array);
+            Assert.NotNull(output.List);
+            Assert.NotNull(output.Dic);
             Assert.Equal(10, output.Array.Length);
             Assert.Equal(10, output.List?.Count);
-            Assert.Equal(10, output.Collection?.Count);
+            Assert.Equal(10, output.Dic?.Count);
 
             for (int i = 0; i < 10; i++)
             {
-
-                Assert.True(tmp.Array[i].Boolean);
-                Assert.True(tmp.List[i].Boolean);
-                Assert.True(tmp.Collection[i].Boolean);
+                Assert.True(output?.Array[i].Boolean);
+                Assert.True(output?.List?[i].Boolean);
+                Assert.True(output?.Dic?.ContainsKey(i));
+                Assert.True(output?.Dic?[i].Boolean);
             }
 
         }

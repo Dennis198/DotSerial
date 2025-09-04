@@ -127,7 +127,7 @@ namespace DotSerial.Tests.Core.XML
         [SerialzePropertyID(1)]
         public List<SimpleClass>? List { get; set; }
         [SerialzePropertyID(2)]
-        public Collection<SimpleClass>? Collection { get; set; }
+        public Dictionary<int, SimpleClass>? Dic { get; set; }
     }
 
     /// <summary>
@@ -600,6 +600,50 @@ namespace DotSerial.Tests.Core.XML
             tmp.EnumListMix = [[TestEnum.None, TestEnum.Second], [TestEnum.Fourth, TestEnum.Second, TestEnum.Fourth]];
 
             return tmp;
+        }
+    }
+
+    public class DictionaryClass()
+    {
+        [SerialzePropertyID(0)]
+        public Dictionary<int, int>? DicIntInt { get; set; }
+        [SerialzePropertyID(1)]
+        public Dictionary<int, string?>? DicIntString { get; set; }
+        [SerialzePropertyID(2)]
+        public Dictionary<string, int>? DicStringInt { get; set; }
+        [SerialzePropertyID(3)]
+        public Dictionary<string, string>? DicStringString { get; set; }
+        [SerialzePropertyID(4)]
+        public Dictionary<string, string>? DicEmpty { get; set; }
+        [SerialzePropertyID(5)]
+        public Dictionary<string, string>? DicNull { get; set; }
+
+        public static DictionaryClass CreateTestDefault()
+        {
+            var result = new DictionaryClass();
+
+            result.DicIntInt = [];
+            result.DicIntInt.Add(33, 44);
+            result.DicIntInt.Add(-33, 88);
+
+            result.DicIntString = [];
+            result.DicIntString.Add(3, "Moin");
+            result.DicIntString.Add(2, null);
+            result.DicIntString.Add(0, "asdasdasd");
+
+            result.DicStringInt = [];
+            result.DicStringInt.Add("sadasd", 44);
+            result.DicStringInt.Add("sss", 311);
+
+            result.DicStringString = [];
+            result.DicStringString.Add("ssasdasd", "998989");
+            result.DicStringString.Add("ssaaaasdasd", "998982229");
+
+            result.DicEmpty = [];
+
+            result.DicNull = null;
+
+            return result;
         }
     }
 
