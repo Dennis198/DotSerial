@@ -1,16 +1,14 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.Design;
-using System.Data.SqlTypes;
 using System.Reflection;
-using System.Reflection.Metadata;
 using System.Xml;
 
 namespace DotSerial.Core.XML
 {
     public class XMLSerial_Serialize
     {
-        /// <summary> Serialize object
+        /// <summary> 
+        /// Serialize object
         /// </summary>
         /// <param name="classObj">Object</param>
         /// <param name="xmlDoc">XmlDocument</param>
@@ -70,13 +68,6 @@ namespace DotSerial.Core.XML
                         // Null
                         AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
                     }
-                    else if (prop.PropertyType == typeof(string))
-                    {
-                        // String
-                        // Note: String case MUST become before IEnumerable
-                        // otherwise it will not be serialized correct.
-                        AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
-                    }
                     else if (prop.PropertyType == typeof(bool))
                     {
                         // Bool
@@ -85,40 +76,32 @@ namespace DotSerial.Core.XML
                         int tmp = Misc.HelperMethods.BoolToInt((bool)value);
                         AddParaXmlNode(xmlDoc, xnodeEntry, id, tmp, propName);
                     }
-                    else if (true == Misc.HelperMethods.ImplementsIEnumerable(value))
+                    if (Misc.HelperMethods.IsDictionary(value))
                     {
-                        if (Misc.HelperMethods.IsDictionary(value))
-                        {
-                            // IEnumarable
-                            var xnodeVersion = xmlDoc.CreateElement(Constants.Dictionary);
+                        // Dictionary
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.Dictionary);
 
-                            CreateAttributes(xmlDoc, xnodeVersion, id, propName);
-                            SerializeDictionary(value, xmlDoc, xnodeVersion);
+                        CreateAttributes(xmlDoc, xnodeVersion, id, propName);
+                        SerializeDictionary(value, xmlDoc, xnodeVersion);
 
-                            xnodeEntry.AppendChild(xnodeVersion);
-                        }
-                        else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
-                        {
-                            // IEnumarable
-                            var xnodeVersion = xmlDoc.CreateElement(Constants.List);
-
-                            CreateAttributes(xmlDoc, xnodeVersion, id, propName);
-                            SerializeList(value, xmlDoc, xnodeVersion);
-
-                            xnodeEntry.AppendChild(xnodeVersion);
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
-
+                        xnodeEntry.AppendChild(xnodeVersion);
                     }
-                    else if (prop.PropertyType.IsClass)
+                    else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
+                    {
+                        // List/Array
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.List);
+
+                        CreateAttributes(xmlDoc, xnodeVersion, id, propName);
+                        SerializeList(value, xmlDoc, xnodeVersion);
+
+                        xnodeEntry.AppendChild(xnodeVersion);
+                    }
+                    else if (Misc.HelperMethods.IsClass(prop.PropertyType))
                     {
                         // Class
                         Serialize(value, xmlDoc, xnodeEntry, id);
                     }
-                    else if (prop.PropertyType.IsValueType && !prop.PropertyType.IsPrimitive && !prop.PropertyType.IsEnum && prop.PropertyType != typeof(decimal))
+                    else if (Misc.HelperMethods.IsStruct(prop.PropertyType))
                     {
                         // Struct
                         Serialize(value, xmlDoc, xnodeEntry, id);
@@ -139,7 +122,8 @@ namespace DotSerial.Core.XML
             xnode.AppendChild(xnodeEntry);
         }
 
-        /// <summary> Adds an Parameter Block to an Xml node
+        /// <summary>
+        /// Adds an Parameter Block to an Xml node
         /// </summary>
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
@@ -232,6 +216,12 @@ namespace DotSerial.Core.XML
             }
         }
 
+        /// <summary>
+        /// Serialite dictionary
+        /// </summary>
+        /// <param name="dic">Dictioanry</param>
+        /// <param name="xmlDoc">XmlDocument</param>
+        /// <param name="xnode">XmlNode</param>
         private static void SerializeDictionary(object dic, XmlDocument xmlDoc, XmlNode xnode)
         {
             ArgumentNullException.ThrowIfNull(dic);
@@ -264,50 +254,53 @@ namespace DotSerial.Core.XML
                         {
                             SerializePrimitive(key, xmlDoc, xnodeKey, 0);
                         }
-                        else if (Misc.HelperMethods.ImplementsIEnumerable(keyType))
+                        else if (Misc.HelperMethods.IsDictionary(key))
                         {
-                            // IEnuramable
                             if (key is IEnumerable castedKey)
                             {
-                                if (Misc.HelperMethods.IsDictionary(key))
+                                int idInner = 0;
+                                foreach (var str in castedKey)
                                 {
-                                    int idInner = 0;
-                                    foreach (var str in castedKey)
-                                    {
-                                        var xnodeVersionInner = xmlDoc.CreateElement(Constants.Dictionary);
-                                        CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                        SerializeDictionary(str, xmlDoc, xnodeVersionInner);
+                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.Dictionary);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    SerializeDictionary(str, xmlDoc, xnodeVersionInner);
 
-                                        xnodeKey.AppendChild(xnodeVersionInner);
-                                        idInner++;
-                                    }
-                                }
-                                else if (Misc.HelperMethods.IsList(key) || Misc.HelperMethods.IsArray(key))
-                                {
-                                    int idInner = 0;
-                                    foreach (var str in castedKey)
-                                    {
-                                        var xnodeVersionInner = xmlDoc.CreateElement(Constants.List);
-                                        CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                        SerializeList(str, xmlDoc, xnodeVersionInner);
-
-                                        xnodeKey.AppendChild(xnodeVersionInner);
-                                        idInner++;
-                                    }
-                                }
-                                else
-                                {
-                                    throw new NotSupportedException();
+                                    xnodeKey.AppendChild(xnodeVersionInner);
+                                    idInner++;
                                 }
                             }
+                            else
+                            {
+                                throw new NotSupportedException();
+                            }
                         }
-                        else if (keyType.IsClass)
+                        else if (Misc.HelperMethods.IsList(key) || Misc.HelperMethods.IsArray(key))
+                        {
+                            if (key is IEnumerable castedKey)
+                            {
+                                int idInner = 0;
+                                foreach (var str in castedKey)
+                                {
+                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.List);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    SerializeList(str, xmlDoc, xnodeVersionInner);
+
+                                    xnodeKey.AppendChild(xnodeVersionInner);
+                                    idInner++;
+                                }
+                            }
+                            else
+                            {
+                                throw new NotSupportedException();
+                            }
+                        }
+                        else if (Misc.HelperMethods.IsClass(keyType))
                         {
                             // Class
 
                             Serialize(key, xmlDoc, xnodeKey, 0);
                         }
-                        else if (keyType.IsValueType && !keyType.IsPrimitive && !keyType.IsEnum && keyType != typeof(decimal))
+                        else if (Misc.HelperMethods.IsStruct(keyType))
                         {
                             // Struct
 
@@ -330,50 +323,54 @@ namespace DotSerial.Core.XML
                         {
                             SerializePrimitive(value, xmlDoc, xnodeValue, 0);
                         }
-                        else if (Misc.HelperMethods.ImplementsIEnumerable(valueType))
+                        else if (Misc.HelperMethods.IsDictionary(value))
                         {
-                            // IEnuramable
                             if (value is IEnumerable castedKey)
                             {
-                                if (Misc.HelperMethods.IsDictionary(value))
+                                int idInner = 0;
+                                foreach (var str in castedKey)
                                 {
-                                    int idInner = 0;
-                                    foreach (var str in castedKey)
-                                    {
-                                        var xnodeVersionInner = xmlDoc.CreateElement(Constants.Dictionary);
-                                        CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                        SerializeDictionary(str, xmlDoc, xnodeVersionInner);
+                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.Dictionary);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    SerializeDictionary(str, xmlDoc, xnodeVersionInner);
 
-                                        xnodeValue.AppendChild(xnodeVersionInner);
-                                        idInner++;
-                                    }
-                                }
-                                else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
-                                {
-                                    int idInner = 0;
-                                    foreach (var str in castedKey)
-                                    {
-                                        var xnodeVersionInner = xmlDoc.CreateElement(Constants.List);
-                                        CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                        SerializeList(str, xmlDoc, xnodeVersionInner);
-
-                                        xnodeValue.AppendChild(xnodeVersionInner);
-                                        idInner++;
-                                    }
-                                }
-                                else
-                                {
-                                    throw new NotSupportedException();
+                                    xnodeValue.AppendChild(xnodeVersionInner);
+                                    idInner++;
                                 }
                             }
+                            else
+                            {
+                                throw new NotSupportedException();
+                            }
+
                         }
-                        else if (valueType.IsClass)
+                        else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
+                        {
+                            if (value is IEnumerable castedKey)
+                            {
+                                int idInner = 0;
+                                foreach (var str in castedKey)
+                                {
+                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.List);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    SerializeList(str, xmlDoc, xnodeVersionInner);
+
+                                    xnodeValue.AppendChild(xnodeVersionInner);
+                                    idInner++;
+                                }
+                            }
+                            else
+                            {
+                                throw new NotSupportedException();
+                            }
+                        }
+                        else if (Misc.HelperMethods.IsClass(valueType))
                         {
                             // Class
 
                             Serialize(value, xmlDoc, xnodeValue, 0);
                         }
-                        else if (valueType.IsValueType && !valueType.IsPrimitive && !valueType.IsEnum && valueType != typeof(decimal))
+                        else if (Misc.HelperMethods.IsStruct(valueType))
                         {
                             // Struct
 
@@ -393,7 +390,6 @@ namespace DotSerial.Core.XML
                         id++;
 
                     }
-                    int h = 0;
                 }
                 else
                 {
@@ -406,7 +402,8 @@ namespace DotSerial.Core.XML
             }
         }
 
-        /// <summary> Serialize a list.
+        /// <summary> 
+        /// Serialize a list.
         /// </summary>
         /// <param name="list">List</param>
         /// <param name="xmlDoc">XmlDocument</param>
@@ -429,43 +426,33 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
-                else if (Misc.HelperMethods.ImplementsIEnumerable(type))
+                else if (Misc.HelperMethods.IsDictionary(type))
                 {
-                    // IEnuramable
-
-                    if (Misc.HelperMethods.IsDictionary(castedList))
+                    int id = 0;
+                    foreach (var str in castedList)
                     {
-                        int id = 0;
-                        foreach (var str in castedList)
-                        {
-                            var xnodeVersion = xmlDoc.CreateElement(Constants.Dictionary);
-                            CreateAttributes(xmlDoc, xnodeVersion, id);
-                            SerializeList(str, xmlDoc, xnodeVersion);
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.Dictionary);
+                        CreateAttributes(xmlDoc, xnodeVersion, id);
+                        SerializeList(str, xmlDoc, xnodeVersion);
 
-                            xnode.AppendChild(xnodeVersion);
-                            id++;
-                        }
+                        xnode.AppendChild(xnodeVersion);
+                        id++;
                     }
-                    else if (Misc.HelperMethods.IsList(castedList) || Misc.HelperMethods.IsArray(castedList))
-                    {
-                        int id = 0;
-                        foreach (var str in castedList)
-                        {
-                            var xnodeVersion = xmlDoc.CreateElement(Constants.List);
-                            CreateAttributes(xmlDoc, xnodeVersion, id);
-                            SerializeList(str, xmlDoc, xnodeVersion);
-
-                            xnode.AppendChild(xnodeVersion);
-                            id++;
-                        }
-                    }
-                    else
-                    {
-                        throw new NotSupportedException();
-                    }
-
                 }
-                else if (true == type.IsClass)
+                else if (Misc.HelperMethods.IsList(type) || Misc.HelperMethods.IsArray(type))
+                {
+                    int id = 0;
+                    foreach (var str in castedList)
+                    {
+                        var xnodeVersion = xmlDoc.CreateElement(Constants.List);
+                        CreateAttributes(xmlDoc, xnodeVersion, id);
+                        SerializeList(str, xmlDoc, xnodeVersion);
+
+                        xnode.AppendChild(xnodeVersion);
+                        id++;
+                    }
+                }
+                else if (Misc.HelperMethods.IsClass(type))
                 {
                     // Class
 
@@ -476,7 +463,7 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
-                else if (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal))
+                else if (Misc.HelperMethods.IsStruct(type))
                 {
                     // Struct
 

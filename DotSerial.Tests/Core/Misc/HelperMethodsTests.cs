@@ -8,7 +8,7 @@ namespace DotSerial.Tests.Core.Misc
         public void GetItemTypeOfIEnumerable_ListInt_Type()
         {            
             Type tmp = typeof(List<int>);
-            var result = HelperMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(tmp);
             Assert.Equal(typeof(int), result);
         }
 
@@ -16,7 +16,7 @@ namespace DotSerial.Tests.Core.Misc
         public void GetItemTypeOfIEnumerable_ListInt_Object()
         {
             var tmp = new List<int>();
-            var result = HelperMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(tmp);
             Assert.Equal(typeof(int), result);
         }
 
@@ -24,7 +24,7 @@ namespace DotSerial.Tests.Core.Misc
         public void ImplementsIEnumerable_ListInt_Object()
         {
             var tmp = new List<int>();
-            var result = HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.ImplementsIEnumerable(tmp);
             Assert.True(result);
         }
 
@@ -32,7 +32,7 @@ namespace DotSerial.Tests.Core.Misc
         public void ImplementsIEnumerable_Int_Object()
         {
             int tmp = 5;
-            var result = HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.ImplementsIEnumerable(tmp);
             Assert.False(result);
         }
 
@@ -40,7 +40,7 @@ namespace DotSerial.Tests.Core.Misc
         public void ImplementsIEnumerable_ListInt_Type()
         {
             Type tmp = typeof(List<int>);
-            var result = HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.ImplementsIEnumerable(tmp);
             Assert.True(result);
         }
 
@@ -48,7 +48,7 @@ namespace DotSerial.Tests.Core.Misc
         public void ImplementsIEnumerable_Int_Type()
         {
             Type tmp = typeof(int);
-            var result = HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.HelperMethods.ImplementsIEnumerable(tmp);
             Assert.False(result);
         }
 
@@ -56,7 +56,7 @@ namespace DotSerial.Tests.Core.Misc
         public void BoolToInt_True()
         {
             bool tmp = true;
-            int result = HelperMethods.BoolToInt(tmp);
+            int result = DotSerial.Core.Misc.HelperMethods.BoolToInt(tmp);
             Assert.Equal(1, result);
         }
 
@@ -64,7 +64,7 @@ namespace DotSerial.Tests.Core.Misc
         public void BoolToInt_False()
         {
             bool tmp = false;
-            int result = HelperMethods.BoolToInt(tmp);
+            int result = DotSerial.Core.Misc.HelperMethods.BoolToInt(tmp);
             Assert.Equal(0, result);
         }
 
@@ -72,7 +72,7 @@ namespace DotSerial.Tests.Core.Misc
         public void IntToBool_False()
         {
             int tmp = 0;
-            bool result = HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Core.Misc.HelperMethods.IntToBool(tmp);
             Assert.False(result);
         }
 
@@ -80,7 +80,7 @@ namespace DotSerial.Tests.Core.Misc
         public void IntToBool_True()
         {
             int tmp = 1;
-            bool result = HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Core.Misc.HelperMethods.IntToBool(tmp);
             Assert.True(result);
         }
     }
