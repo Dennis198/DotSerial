@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace DotSerial.Tests.Attributes
 {
@@ -12,16 +7,18 @@ namespace DotSerial.Tests.Attributes
         [Fact]
         public void GetPropertyID_True()
         {
-            NoAttributeClass tmp = new NoAttributeClass();
-            // Get all Properties and iterate threw
+            // Arrange
+            NoAttributeClass tmp = new ();            
             PropertyInfo[] props = tmp.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
             {
                 if (prop.Name == nameof(NoAttributeClass.Boolean))
                 {
-                    
+                    // Act
                     int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
+
+                    // Assert
                     Assert.Equal(1, id);
                     return;
                 }
@@ -31,16 +28,18 @@ namespace DotSerial.Tests.Attributes
         [Fact]
         public void GetPropertyID_False()
         {
-            NoAttributeClass tmp = new NoAttributeClass();
-            // Get all Properties and iterate threw
+            // Arrange
+            NoAttributeClass tmp = new ();
             PropertyInfo[] props = tmp.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
             {
                 if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
                 {
-
+                    //Act
                     int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
+
+                    // Assert
                     Assert.Equal(-1, id);
                     return;
                 }

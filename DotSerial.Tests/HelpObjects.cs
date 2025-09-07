@@ -13,9 +13,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class NoAttributeClass
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public bool Boolean { get; set; }
 
         public bool BooleanNoAttribute { get; set; }
@@ -53,33 +53,33 @@ namespace DotSerial.Tests
     /// </summary>
     public class NullClass
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public SimpleClass? SimpleClass { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public SimpleClass[]? Array { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public List<SimpleClass>? List { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public SimpleClass?[]? ArrayWithNulls { get; set; }
-        [SerialzePropertyID(4)]
+        [DSPropertyID(4)]
         public List<SimpleClass>? ListWithNulls { get; set; }
-        [SerialzePropertyID(5)]
+        [DSPropertyID(5)]
         public string? String { get; set; }
-        [SerialzePropertyID(6)]
+        [DSPropertyID(6)]
         public bool[]? BooleanArray { get; set; }
-        [SerialzePropertyID(7)]
+        [DSPropertyID(7)]
         public List<bool>? BooleanList { get; set; }
-        [SerialzePropertyID(8)]
+        [DSPropertyID(8)]
         public string[]? StringArray { get; set; }
-        [SerialzePropertyID(9)]
+        [DSPropertyID(9)]
         public List<string>? StringList { get; set; }
-        [SerialzePropertyID(10)]
+        [DSPropertyID(10)]
         public string?[]? StringArrayWithNulls { get; set; }
-        [SerialzePropertyID(11)]
+        [DSPropertyID(11)]
         public List<string>? StringListWithNulls { get; set; }
-        [SerialzePropertyID(12)]
+        [DSPropertyID(12)]
         public TestEnum[]? EnumArray { get; set; }
-        [SerialzePropertyID(13)]
+        [DSPropertyID(13)]
         public List<TestEnum>? EnumList { get; set; }
 
         public static NullClass CreateTestDefault()
@@ -111,7 +111,7 @@ namespace DotSerial.Tests
     /// </summary>
     public class SimpleClass
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public bool Boolean { get; set; }
     }
 
@@ -120,11 +120,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class IEnumerableClass
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public SimpleClass[]? Array { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public List<SimpleClass>? List { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public Dictionary<int, SimpleClass>? Dic { get; set; }
     }
 
@@ -133,9 +133,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class NestedClass()
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public bool Boolean { get; set; }
     }
 
@@ -144,11 +144,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class NestedNestedClass()
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public NestedClass? NestedClass { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public bool Boolean { get; set; }
     }
 
@@ -157,39 +157,39 @@ namespace DotSerial.Tests
     /// </summary>
     public class PrimitiveClass
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public bool Boolean { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public byte Byte { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public sbyte SByte { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public char Char { get; set; }
-        [SerialzePropertyID(4)]
+        [DSPropertyID(4)]
         public decimal Decimal { get; set; }
-        [SerialzePropertyID(5)]
+        [DSPropertyID(5)]
         public double Double { get; set; }
-        [SerialzePropertyID(6)]
+        [DSPropertyID(6)]
         public float Float { get; set; }
-        [SerialzePropertyID(7)]
+        [DSPropertyID(7)]
         public int Int { get; set; }
-        [SerialzePropertyID(8)]
+        [DSPropertyID(8)]
         public uint UInt { get; set; }
-        [SerialzePropertyID(9)]
+        [DSPropertyID(9)]
         public nint NInt { get; set; }
-        [SerialzePropertyID(10)]
+        [DSPropertyID(10)]
         public nuint NUInt { get; set; }
-        [SerialzePropertyID(11)]
+        [DSPropertyID(11)]
         public long Long { get; set; }
-        [SerialzePropertyID(12)]
+        [DSPropertyID(12)]
         public ulong ULong { get; set; }
-        [SerialzePropertyID(13)]
+        [DSPropertyID(13)]
         public short Short { get; set; }
-        [SerialzePropertyID(14)]
+        [DSPropertyID(14)]
         public ushort UShort { get; set; }
-        [SerialzePropertyID(15)]
+        [DSPropertyID(15)]
         public string? String { get; set; }
-        [SerialzePropertyID(16)]
+        [DSPropertyID(16)]
         public TestEnum Enum { get; set; }
 
         public static PrimitiveClass CreateTestDefault()
@@ -224,73 +224,73 @@ namespace DotSerial.Tests
     /// </summary>
     public class PrimitiveClassIEnumarable
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public bool[]? Boolean { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public List<bool>? BooleanList { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public byte[]? Byte { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public List<byte>? ByteList { get; set; }
-        [SerialzePropertyID(4)]
+        [DSPropertyID(4)]
         public sbyte[]? SByte { get; set; }
-        [SerialzePropertyID(5)]
+        [DSPropertyID(5)]
         public List<sbyte>? SByteList { get; set; }
-        [SerialzePropertyID(6)]
+        [DSPropertyID(6)]
         public char[]? Char { get; set; }
-        [SerialzePropertyID(7)]
+        [DSPropertyID(7)]
         public List<char>? CharList { get; set; }
-        [SerialzePropertyID(8)]
+        [DSPropertyID(8)]
         public decimal[]? Decimal { get; set; }
-        [SerialzePropertyID(9)]
+        [DSPropertyID(9)]
         public List<decimal>? DecimalList { get; set; }
-        [SerialzePropertyID(10)]
+        [DSPropertyID(10)]
         public double[]? Double { get; set; }
-        [SerialzePropertyID(11)]
+        [DSPropertyID(11)]
         public List<double>? DoubleList { get; set; }
-        [SerialzePropertyID(12)]
+        [DSPropertyID(12)]
         public float[]? Float { get; set; }
-        [SerialzePropertyID(13)]
+        [DSPropertyID(13)]
         public List<float>? FloatList { get; set; }
-        [SerialzePropertyID(14)]
+        [DSPropertyID(14)]
         public int[]? Int { get; set; }
-        [SerialzePropertyID(15)]
+        [DSPropertyID(15)]
         public List<int>? IntList { get; set; }
-        [SerialzePropertyID(16)]
+        [DSPropertyID(16)]
         public uint[]? UInt { get; set; }
-        [SerialzePropertyID(17)]
+        [DSPropertyID(17)]
         public List<uint>? UIntList { get; set; }
-        [SerialzePropertyID(18)]
+        [DSPropertyID(18)]
         public nint[]? NInt { get; set; }
-        [SerialzePropertyID(19)]
+        [DSPropertyID(19)]
         public List<nint>? NIntList { get; set; }
-        [SerialzePropertyID(20)]
+        [DSPropertyID(20)]
         public nuint[]? NUInt { get; set; }
-        [SerialzePropertyID(21)]
+        [DSPropertyID(21)]
         public List<nuint>? NUIntList { get; set; }
-        [SerialzePropertyID(22)]
+        [DSPropertyID(22)]
         public long[]? Long { get; set; }
-        [SerialzePropertyID(23)]
+        [DSPropertyID(23)]
         public List<long>? LongList { get; set; }
-        [SerialzePropertyID(24)]
+        [DSPropertyID(24)]
         public ulong[]? ULong { get; set; }
-        [SerialzePropertyID(25)]
+        [DSPropertyID(25)]
         public List<ulong>? ULongList { get; set; }
-        [SerialzePropertyID(26)]
+        [DSPropertyID(26)]
         public short[]? Short { get; set; }
-        [SerialzePropertyID(27)]
+        [DSPropertyID(27)]
         public List<short>? ShortList { get; set; }
-        [SerialzePropertyID(28)]
+        [DSPropertyID(28)]
         public ushort[]? UShort { get; set; }
-        [SerialzePropertyID(29)]
+        [DSPropertyID(29)]
         public List<ushort>? UShortList { get; set; }
-        [SerialzePropertyID(30)]
+        [DSPropertyID(30)]
         public string[]? String { get; set; }
-        [SerialzePropertyID(31)]
+        [DSPropertyID(31)]
         public List<string>? StringList { get; set; }
-        [SerialzePropertyID(32)]
+        [DSPropertyID(32)]
         public TestEnum[]? Enum { get; set; }
-        [SerialzePropertyID(33)]
+        [DSPropertyID(33)]
         public List<TestEnum>? EnumList { get; set; }
 
         public static PrimitiveClassIEnumarable CreateTestDefault()
@@ -342,56 +342,56 @@ namespace DotSerial.Tests
     /// </summary>
     public class MultiDimClassIEnumarble
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public int[][]? Int { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public List<List<int>>? IntList{ get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public int[][][]? IntThree { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public List<List<List<int>>>? IntListThree { get; set; }
-        [SerialzePropertyID(4)]
+        [DSPropertyID(4)]
         public List<int>[]? IntMix { get; set; }
-        [SerialzePropertyID(5)]
+        [DSPropertyID(5)]
         public List<int[]>? IntListMix { get; set; }
 
-        [SerialzePropertyID(6)]
+        [DSPropertyID(6)]
         public string[][]? String { get; set; }
-        [SerialzePropertyID(7)]
+        [DSPropertyID(7)]
         public List<List<string>>? StringList { get; set; }
-        [SerialzePropertyID(8)]
+        [DSPropertyID(8)]
         public string[][][]? StringThree { get; set; }
-        [SerialzePropertyID(9)]
+        [DSPropertyID(9)]
         public List<List<List<string>>>? StringListThree { get; set; }
-        [SerialzePropertyID(10)]
+        [DSPropertyID(10)]
         public List<string>[]? StringMix { get; set; }
-        [SerialzePropertyID(11)]
+        [DSPropertyID(11)]
         public List<string[]>? StringListMix { get; set; }
 
-        [SerialzePropertyID(12)]
+        [DSPropertyID(12)]
         public PrimitiveClass[][]? PrimitiveClassArray { get; set; }
-        [SerialzePropertyID(13)]
+        [DSPropertyID(13)]
         public List<List<PrimitiveClass>>? PrimitiveClassList { get; set; }
-        [SerialzePropertyID(14)]
+        [DSPropertyID(14)]
         public PrimitiveClass[][][]? PrimitiveClassArrayThree { get; set; }
-        [SerialzePropertyID(15)]
+        [DSPropertyID(15)]
         public List<List<List<PrimitiveClass>>>? PrimitiveClassListThree { get; set; }
-        [SerialzePropertyID(16)]
+        [DSPropertyID(16)]
         public List<PrimitiveClass>[]? PrimitiveClassArrayMix { get; set; }
-        [SerialzePropertyID(17)]
+        [DSPropertyID(17)]
         public List<PrimitiveClass[]>? PrimitiveClassListMix { get; set; }
 
-        [SerialzePropertyID(18)]
+        [DSPropertyID(18)]
         public TestEnum[][]? Enum { get; set; }
-        [SerialzePropertyID(19)]
+        [DSPropertyID(19)]
         public List<List<TestEnum>>? EnumList { get; set; }
-        [SerialzePropertyID(20)]
+        [DSPropertyID(20)]
         public TestEnum[][][]? EnumThree { get; set; }
-        [SerialzePropertyID(21)]
+        [DSPropertyID(21)]
         public List<List<List<TestEnum>>>? EnumListThree { get; set; }
-        [SerialzePropertyID(22)]
+        [DSPropertyID(22)]
         public List<TestEnum>[]? EnumMix { get; set; }
-        [SerialzePropertyID(23)]
+        [DSPropertyID(23)]
         public List<TestEnum[]>? EnumListMix { get; set; }
 
         public static MultiDimClassIEnumarble CreateTestDefault()
@@ -606,17 +606,17 @@ namespace DotSerial.Tests
     /// </summary>
     public class DictionaryClass()
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public Dictionary<int, int>? DicIntInt { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public Dictionary<int, string?>? DicIntString { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public Dictionary<string, int>? DicStringInt { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public Dictionary<string, string>? DicStringString { get; set; }
-        [SerialzePropertyID(4)]
+        [DSPropertyID(4)]
         public Dictionary<string, string>? DicEmpty { get; set; }
-        [SerialzePropertyID(5)]
+        [DSPropertyID(5)]
         public Dictionary<string, string>? DicNull { get; set; }
 
         public static DictionaryClass CreateTestDefault()
@@ -653,11 +653,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class EnumClass()
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public TestEnum TestEnum0 { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public TestEnum TestEnum1 { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public TestEnum TestEnum2 { get; set; }
     }
 
@@ -678,13 +678,13 @@ namespace DotSerial.Tests
     /// </summary>
     public class StructClass()
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public TestStruct TestStruct0 { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public TestStruct TestStruct1 { get; set; }
-        [SerialzePropertyID(2)]
+        [DSPropertyID(2)]
         public TestStruct TestStruct2 { get; set; }
-        [SerialzePropertyID(3)]
+        [DSPropertyID(3)]
         public TestStruct[]? TestStructArray { get; set; }
 
         public static StructClass CreateTestDefault()
@@ -706,9 +706,9 @@ namespace DotSerial.Tests
     /// </summary>
     public struct TestStruct
     {
-        [SerialzePropertyID(0)]
+        [DSPropertyID(0)]
         public int Value0 { get; set; }
-        [SerialzePropertyID(1)]
+        [DSPropertyID(1)]
         public int Value1 { get; set; }
 
         public TestStruct(int x, int y)
@@ -723,15 +723,21 @@ namespace DotSerial.Tests
     /// </summary>
     public class DuplicateIDClass
     {
-        [SerialzePropertyID(1893)]
+        [DSPropertyID(1893)]
         public int Value0 { get; set; }
-        [SerialzePropertyID(1893)]
+        [DSPropertyID(1893)]
         public int Value1 { get; set; }
     }
 
     public class NotSupportedTypeClass
     {
-        [SerialzePropertyID(1893)]
+        [DSPropertyID(1893)]
         public HashSet<int>? Value0 { get; set; }
+    }
+
+    public class InvalidIDClass()
+    {
+        [DSPropertyID(-1)]
+        public int Value0 { get; set; }
     }
 }

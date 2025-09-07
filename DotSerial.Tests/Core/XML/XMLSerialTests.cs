@@ -294,6 +294,16 @@ namespace DotSerial.Tests.Core.XML
             Assert.Throws<ArgumentNullException>(() => XMLSerial.CreateSerializedObject(tmp));
         }
 
+        [Fact]
+        public void CreateSerializedObject_InvalidIDException()
+        {
+            // Arrange
+            InvalidIDClass tmp = new();
+
+            // Act & Assert
+            Assert.Throws<InvalidIDException>(() => XMLSerial.CreateSerializedObject(tmp));
+        }
+
         [Theory]
         [InlineData(typeof(bool))]
         [InlineData(typeof(byte))]

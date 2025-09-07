@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
 
 namespace DotSerial.Attributes
@@ -14,9 +15,16 @@ namespace DotSerial.Attributes
             object[] attrs = prop.GetCustomAttributes(true);
             foreach (object att in attrs)
             {
-                if (att is SerialzePropertyIDAttribute saveAtt)
+                if (att is DSPropertyIDAttribute saveAtt)
                 {
-                    return (int)saveAtt.PropertyID;
+                    int result = (int)saveAtt.PropertyID;
+
+                    if (result == Constants.NoAttributeID)
+                    {
+                        throw new InvalidIDException(result);
+                    }
+
+                    return result;
                 }
             }
             return Constants.NoAttributeID;

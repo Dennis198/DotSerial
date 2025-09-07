@@ -4,7 +4,7 @@
     /// </summary>
     /// <param name="id">ID</param>
     [AttributeUsage(AttributeTargets.Property)]
-    public class SerialzePropertyIDAttribute(int id) : Attribute
+    public class DSPropertyIDAttribute(int id) : Attribute
     {
         public int PropertyID { get; private set; } = id;
     }
