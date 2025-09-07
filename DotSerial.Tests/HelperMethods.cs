@@ -44,13 +44,17 @@ namespace DotSerial.Tests
                 string isPropName = isPropInfo.Name;
 
                 PropertyInfo expectedPropInfo = propsExpected[i];
-                object? expectedValue = expectedPropInfo.GetValue(isClass);
+                object? expectedValue = expectedPropInfo.GetValue(expectedClass);
                 string expectedPropName = expectedPropInfo.Name;
 
                 Assert.Equal(isPropName, expectedPropName);
                 Assert.Equal(isPropInfo.PropertyType, expectedPropInfo.PropertyType);
 
-                if (isPropInfo.PropertyType == typeof(string))
+                if (null == expectedValue)
+                {
+                    Assert.Null(isValue);
+                }
+                else if (isPropInfo.PropertyType == typeof(string))
                 {
                     Assert.Equal(expectedValue, isValue);
                 }

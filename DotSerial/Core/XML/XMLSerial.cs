@@ -14,7 +14,7 @@ namespace DotSerial.Core.XML
         public static readonly Version s_Version = new(1, 0);
 
         /// <inheritdoc/>
-        public static XmlDocument CreateSerializedObject(object obj)
+        public static XmlDocument CreateSerializedObject(object? obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
@@ -68,6 +68,37 @@ namespace DotSerial.Core.XML
             xmlDoc.WriteTo(tx);
             string strXmlText = sw.ToString();
             return strXmlText;
+        }
+
+        /// <inheritdoc/>
+        public static bool IsTypeSupported(Type t)
+        {
+            // Primitive + string.
+            if (Misc.HelperMethods.IsPrimitive(t))
+            {
+                return true;
+            }
+
+            if (Misc.HelperMethods.ImplementsIEnumerable(t))
+            {
+                if (Misc.HelperMethods.IsDictionary(t) ||
+                    Misc.HelperMethods.IsList(t) ||
+                    Misc.HelperMethods.IsArray(t))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            if (Misc.HelperMethods.IsClass(t) || Misc.HelperMethods.IsStruct(t))
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -303,7 +303,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">object</param>
         /// <returns>True if struct</returns>
-        public static bool IsStruct(object obj)
+        public static bool IsStruct(object? obj)
         {
             if (obj == null) return false;
             Type type = obj.GetType();
@@ -318,19 +318,9 @@ namespace DotSerial.Core.Misc
         public static bool IsClass(Type type)
         {
             if (type == null) return false;
+            if (type == typeof(string)) return false;
+            if (ImplementsIEnumerable(type)) return false;
             return type.IsClass;
         }
-
-        /// <summary>
-        /// Check if type is class
-        /// </summary>
-        /// <param name="obj">object</param>
-        /// <returns>True if class</returns>
-        //public static bool IsClass(object obj)
-        //{
-        //    if (obj == null) return false;
-            
-        //    return obj.GetType().IsClass;
-        //}
     }
 }

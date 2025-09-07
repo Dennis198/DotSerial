@@ -1,8 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using DotSerial.Attributes;
 
-using DotSerial.Attributes;
-
-namespace DotSerial.Tests.Core.XML
+namespace DotSerial.Tests
 {
     /// <summary>
     /// Empty Class
@@ -603,6 +601,9 @@ namespace DotSerial.Tests.Core.XML
         }
     }
 
+    /// <summary>
+    /// Dictionary Class
+    /// </summary>
     public class DictionaryClass()
     {
         [SerialzePropertyID(0)]
@@ -672,6 +673,9 @@ namespace DotSerial.Tests.Core.XML
         Fourth = 4,
     }
 
+    /// <summary>
+    /// Struct Class
+    /// </summary>
     public class StructClass()
     {
         [SerialzePropertyID(0)]
@@ -681,7 +685,7 @@ namespace DotSerial.Tests.Core.XML
         [SerialzePropertyID(2)]
         public TestStruct TestStruct2 { get; set; }
         [SerialzePropertyID(3)]
-        public TestStruct[] TestStructArray { get; set; }
+        public TestStruct[]? TestStructArray { get; set; }
 
         public static StructClass CreateTestDefault()
         {
@@ -697,6 +701,9 @@ namespace DotSerial.Tests.Core.XML
         }
     }
 
+    /// <summary>
+    /// Test Struct
+    /// </summary>
     public struct TestStruct
     {
         [SerialzePropertyID(0)]
@@ -709,5 +716,22 @@ namespace DotSerial.Tests.Core.XML
             Value0 = x;
             Value1 = y;
         }
+    }
+
+    /// <summary>
+    /// Duplicate ID class
+    /// </summary>
+    public class DuplicateIDClass
+    {
+        [SerialzePropertyID(1893)]
+        public int Value0 { get; set; }
+        [SerialzePropertyID(1893)]
+        public int Value1 { get; set; }
+    }
+
+    public class NotSupportedTypeClass
+    {
+        [SerialzePropertyID(1893)]
+        public HashSet<int>? Value0 { get; set; }
     }
 }

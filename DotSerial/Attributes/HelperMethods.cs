@@ -3,7 +3,7 @@ using DotSerial.Core.XML;
 
 namespace DotSerial.Attributes
 {
-    internal static class HelperMethods
+    public static class HelperMethods
     {
         /// <summary> Get the parameter ID
         /// </summary>
