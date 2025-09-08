@@ -7,7 +7,7 @@ using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
-    public class XMLSerial_Deserialize
+    public class DotSerialXMLDeserialize
     {
         /// <summary> 
         /// Deserialize Object
@@ -40,7 +40,7 @@ namespace DotSerial.Core.XML
                 if (Constants.NoAttributeID != id)
                 {
                     // Check if type is supported
-                    if (false == XMLSerial.IsTypeSupported(prop.PropertyType))
+                    if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
                         throw new NotSupportedTypeException(prop.PropertyType);
                     }
@@ -159,7 +159,7 @@ namespace DotSerial.Core.XML
             Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
-            if (false == XMLSerial.IsTypeSupported(itemType))
+            if (false == DotSerialXML.IsTypeSupported(itemType))
             {
                 throw new NotSupportedTypeException(itemType);
             }
@@ -267,12 +267,12 @@ namespace DotSerial.Core.XML
             if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
-                if (false == XMLSerial.IsTypeSupported(keyType))
+                if (false == DotSerialXML.IsTypeSupported(keyType))
                 {
                     throw new NotSupportedTypeException(keyType);
                 }
                 // Check if type is supported
-                if (false == XMLSerial.IsTypeSupported(valueType))
+                if (false == DotSerialXML.IsTypeSupported(valueType))
                 {
                     throw new NotSupportedTypeException(valueType);
                 }
@@ -355,7 +355,7 @@ namespace DotSerial.Core.XML
             Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
-            if (false == XMLSerial.IsTypeSupported(itemType))
+            if (false == DotSerialXML.IsTypeSupported(itemType))
             {
                 throw new NotSupportedTypeException(itemType);
             }
@@ -442,12 +442,12 @@ namespace DotSerial.Core.XML
             if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
-                if (false == XMLSerial.IsTypeSupported(keyType))
+                if (false == DotSerialXML.IsTypeSupported(keyType))
                 {
                     throw new NotSupportedTypeException(keyType);
                 }
                 // Check if type is supported
-                if (false == XMLSerial.IsTypeSupported(valueType))
+                if (false == DotSerialXML.IsTypeSupported(valueType))
                 {
                     throw new NotSupportedTypeException(valueType);
                 }

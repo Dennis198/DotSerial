@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
 using System.Xml;
 
@@ -7,7 +6,7 @@ using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
-    public class XMLSerial_Serialize
+    public class DotSerialXMLSerialize
     {
         /// <summary> 
         /// Serialize object
@@ -50,7 +49,7 @@ namespace DotSerial.Core.XML
                 if (Constants.NoAttributeID != id)
                 {
                     // Check if type is supported
-                    if (false == XMLSerial.IsTypeSupported(prop.PropertyType))
+                    if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
                         throw new NotSupportedTypeException(prop.PropertyType);
                     }
@@ -167,12 +166,12 @@ namespace DotSerial.Core.XML
                 if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(dic, out Type keyType, out Type valueType))
                 {
                     // Check if type is supported
-                    if (false == XMLSerial.IsTypeSupported(keyType))
+                    if (false == DotSerialXML.IsTypeSupported(keyType))
                     {
                         throw new NotSupportedTypeException(keyType);
                     }
                     // Check if type is supported
-                    if (false == XMLSerial.IsTypeSupported(valueType))
+                    if (false == DotSerialXML.IsTypeSupported(valueType))
                     {
                         throw new NotSupportedTypeException(valueType);
                     }
@@ -357,7 +356,7 @@ namespace DotSerial.Core.XML
             {
                 Type type = Misc.HelperMethods.GetItemTypeOfIEnumerable(castedList);
                 // Check if type is supported
-                if (false == XMLSerial.IsTypeSupported(type))
+                if (false == DotSerialXML.IsTypeSupported(type))
                 {
                     throw new NotSupportedTypeException(type);
                 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MainObject>
+  <Object id="0" display="PrimitiveClass">
+    <Parameter id="0" display="Boolean">1</Parameter>
+    <Parameter id="1" display="Byte">42</Parameter>
+    <Parameter id="2" display="SByte">41</Parameter>
+    <Parameter id="3" display="Char">d</Parameter>
+    <Parameter id="4" display="Decimal">40</Parameter>
+    <Parameter id="5" display="Double">39,9</Parameter>
+    <Parameter id="6" display="Float">38,8</Parameter>
+    <Parameter id="7" display="Int">37</Parameter>
+    <Parameter id="8" display="UInt">36</Parameter>
+    <Parameter id="9" display="NInt">35</Parameter>
+    <Parameter id="10" display="NUInt">34</Parameter>
+    <Parameter id="11" display="Long">33</Parameter>
+    <Parameter id="12" display="ULong">32</Parameter>
+    <Parameter id="13" display="Short">31</Parameter>
+    <Parameter id="14" display="UShort">30</Parameter>
+    <Parameter id="15" display="String">HelloWorld</Parameter>
+    <Parameter id="16" display="Enum">1</Parameter>
+  </Object>
+</MainObject>
