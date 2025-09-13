@@ -7,6 +7,8 @@
     <FileVersion>0.0.1.0</FileVersion>
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
 	<InformationalVersion>0.0.1.0</InformationalVersion>
+	<PackageVersion>0.0.1</PackageVersion>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
