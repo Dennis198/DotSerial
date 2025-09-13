@@ -8,12 +8,18 @@
     <AssemblyVersion>0.0.1.0</AssemblyVersion>
 	<InformationalVersion>0.0.1.0</InformationalVersion>
 	<PackageVersion>0.0.1</PackageVersion>
+	<PackageId>Dennis198.DotSerial</PackageId>
+	<Authors>Dennis Sölch</Authors>
+	<Product>DotSerial</Product>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<RepositoryUrl>https://github.com/Dennis198/DotSerial</RepositoryUrl>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
 	<Description>DotSerial is a lightweight C# library for serializing and deserializing .NET objects.</Description>
 	<Title>DotSerial</Title>
+	<Version>0.0.1</Version>
+	<PackageProjectUrl>https://github.com/Dennis198/DotSerial</PackageProjectUrl>
+	<PackageTags>Serialization Deserialization, Serialize, Deserialize </PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
