@@ -8,11 +8,6 @@ namespace DotSerial.Tests.Core.XML
     public class XMLSerialTests
     {
 
-        // TODO Code COverage
-
-        //using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
-        //xmlDocument.Save(fileStream);
-
         [Fact]
         public void Save_True()
         {
@@ -102,6 +97,10 @@ namespace DotSerial.Tests.Core.XML
             // Act
             var xmlDocument = DotSerialXML.CreateSerializedObject(tmp);           
             var result = DotSerialXML.DeserializeObject(output, xmlDocument);
+
+
+            //using var fileStream = File.Open(@"C:\Users\Dennis\Downloads\unitTest.xml", FileMode.Create);
+            DotSerialXML.Save(@"C:\Users\Dennis\Downloads\unitTest.xml", tmp);
 
             // Assert
             Assert.True(result);

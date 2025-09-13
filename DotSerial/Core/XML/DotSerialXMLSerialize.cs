@@ -194,7 +194,7 @@ namespace DotSerial.Core.XML
                         }
 
                         var xnodeKey = xmlDoc.CreateElement(Constants.Key);
-                        CreateAttributes(xmlDoc, xnodeKey, 0);
+                        CreateAttributes(xmlDoc, xnodeKey, Constants.DicKeyID);
 
                         if (Misc.HelperMethods.IsPrimitive(keyType))
                         {
@@ -260,7 +260,7 @@ namespace DotSerial.Core.XML
 
                         // Value
                         var xnodeValue = xmlDoc.CreateElement(Constants.Value);
-                        CreateAttributes(xmlDoc, xnodeValue, 1);
+                        CreateAttributes(xmlDoc, xnodeValue, Constants.DicKeyValueID);
 
                         if (Misc.HelperMethods.IsPrimitive(valueType))
                         {
@@ -437,7 +437,7 @@ namespace DotSerial.Core.XML
             ArgumentNullException.ThrowIfNull(xmlDoc);
             ArgumentNullException.ThrowIfNull(xnode);
 
-            var xnodeParameter = xmlDoc.CreateElement(Constants.Parameter);
+            var xnodeParameter = xmlDoc.CreateElement(Constants.Property);
 
             if (value != null)
             {
@@ -468,16 +468,12 @@ namespace DotSerial.Core.XML
         private static void CreateAttributes(XmlDocument xmlDoc, XmlElement xmlElement, int id, string? displayName = null)
         {
             // ID
-            var xnodeParaID = xmlDoc.CreateAttribute(Constants.IdAttribute);
-            xnodeParaID.InnerText = id.ToString();
-            xmlElement.Attributes?.Append(xnodeParaID);
+            DotSerialXML.CreateAttribute(xmlDoc, xmlElement, Constants.XmlAttributeID, id.ToString());
 
             // Display
             if (false == string.IsNullOrWhiteSpace(displayName))
             {
-                var xnodeParaDisplay = xmlDoc.CreateAttribute(Constants.DisplayAttribute);
-                xnodeParaDisplay.InnerText = displayName;
-                xmlElement.Attributes?.Append(xnodeParaDisplay);
+                DotSerialXML.CreateAttribute(xmlDoc, xmlElement, Constants.XmlAttributeName, displayName);
             }
         }
     }

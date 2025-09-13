@@ -16,7 +16,7 @@ namespace DotSerial.Core.XML
         /// <summary>
         /// Current Version
         /// </summary>
-        public static readonly Version s_Version = new(1, 0);
+        public static readonly Version s_Version = new(0, 0, 1);
 
         /// <inheritdoc/>
         public static bool Save(string path, object? obj)
@@ -83,8 +83,10 @@ namespace DotSerial.Core.XML
                     xmlDoc.Load(fileStream);
                 }
 
-                var desObj = new DotSerialXML();
-                desObj._document = xmlDoc;
+                var desObj = new DotSerialXML
+                {
+                    _document = xmlDoc
+                };
 
                 var result = DeserializeObject(obj, desObj);
                 return true;
@@ -106,18 +108,23 @@ namespace DotSerial.Core.XML
             }
 
             XmlDocument xmlDoc = new();
-            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(s_Version.ToString(), "utf-8", null);
+            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(new Version(1, 0).ToString(), "utf-8", null);
             xmlDoc.AppendChild(xmlDecl);
 
             // Create root element
-            XmlElement xnodeRoot = xmlDoc.CreateElement(Constants.MainElementName);
+            XmlElement xnodeRoot = xmlDoc.CreateElement(Constants.DotSerial);
             xmlDoc.AppendChild(xnodeRoot);
+
+            CreateAttribute(xmlDoc, xnodeRoot, Constants.XmlAttributeVersion, s_Version.ToString());
+            CreateAttribute(xmlDoc, xnodeRoot, Constants.XmlAttributeProducer, "DotSerial");
 
             // Serialze Object
             DotSerialXMLSerialize.Serialize(obj, xmlDoc, xnodeRoot, Constants.MainObjectID);
 
-            var result = new DotSerialXML();
-            result._document = xmlDoc;
+            var result = new DotSerialXML
+            {
+                _document = xmlDoc
+            };
 
             return result;
         }
@@ -140,7 +147,7 @@ namespace DotSerial.Core.XML
 
             // Get root element
             XmlDocument doc = serialObj._document;
-            XmlNodeList s = doc.GetElementsByTagName(Constants.MainElementName) ?? throw new NullReferenceException();
+            XmlNodeList s = doc.GetElementsByTagName(Constants.DotSerial) ?? throw new NullReferenceException();
             XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
             XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
 
@@ -198,5 +205,27 @@ namespace DotSerial.Core.XML
             return false;
         }
 
+        /// <summary>
+        /// Create XML Attribute
+        /// </summary>
+        /// <param name="xmlDoc">XmlDoc</param>
+        /// <param name="xmlElement">XmlElement</param>
+        /// <param name="name">Name of attribute</param>
+        /// <param name="value">Value of attribute</param>
+        public static void CreateAttribute(XmlDocument xmlDoc, XmlElement xmlElement, string name, string value)
+        {
+            ArgumentNullException.ThrowIfNull(xmlDoc);
+            ArgumentNullException.ThrowIfNull(xmlElement);
+            ArgumentNullException.ThrowIfNull(value);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException(name);
+            }
+
+            // Create Attribute
+            var xnodeParaID = xmlDoc.CreateAttribute(name);
+            xnodeParaID.InnerText = value;
+            xmlElement.Attributes?.Append(xnodeParaID);
+        }
     }
 }

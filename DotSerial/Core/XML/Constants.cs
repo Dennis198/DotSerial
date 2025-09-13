@@ -3,22 +3,40 @@ namespace DotSerial.Core.XML
 {
     public static class Constants
     {
-        /// <summary>
-        /// XML MainObject display
-        /// </summary>
-        public const string MainElementName = "MainObject";
+
+        #region Attribute
+
         /// <summary>
         /// XML id attribute display
         /// </summary>
-        public const string IdAttribute = "id";
+        public const string XmlAttributeID = "id";
         /// <summary>
         /// XML display attribute display
         /// </summary>
-        public const string DisplayAttribute = "display";
+        public const string XmlAttributeName = "name";
+        /// <summary>
+        /// XML id attribute version
+        /// </summary>
+        public const string XmlAttributeVersion = "version";
+        /// <summary>
+        /// XML id attribute version
+        /// </summary>
+        public const string XmlAttributeProducer = "producer";
+
+        #endregion
+
+        /// <summary>
+        /// XML Object display
+        /// </summary>
+        public const string DotSerial = "DotSerial";
+        /// <summary>
+        /// XML Object display
+        /// </summary>
+        public const string Object = "Object";
         /// <summary>
         /// XML Parameter display
         /// </summary>
-        public const string Parameter = "Parameter";
+        public const string Property = "Parameter";
         /// <summary>
         /// XML List Value display
         /// </summary>
@@ -39,10 +57,9 @@ namespace DotSerial.Core.XML
         /// XML Dictionary Value display
         /// </summary>
         public const string Value = "Value";
-        /// <summary>
-        /// XML Object display
-        /// </summary>
-        public const string Object = "Object";
+
+        #region Default Values
+
         /// <summary>
         /// String for null objects
         /// </summary>
@@ -55,5 +72,15 @@ namespace DotSerial.Core.XML
         /// ID for property without id
         /// </summary>
         public const int NoAttributeID = -1;
+        /// <summary>
+        /// ID for key in dictionary
+        /// </summary>
+        public const int DicKeyID = 0;
+        /// <summary>
+        /// ID for key in value
+        /// </summary>
+        public const int DicKeyValueID = 1;
+
+        #endregion       
     }
 }

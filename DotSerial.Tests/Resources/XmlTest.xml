@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MainObject>
+<DotSerial>
   <Object id="0" display="PrimitiveClass">
     <Parameter id="0" display="Boolean">1</Parameter>
     <Parameter id="1" display="Byte">42</Parameter>
@@ -19,4 +19,4 @@
     <Parameter id="15" display="String">HelloWorld</Parameter>
     <Parameter id="16" display="Enum">1</Parameter>
   </Object>
-</MainObject>
+</DotSerial>

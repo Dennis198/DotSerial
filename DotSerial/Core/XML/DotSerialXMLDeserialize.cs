@@ -53,7 +53,7 @@ namespace DotSerial.Core.XML
                         }
 
                         // Read AttribteID from xmlnode and cast it to int.
-                        string? t = para.Attributes[Constants.IdAttribute]?.Value;
+                        string? t = para.Attributes[Constants.XmlAttributeID]?.Value;
                         if (false == int.TryParse(t, out int idXML))
                         {
                             throw new InvalidCastException("ID could not be deserialized.");
