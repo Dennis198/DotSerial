@@ -19,12 +19,12 @@ namespace DotSerial.Core.XML
         public static readonly Version s_Version = new(0, 0, 1);
 
         /// <inheritdoc/>
-        public static bool Save(string path, object? obj)
+        public static bool SaveToFile(string path, object? obj)
         {           
             try
             {
-                var xmlDocument = CreateSerializedObject(obj);
-                return Save(path, xmlDocument);
+                var xmlDocument = Serialize(obj);
+                return SaveToFile(path, xmlDocument);
             }
             catch 
             {
@@ -33,7 +33,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool Save(string path, DotSerialXML serialObj)
+        public static bool SaveToFile(string path, DotSerialXML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -60,7 +60,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool Load(string path, object obj)
+        public static bool LoadFromFile(string path, object obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
@@ -88,7 +88,7 @@ namespace DotSerial.Core.XML
                     _document = xmlDoc
                 };
 
-                var result = DeserializeObject(obj, desObj);
+                var result = Deserialize(obj, desObj);
                 return true;
             }
             catch
@@ -98,7 +98,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static DotSerialXML CreateSerializedObject(object? obj)
+        public static DotSerialXML Serialize(object? obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
@@ -130,7 +130,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool DeserializeObject(object obj, DotSerialXML serialObj)
+        public static bool Deserialize(object obj, DotSerialXML serialObj)
         {
             ArgumentNullException.ThrowIfNull(obj);
             ArgumentNullException.ThrowIfNull(serialObj);
