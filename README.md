@@ -3,6 +3,8 @@
 DotSerial is a lightweight C# library for serializing and deserializing .NET objects.  
 It allows developers to easily mark properties for serialization using a simple attribute, and provides functionality to save and load objects from files.  
 
+If you encounter any errors, you can create an issues at [GitHub](https://github.com/Dennis198/DotSerial/issues),
+
 ## ✨ Features  
 - 🚀 Simple attribute-based serialization with **`[DSPropertyID]`**  
 - 📂 Save objects to a file and load them back  
