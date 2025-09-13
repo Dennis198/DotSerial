@@ -9,6 +9,22 @@
 	<InformationalVersion>0.0.1.0</InformationalVersion>
 	<PackageVersion>0.0.1</PackageVersion>
 	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<RepositoryUrl>https://github.com/Dennis198/DotSerial</RepositoryUrl>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<Description>DotSerial is a lightweight C# library for serializing and deserializing .NET objects.</Description>
+	<Title>DotSerial</Title>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
 </Project>
