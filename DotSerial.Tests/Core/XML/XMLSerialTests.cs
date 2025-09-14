@@ -2,7 +2,6 @@
 
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.DataCollection;
 
 namespace DotSerial.Tests.Core.XML
 {

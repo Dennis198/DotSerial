@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Reflection;
 using System.Xml;
 
@@ -226,10 +225,12 @@ namespace DotSerial.Core.XML
                             throw new NullReferenceException();
                         }
 
+#pragma warning disable CS8604
                         if (isArray)
                             castedListResult[i] = Enum.ToObject(itemType, castedList[i]);
                         else
                             castedListResult.Add(Enum.ToObject(itemType, castedList[i]));
+#pragma warning restore CS8604
                     }
                     else
                     {
@@ -319,8 +320,10 @@ namespace DotSerial.Core.XML
                             {
                                 throw new NullReferenceException();
                             }
-                            
+
+#pragma warning disable CS8604
                             castedDicResult.Add(keyValuePair.Key, Enum.ToObject(valueType, castedDic[keyValuePair.Key]));
+#pragma warning restore CS8604
                         }
                         else
                         {
@@ -457,9 +460,15 @@ namespace DotSerial.Core.XML
                 {
                     if (null != node && null != node?.ChildNodes && node.ChildNodes.Count == 2)
                     {
+
                         #region Key
+
+#pragma warning disable CS8600, CS8602
                         XmlNode keyNode = node.ChildNodes[0];
                         XmlNode keyNodeInner = keyNode.ChildNodes[0];
+#pragma warning restore CS8600, CS8602
+
+
                         object key;
 
                         if (null == keyNode || null == keyNodeInner)
@@ -557,8 +566,11 @@ namespace DotSerial.Core.XML
 
                         #region Value
 
+#pragma warning disable CS8600, CS8602
                         XmlNode valueNode = node.ChildNodes[1];
                         XmlNode valueNodeInner = valueNode.ChildNodes[0];
+#pragma warning restore CS8600, CS8602
+
                         object? value;
 
                         if (valueType == typeof(string))
@@ -566,11 +578,14 @@ namespace DotSerial.Core.XML
                             // Note: String case MUST become before IEnumerable
                             // otherwise it will not be serialized correct.
 
+#pragma warning disable CS8604
                             DeserializeString(out string? tmpString, valueNodeInner);
+#pragma warning restore CS8604
                             value = tmpString;
                         }
                         else if (Misc.HelperMethods.IsDictionary(valueType))
                         {
+#pragma warning disable CS8602
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
                             if (valueNodeInner.InnerText.Equals(Constants.NullString))
@@ -581,10 +596,12 @@ namespace DotSerial.Core.XML
                             {
                                 var tmpDic = DeserializeDictionary(valueNodeInner.ChildNodes, valueType);
                                 value = tmpDic;
-                            }                                
+                            }
+#pragma warning restore CS8602
                         }
                         else if (Misc.HelperMethods.IsList(valueType) || Misc.HelperMethods.IsArray(valueType))
                         {
+#pragma warning disable CS8602
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
                             if (valueNodeInner.InnerText.Equals(Constants.NullString))
@@ -596,7 +613,7 @@ namespace DotSerial.Core.XML
                                 var tmpList = DeserializeList(valueNodeInner.ChildNodes, valueType);
                                 value = tmpList;
                             }
-
+#pragma warning restore CS8602
                         }
                         else
                         {

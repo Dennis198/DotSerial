@@ -13,14 +13,6 @@ namespace DotSerial.Interfaces
         /// <summary>
         /// Deserialze Object
         /// </summary>
-        /// <param name="obj">Object to dezerialize</param>
-        /// <param name="serialObj">Serialized object</param>
-        /// <returns>True, if deserialiation is succesfull.</returns>
-        //public abstract static bool Deserialize(object obj, T serialObj);
-
-        /// <summary>
-        /// Deserialze Object
-        /// </summary>
         /// <typeparam name="U">Type of the serialized object</typeparam>
         /// <param name="serialObj">Serialized object.</param>
         /// <returns>Deserialized object</returns>

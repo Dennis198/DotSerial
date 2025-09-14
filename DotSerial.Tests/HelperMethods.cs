@@ -14,6 +14,8 @@ namespace DotSerial.Tests
                 return;
             }
 
+            ArgumentNullException.ThrowIfNull(isClass);
+
             if (DotSerial.Core.Misc.HelperMethods.IsClass(isClass.GetType()))
             {
                 // Check if Class
@@ -193,7 +195,9 @@ namespace DotSerial.Tests
 
             // Type Check
             Type targetItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(targetList);
+#pragma warning disable CS8604
             Type isItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(isList);
+#pragma warning restore CS8604
             Assert.Equal(targetItemType, isItemType);
 
             // Value Check
@@ -268,10 +272,12 @@ namespace DotSerial.Tests
             {
                 Assert.Fail();
             }
+#pragma warning disable CS8604
             if (false == DotSerial.Core.Misc.HelperMethods.GetKeyValueTypeOfDictionary(isDic, out Type isDicKeyType, out Type isDicValueType))
             {
                 Assert.Fail();
             }
+#pragma warning disable CS8604
             Assert.Equal(targetDicKeyType, isDicKeyType);
             Assert.Equal(targetDicValueType, isDicValueType);
 

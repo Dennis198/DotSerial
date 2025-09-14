@@ -446,8 +446,9 @@ namespace DotSerial.Core.XML
                 {
                     throw new NullReferenceException();
                 }
-
+#pragma warning disable CS8601
                 xnodeParameter.InnerText = type.IsEnum ? Convert.ToString((int)value) : value.ToString();
+#pragma warning restore CS8601
             }
             else
             {
