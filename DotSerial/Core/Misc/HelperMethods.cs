@@ -2,14 +2,14 @@
 
 namespace DotSerial.Core.Misc
 {
-    public static class HelperMethods
+    internal static class HelperMethods
     {
         /// <summary>
         /// Returns true, if Type is a primitive
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns>True if primitive</returns>
-        public static bool IsPrimitive(Type type)
+        internal static bool IsPrimitive(Type type)
         {
             // null => false
             if (type == null)
@@ -51,7 +51,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="objType">Object Type</param>
         /// <returns>Type of object in IEnumerable.</returns>
-        public static Type GetItemTypeOfIEnumerable(Type objType)
+        internal static Type GetItemTypeOfIEnumerable(Type objType)
         {
             if (false == ImplementsIEnumerable(objType))
             {
@@ -72,7 +72,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">Object</param>
         /// <returns>Type of object in IEnumerable.</returns>
-        public static Type GetItemTypeOfIEnumerable(object obj)
+        internal static Type GetItemTypeOfIEnumerable(object obj)
         {
             if (false == ImplementsIEnumerable(obj))
             {
@@ -96,7 +96,7 @@ namespace DotSerial.Core.Misc
         /// <param name="typeValue">Value type</param>
         /// <returns>True, if succeeded</returns>
         /// <exception cref="NotSupportedException"></exception>
-        public static bool GetKeyValueTypeOfDictionary(object obj, out Type typeKey, out Type typeValue)
+        internal static bool GetKeyValueTypeOfDictionary(object obj, out Type typeKey, out Type typeValue)
         {
             if (false == IsDictionary(obj))
             {
@@ -124,7 +124,7 @@ namespace DotSerial.Core.Misc
         /// <param name="typeValue">Value type</param>
         /// <returns>True, if succeeded</returns>
         /// <exception cref="NotSupportedException"></exception>
-        public static bool GetKeyValueTypeOfDictionary(Type type, out Type typeKey, out Type typeValue)
+        internal static bool GetKeyValueTypeOfDictionary(Type type, out Type typeKey, out Type typeValue)
         {
             if (false == IsDictionary(type))
             {
@@ -149,7 +149,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">Object</param>
         /// <returns>Type of object in IEnumerable.</returns>
-        public static Type? GetItemTypeOfArray(object obj)
+        internal static Type? GetItemTypeOfArray(object obj)
         {
             if (false == ImplementsIEnumerable(obj))
             {
@@ -164,7 +164,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">Object</param>
         /// <returns>Type of object in IEnumerable.</returns>
-        public static Type? GetItemTypeOfArray(Type objType)
+        internal static Type? GetItemTypeOfArray(Type objType)
         {
             if (false == ImplementsIEnumerable(objType))
             {
@@ -179,7 +179,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">Object</param>
         /// <returns>True, if type implements IEnumerable</returns>
-        public static bool ImplementsIEnumerable(object obj)
+        internal static bool ImplementsIEnumerable(object obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
             var oType = obj.GetType();
@@ -191,7 +191,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="objType">Type</param>
         /// <returns>True, if type implements IEnumerable</returns>
-        public static bool ImplementsIEnumerable(Type objType)
+        internal static bool ImplementsIEnumerable(Type objType)
         {
             return typeof(IEnumerable).IsAssignableFrom(objType);
         }
@@ -201,7 +201,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="b">Bool</param>
         /// <returns>Integer</returns>
-        public static int BoolToInt(bool b)
+        internal static int BoolToInt(bool b)
         {
             return b ? 1 : 0;
         }
@@ -211,7 +211,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="i">Integer</param>
         /// <returns>Bool</returns>
-        public static bool IntToBool(int i)
+        internal static bool IntToBool(int i)
         {
             return i == 1;
         }
@@ -221,7 +221,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="o">object</param>
         /// <returns>True if array</returns>
-        public static bool IsArray(object? o)
+        internal static bool IsArray(object? o)
         {
             if (o == null) return false;
             return o.GetType().IsArray;
@@ -232,7 +232,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="type">type</param>
         /// <returns>True if array</returns>
-        public static bool IsArray(Type type)
+        internal static bool IsArray(Type type)
         {
             if (type == null) return false;
             return type.IsArray;
@@ -243,7 +243,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="o">object</param>
         /// <returns>True if list</returns>
-        public static bool IsList(object? o)
+        internal static bool IsList(object? o)
         {
             if (o == null) return false;
             return o is IList &&
@@ -256,7 +256,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="type">type</param>
         /// <returns>True if list</returns>
-        public static bool IsList(Type type)
+        internal static bool IsList(Type type)
         {
             if (type == null) return false;
             return type.IsGenericType &&
@@ -268,7 +268,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="o">object</param>
         /// <returns>True if list</returns>
-        public static bool IsDictionary(object? o)
+        internal static bool IsDictionary(object? o)
         {
             if (o == null) return false;
             return o is IDictionary &&
@@ -281,7 +281,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="type">type</param>
         /// <returns>True if dictionary</returns>
-        public static bool IsDictionary(Type type)
+        internal static bool IsDictionary(Type type)
         {
             if (type == null) return false;
             return type.IsGenericType &&
@@ -293,7 +293,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="type">type</param>
         /// <returns>True if struct</returns>
-        public static bool IsStruct(Type type)
+        internal static bool IsStruct(Type type)
         {
             return (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal));
         }
@@ -303,7 +303,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="obj">object</param>
         /// <returns>True if struct</returns>
-        public static bool IsStruct(object? obj)
+        internal static bool IsStruct(object? obj)
         {
             if (obj == null) return false;
             Type type = obj.GetType();
@@ -315,7 +315,7 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns>True if class</returns>
-        public static bool IsClass(Type type)
+        internal static bool IsClass(Type type)
         {
             if (type == null) return false;
             if (type == typeof(string)) return false;

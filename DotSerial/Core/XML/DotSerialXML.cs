@@ -60,9 +60,8 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool LoadFromFile(string path, object obj)
+        public static U LoadFromFile<U>(string path)
         {
-            ArgumentNullException.ThrowIfNull(obj);
 
             if (string.IsNullOrWhiteSpace(path))
             {
@@ -88,8 +87,8 @@ namespace DotSerial.Core.XML
                     _document = xmlDoc
                 };
 
-                var result = Deserialize(obj, desObj);
-                return true;
+                var result = Deserialize<U>(desObj);
+                return result;
             }
             catch
             {
@@ -130,12 +129,13 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool Deserialize(object obj, DotSerialXML serialObj)
+        public static U Deserialize<U>(DotSerialXML serialObj)
         {
-            ArgumentNullException.ThrowIfNull(obj);
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            if (false == obj.GetType().IsClass)
+            var result = Activator.CreateInstance<U>();
+
+            if (false == result?.GetType().IsClass)
             {
                 throw new NotSupportedException();
             }
@@ -151,31 +151,17 @@ namespace DotSerial.Core.XML
             XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
             XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
 
-            DotSerialXMLDeserialize.Deserialize(obj, rootNode);
+            DotSerialXMLDeserialize.Deserialize(result, rootNode);
 
-            return true;
+            return result;
         }
 
-        /// <inheritdoc/>
-        public static string AsString(DotSerialXML serialObj)
-        {
-            ArgumentNullException.ThrowIfNull(serialObj);
-
-            if (null == serialObj._document)
-            {
-                throw new NullReferenceException();
-            }
-
-            using StringWriter sw = new();
-            using XmlTextWriter tx = new(sw);
-            var xmlDoc = serialObj._document;
-            xmlDoc.WriteTo(tx);
-            string strXmlText = sw.ToString();
-            return strXmlText;
-        }
-
-        /// <inheritdoc/>
-        public static bool IsTypeSupported(Type t)
+        /// <summary>
+        /// Check if Type is supprted for serialization and deserialization.
+        /// </summary>
+        /// <param name="t">Type</param>
+        /// <returns>True, if supported</returns>
+        internal static bool IsTypeSupported(Type t)
         {
             // Primitive + string.
             if (Misc.HelperMethods.IsPrimitive(t))
@@ -212,7 +198,7 @@ namespace DotSerial.Core.XML
         /// <param name="xmlElement">XmlElement</param>
         /// <param name="name">Name of attribute</param>
         /// <param name="value">Value of attribute</param>
-        public static void CreateAttribute(XmlDocument xmlDoc, XmlElement xmlElement, string name, string value)
+        internal static void CreateAttribute(XmlDocument xmlDoc, XmlElement xmlElement, string name, string value)
         {
             ArgumentNullException.ThrowIfNull(xmlDoc);
             ArgumentNullException.ThrowIfNull(xmlElement);
@@ -226,6 +212,25 @@ namespace DotSerial.Core.XML
             var xnodeParaID = xmlDoc.CreateAttribute(name);
             xnodeParaID.InnerText = value;
             xmlElement.Attributes?.Append(xnodeParaID);
+        }
+
+        /// <summary>
+        /// Converts the serialized object to an string.
+        /// </summary>
+        /// <returns>String</returns>
+        public override string ToString()
+        {
+            if (null == _document)
+            {
+                return string.Empty;
+            }
+
+            using StringWriter sw = new();
+            using XmlTextWriter tx = new(sw);
+            var xmlDoc = _document;
+            xmlDoc.WriteTo(tx);
+            string strXmlText = sw.ToString();
+            return strXmlText;
         }
     }
 }

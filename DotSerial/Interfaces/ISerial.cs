@@ -16,7 +16,15 @@ namespace DotSerial.Interfaces
         /// <param name="obj">Object to dezerialize</param>
         /// <param name="serialObj">Serialized object</param>
         /// <returns>True, if deserialiation is succesfull.</returns>
-        public abstract static bool Deserialize(object obj, T serialObj);
+        //public abstract static bool Deserialize(object obj, T serialObj);
+
+        /// <summary>
+        /// Deserialze Object
+        /// </summary>
+        /// <typeparam name="U">Type of the serialized object</typeparam>
+        /// <param name="serialObj">Serialized object.</param>
+        /// <returns>Deserialized object</returns>
+        public abstract static U Deserialize<U>(T serialObj);
 
         /// <summary>
         /// Saves the serialized object to file.
@@ -33,27 +41,14 @@ namespace DotSerial.Interfaces
         /// <param name="obj">Object to serialze</param>
         /// <returns>True if succeeded</returns>
         public abstract static bool SaveToFile(string path, object? obj);
-
+        
         /// <summary>
-        /// Loads the serialized object and deserializes it.
+        /// Loads the deserialized object from file
         /// </summary>
-        /// <param name="path">Path</param>
-        /// <param name="obj">Object to dezerialize</param>
-        /// <returns>True, if succeeded</returns>
-        public abstract static bool LoadFromFile(string path, object obj);
+        /// <typeparam name="U">Type of the object</typeparam>
+        /// <param name="path">Path to the file</param>
+        /// <returns>Deserilized object</returns>
+        public abstract static U LoadFromFile<U>(string path);
 
-        /// <summary>
-        /// Converts the serialized object to a string
-        /// </summary>
-        /// <param name="serialObj">erialized object</param>
-        /// <returns>String</returns>
-        public abstract static string AsString(T serialObj);
-
-        /// <summary>
-        /// Check if Type is supprted for serialization and deserialization.
-        /// </summary>
-        /// <param name="t">Type</param>
-        /// <returns>True, if supported</returns>
-        public abstract static bool IsTypeSupported(Type t);
     }
 }

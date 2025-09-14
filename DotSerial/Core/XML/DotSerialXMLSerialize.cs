@@ -6,7 +6,7 @@ using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
-    public class DotSerialXMLSerialize
+    internal class DotSerialXMLSerialize
     {
         /// <summary> 
         /// Serialize object
@@ -15,7 +15,7 @@ namespace DotSerial.Core.XML
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
         /// <param name="objectID">ObjectID</param>
-        public static void Serialize(object? classObj, XmlDocument xmlDoc, XmlNode xnode, int objectID)
+        internal static void Serialize(object? classObj, XmlDocument xmlDoc, XmlNode xnode, int objectID)
         {
             // If classObj is null, create empty node
             if (classObj == null)

@@ -7,14 +7,14 @@ using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
-    public class DotSerialXMLDeserialize
+    internal class DotSerialXMLDeserialize
     {
         /// <summary> 
         /// Deserialize Object
         /// </summary>
         /// <param name="classObj">Object</param>
         /// <param name="node">XmlNode</param>
-        public static void Deserialize(object? classObj, XmlNode node)
+        internal static void Deserialize(object? classObj, XmlNode node)
         {
             // XmlNode text equals NullString
             // => Object was null when it was serialzed.
