@@ -51,8 +51,7 @@ var obj = new Example
 var serialized = DotSerialXML.Serialize(obj);
 
 // Deserialize back
-var output = new Example();
-bool result = DotSerialXML.Deserialize(output, serialized);
+Example result = DotSerialXML.Deserialize<Example>(serialized);
 ```
 
 ### Save and Load from File  
@@ -61,7 +60,7 @@ bool result = DotSerialXML.Deserialize(output, serialized);
 bool resultSave = DotSerialXML.SaveToFile("example.xml", obj);
 
 // Load from file
-bool resultLoad = DotSerialXML.LoadFromFile("example.xml", obj);
+Example resultLoad = DotSerialXML.LoadFromFile<Example>("example.xml");
 ```
 
 ---
@@ -70,7 +69,7 @@ bool resultLoad = DotSerialXML.LoadFromFile("example.xml", obj);
 
 - **`[DSPropertyID(int id)]`**  
   Assign a unique **ID** to each property you want to serialize.  
-  - The ID must be unique within the class.  
+  - The ID must be unique within the class.
   - Properties without this attribute will not be serialized.  
 
 Example:
