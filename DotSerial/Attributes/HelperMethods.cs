@@ -1,4 +1,6 @@
 ﻿using System.Reflection;
+using DotSerial.Core.Exceptions;
+using DotSerial.Core.XML;
 
 namespace DotSerial.Attributes
 {
@@ -8,34 +10,25 @@ namespace DotSerial.Attributes
         /// </summary>
         /// <param name="prop">PropertyInfo</param>
         /// <returns>ID</returns>
-        public static int GetPropertyID(PropertyInfo prop)
+        internal static int GetPropertyID(PropertyInfo prop)
         {
             object[] attrs = prop.GetCustomAttributes(true);
             foreach (object att in attrs)
             {
-                if (att is SerialzeParaIDAttribute saveAtt)
+                if (att is DSPropertyIDAttribute saveAtt)
                 {
-                    return (int)saveAtt.ParaID;
+                    int result = (int)saveAtt.PropertyID;
+
+                    if (result == Constants.NoAttributeID)
+                    {
+                        throw new InvalidIDException(result);
+                    }
+
+                    return result;
                 }
             }
-            return -1;
+            return Constants.NoAttributeID;
         }
 
-        /// <summary> Get the class ID
-        /// </summary>
-        /// <param name="t">Type</param>
-        /// <returns>ID</returns>
-        public static int GetClassID(Type t)
-        {
-            var attrs = t.GetCustomAttributes();
-            foreach (object att in attrs)
-            {
-                if (att is SerialzeClassIDAttribute classID)
-                {
-                    return (int)classID.ClassID;
-                }
-            }
-            return -1;
-        }
     }
 }

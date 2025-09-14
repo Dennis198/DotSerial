@@ -4,6 +4,40 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <FileVersion>0.0.1.0</FileVersion>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+	<InformationalVersion>0.0.1.0</InformationalVersion>
+	<PackageVersion>0.0.1</PackageVersion>
+	<PackageId>Dennis198.DotSerial</PackageId>
+	<Authors>Dennis Sölch</Authors>
+	<Product>DotSerial</Product>
+	<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<RepositoryUrl>https://github.com/Dennis198/DotSerial</RepositoryUrl>
+	<PackageLicenseFile>LICENSE</PackageLicenseFile>
+	<Description>DotSerial is a lightweight C# library for serializing and deserializing .NET objects.</Description>
+	<Title>DotSerial</Title>
+	<Version>0.0.1</Version>
+	<PackageProjectUrl>https://github.com/Dennis198/DotSerial</PackageProjectUrl>
+	<PackageTags>Serialization Deserialization, Serialize, Deserialize </PackageTags>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+			<_Parameter1>$(AssemblyName).Tests</_Parameter1>
+			<!-- We use the value of AssemblyName to declare the value of the attribute -->
+		</AssemblyAttribute>
+	</ItemGroup>
 
 </Project>
