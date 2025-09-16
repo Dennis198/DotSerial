@@ -1,4 +1,6 @@
-﻿using DotSerial.Attributes;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
+using DotSerial.Attributes;
 
 namespace DotSerial.Tests
 {
@@ -190,7 +192,7 @@ namespace DotSerial.Tests
         [DSPropertyID(15)]
         public string? String { get; set; }
         [DSPropertyID(16)]
-        public TestEnum Enum { get; set; }
+        public TestEnum Enum { get; set; }        
 
         public static PrimitiveClass CreateTestDefault()
         {
@@ -729,15 +731,133 @@ namespace DotSerial.Tests
         public int Value1 { get; set; }
     }
 
-    public class NotSupportedTypeClass
-    {
-        [DSPropertyID(1893)]
-        public HashSet<int>? Value0 { get; set; }
-    }
-
     public class InvalidIDClass()
     {
         [DSPropertyID(-1)]
         public int Value0 { get; set; }
     }
+
+    public class RecordClass()
+    {
+        [DSPropertyID(0)]
+        public TestRecord TestRecord0 { get; set; }
+        [DSPropertyID(1)]
+        public TestRecord TestRecord1 { get; set; }
+        [DSPropertyID(2)]
+        public TestRecord TestRecord2 { get; set; }
+        [DSPropertyID(3)]
+        public TestRecord[]? TestRecordArray { get; set; }
+
+        public static RecordClass CreateTestDefault()
+        {
+            var tmp = new RecordClass
+            {
+                TestRecord0 = new TestRecord(55, 3),
+                TestRecord1 = new TestRecord(5, 3),
+                TestRecord2 = new TestRecord(55, 32),
+                TestRecordArray = [new TestRecord(6, 5), new TestRecord(4, 3), new TestRecord(2, 1)]
+            };
+
+            return tmp;
+        }
+    }
+
+    public record TestRecord
+    {
+        [DSPropertyID(0)]
+        public int Value0 { get; set; }
+        [DSPropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestRecord()
+        {}
+
+        public TestRecord(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
+    }
+
+    #region CurrentlyNotSupported (XML)
+
+    public class NotSupportedTypeClassHashSet
+    {
+        [DSPropertyID(1893)]
+        public HashSet<int>? Value0 { get; set; }
+
+        public static NotSupportedTypeClassHashSet CreateTestDefault()
+        {
+            var tmp = new NotSupportedTypeClassHashSet
+            {
+                Value0 = [2, 4, 6]
+            };
+
+            return tmp;
+        }
+    }
+
+    public class NotSupportedTypeClassHashTable
+    {
+        [DSPropertyID(1893)]
+        public Hashtable? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassStack
+    {
+        [DSPropertyID(1893)]
+        public Stack<int>? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassQueue
+    {
+        [DSPropertyID(1893)]
+        public Queue<int>? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassLinkedList
+    {
+        [DSPropertyID(1893)]
+        public LinkedList<int>? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassObservableCollection
+    {
+        [DSPropertyID(1893)]
+        public ObservableCollection<int>? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassSortedList
+    {
+        [DSPropertyID(1893)]
+        public SortedList<int, int>? Value0 { get; set; }
+    }
+
+    public class NotSupportedTypeClassSortedSet
+    {
+        [DSPropertyID(1893)]
+        public SortedSet<int>? Value0 { get; set; }
+    }
+
+    public record TestRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(0)]
+        public int Value0 { get; set; }
+        [DSPropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestRecordNoParameterlessConstructor(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
+    }
+
+    public class NotSupportedTypeClassRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(1893)]
+        public TestRecordNoParameterlessConstructor? Value0 { get; set; }
+    }
+
+    #endregion
 }

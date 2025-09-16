@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
 
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
@@ -109,6 +110,21 @@ namespace DotSerial.Tests.Core.XML
             // Act
             var xmlDocument = DotSerialXML.Serialize(tmp);
             var result = DotSerialXML.Deserialize<StructClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            HelperMethods.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_RecordClass()
+        {
+            // Arrange
+            var tmp = RecordClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<RecordClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -320,14 +336,103 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClass()
+        public void CreateSerializedObject_NotSupportedTypeClassHashSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClass();
-            tmp.Value0 = new HashSet<int>();
+            var tmp = NotSupportedTypeClassHashSet.CreateTestDefault();
 
             // Act & Assert
             Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassHashTable()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassHashTable();
+            tmp.Value0 = new Hashtable();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassStack()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassStack();
+            tmp.Value0 = new Stack<int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassQueue()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassQueue();
+            tmp.Value0 = new Queue<int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassLinkedList();
+            tmp.Value0 = new LinkedList<int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassObservableCollection();
+            tmp.Value0 = new ObservableCollection<int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassSortedList()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassSortedList();
+            tmp.Value0 = new SortedList<int, int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassSortedSet();
+            tmp.Value0 = new SortedSet<int>();
+
+            // Act & Assert
+            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor();
+            tmp.Value0 = new TestRecordNoParameterlessConstructor(5, 7);            
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+
+            // Act & Assert
+            Assert.Throws<NoParameterlessConstructorDefinedException>(() => DotSerialXML.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
+
         }
 
         [Fact]

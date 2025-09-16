@@ -164,16 +164,17 @@ namespace DotSerial.Core.XML
         internal static bool IsTypeSupported(Type t)
         {
             // Primitive + string.
-            if (Misc.HelperMethods.IsPrimitive(t))
+            if (Misc.TypeCheckMethods.IsPrimitive(t))
             {
                 return true;
             }
 
             if (Misc.HelperMethods.ImplementsIEnumerable(t))
             {
-                if (Misc.HelperMethods.IsDictionary(t) ||
-                    Misc.HelperMethods.IsList(t) ||
-                    Misc.HelperMethods.IsArray(t))
+                if (Misc.TypeCheckMethods.IsDictionary(t) ||
+                    Misc.TypeCheckMethods.IsList(t) ||
+                    Misc.TypeCheckMethods.IsArray(t) ||
+                    Misc.TypeCheckMethods.IsHashSet(t))
                 {
                     return true;
                 }
@@ -183,7 +184,7 @@ namespace DotSerial.Core.XML
                 }
             }
 
-            if (Misc.HelperMethods.IsClass(t) || Misc.HelperMethods.IsStruct(t))
+            if (Misc.TypeCheckMethods.IsClass(t) || Misc.TypeCheckMethods.IsStruct(t))
             {
                 return true;
             }

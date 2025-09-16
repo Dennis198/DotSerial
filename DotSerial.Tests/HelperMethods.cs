@@ -16,17 +16,17 @@ namespace DotSerial.Tests
 
             ArgumentNullException.ThrowIfNull(isClass);
 
-            if (DotSerial.Core.Misc.HelperMethods.IsClass(isClass.GetType()))
+            if (DotSerial.Core.Misc.TypeCheckMethods.IsClass(isClass.GetType()))
             {
                 // Check if Class
-                Assert.True(DotSerial.Core.Misc.HelperMethods.IsClass(isClass.GetType()));
-                Assert.True(DotSerial.Core.Misc.HelperMethods.IsClass(expectedClass.GetType()));
+                Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsClass(isClass.GetType()));
+                Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsClass(expectedClass.GetType()));
             }
             else
             {
                 // Check if Struct
-                Assert.True(DotSerial.Core.Misc.HelperMethods.IsStruct(isClass.GetType()));
-                Assert.True(DotSerial.Core.Misc.HelperMethods.IsStruct(expectedClass.GetType()));
+                Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isClass.GetType()));
+                Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsStruct(expectedClass.GetType()));
             }
 
 
@@ -60,27 +60,27 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(expectedValue, isValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsList(isValue))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsList(isValue))
                 {
                     AssertListEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsArray(isValue))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsArray(isValue))
                 {
                     AssertArrayEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsDictionary(isValue))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(isValue))
                 {
                     AssertDictionaryEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsClass(isPropInfo.PropertyType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsClass(isPropInfo.PropertyType))
                 {
                     AssertClassEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsStruct(isPropInfo.PropertyType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isPropInfo.PropertyType))
                 {
                     AssertClassEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsPrimitive(isPropInfo.PropertyType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isPropInfo.PropertyType))
                 {
                     Assert.Equal(expectedValue, isValue);
                 }
@@ -114,12 +114,12 @@ namespace DotSerial.Tests
             }
 
             // Check if array
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsArray(isArray));
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsArray(targetArray));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsArray(isArray));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsArray(targetArray));
 
             // Type Check
-            Type targetItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(targetArray);
-            Type isItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(isArray);
+            Type targetItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(targetArray);
+            Type isItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(isArray);
             Assert.Equal(targetItemType, isItemType);
 
             // Value Check
@@ -132,27 +132,27 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsList(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsList(isItemType))
                 {
                     AssertListEqual(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsArray(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsArray(isItemType))
                 {
                     AssertArrayEqual(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsDictionary(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(isItemType))
                 {
                     AssertDictionaryEqual(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsClass(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsClass(isItemType))
                 {
                     AssertClassEqual(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsStruct(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isItemType))
                 {
                     AssertClassEqual(targetEnum.Current, isEnum.Current);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsPrimitive(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
                     Assert.Equal(targetEnum.Current, isEnum.Current);
                 }
@@ -187,16 +187,16 @@ namespace DotSerial.Tests
             }
 
             // Check if lists
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsList(isList));
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsList(targetList));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsList(isList));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsList(targetList));
 
             // Size check
             Assert.Equal(targetList.Count, isList?.Count);
 
             // Type Check
-            Type targetItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(targetList);
+            Type targetItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(targetList);
 #pragma warning disable CS8604
-            Type isItemType = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(isList);
+            Type isItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(isList);
 #pragma warning restore CS8604
             Assert.Equal(targetItemType, isItemType);
 
@@ -207,27 +207,27 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsList(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsList(isItemType))
                 {
                     AssertListEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsArray(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsArray(isItemType))
                 {
                     AssertArrayEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsDictionary(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(isItemType))
                 {
                     AssertDictionaryEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsClass(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsClass(isItemType))
                 {
                     AssertClassEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsStruct(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isItemType))
                 {
                     AssertClassEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsPrimitive(isItemType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
                     Assert.Equal(targetList[i], isList[i]);
                 }
@@ -261,19 +261,19 @@ namespace DotSerial.Tests
             }
 
             // Check if dictionary
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsDictionary(isDic));
-            Assert.True(DotSerial.Core.Misc.HelperMethods.IsDictionary(targetDic));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(isDic));
+            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(targetDic));
 
             // Size check
             Assert.Equal(targetDic.Count, isDic?.Count);
 
             // Type Check
-            if (false == DotSerial.Core.Misc.HelperMethods.GetKeyValueTypeOfDictionary(targetDic, out Type targetDicKeyType, out Type targetDicValueType))
+            if (false == DotSerial.Core.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(targetDic, out Type targetDicKeyType, out Type targetDicValueType))
             {
                 Assert.Fail();
             }
 #pragma warning disable CS8604
-            if (false == DotSerial.Core.Misc.HelperMethods.GetKeyValueTypeOfDictionary(isDic, out Type isDicKeyType, out Type isDicValueType))
+            if (false == DotSerial.Core.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(isDic, out Type isDicKeyType, out Type isDicValueType))
             {
                 Assert.Fail();
             }
@@ -290,27 +290,27 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsList(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsList(isDicValueType))
                 {
                     AssertListEqual(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsArray(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsArray(isDicValueType))
                 {
                     AssertArrayEqual(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsDictionary(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(isDicValueType))
                 {
                     AssertDictionaryEqual(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsClass(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsClass(isDicValueType))
                 {
                     AssertClassEqual(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsStruct(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isDicValueType))
                 {
                     AssertClassEqual(isDic[keyValue.Key], keyValue.Value);
                 }
-                else if (DotSerial.Core.Misc.HelperMethods.IsPrimitive(isDicValueType))
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isDicValueType))
                 {
                     Assert.Equal(isDic[keyValue.Key], keyValue.Value);
                 }

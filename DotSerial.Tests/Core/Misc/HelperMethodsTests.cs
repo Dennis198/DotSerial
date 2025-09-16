@@ -9,7 +9,7 @@
             Type tmp = typeof(List<int>);
 
             // Act
-            var result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
 
             // Assert
             Assert.Equal(typeof(int), result);
@@ -22,7 +22,7 @@
             var tmp = new List<int>();
 
             // Act
-            var result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
 
             // Assert
             Assert.Equal(typeof(int), result);
@@ -153,7 +153,7 @@
         public void IsPrimitive_True(Type t)
         {
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsPrimitive(t);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(t);
 
             // Assert
             Assert.True(result);
@@ -169,7 +169,7 @@
         public void IsPrimitive_False(Type t)
         {
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsPrimitive(t);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(t);
 
             // Assert
             Assert.False(result);
@@ -182,7 +182,7 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.GetKeyValueTypeOfDictionary(tmp, out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Core.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp, out Type typeKey, out Type typeValue);
 
             // Assert
             Assert.True(result);
@@ -199,7 +199,7 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.GetKeyValueTypeOfDictionary(tmp.GetType(), out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Core.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp.GetType(), out Type typeKey, out Type typeValue);
 
             // Assert
             Assert.True(result);
@@ -216,7 +216,7 @@
             int[] tmp = [];
 
             // Act
-            Type? result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfArray(tmp);
+            Type? result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfArray(tmp);
             
             // Assert
             Assert.NotNull(result);
@@ -230,7 +230,7 @@
             int[] tmp = [];
 
             // Act
-            Type? result = DotSerial.Core.Misc.HelperMethods.GetItemTypeOfArray(tmp.GetType());
+            Type? result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfArray(tmp.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -244,7 +244,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsArray(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsArray(tmp);
 
             // Assert
             Assert.True(result);
@@ -257,7 +257,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsArray(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsArray(tmp.GetType());
 
             // Assert
             Assert.True(result);
@@ -270,7 +270,7 @@
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsArray(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsArray(tmp);
 
             // Assert
             Assert.False(result);
@@ -283,7 +283,7 @@
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsArray(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsArray(tmp.GetType());
 
             // Assert
             Assert.False(result);
@@ -293,7 +293,7 @@
         public void IsArray_Null_False()
         {
             List<int>? tmp = null;
-            bool result = DotSerial.Core.Misc.HelperMethods.IsArray(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsArray(tmp);
             Assert.False(result);
         }
 
@@ -304,7 +304,7 @@
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsList(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsList(tmp);
 
             // Assert
             Assert.True(result);
@@ -317,7 +317,7 @@
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsList(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsList(tmp.GetType());
 
             // Assert
             Assert.True(result);
@@ -330,7 +330,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsList(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsList(tmp);
 
             // Assert
             Assert.False(result);
@@ -343,7 +343,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsList(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsList(tmp.GetType());
 
             // Assert
             Assert.False(result);
@@ -356,7 +356,7 @@
             List<int>? tmp = null;
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsList(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsList(tmp);
 
             // Assert
             Assert.False(result);
@@ -369,7 +369,7 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsDictionary(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(tmp);
 
             // Assert
             Assert.True(result);
@@ -382,7 +382,7 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsDictionary(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(tmp.GetType());
 
             // Assert
             Assert.True(result);
@@ -395,7 +395,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsDictionary(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(tmp);
 
             // Assert
             Assert.False(result);
@@ -408,7 +408,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsDictionary(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(tmp.GetType());
 
             // Assert
             Assert.False(result);
@@ -421,7 +421,7 @@
             List<int>? tmp = null;
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsDictionary(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsDictionary(tmp);
 
             // Assert
             Assert.False(result);
@@ -434,7 +434,7 @@
             TestStruct tmp = new();
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
 
             // Assert
             Assert.True(result);
@@ -447,7 +447,7 @@
             TestStruct tmp = new();
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp.GetType());
 
             // Assert
             Assert.True(result);
@@ -460,7 +460,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
 
             // Assert
             Assert.False(result);
@@ -473,7 +473,7 @@
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp.GetType());
 
             // Assert
             Assert.False(result);
@@ -486,7 +486,7 @@
             SimpleClass tmp = new();
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
 
             // Assert
             Assert.False(result);
@@ -499,7 +499,7 @@
             SimpleClass tmp = new();
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp.GetType());
 
             // Assert
             Assert.False(result);
@@ -512,7 +512,7 @@
             decimal tmp = 4;
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
 
             // Assert
             Assert.False(result);
@@ -525,7 +525,7 @@
             List<int>? tmp = null;
 
             // Act
-            bool result = DotSerial.Core.Misc.HelperMethods.IsStruct(tmp);
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
 
             // Assert
             Assert.False(result);
@@ -540,7 +540,7 @@
         public void IsClass_Type_True()
         {
             SimpleClass tmp = new();
-            bool result = DotSerial.Core.Misc.HelperMethods.IsClass(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
             Assert.True(result);
         }
 
@@ -548,7 +548,7 @@
         public void IsClass_Object_True()
         {
             object? tmp = new();
-            bool result = DotSerial.Core.Misc.HelperMethods.IsClass(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
             Assert.True(result);
         }
 
@@ -556,15 +556,15 @@
         public void IsClass_Type_False()
         {
             int[] tmp = [];
-            bool result = DotSerial.Core.Misc.HelperMethods.IsClass(tmp.GetType());
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
             Assert.False(result);
         }
 
         [Fact]
         public void IsClass_Class_False()
         {
-            TestStruct tmp = new();
-            bool result = DotSerial.Core.Misc.HelperMethods.IsClass(tmp.GetType());
+            TestStruct tmp = new();            
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
             Assert.False(result);
         }
 
