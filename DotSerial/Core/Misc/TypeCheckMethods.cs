@@ -58,7 +58,7 @@ namespace DotSerial.Core.Misc
         internal static bool IsArray(object? o)
         {
             if (o == null) return false;
-            return o.GetType().IsArray;
+            return IsArray(o.GetType());
         }
 
         /// <summary>
@@ -80,9 +80,7 @@ namespace DotSerial.Core.Misc
         internal static bool IsList(object? o)
         {
             if (o == null) return false;
-            return o is IList &&
-                   o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+            return o is IList && IsList(o.GetType());
         }
 
         /// <summary>
@@ -105,9 +103,7 @@ namespace DotSerial.Core.Misc
         internal static bool IsDictionary(object? o)
         {
             if (o == null) return false;
-            return o is IDictionary &&
-                   o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+            return o is IDictionary && IsDictionary(o.GetType());
         }
 
         /// <summary>
@@ -123,16 +119,6 @@ namespace DotSerial.Core.Misc
         }
 
         /// <summary>
-        /// Check if type is struct
-        /// </summary>
-        /// <param name="type">type</param>
-        /// <returns>True if struct</returns>
-        internal static bool IsStruct(Type type)
-        {
-            return (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal));
-        }
-
-        /// <summary>
         /// Check if obj is struct
         /// </summary>
         /// <param name="obj">object</param>
@@ -140,7 +126,16 @@ namespace DotSerial.Core.Misc
         internal static bool IsStruct(object? obj)
         {
             if (obj == null) return false;
-            Type type = obj.GetType();
+            return IsStruct(obj.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is struct
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if struct</returns>
+        internal static bool IsStruct(Type type)
+        {
             return (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal));
         }
 
@@ -165,8 +160,7 @@ namespace DotSerial.Core.Misc
         internal static bool IsHashSet(object? o)
         {
             if (o == null) return false;
-            return o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(HashSet<>));
+            return IsHashSet(o.GetType());
         }
 
         /// <summary>
@@ -179,6 +173,53 @@ namespace DotSerial.Core.Misc
             if (type == null) return false;
             return type.IsGenericType &&
                  type.GetGenericTypeDefinition().IsAssignableFrom(typeof(HashSet<>));
+        }
+
+
+
+
+
+
+        internal static bool IsHashTable(object? o)
+        {
+            if (o == null) return false;
+            return o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Hashtable));
+        }
+
+        internal static bool IsHashTable(Type type)
+        {
+            if (type == null) return false;
+            return type.IsGenericType &&
+                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Hashtable));
+        }
+
+        internal static bool IsStack(object? o)
+        {
+            if (o == null) return false;
+            return o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
+        }
+
+        internal static bool IsStack(Type type)
+        {
+            if (type == null) return false;
+            return type.IsGenericType &&
+                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
+        }
+
+        internal static bool IsQueue(object? o)
+        {
+            if (o == null) return false;
+            return o.GetType().IsGenericType &&
+                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
+        }
+
+        internal static bool IsQueue(Type type)
+        {
+            if (type == null) return false;
+            return type.IsGenericType &&
+                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
         }
     }
 }

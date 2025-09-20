@@ -6,7 +6,6 @@ namespace DotSerial.Core.Misc
     /// </summary>
     internal static class GetTypeMethods
     {
-
         /// <summary>
         /// Gets the type of an object which implements IEnumarble
         /// </summary>
@@ -123,7 +122,7 @@ namespace DotSerial.Core.Misc
         /// <summary>
         /// Gets the type of an object which implements IEnumarble
         /// </summary>
-        /// <param name="obj">Object</param>
+        /// <param name="objType">Object</param>
         /// <returns>Type of object in IEnumerable.</returns>
         internal static Type? GetItemTypeOfArray(Type objType)
         {
@@ -133,6 +132,36 @@ namespace DotSerial.Core.Misc
             }
 
             return objType.GetElementType();
+        }
+
+        /// <summary>
+        /// Gets the type of an object which implements IEnumarble
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>Type of object in IEnumerable.</returns>
+        internal static Type? GetItemTypeHashSet(object obj)
+        {
+            if (false == HelperMethods.ImplementsIEnumerable(obj))
+            {
+                throw new NotSupportedException();
+            }
+
+            return obj.GetType().GetGenericArguments().Single();
+        }
+
+        /// <summary>
+        /// Gets the type of an object which implements IEnumarble
+        /// </summary>
+        /// <param name="objType">Object</param>
+        /// <returns>Type of object in IEnumerable.</returns>
+        internal static Type? GetItemTypeHashSet(Type objType)
+        {
+            if (false == HelperMethods.ImplementsIEnumerable(objType))
+            {
+                throw new NotSupportedException();
+            }
+
+            return objType.GetGenericArguments().Single();
         }
     }
 }

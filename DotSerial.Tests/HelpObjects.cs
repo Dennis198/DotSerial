@@ -779,23 +779,45 @@ namespace DotSerial.Tests
         }
     }
 
-    #region CurrentlyNotSupported (XML)
-
-    public class NotSupportedTypeClassHashSet
+    public class HashSetClass
     {
         [DSPropertyID(1893)]
-        public HashSet<int>? Value0 { get; set; }
+        public HashSet<int>? Int { get; set; }
+        [DSPropertyID(1894)]
+        public HashSet<string>? String { get; set; }
+        [DSPropertyID(1895)]
+        public HashSet<string>? Null { get; set; }
 
-        public static NotSupportedTypeClassHashSet CreateTestDefault()
+        public static HashSetClass CreateTestDefault()
         {
-            var tmp = new NotSupportedTypeClassHashSet
+            var tmp = new HashSetClass
             {
-                Value0 = [2, 4, 6]
+                Int = [2, 4, 6],
+                String = ["Hello World", "Moin"],
+                Null = null
             };
 
             return tmp;
         }
     }
+
+    public class HashSetClassNotSupported
+    {
+        [DSPropertyID(1893)]
+        public HashSet<TestStruct>? Value0 { get; set; }
+
+        public static HashSetClassNotSupported CreateTestDefault()
+        {
+            var tmp = new HashSetClassNotSupported
+            {
+                Value0 = [new TestStruct(9,9)],
+            };
+
+            return tmp;
+        }
+    }
+
+    #region CurrentlyNotSupported (XML)
 
     public class NotSupportedTypeClassHashTable
     {

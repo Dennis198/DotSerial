@@ -5,9 +5,6 @@ namespace DotSerial.Core.Misc
     internal static class HelperMethods
     {
 
-
-
-
         /// <summary>
         /// Check if Object implements IEnumerable
         /// </summary>
@@ -48,48 +45,6 @@ namespace DotSerial.Core.Misc
         internal static bool IntToBool(int i)
         {
             return i == 1;
-        }
-
-        internal static bool IsHashTable(object? o)
-        {
-            if (o == null) return false;
-            return o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Hashtable));
-        }
-
-        internal static bool IsHashTable(Type type)
-        {
-            if (type == null) return false;
-            return type.IsGenericType &&
-                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Hashtable));
-        }
-
-        internal static bool IsStack(object? o)
-        {
-            if (o == null) return false;
-            return o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
-        }
-
-        internal static bool IsStack(Type type)
-        {
-            if (type == null) return false;
-            return type.IsGenericType &&
-                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
-        }
-
-        internal static bool IsQueue(object? o)
-        {
-            if (o == null) return false;
-            return o.GetType().IsGenericType &&
-                   o.GetType().GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
-        }
-
-        internal static bool IsQueue(Type type)
-        {
-            if (type == null) return false;
-            return type.IsGenericType &&
-                 type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
         }
 
     }

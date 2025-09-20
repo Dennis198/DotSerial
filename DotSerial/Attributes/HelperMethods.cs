@@ -21,7 +21,7 @@ namespace DotSerial.Attributes
 
                     if (result == Constants.NoAttributeID)
                     {
-                        throw new InvalidIDException(result);
+                        throw new DSInvalidIDException(result);
                     }
 
                     return result;
