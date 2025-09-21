@@ -42,5 +42,12 @@ namespace DotSerial.Interfaces
         /// <returns>Deserilized object</returns>
         public abstract static U LoadFromFile<U>(string path);
 
+        /// <summary>
+        /// Check if Type is supprted for serialization and deserialization.
+        /// </summary>
+        /// <param name="t">Type</param>
+        /// <returns>True, if supported</returns>
+        public abstract static bool IsTypeSupported(Type t);
+
     }
 }

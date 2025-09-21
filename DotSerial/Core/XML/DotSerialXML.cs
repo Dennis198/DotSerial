@@ -1,5 +1,5 @@
 ﻿using System.Xml;
-
+using DotSerial.Core.Misc;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.XML
@@ -133,7 +133,7 @@ namespace DotSerial.Core.XML
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            var result = Activator.CreateInstance<U>();
+            var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
 
             if (false == result?.GetType().IsClass)
             {
@@ -156,12 +156,9 @@ namespace DotSerial.Core.XML
             return result;
         }
 
-        /// <summary>
-        /// Check if Type is supprted for serialization and deserialization.
-        /// </summary>
-        /// <param name="t">Type</param>
-        /// <returns>True, if supported</returns>
-        internal static bool IsTypeSupported(Type t)
+
+        /// <inheritdoc/>
+        public static bool IsTypeSupported(Type t)
         {
             // Primitive + string.
             if (Misc.TypeCheckMethods.IsPrimitive(t))
@@ -173,8 +170,7 @@ namespace DotSerial.Core.XML
             {
                 if (Misc.TypeCheckMethods.IsDictionary(t) ||
                     Misc.TypeCheckMethods.IsList(t) ||
-                    Misc.TypeCheckMethods.IsArray(t) ||
-                    Misc.TypeCheckMethods.IsHashSet(t))
+                    Misc.TypeCheckMethods.IsArray(t))
                 {
                     return true;
                 }

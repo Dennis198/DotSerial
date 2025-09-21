@@ -6,6 +6,8 @@ namespace DotSerial.Core.Exceptions
     {
         public DSNotSupportedTypeException() : base("Type is not supported.") { }
 
+        public DSNotSupportedTypeException(string str) : base(str) { }
+
         public DSNotSupportedTypeException(Type t) : base(string.Format("Type {0} is not supported.", t.Name))
         { }
 

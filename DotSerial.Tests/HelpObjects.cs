@@ -664,18 +664,6 @@ namespace DotSerial.Tests
     }
 
     /// <summary>
-    /// Enum for Tests
-    /// </summary>
-    public enum TestEnum
-    {
-        Undefined = -1,
-        None = 0,
-        First = 1,
-        Second = 2,
-        Fourth = 4,
-    }
-
-    /// <summary>
     /// Struct Class
     /// </summary>
     public class StructClass()
@@ -704,23 +692,6 @@ namespace DotSerial.Tests
     }
 
     /// <summary>
-    /// Test Struct
-    /// </summary>
-    public struct TestStruct
-    {
-        [DSPropertyID(0)]
-        public int Value0 { get; set; }
-        [DSPropertyID(1)]
-        public int Value1 { get; set; }
-
-        public TestStruct(int x, int y)
-        {
-            Value0 = x;
-            Value1 = y;
-        }
-    }
-
-    /// <summary>
     /// Duplicate ID class
     /// </summary>
     public class DuplicateIDClass
@@ -731,12 +702,18 @@ namespace DotSerial.Tests
         public int Value1 { get; set; }
     }
 
+    /// <summary>
+    /// Class with invalid id
+    /// </summary>
     public class InvalidIDClass()
     {
         [DSPropertyID(-1)]
         public int Value0 { get; set; }
     }
 
+    /// <summary>
+    /// Record Class
+    /// </summary>
     public class RecordClass()
     {
         [DSPropertyID(0)]
@@ -762,6 +739,40 @@ namespace DotSerial.Tests
         }
     }
 
+    #region Helper Class, Enum, Struct, ...
+
+    /// <summary>
+    /// Enum for Tests
+    /// </summary>
+    public enum TestEnum
+    {
+        Undefined = -1,
+        None = 0,
+        First = 1,
+        Second = 2,
+        Fourth = 4,
+    }
+
+    /// <summary>
+    /// Test Struct
+    /// </summary>
+    public struct TestStruct
+    {
+        [DSPropertyID(0)]
+        public int Value0 { get; set; }
+        [DSPropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestStruct(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
+    }
+
+    /// <summary>
+    /// Record
+    /// </summary>
     public record TestRecord
     {
         [DSPropertyID(0)]
@@ -770,7 +781,7 @@ namespace DotSerial.Tests
         public int Value1 { get; set; }
 
         public TestRecord()
-        {}
+        { }
 
         public TestRecord(int x, int y)
         {
@@ -779,45 +790,15 @@ namespace DotSerial.Tests
         }
     }
 
-    public class HashSetClass
-    {
-        [DSPropertyID(1893)]
-        public HashSet<int>? Int { get; set; }
-        [DSPropertyID(1894)]
-        public HashSet<string>? String { get; set; }
-        [DSPropertyID(1895)]
-        public HashSet<string>? Null { get; set; }
+    #endregion
 
-        public static HashSetClass CreateTestDefault()
-        {
-            var tmp = new HashSetClass
-            {
-                Int = [2, 4, 6],
-                String = ["Hello World", "Moin"],
-                Null = null
-            };
-
-            return tmp;
-        }
-    }
+    #region CurrentlyNotSupported
 
     public class HashSetClassNotSupported
     {
         [DSPropertyID(1893)]
-        public HashSet<TestStruct>? Value0 { get; set; }
-
-        public static HashSetClassNotSupported CreateTestDefault()
-        {
-            var tmp = new HashSetClassNotSupported
-            {
-                Value0 = [new TestStruct(9,9)],
-            };
-
-            return tmp;
-        }
+        public HashSet<int>? Value0 { get; set; }
     }
-
-    #region CurrentlyNotSupported (XML)
 
     public class NotSupportedTypeClassHashTable
     {
@@ -882,4 +863,5 @@ namespace DotSerial.Tests
     }
 
     #endregion
+
 }

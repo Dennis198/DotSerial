@@ -80,10 +80,6 @@ namespace DotSerial.Tests
                 {
                     AssertClassEqual(isValue, expectedValue);
                 }
-                else if (DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(isPropInfo.PropertyType))
-                {
-                    AssertHashSetEqual(expectedValue, isValue);
-                }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isPropInfo.PropertyType))
                 {
                     Assert.Equal(expectedValue, isValue);
@@ -151,10 +147,6 @@ namespace DotSerial.Tests
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isItemType))
                 {
                     AssertClassEqual(targetEnum.Current, isEnum.Current);
-                }
-                else if (DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(isItemType))
-                {
-                    AssertHashSetEqual(targetEnum.Current, isEnum.Current);
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
@@ -227,63 +219,9 @@ namespace DotSerial.Tests
                 {
                     AssertClassEqual(targetList[i], isList[i]);
                 }
-                else if (DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(isItemType))
-                {
-                    AssertHashSetEqual(targetList[i], isList[i]);
-                }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
                     Assert.Equal(targetList[i], isList[i]);
-                }
-                else
-                {
-                    Assert.Fail();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Check if two hashsets are equal.
-        /// </summary>
-        /// <param name="isObj">s List</param>
-        /// <param name="targetObj">Expected List</param>
-        public static void AssertHashSetEqual(object? isObj, object? targetObj)
-        {
-            // Null check
-            if (null == targetObj)
-            {
-                Assert.Null(isObj);
-                return;
-            }
-
-            // Check if dictionary
-            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(isObj));
-            Assert.True(DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(targetObj));
-
-            // Type Check
-            Type isItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(isObj);
-            Type targetItemType = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(targetObj);
-            Assert.Equal(isItemType, targetItemType);
-
-            dynamic? isHashSet = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(isItemType));
-            dynamic? targetHashSet = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(targetItemType));
-
-            if (null == isHashSet || null == targetHashSet)
-            {
-                Assert.Fail();
-            }
-
-            isHashSet = isObj;
-            targetHashSet = targetObj;
-
-            // Size check
-            Assert.Equal(isHashSet?.Count, targetHashSet?.Count);
-
-            foreach(dynamic? obj in targetHashSet)
-            {
-                if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
-                {
-                    Assert.True(isHashSet.Contains(obj));
                 }
                 else
                 {
@@ -359,10 +297,6 @@ namespace DotSerial.Tests
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsStruct(isDicValueType))
                 {
                     AssertClassEqual(isDic[keyValue.Key], keyValue.Value);
-                }
-                else if (DotSerial.Core.Misc.TypeCheckMethods.IsHashSet(isDicValueType))
-                {
-                    AssertHashSetEqual(isDic[keyValue.Key], keyValue.Value);
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isDicValueType))
                 {

@@ -621,64 +621,104 @@ namespace DotSerial.Tests.Core.Misc
         [Fact]
         public void IsClass_Class_True()
         {
+            // Arrange
             SimpleClass tmp = new();
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.True(result);
         }
 
         [Fact]
         public void IsClass_ClassT_True()
         {
+            // Arrange
             object? tmp = new();
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.True(result);
         }
 
         [Fact]
         public void IsClass_Array_False()
         {
+            // Arrange
             int[] tmp = [];
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.False(result);
         }
 
         [Fact]
         public void IsClass_Struct_False()
         {
+            // Arrange
             TestStruct tmp = new();
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.False(result);
         }
 
         [Fact]
         public void IsClass_Record_True()
         {
+            // Arrange
             TestRecord tmp = new();
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.True(result);
         }
 
         [Fact]
         public void IsClass_List_False()
         {
+            // Arrange
             List<int> tmp = [];
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.False(result);
         }
 
         [Fact]
         public void IsClass_Dictionary_False()
         {
+            // Arrange
             Dictionary<int, int> tmp = [];
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.False(result);
         }
 
         [Fact]
         public void IsClass_HashSet_False()
         {
+            // Arrange
             List<int> tmp = [];
+
+            // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
             Assert.False(result);
         }
 

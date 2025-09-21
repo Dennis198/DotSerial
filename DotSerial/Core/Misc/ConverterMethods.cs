@@ -1,7 +1,6 @@
-﻿using System.Collections;
-
-using DotSerial.Core.Exceptions;
+﻿using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
+using System.Collections;
 
 namespace DotSerial.Core.Misc
 {
@@ -20,11 +19,13 @@ namespace DotSerial.Core.Misc
             {
                 return null;
             }
-
+            
             // Get Item type of list
             Type itemType = Misc.GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
+            // TODO vom Interace abhänhgig machen:
+            // https://stackoverflow.com/questions/196661/calling-a-static-method-on-a-generic-type-parameter
             if (false == DotSerialXML.IsTypeSupported(itemType))
             {
                 throw new DSNotSupportedTypeException(itemType);
@@ -39,11 +40,11 @@ namespace DotSerial.Core.Misc
             // Create initial object to fill.
             if (isArray)
             {
-                result = Array.CreateInstanceFromArrayType(type, list.Count);
+                result = CreateInstanceMethods.CreateInstanceArray(type, list.Count);
             }
             else
             {
-                result = Activator.CreateInstance(type);
+                result = CreateInstanceMethods.CreateInstanceGeneric(type);
             }
 
             if (list is IList castedList && result is IList castedListResult)
@@ -86,21 +87,6 @@ namespace DotSerial.Core.Misc
                                 castedListResult.Add(itemResult);
                         }
                     }
-                    else if (Misc.TypeCheckMethods.IsHashSet(itemType))
-                    {
-                        object? itemResult = null;
-                        if (castedList[i] is not List<object?> castedListItemObj)
-                        {
-                            throw new InvalidCastException();
-                        }
-
-                        itemResult = ConvertDeserializeHashSet(castedListItemObj, itemType);
-
-                        if (itemResult != null)
-                        {
-                            castedListResult.Add(itemResult);
-                        }
-                    }
                     else if (itemType.IsEnum)
                     {
                         if (null == castedList[i])
@@ -109,10 +95,11 @@ namespace DotSerial.Core.Misc
                         }
 
 #pragma warning disable CS8604
+                        object enumObj = ConvertEnumToObject(itemType, castedList[i]);
                         if (isArray)
-                            castedListResult[i] = Enum.ToObject(itemType, castedList[i]);
+                            castedListResult[i] = enumObj;
                         else
-                            castedListResult.Add(Enum.ToObject(itemType, castedList[i]));
+                            castedListResult.Add(enumObj);
 #pragma warning restore CS8604
                     }
                     else if (TypeCheckMethods.IsClass(itemType) ||
@@ -168,8 +155,8 @@ namespace DotSerial.Core.Misc
                 }
 
                 // result object
-                Type resultType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-                object? result = Activator.CreateInstance(resultType);
+                Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
+                object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
 
                 if (null == result)
                 {
@@ -204,21 +191,6 @@ namespace DotSerial.Core.Misc
 
                             castedDicResult.Add(keyValuePair.Key, itemResult);
                         }
-                        else if (Misc.TypeCheckMethods.IsHashSet(valueType))
-                        {
-                            object? itemResult = null;
-                            if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)
-                            {
-                                throw new InvalidCastException();
-                            }
-
-                            itemResult = ConvertDeserializeHashSet(castedListItemObj, valueType);
-
-                            if (itemResult != null)
-                            {
-                                castedDicResult.Add(keyValuePair.Key, itemResult);
-                            }
-                        }
                         else if (valueType.IsEnum)
                         {
                             if (null == castedDic[keyValuePair.Key])
@@ -227,7 +199,7 @@ namespace DotSerial.Core.Misc
                             }
 
 #pragma warning disable CS8604
-                            castedDicResult.Add(keyValuePair.Key, Enum.ToObject(valueType, castedDic[keyValuePair.Key]));
+                            castedDicResult.Add(keyValuePair.Key, ConvertEnumToObject(valueType, castedDic[keyValuePair.Key]));
 #pragma warning restore CS8604
                         }
                         else if (TypeCheckMethods.IsClass(valueType) ||
@@ -255,129 +227,25 @@ namespace DotSerial.Core.Misc
             }
         }
 
-        /// <summary> 
-        /// Converts the serialzed hashset to object so "PropertyInfo.SetValue" can
-        /// set the value properly
+        /// <summary>
+        /// Converts an enum object to an object
         /// </summary>
-        /// <param name="hashSet">Deserialzed HashSet</param>
         /// <param name="type">Type</param>
-        /// <returns>Converted hashset</returns>
-        internal static object? ConvertDeserializeHashSet(List<object?> hashSet, Type type)
+        /// <param name="enumObj">Enum</param>
+        /// <returns>Object</returns>
+        internal static object ConvertEnumToObject(Type type, object enumObj)
         {
-            if (null == hashSet)
+            ArgumentNullException.ThrowIfNull(type);
+            ArgumentNullException.ThrowIfNull(enumObj);
+
+            try
             {
-                return null;
+                return Enum.ToObject(type, enumObj);
             }
-
-            // Get Item type of list
-            Type itemType = Misc.GetTypeMethods.GetItemTypeOfIEnumerable(type);
-
-            // Check if type is supported
-            if (false == DotSerialXML.IsTypeSupported(itemType))
+            catch(Exception)
             {
-                throw new DSNotSupportedTypeException(itemType);
+                throw;
             }
-
-
-            dynamic? result = Activator.CreateInstance(typeof(HashSet<>).MakeGenericType(itemType));
-
-            if (null != result)
-            {
-                foreach (object? obj in hashSet)
-                {
-                    if (obj.GetType().IsEnum)
-                    {
-                        throw new DSNotSupportedTypeException(type, itemType);
-                    }
-
-                    if (TypeCheckMethods.IsPrimitive(obj.GetType()))
-                    {
-                        dynamic itemResult = obj;
-                        result.Add(itemResult);
-                    }
-                    else 
-                    {
-                        throw new DSNotSupportedTypeException(type, itemType);
-                    }
-
-
-//                    if (Misc.TypeCheckMethods.IsDictionary(itemType))
-//                    {
-//                        object? itemResult = null;
-//                        if (obj is not Dictionary<object, object?> castedDictionaryItemObj)
-//                        {
-//                            throw new InvalidCastException();
-//                        }
-//                        itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
-
-//                        if (itemResult != null)
-//                        {
-//                            result.Add(itemResult);
-//                        }
-//                    }
-//                    else if (Misc.TypeCheckMethods.IsList(itemType) ||
-//                             Misc.TypeCheckMethods.IsArray(itemType))
-//                    {
-//                        object? itemResult = null;
-//                        if (obj is not List<object?> castedListItemObj)
-//                        {
-//                            throw new InvalidCastException();
-//                        }
-
-//                        itemResult = ConvertDeserializedList(castedListItemObj, itemType);
-
-//                        if (itemResult != null)
-//                        {
-//                            result.Add(itemResult);
-//                        }
-//                    }
-//                    else if (Misc.TypeCheckMethods.IsHashSet(itemType))
-//                    {
-//                        object? itemResult = null;
-//                        if (obj is not List<object?> castedListItemObj)
-//                        {
-//                            throw new InvalidCastException();
-//                        }
-
-//                        itemResult = ConvertDeserializeHashSet(castedListItemObj, itemType);
-
-//                        if (itemResult != null)
-//                        {
-//                            result.Add(itemResult);
-//                        }
-//                    }
-//                    else if (itemType.IsEnum)
-//                    {
-//                        if (null == obj)
-//                        {
-//                            throw new NullReferenceException();
-//                        }
-
-//#pragma warning disable CS8604
-//                        result.Add(Enum.ToObject(itemType, obj));
-//#pragma warning restore CS8604
-//                    }
-//                    else if (TypeCheckMethods.IsPrimitive(obj.GetType()))
-//                    {
-//                        dynamic itemResult = obj;
-//                        result.Add(itemResult);
-//                    }
-//                    else if (TypeCheckMethods.IsClass(obj.GetType()) ||
-//                             TypeCheckMethods.IsStruct(obj.GetType()) ||
-//                             TypeCheckMethods.IsPrimitive(obj.GetType()))
-//                    {
-//                        dynamic itemResult = obj;
-//                        result.Add(itemResult);
-//                    }
-//                    else
-//                    {
-//                        throw new NotSupportedTypeException(itemType);
-//                    }
-                }
-            }
-
-
-            return result;
         }
     }
 }

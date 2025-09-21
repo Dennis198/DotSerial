@@ -102,36 +102,17 @@ namespace DotSerial.Tests.Core.Misc
             Assert.Equal(typeof(string), typeValue);
         }
 
-        #endregion
-
-        #region HashSet 
-
         [Fact]
-        public void GetKeyValueTypeOfHashSet_Object()
+        public void GetDictionaryTypeFromKeyValue_IntString()
         {
             // Arrange
-            HashSet<int> tmp = [];
+            Dictionary<int, string> tmp = [];
 
             // Act
-            Type? result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeHashSet(tmp);
+            var result = DotSerial.Core.Misc.GetTypeMethods.GetDictionaryTypeFromKeyValue(typeof(int), typeof(string));
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(typeof(int), result);
-        }
-
-        [Fact]
-        public void GetKeyValueTypeOfHashSet_Type()
-        {
-            // Arrange
-            HashSet<int> tmp = [];
-
-            // Act
-            Type? result = DotSerial.Core.Misc.GetTypeMethods.GetItemTypeHashSet(tmp.GetType());
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal(typeof(int), result);
+            Assert.Equal(tmp.GetType(), result);
         }
 
         #endregion

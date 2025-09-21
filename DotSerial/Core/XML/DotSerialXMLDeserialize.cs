@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Xml;
 
 using DotSerial.Core.Exceptions;
@@ -115,55 +114,22 @@ namespace DotSerial.Core.XML
 
                                 prop.SetValue(classObj, tmpValue);
                             }
-                            else if (Misc.TypeCheckMethods.IsHashSet(prop.PropertyType))
-                            {
-                                if (para.InnerText.Equals(Constants.NullString))
-                                {
-                                    prop.SetValue(classObj, null);
-                                    break;
-                                }
-
-                                var tmpList = DeserializeHashSet(para.ChildNodes, prop.PropertyType);
-
-                                if (null == tmpList)
-                                {
-                                    throw new NullReferenceException();
-                                }
-
-                                object? tmpValue;
-                                // Convert deserialzed list.
-                                tmpValue = Misc.ConverterMethods.ConvertDeserializeHashSet(tmpList, prop.PropertyType);
-
-                                prop.SetValue(classObj, tmpValue);
-                            }
                             else if (Misc.TypeCheckMethods.IsClass(prop.PropertyType) ||
                                      Misc.TypeCheckMethods.IsStruct(prop.PropertyType))
                             {
-                                try
-                                {
-                                    object? tmp = Activator.CreateInstance(prop.PropertyType);
-                                    if (null != tmp)
-                                    {
-                                        // If xmlnode text equals NullString
-                                        // => Object was null when it was serialzed.
-                                        if (para.InnerText.Equals(Constants.NullString))
-                                        {
-                                            prop.SetValue(classObj, null);
-                                        }
-                                        else
-                                        {
-                                            Deserialize(tmp, para);
-                                            prop.SetValue(classObj, tmp);
-                                        }
-                                    }
-                                }
-                                catch(MissingMethodException)
-                                {
-                                    // Hack, currently if a "record" without a parameterless constructor is
-                                    // deserialized it will crash with "Activator.CreateInstance"
-                                    throw new DSNoParameterlessConstructorDefinedException(prop.PropertyType.Name);
-                                }
+                                object tmp = CreateInstanceMethods.CreateInstanceGeneric(prop.PropertyType);
 
+                                // If xmlnode text equals NullString
+                                // => Object was null when it was serialzed.
+                                if (para.InnerText.Equals(Constants.NullString))
+                                {
+                                    prop.SetValue(classObj, null);
+                                }
+                                else
+                                {
+                                    Deserialize(tmp, para);
+                                    prop.SetValue(classObj, tmp);
+                                }
                             }
                             else
                             {
@@ -231,26 +197,9 @@ namespace DotSerial.Core.XML
                     var tmpList = DeserializeList(node.ChildNodes, itemType);
                     result.Add(tmpList);
                 }
-                else if (Misc.TypeCheckMethods.IsHashSet(itemType))
-                {
-                    // If xml text equals NullString
-                    // => Object was null when it was serialzed.
-                    if (node.InnerText.Equals(Constants.NullString))
-                    {
-                        result.Add(null);
-                        continue;
-                    }
-
-                    var tmpList = DeserializeHashSet(node.ChildNodes, itemType);
-                    result.Add(tmpList);
-                }
                 else
                 {
-                    object? tmp = Activator.CreateInstance(itemType);
-                    if (null == tmp)
-                    {
-                        throw new NullReferenceException();
-                    }
+                    object? tmp = CreateInstanceMethods.CreateInstanceGeneric(itemType);
 
                     if (Misc.TypeCheckMethods.IsPrimitive(itemType))
                     {
@@ -281,63 +230,6 @@ namespace DotSerial.Core.XML
             return result;
         }
 
-        /// <summary> 
-        /// Deserialize a HashSet
-        /// </summary>
-        /// <param name="xnodeList">XmlNodeList</param>
-        /// <param name="type">Type</param>
-        /// <returns>List of objects</returns>
-        private static List<object?> DeserializeHashSet(XmlNodeList xnodeList, Type type)
-        {
-            ArgumentNullException.ThrowIfNull(xnodeList);
-            ArgumentNullException.ThrowIfNull(type);
-
-            Type itemType = Misc.GetTypeMethods.GetItemTypeOfIEnumerable(type);
-
-            // Check if type is supported
-            if (false == DotSerialXML.IsTypeSupported(itemType))
-            {
-                throw new DSNotSupportedTypeException(itemType);
-            }
-
-            List<object?> result = [];
-
-            foreach (XmlNode node in xnodeList)
-            {
-                if (itemType == typeof(string))
-                {
-                    DeserializeString(out string? tmpString, node);
-                    result.Add(tmpString);
-                }
-                else
-                {
-                    object? tmp = Activator.CreateInstance(itemType);
-                    if (null == tmp)
-                    {
-                        throw new NullReferenceException();
-                    }
-
-                    if (itemType.IsEnum)
-                    {
-                        throw new DSNotSupportedTypeException(type, itemType);
-                    }
-
-                    if (Misc.TypeCheckMethods.IsPrimitive(itemType))
-                    {
-                        DeserializePrimitive(ref tmp, itemType, node);
-                    }
-                    else
-                    {
-                        throw new DSNotSupportedTypeException(type, itemType);
-                    }
-
-                    result.Add(tmp);
-                }
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Deserialze Dictionary
         /// </summary>
@@ -358,6 +250,7 @@ namespace DotSerial.Core.XML
                 {
                     throw new DSNotSupportedTypeException(valueType);
                 }
+
                 Dictionary< object, object ?> result = [];
 
                 foreach (XmlNode node in xnodeList)
@@ -429,30 +322,9 @@ namespace DotSerial.Core.XML
 
                             key = tmpList;
                         }
-                        else if (Misc.TypeCheckMethods.IsHashSet(keyType))
-                        {
-                            // If xml text equals NullString
-                            // => Object was null when it was serialzed.
-                            if (keyNodeInner.InnerText.Equals(Constants.NullString))
-                            {
-                                throw new NullReferenceException();
-                            }
-                            var tmpList = DeserializeHashSet(keyNodeInner.ChildNodes, keyType);
-
-                            if (null == tmpList)
-                            {
-                                throw new NullReferenceException();
-                            }
-
-                            key = tmpList;
-                        }
                         else
                         {
-                            object? tmp = Activator.CreateInstance(keyType);
-                            if (null == tmp)
-                            {
-                                throw new NullReferenceException();
-                            }
+                            object? tmp = CreateInstanceMethods.CreateInstanceGeneric(keyType);
 
                             if (Misc.TypeCheckMethods.IsPrimitive(keyType))
                             {
@@ -538,29 +410,9 @@ namespace DotSerial.Core.XML
                             }
 #pragma warning restore CS8602
                         }
-                        else if (Misc.TypeCheckMethods.IsHashSet(valueType))
-                        {
-#pragma warning disable CS8602
-                            // If xml text equals NullString
-                            // => Object was null when it was serialzed.
-                            if (valueNodeInner.InnerText.Equals(Constants.NullString))
-                            {
-                                value = null;
-                            }
-                            else
-                            {
-                                var tmpList = DeserializeHashSet(valueNodeInner.ChildNodes, valueType);
-                                value = tmpList;
-                            }
-#pragma warning restore CS8602
-                        }
                         else
                         {
-                            object? tmp = Activator.CreateInstance(valueType);
-                            if (null == tmp)
-                            {
-                                throw new NullReferenceException();
-                            }
+                            object? tmp = CreateInstanceMethods.CreateInstanceGeneric(valueType);
 
                             if (Misc.TypeCheckMethods.IsPrimitive(valueType))
                             {

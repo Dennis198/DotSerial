@@ -336,25 +336,20 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
-        public void CreateSerializedObject_HashSetClass()
-        {
-            // Arrange
-            var tmp = HashSetClass.CreateTestDefault();
-
-            // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<HashSetClass>(xmlDocument);
-
-            // Assert
-            Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
-        }
-
-        [Fact]
         public void CreateSerializedObject_NotSupportedTypeHashSet()
         {
             // Arrange
-            var tmp = HashSetClassNotSupported.CreateTestDefault();
+            var tmp = new HashSetClassNotSupported();
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_StackClass()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -495,7 +490,6 @@ namespace DotSerial.Tests.Core.XML
         [InlineData(typeof(List<int>))]
         [InlineData(typeof(int[]))]
         [InlineData(typeof(RecordClass))]
-        [InlineData(typeof(HashSet<int>))]
         public void IsTypeSupported_True(Type t)
         {
             bool result = DotSerialXML.IsTypeSupported(t);
@@ -512,6 +506,7 @@ namespace DotSerial.Tests.Core.XML
         [InlineData(typeof(ObservableCollection<int>))]
         [InlineData(typeof(SortedList<int, int>))]
         [InlineData(typeof(SortedSet<int>))]
+        [InlineData(typeof(HashSet<int>))]
         public void IsTypeSupported_False(Type t)
         {
             bool result = DotSerialXML.IsTypeSupported(t);
