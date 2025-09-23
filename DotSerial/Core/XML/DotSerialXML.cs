@@ -16,7 +16,7 @@ namespace DotSerial.Core.XML
         /// <summary>
         /// Current Version
         /// </summary>
-        public static readonly Version s_Version = new(0, 0, 1);
+        public static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
