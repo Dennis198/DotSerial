@@ -4,18 +4,34 @@ namespace DotSerial.Interfaces
     public interface ISerial<T>
     {
         /// <summary> 
-        /// Creates from an object an object T which can be serialzed.
+        /// Serializes the specific object and creates the an object T which contains
+        /// the serialized object.
         /// </summary>
         /// <param name="obj">Object to serialize</param>
-        /// <returns>T</returns>
+        /// <returns>Object which contains the serialized object</returns>
+        /// <exception cref="DSNotSupportedTypeException">Object type not supported.</exception>
+        /// <exception cref="DSDuplicateIDException">Duplicate ids.</exception>
+        /// <exception cref="DSInvalidIDException">Invalid id.</exception>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="InvalidCastException">Invalid cast.</exception>
+        /// <exception cref="TypeAccessException">Type access.</exception>
+        /// <exception cref="NullReferenceException">Null reference.</exception>
+        /// <exception cref="NotSupportedException">Not supported.</exception>
         public abstract static T Serialize(object obj);
 
         /// <summary>
-        /// Deserialze Object
+        /// Deserialzes the object to the specific type.
         /// </summary>
         /// <typeparam name="U">Type of the serialized object</typeparam>
         /// <param name="serialObj">Serialized object.</param>
         /// <returns>Deserialized object</returns>
+        /// <exception cref="DSNotSupportedTypeException">Object type not supported.</exception>
+        /// <exception cref="DSInvalidIDException">Invalid id.</exception>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="InvalidCastException">Invalid cast.</exception>
+        /// <exception cref="TypeAccessException">Type access.</exception>
+        /// <exception cref="NullReferenceException">Null reference.</exception>
+        /// <exception cref="NotSupportedException">Not supported.</exception>
         public abstract static U Deserialize<U>(T serialObj);
 
         /// <summary>
@@ -23,23 +39,48 @@ namespace DotSerial.Interfaces
         /// </summary>
         /// <param name="path">Path</param>
         /// <param name="serialObj">Serialzed object</param>
-        /// <returns>True if succeeded</returns>
-        public abstract static bool SaveToFile(string path, T serialObj);
+        /// <exception cref="DSNotSupportedTypeException">Object type not supported.</exception>
+        /// <exception cref="DSDuplicateIDException">Duplicate ids.</exception>
+        /// <exception cref="DSInvalidIDException">Invalid id.</exception>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="InvalidCastException">Invalid cast.</exception>
+        /// <exception cref="TypeAccessException">Type access.</exception>
+        /// <exception cref="NullReferenceException">Null reference.</exception>
+        /// <exception cref="NotSupportedException">Not supported.</exception>
+        /// <exception cref="XmlException">Not supported.</exception>
+        public abstract static void SaveToFile(string path, T serialObj);
 
         /// <summary>
         /// Saves the serialized object to file.
         /// </summary>
         /// <param name="path">Path</param>
         /// <param name="obj">Object to serialze</param>
-        /// <returns>True if succeeded</returns>
-        public abstract static bool SaveToFile(string path, object? obj);
-        
+        /// <exception cref="DSNotSupportedTypeException">Object type not supported.</exception>
+        /// <exception cref="DSDuplicateIDException">Duplicate ids.</exception>
+        /// <exception cref="DSInvalidIDException">Invalid id.</exception>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="InvalidCastException">Invalid cast.</exception>
+        /// <exception cref="TypeAccessException">Type access.</exception>
+        /// <exception cref="NullReferenceException">Null reference.</exception>
+        /// <exception cref="NotSupportedException">Not supported.</exception>
+        /// <exception cref="XmlException">Not supported.</exception>
+        public abstract static void SaveToFile(string path, object? obj);
+
         /// <summary>
         /// Loads the deserialized object from file
         /// </summary>
         /// <typeparam name="U">Type of the object</typeparam>
         /// <param name="path">Path to the file</param>
         /// <returns>Deserilized object</returns>
+        /// <exception cref="DSNotSupportedTypeException">Object type not supported.</exception>
+        /// <exception cref="DSInvalidIDException">Invalid id.</exception>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="InvalidCastException">Invalid cast.</exception>
+        /// <exception cref="TypeAccessException">Type access.</exception>
+        /// <exception cref="NullReferenceException">Null reference.</exception>
+        /// <exception cref="NotSupportedException">Not supported.</exception>
+        /// <exception cref="XmlException">Not supported.</exception>
+        /// <exception cref="FileNotFoundException">Not supported.</exception>
         public abstract static U LoadFromFile<U>(string path);
 
         /// <summary>

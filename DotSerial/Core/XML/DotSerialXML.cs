@@ -19,12 +19,12 @@ namespace DotSerial.Core.XML
         public static readonly Version s_Version = new(0, 0, 1);
 
         /// <inheritdoc/>
-        public static bool SaveToFile(string path, object? obj)
+        public static void SaveToFile(string path, object? obj)
         {           
             try
             {
                 var xmlDocument = Serialize(obj);
-                return SaveToFile(path, xmlDocument);
+                SaveToFile(path, xmlDocument);
             }
             catch 
             {
@@ -33,7 +33,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool SaveToFile(string path, DotSerialXML serialObj)
+        public static void SaveToFile(string path, DotSerialXML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -51,7 +51,6 @@ namespace DotSerial.Core.XML
             {
                 using var fileStream = File.Open(path, FileMode.Create);
                 serialObj._document.Save(fileStream);
-                return true;
             }
             catch
             {

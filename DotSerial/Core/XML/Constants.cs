@@ -42,6 +42,10 @@ namespace DotSerial.Core.XML
         /// </summary>
         public const string List = "List";
         /// <summary>
+        /// XML List Value display
+        /// </summary>
+        public const string Null = "Null";
+        /// <summary>
         /// XML Dictionary display
         /// </summary>
         public const string Dictionary = "Dictionary";

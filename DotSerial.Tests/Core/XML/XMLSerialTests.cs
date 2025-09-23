@@ -15,33 +15,25 @@ namespace DotSerial.Tests.Core.XML
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
             var xmlDocument = DotSerialXML.Serialize(testDefault);
-            bool result;
 
             using (var file = new TemporaryFile())
             {
                 // Act
-                result = DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
+                DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
             }
-
-            // Assert
-            Assert.True(result);
         }
 
         [Fact]
         public void Save_Diect_True()
         {
             // Arrange
-            var testDefault = PrimitiveClass.CreateTestDefault();            
-            bool result;
+            var testDefault = PrimitiveClass.CreateTestDefault();                        
 
             using (var file = new TemporaryFile())
             {
                 // Act
-                result = DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
+                DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
             }
-
-            // Assert
-            Assert.True(result);
         }
 
         [Fact]

@@ -21,7 +21,7 @@ namespace DotSerial.Core.XML
             if (classObj == null)
             {
                 var xnodeNullEntry = xmlDoc.CreateElement(Constants.Object);
-                CreateAttributes(xmlDoc, xnodeNullEntry, objectID, "Null");
+                CreateAttributes(xmlDoc, xnodeNullEntry, objectID, Constants.Null);
                 xnode.AppendChild(xnodeNullEntry);
                 return;
             }
