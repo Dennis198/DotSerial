@@ -87,7 +87,17 @@ namespace DotSerial.Core.Misc
         {
             try
             {
+
+#if NET9_0
                 var tmp = Array.CreateInstanceFromArrayType(type, count);
+#elif NET8_0
+                Type? itemType = GetTypeMethods.GetItemTypeOfArray(type);
+                if (null == itemType)
+                {
+                    throw new NullReferenceException();
+                }
+                var tmp = Array.CreateInstance(itemType, count);
+#endif
                 return tmp ?? throw new NullReferenceException();
             }
             catch (Exception)
