@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
-
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
 
@@ -71,6 +70,21 @@ namespace DotSerial.Tests.Core.XML
             // Act
             var xmlDocument = DotSerialXML.Serialize(tmp);
             var result = DotSerialXML.Deserialize<EmptyClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_AccessModifierClass()
+        {
+            // Arrange
+            var tmp = AccessModifierClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<AccessModifierClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -508,7 +522,7 @@ namespace DotSerial.Tests.Core.XML
         [Fact]
         public void ToString_Content()
         {
-            var tmp = PrimitiveClass.CreateTestDefault();
+            var tmp = ExampleClass.CreateTestDefault();
             var xml = DotSerialXML.Serialize(tmp);
             string result = xml.ToString();
 
@@ -519,7 +533,6 @@ namespace DotSerial.Tests.Core.XML
         [Fact]
         public void ToString_NoContent()
         {
-            var tmp = PrimitiveClass.CreateTestDefault();
             var xml = new DotSerialXML();
             string result = xml.ToString();
 

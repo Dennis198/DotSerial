@@ -5,6 +5,33 @@ using DotSerial.Attributes;
 namespace DotSerial.Tests
 {
     /// <summary>
+    /// Example class (ReadMe.md)
+    /// </summary>
+    public class ExampleClass
+    {
+        [DSPropertyID(0)]
+        public bool Boolean { get; set; }
+
+        [DSPropertyID(1)]
+        public int Number { get; set; }
+
+        [DSPropertyID(2)]
+        public string Text { get; set; }
+
+        public static ExampleClass CreateTestDefault()
+        {
+            var tmp = new ExampleClass
+            {
+               Boolean = true,
+               Number = 42,
+               Text = "Hello DotSerial!"
+            };
+
+            return tmp;
+        }
+    }
+
+    /// <summary>
     /// Empty Class
     /// </summary>
     public class EmptyClass
@@ -47,7 +74,35 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+    }
 
+    public class AccessModifierClass
+    {
+        [DSPropertyID(0)]
+        public int PublicBoolean { get; set; }
+        [DSPropertyID(1)]
+        private int PrivateBoolean { get; set; }
+        [DSPropertyID(2)]
+        internal int InternalBoolean { get; set; }
+        [DSPropertyID(3)]
+        protected int ProtectedBoolean { get; set; }
+        [DSPropertyID(4)]
+        public static int StaticBoolean { get; set; }
+
+        public static AccessModifierClass CreateTestDefault()
+        {
+            var tmp = new AccessModifierClass
+            {
+                PublicBoolean = 11,
+                PrivateBoolean = 12,
+                InternalBoolean = 13,
+                ProtectedBoolean = 14,
+            };
+
+            AccessModifierClass.StaticBoolean = 15;
+
+            return tmp;
+        }
     }
 
     /// <summary>

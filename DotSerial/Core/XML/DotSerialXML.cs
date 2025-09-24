@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using System.Xml.Linq;
 using DotSerial.Core.Misc;
 using DotSerial.Interfaces;
 
@@ -221,12 +222,29 @@ namespace DotSerial.Core.XML
                 return string.Empty;
             }
 
-            using StringWriter sw = new();
-            using XmlTextWriter tx = new(sw);
-            var xmlDoc = _document;
-            xmlDoc.WriteTo(tx);
-            string strXmlText = sw.ToString();
-            return strXmlText;
+            try
+            {
+                XDocument doc = XDocument.Parse(_document.OuterXml);
+
+                // Add decleration
+                string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+
+                // Xml content
+                string xmlString = doc.ToString();
+
+                // Add new line so declaration is seperated in one line
+                result += Environment.NewLine;
+
+                // Add xml content to result
+                result += xmlString;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
     }
 }
