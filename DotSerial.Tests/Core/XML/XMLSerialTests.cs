@@ -15,24 +15,20 @@ namespace DotSerial.Tests.Core.XML
             var testDefault = PrimitiveClass.CreateTestDefault();
             var xmlDocument = DotSerialXML.Serialize(testDefault);
 
-            using (var file = new TemporaryFile())
-            {
-                // Act
-                DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
-            }
+            using var file = new TemporaryFile();
+            // Act
+            DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
         }
 
         [Fact]
         public void Save_Diect_True()
         {
             // Arrange
-            var testDefault = PrimitiveClass.CreateTestDefault();                        
+            var testDefault = PrimitiveClass.CreateTestDefault();
 
-            using (var file = new TemporaryFile())
-            {
-                // Act
-                DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
-            }
+            using var file = new TemporaryFile();
+            // Act
+            DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
         }
 
         [Fact]
@@ -365,8 +361,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable();
-            tmp.Value0 = new Hashtable();
+            var tmp = new NotSupportedTypeClassHashTable
+            {
+                Value0 = []
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -376,8 +374,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassStack()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack();
-            tmp.Value0 = new Stack<int>();
+            var tmp = new NotSupportedTypeClassStack
+            {
+                Value0 = new Stack<int>()
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -387,8 +387,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassQueue()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassQueue();
-            tmp.Value0 = new Queue<int>();
+            var tmp = new NotSupportedTypeClassQueue
+            {
+                Value0 = new Queue<int>()
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -398,8 +400,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList();
-            tmp.Value0 = new LinkedList<int>();
+            var tmp = new NotSupportedTypeClassLinkedList
+            {
+                Value0 = new LinkedList<int>()
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -409,8 +413,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection();
-            tmp.Value0 = new ObservableCollection<int>();
+            var tmp = new NotSupportedTypeClassObservableCollection
+            {
+                Value0 = []
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -420,8 +426,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassSortedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedList();
-            tmp.Value0 = new SortedList<int, int>();
+            var tmp = new NotSupportedTypeClassSortedList
+            {
+                Value0 = []
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -431,8 +439,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet();
-            tmp.Value0 = new SortedSet<int>();
+            var tmp = new NotSupportedTypeClassSortedSet
+            {
+                Value0 = []
+            };
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
@@ -442,8 +452,10 @@ namespace DotSerial.Tests.Core.XML
         public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor();
-            tmp.Value0 = new TestRecordNoParameterlessConstructor(5, 7);            
+            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
             var xmlDocument = DotSerialXML.Serialize(tmp);
 
             // Act & Assert

@@ -61,7 +61,7 @@ namespace DotSerial.Core.XML
                         // If AttributeID and ID from xml node match => deserialze.
                         if (id == idXML)
                         {
-                            if (Misc.TypeCheckMethods.IsPrimitive(prop.PropertyType))
+                            if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                             {
                                 object? tmp = null;
                                 DeserializePrimitive(ref tmp, prop.PropertyType, para);
@@ -73,7 +73,7 @@ namespace DotSerial.Core.XML
                                 DateTime tmp = DateTime.Parse(para.InnerText);
                                 prop.SetValue(classObj, tmp);
                             }
-                            else if (Misc.TypeCheckMethods.IsDictionary(prop.PropertyType))
+                            else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                             {
                                 if (para.InnerText.Equals(Constants.NullString))
                                 {
@@ -89,11 +89,11 @@ namespace DotSerial.Core.XML
                                 }
 
                                 // Convert deserialzed dictionary.
-                                object? tmpValue = Misc.ConverterMethods.ConvertDeserializedDictionary(tmpDic, prop.PropertyType);
+                                object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpDic, prop.PropertyType);
                                 prop.SetValue(classObj, tmpValue);
                             }
-                            else if (Misc.TypeCheckMethods.IsList(prop.PropertyType) ||
-                                     Misc.TypeCheckMethods.IsArray(prop.PropertyType))
+                            else if (TypeCheckMethods.IsList(prop.PropertyType) ||
+                                     TypeCheckMethods.IsArray(prop.PropertyType))
                             {
                                 if (para.InnerText.Equals(Constants.NullString))
                                 {
@@ -110,12 +110,12 @@ namespace DotSerial.Core.XML
 
                                 object? tmpValue;
                                 // Convert deserialzed list.
-                                tmpValue = Misc.ConverterMethods.ConvertDeserializedList(tmpList, prop.PropertyType);
+                                tmpValue = ConverterMethods.ConvertDeserializedList(tmpList, prop.PropertyType);
 
                                 prop.SetValue(classObj, tmpValue);
                             }
-                            else if (Misc.TypeCheckMethods.IsClass(prop.PropertyType) ||
-                                     Misc.TypeCheckMethods.IsStruct(prop.PropertyType))
+                            else if (TypeCheckMethods.IsClass(prop.PropertyType) ||
+                                     TypeCheckMethods.IsStruct(prop.PropertyType))
                             {
                                 object tmp = CreateInstanceMethods.CreateInstanceGeneric(prop.PropertyType);
 
@@ -153,7 +153,7 @@ namespace DotSerial.Core.XML
             ArgumentNullException.ThrowIfNull(xnodeList);
             ArgumentNullException.ThrowIfNull(type);
 
-            Type itemType = Misc.GetTypeMethods.GetItemTypeOfIEnumerable(type);
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
             if (false == DotSerialXML.IsTypeSupported(itemType))
@@ -170,7 +170,7 @@ namespace DotSerial.Core.XML
                     DeserializeString(out string? tmpString, node);
                     result.Add(tmpString);
                 }
-                else if (Misc.TypeCheckMethods.IsDictionary(itemType))
+                else if (TypeCheckMethods.IsDictionary(itemType))
                 {
                     // If xml text equals NullString
                     // => Object was null when it was serialzed.
@@ -183,8 +183,8 @@ namespace DotSerial.Core.XML
                     var tmpDic = DeserializeDictionary(node.ChildNodes, itemType);
                     result.Add(tmpDic);
                 }
-                else if (Misc.TypeCheckMethods.IsList(itemType) ||
-                         Misc.TypeCheckMethods.IsArray(itemType))
+                else if (TypeCheckMethods.IsList(itemType) ||
+                         TypeCheckMethods.IsArray(itemType))
                 {
                     // If xml text equals NullString
                     // => Object was null when it was serialzed.
@@ -201,12 +201,12 @@ namespace DotSerial.Core.XML
                 {
                     object? tmp = CreateInstanceMethods.CreateInstanceGeneric(itemType);
 
-                    if (Misc.TypeCheckMethods.IsPrimitive(itemType))
+                    if (TypeCheckMethods.IsPrimitive(itemType))
                     {
                         DeserializePrimitive(ref tmp, itemType, node);
                     }
-                    else if (Misc.TypeCheckMethods.IsClass(itemType) ||
-                             Misc.TypeCheckMethods.IsStruct(itemType))
+                    else if (TypeCheckMethods.IsClass(itemType) ||
+                             TypeCheckMethods.IsStruct(itemType))
                     {
                         if (false == string.IsNullOrWhiteSpace(node.InnerText))
                         {
@@ -238,7 +238,7 @@ namespace DotSerial.Core.XML
         /// <returns>Dictionary of objects</returns>
         private static Dictionary<object, object?> DeserializeDictionary(XmlNodeList xnodeList, Type type)
         {
-            if (Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(keyType))
@@ -287,7 +287,7 @@ namespace DotSerial.Core.XML
 
                             key = tmpString;
                         }
-                        else if (Misc.TypeCheckMethods.IsDictionary(keyType))
+                        else if (TypeCheckMethods.IsDictionary(keyType))
                         {
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
@@ -304,8 +304,8 @@ namespace DotSerial.Core.XML
 
                             key = tmpDic;
                         }
-                        else if (Misc.TypeCheckMethods.IsList(keyType) ||
-                                 Misc.TypeCheckMethods.IsArray(keyType))
+                        else if (TypeCheckMethods.IsList(keyType) ||
+                                 TypeCheckMethods.IsArray(keyType))
                         {
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
@@ -326,11 +326,11 @@ namespace DotSerial.Core.XML
                         {
                             object? tmp = CreateInstanceMethods.CreateInstanceGeneric(keyType);
 
-                            if (Misc.TypeCheckMethods.IsPrimitive(keyType))
+                            if (TypeCheckMethods.IsPrimitive(keyType))
                             {
                                 DeserializePrimitive(ref tmp, keyType, keyNodeInner);
                             }
-                            else if (Misc.TypeCheckMethods.IsClass(keyType) || Misc.TypeCheckMethods.IsStruct(keyType))
+                            else if (TypeCheckMethods.IsClass(keyType) || TypeCheckMethods.IsStruct(keyType))
                             {
                                 if (false == string.IsNullOrWhiteSpace(keyNodeInner.InnerText))
                                 {
@@ -377,7 +377,7 @@ namespace DotSerial.Core.XML
 #pragma warning restore CS8604
                             value = tmpString;
                         }
-                        else if (Misc.TypeCheckMethods.IsDictionary(valueType))
+                        else if (TypeCheckMethods.IsDictionary(valueType))
                         {
 #pragma warning disable CS8602
                             // If xml text equals NullString
@@ -393,8 +393,8 @@ namespace DotSerial.Core.XML
                             }
 #pragma warning restore CS8602
                         }
-                        else if (Misc.TypeCheckMethods.IsList(valueType) ||
-                                 Misc.TypeCheckMethods.IsArray(valueType))
+                        else if (TypeCheckMethods.IsList(valueType) ||
+                                 TypeCheckMethods.IsArray(valueType))
                         {
 #pragma warning disable CS8602
                             // If xml text equals NullString
@@ -414,11 +414,11 @@ namespace DotSerial.Core.XML
                         {
                             object? tmp = CreateInstanceMethods.CreateInstanceGeneric(valueType);
 
-                            if (Misc.TypeCheckMethods.IsPrimitive(valueType))
+                            if (TypeCheckMethods.IsPrimitive(valueType))
                             {
                                 DeserializePrimitive(ref tmp, valueType, valueNodeInner);
                             }
-                            else if (Misc.TypeCheckMethods.IsClass(valueType) || Misc.TypeCheckMethods.IsStruct(valueType))
+                            else if (TypeCheckMethods.IsClass(valueType) || TypeCheckMethods.IsStruct(valueType))
                             {
                                 if (false == string.IsNullOrWhiteSpace(valueNodeInner?.InnerText))
                                 {
@@ -502,7 +502,7 @@ namespace DotSerial.Core.XML
             Type typeObj = primType;
 
             // Check if primitive type
-            if (!Misc.TypeCheckMethods.IsPrimitive(typeObj))
+            if (!TypeCheckMethods.IsPrimitive(typeObj))
             {
                 throw new DSNotSupportedTypeException(typeObj);
             }
@@ -611,7 +611,7 @@ namespace DotSerial.Core.XML
 
                 // Special case bool
                 // Was casted to int in serialze.
-                bool tmpBool = Misc.HelperMethods.IntToBool(tmp);
+                bool tmpBool = HelperMethods.IntToBool(tmp);
                 primObj = tmpBool;
             }
             // DateTime

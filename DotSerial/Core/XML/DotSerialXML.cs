@@ -17,7 +17,7 @@ namespace DotSerial.Core.XML
         /// <summary>
         /// Current Version
         /// </summary>
-        public static readonly Version s_Version = new(1, 0, 0);
+        private static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
@@ -161,16 +161,16 @@ namespace DotSerial.Core.XML
         public static bool IsTypeSupported(Type t)
         {
             // Primitive + string.
-            if (Misc.TypeCheckMethods.IsPrimitive(t))
+            if (TypeCheckMethods.IsPrimitive(t))
             {
                 return true;
             }
 
-            if (Misc.HelperMethods.ImplementsIEnumerable(t))
+            if (HelperMethods.ImplementsIEnumerable(t))
             {
-                if (Misc.TypeCheckMethods.IsDictionary(t) ||
-                    Misc.TypeCheckMethods.IsList(t) ||
-                    Misc.TypeCheckMethods.IsArray(t))
+                if (TypeCheckMethods.IsDictionary(t) ||
+                    TypeCheckMethods.IsList(t) ||
+                    TypeCheckMethods.IsArray(t))
                 {
                     return true;
                 }
@@ -180,7 +180,7 @@ namespace DotSerial.Core.XML
                 }
             }
 
-            if (Misc.TypeCheckMethods.IsClass(t) || Misc.TypeCheckMethods.IsStruct(t))
+            if (TypeCheckMethods.IsClass(t) || TypeCheckMethods.IsStruct(t))
             {
                 return true;
             }

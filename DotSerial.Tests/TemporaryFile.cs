@@ -5,21 +5,18 @@ namespace DotSerial.Tests
     /// Only used for testing
     /// Source: https://www.geekality.net/blog/c-temporary-file-handler-for-unit-tests-and-such
     /// </summary>
-    public sealed class TemporaryFile : IDisposable
+    public sealed class TemporaryFile(FileInfo temporaryFile) : IDisposable
     {
-        private readonly FileInfo file;
+        private readonly FileInfo file = temporaryFile;
         public FileInfo FileInfo { get { return file; } }
 
         public TemporaryFile() : this(Path.GetTempFileName()) { }
         public TemporaryFile(string fileName) : this(new FileInfo(fileName)) { }
-        public TemporaryFile(FileInfo temporaryFile)
-        {
-            file = temporaryFile;
-        }
+
         public TemporaryFile(Stream initialFileContents) : this()
         {
-            using (var file = new FileStream(this, FileMode.Open))
-                initialFileContents.CopyTo(file);
+            using var file = new FileStream(this, FileMode.Open);
+            initialFileContents.CopyTo(file);
         }
 
         public static implicit operator FileInfo(TemporaryFile temporaryFile)

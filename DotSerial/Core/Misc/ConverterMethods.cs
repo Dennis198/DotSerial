@@ -21,7 +21,7 @@ namespace DotSerial.Core.Misc
             }
             
             // Get Item type of list
-            Type itemType = Misc.GetTypeMethods.GetItemTypeOfIEnumerable(type);
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
             // TODO vom Interace abhänhgig machen:
@@ -51,9 +51,9 @@ namespace DotSerial.Core.Misc
             {
                 for (int i = 0; i < castedList.Count; i++)
                 {
-                    if (Misc.TypeCheckMethods.IsDictionary(itemType))
+                    if (TypeCheckMethods.IsDictionary(itemType))
                     {
-                        object? itemResult = null;
+                        object? itemResult;
                         if (castedList[i] is not Dictionary<object, object?> castedDictionaryItemObj)
                         {
                             throw new InvalidCastException();
@@ -68,10 +68,10 @@ namespace DotSerial.Core.Misc
                                 castedListResult.Add(itemResult);
                         }
                     }
-                    else if (Misc.TypeCheckMethods.IsList(itemType) ||
-                             Misc.TypeCheckMethods.IsArray(itemType))
+                    else if (TypeCheckMethods.IsList(itemType) ||
+                             TypeCheckMethods.IsArray(itemType))
                     {
-                        object? itemResult = null;
+                        object? itemResult;
                         if (castedList[i] is not List<object?> castedListItemObj)
                         {
                             throw new InvalidCastException();
@@ -141,7 +141,7 @@ namespace DotSerial.Core.Misc
             }
 
             // Get Item type of dictionary            
-            if (Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(keyType))
@@ -167,7 +167,7 @@ namespace DotSerial.Core.Misc
                 {
                     foreach (DictionaryEntry keyValuePair in castedDic)
                     {
-                        if (Misc.TypeCheckMethods.IsDictionary(valueType))
+                        if (TypeCheckMethods.IsDictionary(valueType))
                         {
                             object? itemResult = null;
                             if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
@@ -178,8 +178,8 @@ namespace DotSerial.Core.Misc
 
                             castedDicResult.Add(keyValuePair.Key, itemResult);
                         }
-                        else if (Misc.TypeCheckMethods.IsList(valueType) ||
-                                 Misc.TypeCheckMethods.IsArray(valueType))
+                        else if (TypeCheckMethods.IsList(valueType) ||
+                                 TypeCheckMethods.IsArray(valueType))
                         {
                             object? itemResult = null;
                             if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)

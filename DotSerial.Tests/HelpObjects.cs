@@ -16,7 +16,7 @@ namespace DotSerial.Tests
         public int Number { get; set; }
 
         [DSPropertyID(2)]
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         public static ExampleClass CreateTestDefault()
         {
@@ -453,9 +453,10 @@ namespace DotSerial.Tests
 
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
-            var tmp = new MultiDimClassIEnumarble();
-
-            tmp.Int = new int[3][];
+            var tmp = new MultiDimClassIEnumarble
+            {
+                Int = new int[3][]
+            };
             tmp.Int[0] = [1, 2, 3];
             tmp.Int[1] = [3, 4, 5];
             tmp.Int[2] = [6, 7, 8];
@@ -678,9 +679,10 @@ namespace DotSerial.Tests
 
         public static DictionaryClass CreateTestDefault()
         {
-            var result = new DictionaryClass();
-
-            result.DicIntInt = [];
+            var result = new DictionaryClass
+            {
+                DicIntInt = []
+            };
             result.DicIntInt.Add(33, 44);
             result.DicIntInt.Add(-33, 88);
 
@@ -772,11 +774,11 @@ namespace DotSerial.Tests
     public class RecordClass()
     {
         [DSPropertyID(0)]
-        public TestRecord TestRecord0 { get; set; }
+        public TestRecord? TestRecord0 { get; set; }
         [DSPropertyID(1)]
-        public TestRecord TestRecord1 { get; set; }
+        public TestRecord? TestRecord1 { get; set; }
         [DSPropertyID(2)]
-        public TestRecord TestRecord2 { get; set; }
+        public TestRecord? TestRecord2 { get; set; }
         [DSPropertyID(3)]
         public TestRecord[]? TestRecordArray { get; set; }
 
@@ -811,18 +813,12 @@ namespace DotSerial.Tests
     /// <summary>
     /// Test Struct
     /// </summary>
-    public struct TestStruct
+    public struct TestStruct(int x, int y)
     {
         [DSPropertyID(0)]
-        public int Value0 { get; set; }
+        public int Value0 { get; set; } = x;
         [DSPropertyID(1)]
-        public int Value1 { get; set; }
-
-        public TestStruct(int x, int y)
-        {
-            Value0 = x;
-            Value1 = y;
-        }
+        public int Value1 { get; set; } = y;
     }
 
     /// <summary>
