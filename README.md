@@ -14,8 +14,8 @@ If you encounter any errors, you can create an issues at [GitHub](https://github
 ---
 
 ## 📦 Installation  
-Add **DotSerial** to your project (NuGet package coming soon).  
-For now, include the source in your project.  
+Add **DotSerial** to your project [nuget](https://www.nuget.org/packages/Dennis198.DotSerial).  
+Or include the source in your project.  
 
 ---
 
