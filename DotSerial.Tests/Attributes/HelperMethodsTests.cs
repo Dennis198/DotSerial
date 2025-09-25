@@ -21,36 +21,51 @@
 #endregion
 
 using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.Core.XML;
 
-namespace DotSerial.Attributes
+namespace DotSerial.Tests.Attributes
 {
-    internal static class HelperMethods
+    public class HelperMethodsTests
     {
-        /// <summary> Get the parameter ID
-        /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
+        [Fact]
+        public void GetPropertyID_True()
         {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
+            // Arrange
+            NoAttributeClass tmp = new ();            
+            PropertyInfo[] props = tmp.GetType().GetProperties();
+
+            foreach (PropertyInfo prop in props)
             {
-                if (att is DSPropertyIDAttribute saveAtt)
+                if (prop.Name == nameof(NoAttributeClass.Boolean))
                 {
-                    int result = (int)saveAtt.PropertyID;
+                    // Act
+                    int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
 
-                    if (result == Constants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
-
-                    return result;
+                    // Assert
+                    Assert.Equal(1, id);
+                    return;
                 }
             }
-            return Constants.NoAttributeID;
         }
 
+        [Fact]
+        public void GetPropertyID_False()
+        {
+            // Arrange
+            NoAttributeClass tmp = new ();
+            PropertyInfo[] props = tmp.GetType().GetProperties();
+
+            foreach (PropertyInfo prop in props)
+            {
+                if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
+                {
+                    //Act
+                    int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
+
+                    // Assert
+                    Assert.Equal(-1, id);
+                    return;
+                }
+            }
+        }
     }
 }

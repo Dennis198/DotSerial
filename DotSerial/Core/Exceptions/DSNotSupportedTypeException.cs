@@ -20,37 +20,19 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.Core.XML;
-
-namespace DotSerial.Attributes
+namespace DotSerial.Core.Exceptions
 {
-    internal static class HelperMethods
+    [Serializable()]
+    public class DSNotSupportedTypeException : Exception
     {
-        /// <summary> Get the parameter ID
-        /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
-        {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
-            {
-                if (att is DSPropertyIDAttribute saveAtt)
-                {
-                    int result = (int)saveAtt.PropertyID;
+        public DSNotSupportedTypeException() : base("Type is not supported.") { }
 
-                    if (result == Constants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
+        public DSNotSupportedTypeException(string str) : base(str) { }
 
-                    return result;
-                }
-            }
-            return Constants.NoAttributeID;
-        }
+        public DSNotSupportedTypeException(Type t) : base(string.Format("Type {0} is not supported.", t.Name))
+        { }
 
+        public DSNotSupportedTypeException(Type t, Type itemT) : base(string.Format("Item type {0} is not supported in type {1}.", itemT.Name, t.Name))
+        { }
     }
 }
