@@ -20,37 +20,16 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.Core.XML;
+using DotSerial.Attributes;
 
-namespace DotSerial.Attributes
+namespace DotSerial.Core.Exceptions
 {
-    internal static class HelperMethods
+    [Serializable()]
+    public class DSDuplicateIDException : Exception
     {
-        /// <summary> Get the parameter ID
-        /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
-        {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
-            {
-                if (att is DSPropertyIDAttribute saveAtt)
-                {
-                    int result = (int)saveAtt.PropertyID;
+        public DSDuplicateIDException() : base(string.Format("{0} must be unique within an object", nameof(DSPropertyIDAttribute))) { }
 
-                    if (result == Constants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
-
-                    return result;
-                }
-            }
-            return Constants.NoAttributeID;
-        }
-
+        public DSDuplicateIDException(int id) : base(string.Format("{0} {1} must not exist more than once inside an object.", nameof(DSPropertyIDAttribute), id))
+        {}
     }
 }

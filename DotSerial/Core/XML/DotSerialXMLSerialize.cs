@@ -1,7 +1,30 @@
-﻿using System.Collections;
+﻿#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+using System.Collections;
 using System.Reflection;
 using System.Xml;
 
+using DotSerial.Core.Misc;
 using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
@@ -21,7 +44,7 @@ namespace DotSerial.Core.XML
             if (classObj == null)
             {
                 var xnodeNullEntry = xmlDoc.CreateElement(Constants.Object);
-                CreateAttributes(xmlDoc, xnodeNullEntry, objectID, "Null");
+                CreateAttributes(xmlDoc, xnodeNullEntry, objectID, Constants.Null);
                 xnode.AppendChild(xnodeNullEntry);
                 return;
             }
@@ -51,14 +74,14 @@ namespace DotSerial.Core.XML
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new NotSupportedTypeException(prop.PropertyType);
+                        throw new DSNotSupportedTypeException(prop.PropertyType);
                     }
 
                     // Check if id was already used.
                     // If yes throw exception.
                     if (dicIdName.ContainsKey(id))
                     {
-                        throw new DuplicateIDException(id);
+                        throw new DSDuplicateIDException(id);
                     }
 
                     // Get Value of property
@@ -74,7 +97,7 @@ namespace DotSerial.Core.XML
                         // Null
                         AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
                     }
-                    else if (Misc.HelperMethods.IsDictionary(value))
+                    else if (TypeCheckMethods.IsDictionary(value))
                     {
                         // Dictionary
                         var xnodeVersion = xmlDoc.CreateElement(Constants.Dictionary);
@@ -84,7 +107,8 @@ namespace DotSerial.Core.XML
 
                         xnodeEntry.AppendChild(xnodeVersion);
                     }
-                    else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
+                    else if (TypeCheckMethods.IsList(value) ||
+                             TypeCheckMethods.IsArray(value))
                     {
                         // List || Array
                         var xnodeVersion = xmlDoc.CreateElement(Constants.List);
@@ -94,19 +118,19 @@ namespace DotSerial.Core.XML
 
                         xnodeEntry.AppendChild(xnodeVersion);
                     }
-                    else if (Misc.HelperMethods.IsClass(prop.PropertyType) || Misc.HelperMethods.IsStruct(prop.PropertyType))
+                    else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
                         Serialize(value, xmlDoc, xnodeEntry, id);
                     }
-                    else if (Misc.HelperMethods.IsPrimitive(prop.PropertyType))
+                    else if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                     {
                         // Primitive types || String
                         SerializePrimitive(value, xmlDoc, xnodeEntry, id, propName);
                     }
                     else
                     {
-                        throw new NotSupportedTypeException(prop.PropertyType);
+                        throw new DSNotSupportedTypeException(prop.PropertyType);
                     }
                 }
             }
@@ -133,16 +157,16 @@ namespace DotSerial.Core.XML
             Type typeObj = primObj.GetType();
 
             // Check if object is a primitive
-            if (false == Misc.HelperMethods.IsPrimitive(typeObj))
+            if (false == TypeCheckMethods.IsPrimitive(typeObj))
             {
-                throw new NotSupportedTypeException(typeObj);
+                throw new DSNotSupportedTypeException(typeObj);
             }
 
             // Special case bool
             // => casted to int.
             if (typeObj == typeof(bool))
             {
-                int tmp = Misc.HelperMethods.BoolToInt((bool)primObj);
+                int tmp = HelperMethods.BoolToInt((bool)primObj);
                 AddParaXmlNode(xmlDoc, xnode, primID, tmp, displayName);
             }
             else
@@ -163,17 +187,17 @@ namespace DotSerial.Core.XML
 
             if (dic is IDictionary castedDic)
             {
-                if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(dic, out Type keyType, out Type valueType))
+                if (GetTypeMethods.GetKeyValueTypeOfDictionary(dic, out Type keyType, out Type valueType))
                 {
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(keyType))
                     {
-                        throw new NotSupportedTypeException(keyType);
+                        throw new DSNotSupportedTypeException(keyType);
                     }
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(valueType))
                     {
-                        throw new NotSupportedTypeException(valueType);
+                        throw new DSNotSupportedTypeException(valueType);
                     }
 
                     int id = 0;
@@ -196,11 +220,11 @@ namespace DotSerial.Core.XML
                         var xnodeKey = xmlDoc.CreateElement(Constants.Key);
                         CreateAttributes(xmlDoc, xnodeKey, Constants.DicKeyID);
 
-                        if (Misc.HelperMethods.IsPrimitive(keyType))
+                        if (TypeCheckMethods.IsPrimitive(keyType))
                         {
                             SerializePrimitive(key, xmlDoc, xnodeKey, 0);
                         }
-                        else if (Misc.HelperMethods.IsDictionary(key))
+                        else if (TypeCheckMethods.IsDictionary(key))
                         {
                             // Dictionary
 
@@ -222,7 +246,8 @@ namespace DotSerial.Core.XML
                                 throw new InvalidCastException();
                             }
                         }
-                        else if (Misc.HelperMethods.IsList(key) || Misc.HelperMethods.IsArray(key))
+                        else if (TypeCheckMethods.IsList(key) ||
+                                 TypeCheckMethods.IsArray(key))
                         {
                             // List || Array
 
@@ -244,14 +269,15 @@ namespace DotSerial.Core.XML
                                 throw new InvalidCastException();
                             }
                         }
-                        else if (Misc.HelperMethods.IsClass(keyType) || Misc.HelperMethods.IsStruct(keyType))
+                        else if (TypeCheckMethods.IsClass(keyType) ||
+                                 TypeCheckMethods.IsStruct(keyType))
                         {
                             // Class || Struct
                             Serialize(key, xmlDoc, xnodeKey, 0);
                         }
                         else
                         {
-                            throw new NotSupportedTypeException(keyType);
+                            throw new DSNotSupportedTypeException(keyType);
                         }
 
                         #endregion
@@ -262,11 +288,11 @@ namespace DotSerial.Core.XML
                         var xnodeValue = xmlDoc.CreateElement(Constants.Value);
                         CreateAttributes(xmlDoc, xnodeValue, Constants.DicKeyValueID);
 
-                        if (Misc.HelperMethods.IsPrimitive(valueType))
+                        if (TypeCheckMethods.IsPrimitive(valueType))
                         {
                             SerializePrimitive(value, xmlDoc, xnodeValue, 0);
                         }
-                        else if (Misc.HelperMethods.IsDictionary(value))
+                        else if (TypeCheckMethods.IsDictionary(value))
                         {
                             // Dictionary
 
@@ -289,7 +315,8 @@ namespace DotSerial.Core.XML
                             }
 
                         }
-                        else if (Misc.HelperMethods.IsList(value) || Misc.HelperMethods.IsArray(value))
+                        else if (TypeCheckMethods.IsList(value) ||
+                                 TypeCheckMethods.IsArray(value))
                         {
                             // List || Array
 
@@ -311,14 +338,15 @@ namespace DotSerial.Core.XML
                                 throw new InvalidCastException();
                             }
                         }
-                        else if (Misc.HelperMethods.IsClass(valueType) || Misc.HelperMethods.IsStruct(valueType))
+                        else if (TypeCheckMethods.IsClass(valueType) ||
+                                 TypeCheckMethods.IsStruct(valueType))
                         {
                             // Class || Struct
                             Serialize(value, xmlDoc, xnodeValue, 0);
                         }
                         else
                         {
-                            throw new NotSupportedTypeException(valueType);
+                            throw new DSNotSupportedTypeException(valueType);
                         }
 
                         #endregion
@@ -354,14 +382,14 @@ namespace DotSerial.Core.XML
 
             if (list is IEnumerable castedList)
             {
-                Type type = Misc.HelperMethods.GetItemTypeOfIEnumerable(castedList);
+                Type type = GetTypeMethods.GetItemTypeOfIEnumerable(castedList);
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(type))
                 {
-                    throw new NotSupportedTypeException(type);
+                    throw new DSNotSupportedTypeException(type);
                 }
 
-                if (Misc.HelperMethods.IsPrimitive(type))
+                if (TypeCheckMethods.IsPrimitive(type))
                 {
                     // Primitive types
 
@@ -372,7 +400,7 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
-                else if (Misc.HelperMethods.IsDictionary(type))
+                else if (TypeCheckMethods.IsDictionary(type))
                 {
                     // Dictionary
 
@@ -387,7 +415,8 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
-                else if (Misc.HelperMethods.IsList(type) || Misc.HelperMethods.IsArray(type))
+                else if (TypeCheckMethods.IsList(type) ||
+                         TypeCheckMethods.IsArray(type))
                 {
                     // List || Array
 
@@ -402,7 +431,8 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
-                else if (Misc.HelperMethods.IsClass(type) || Misc.HelperMethods.IsStruct(type))
+                else if (TypeCheckMethods.IsClass(type) ||
+                         TypeCheckMethods.IsStruct(type))
                 {
                     // Class || Struct
 
@@ -415,7 +445,7 @@ namespace DotSerial.Core.XML
                 }
                 else
                 {
-                    throw new NotSupportedTypeException(type);
+                    throw new DSNotSupportedTypeException(type);
                 }
             }
             else

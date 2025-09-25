@@ -1,8 +1,30 @@
-﻿using System.Collections;
+﻿
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
 using System.Reflection;
 using System.Xml;
 
 using DotSerial.Core.Exceptions;
+using DotSerial.Core.Misc;
 
 namespace DotSerial.Core.XML
 {
@@ -41,7 +63,7 @@ namespace DotSerial.Core.XML
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new NotSupportedTypeException(prop.PropertyType);
+                        throw new DSNotSupportedTypeException(prop.PropertyType);
                     }
 
                     foreach (XmlNode para in node.ChildNodes)
@@ -61,7 +83,7 @@ namespace DotSerial.Core.XML
                         // If AttributeID and ID from xml node match => deserialze.
                         if (id == idXML)
                         {
-                            if (Misc.HelperMethods.IsPrimitive(prop.PropertyType))
+                            if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                             {
                                 object? tmp = null;
                                 DeserializePrimitive(ref tmp, prop.PropertyType, para);
@@ -73,7 +95,7 @@ namespace DotSerial.Core.XML
                                 DateTime tmp = DateTime.Parse(para.InnerText);
                                 prop.SetValue(classObj, tmp);
                             }
-                            else if (Misc.HelperMethods.IsDictionary(prop.PropertyType))
+                            else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                             {
                                 if (para.InnerText.Equals(Constants.NullString))
                                 {
@@ -89,10 +111,11 @@ namespace DotSerial.Core.XML
                                 }
 
                                 // Convert deserialzed dictionary.
-                                object? tmpValue = ConvertDeserializedDictionary(tmpDic, prop.PropertyType);
+                                object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpDic, prop.PropertyType);
                                 prop.SetValue(classObj, tmpValue);
                             }
-                            else if (Misc.HelperMethods.IsList(prop.PropertyType) || Misc.HelperMethods.IsArray(prop.PropertyType))
+                            else if (TypeCheckMethods.IsList(prop.PropertyType) ||
+                                     TypeCheckMethods.IsArray(prop.PropertyType))
                             {
                                 if (para.InnerText.Equals(Constants.NullString))
                                 {
@@ -107,241 +130,38 @@ namespace DotSerial.Core.XML
                                     throw new NullReferenceException();
                                 }
 
+                                object? tmpValue;
                                 // Convert deserialzed list.
-                                object? tmpValue = ConvertDeserializedList(tmpList, prop.PropertyType);
+                                tmpValue = ConverterMethods.ConvertDeserializedList(tmpList, prop.PropertyType);
+
                                 prop.SetValue(classObj, tmpValue);
                             }
-                            else if (Misc.HelperMethods.IsClass(prop.PropertyType) || Misc.HelperMethods.IsStruct(prop.PropertyType))
+                            else if (TypeCheckMethods.IsClass(prop.PropertyType) ||
+                                     TypeCheckMethods.IsStruct(prop.PropertyType))
                             {
-                                object? tmp = Activator.CreateInstance(prop.PropertyType);
-                                if (null != tmp)
+                                object tmp = CreateInstanceMethods.CreateInstanceGeneric(prop.PropertyType);
+
+                                // If xmlnode text equals NullString
+                                // => Object was null when it was serialzed.
+                                if (para.InnerText.Equals(Constants.NullString))
                                 {
-                                    // If xmlnode text equals NullString
-                                    // => Object was null when it was serialzed.
-                                    if (para.InnerText.Equals(Constants.NullString))
-                                    {
-                                        prop.SetValue(classObj, null);
-                                    }
-                                    else
-                                    {
-                                        Deserialize(tmp, para);
-                                        prop.SetValue(classObj, tmp);
-                                    }
+                                    prop.SetValue(classObj, null);
+                                }
+                                else
+                                {
+                                    Deserialize(tmp, para);
+                                    prop.SetValue(classObj, tmp);
                                 }
                             }
                             else
                             {
-                                throw new NotSupportedTypeException(prop.PropertyType);
+                                throw new DSNotSupportedTypeException(prop.PropertyType);
                             }
                             break;
                         }
                     }
                 }
             }
-        }
-
-        /// <summary> 
-        /// Converts the serialzed list to object so "PropertyInfo.SetValue" can
-        /// set the value properly
-        /// </summary>
-        /// <param name="list">Deserialzed List</param>
-        /// <param name="type">Type</param>
-        /// <returns>Converted list</returns>
-        private static object? ConvertDeserializedList(List<object?> list, Type type)
-        {
-            if (null == list)
-            {
-                return null;
-            }
-
-            // Get Item type of list
-            Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
-
-            // Check if type is supported
-            if (false == DotSerialXML.IsTypeSupported(itemType))
-            {
-                throw new NotSupportedTypeException(itemType);
-            }
-
-            // Check if type is array
-            bool isArray = type.IsArray;
-
-            // result object
-            object? result;
-
-            // Create initial object to fill.
-            if (isArray)
-            {
-                result = Array.CreateInstanceFromArrayType(type, list.Count);
-            }
-            else
-            {
-                result = Activator.CreateInstance(type);
-            }
-
-            if (list is IList castedList && result is IList castedListResult)
-            {
-                for (int i = 0; i < castedList.Count; i++)
-                {
-                    if (Misc.HelperMethods.IsDictionary(itemType))
-                    {
-                        object? itemResult = null;
-                        if (castedList[i] is not Dictionary<object, object?> castedDictionaryItemObj)
-                        {
-                            throw new InvalidCastException();
-                        }
-                        itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
-
-                        if (itemResult != null)
-                        {
-                            if (isArray)
-                                castedListResult[i] = itemResult;
-                            else
-                                castedListResult.Add(itemResult);
-                        }
-                    }
-                    else if (Misc.HelperMethods.IsList(itemType) || Misc.HelperMethods.IsArray(itemType))
-                    {
-                        object? itemResult = null;
-                        if (castedList[i] is not List<object?> castedListItemObj)
-                        {
-                            throw new InvalidCastException();
-                        }
-
-                        itemResult = ConvertDeserializedList(castedListItemObj, itemType);
-
-                        if (itemResult != null)
-                        {
-                            if (isArray)
-                                castedListResult[i] = itemResult;
-                            else
-                                castedListResult.Add(itemResult);
-                        }
-                    }
-                    else if (itemType.IsEnum)
-                    {
-                        if (null == castedList[i])
-                        {
-                            throw new NullReferenceException();
-                        }
-
-#pragma warning disable CS8604
-                        if (isArray)
-                            castedListResult[i] = Enum.ToObject(itemType, castedList[i]);
-                        else
-                            castedListResult.Add(Enum.ToObject(itemType, castedList[i]));
-#pragma warning restore CS8604
-                    }
-                    else
-                    {
-                        if (isArray)
-                            castedListResult[i] = castedList[i];
-                        else
-                            castedListResult.Add(castedList[i]);
-                    }
-                }
-
-                return castedListResult;
-            }
-            else
-            {
-                throw new InvalidCastException();
-            }
-
-        }
-
-        /// <summary> 
-        /// Converts the serialzed dictionary to object so "PropertyInfo.SetValue" can
-        /// set the value properly
-        /// </summary>
-        /// <param name="dic">Deserialzed Dictionary</param>
-        /// <param name="type">Type</param>
-        /// <returns>Converted dictionary</returns>
-        private static object? ConvertDeserializedDictionary(Dictionary<object, object?> dic, Type type)
-        {
-            if (null == dic)
-            {
-                return null;
-            }
-
-            // Get Item type of dictionary            
-            if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
-            {
-                // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(keyType))
-                {
-                    throw new NotSupportedTypeException(keyType);
-                }
-                // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(valueType))
-                {
-                    throw new NotSupportedTypeException(valueType);
-                }
-
-                // result object
-                Type resultType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
-                object? result = Activator.CreateInstance(resultType);
-
-                if (null == result)
-                {
-                    throw new NullReferenceException();
-                }
-
-                if (dic is IDictionary castedDic && result is IDictionary castedDicResult)
-                {
-                    foreach (DictionaryEntry keyValuePair in castedDic)
-                    {
-                        if (Misc.HelperMethods.IsDictionary(valueType))
-                        {
-                            object? itemResult = null;
-                            if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
-                            {
-                                throw new InvalidCastException();
-                            }
-                            itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
-
-                            castedDicResult.Add(keyValuePair.Key, itemResult);
-                        }
-                        else if (Misc.HelperMethods.IsList(valueType) || Misc.HelperMethods.IsArray(valueType))
-                        {
-                            object? itemResult = null;
-                            if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)
-                            {
-                                throw new InvalidCastException();
-                            }
-
-                            itemResult = ConvertDeserializedList(castedListItemObj, valueType);
-
-                            castedDicResult.Add(keyValuePair.Key, itemResult);
-                        }
-                        else if (valueType.IsEnum)
-                        {
-                            if (null == castedDic[keyValuePair.Key])
-                            {
-                                throw new NullReferenceException();
-                            }
-
-#pragma warning disable CS8604
-                            castedDicResult.Add(keyValuePair.Key, Enum.ToObject(valueType, castedDic[keyValuePair.Key]));
-#pragma warning restore CS8604
-                        }
-                        else
-                        {
-                            castedDicResult.Add(keyValuePair.Key, keyValuePair.Value);
-                        }
-                    }
-
-                    return castedDicResult;
-                }
-                else
-                {
-                    throw new InvalidCastException();
-                }
-            }
-            else
-            {
-                throw new TypeAccessException();
-            }          
         }
 
         /// <summary> 
@@ -355,12 +175,12 @@ namespace DotSerial.Core.XML
             ArgumentNullException.ThrowIfNull(xnodeList);
             ArgumentNullException.ThrowIfNull(type);
 
-            Type itemType = Misc.HelperMethods.GetItemTypeOfIEnumerable(type);
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
             if (false == DotSerialXML.IsTypeSupported(itemType))
             {
-                throw new NotSupportedTypeException(itemType);
+                throw new DSNotSupportedTypeException(itemType);
             }
 
             List<object?> result = [];
@@ -372,7 +192,7 @@ namespace DotSerial.Core.XML
                     DeserializeString(out string? tmpString, node);
                     result.Add(tmpString);
                 }
-                else if (Misc.HelperMethods.IsDictionary(itemType))
+                else if (TypeCheckMethods.IsDictionary(itemType))
                 {
                     // If xml text equals NullString
                     // => Object was null when it was serialzed.
@@ -385,7 +205,8 @@ namespace DotSerial.Core.XML
                     var tmpDic = DeserializeDictionary(node.ChildNodes, itemType);
                     result.Add(tmpDic);
                 }
-                else if (Misc.HelperMethods.IsList(itemType) || Misc.HelperMethods.IsArray(itemType))
+                else if (TypeCheckMethods.IsList(itemType) ||
+                         TypeCheckMethods.IsArray(itemType))
                 {
                     // If xml text equals NullString
                     // => Object was null when it was serialzed.
@@ -400,17 +221,14 @@ namespace DotSerial.Core.XML
                 }
                 else
                 {
-                    object? tmp = Activator.CreateInstance(itemType);
-                    if (null == tmp)
-                    {
-                        throw new NullReferenceException();
-                    }
+                    object? tmp = CreateInstanceMethods.CreateInstanceGeneric(itemType);
 
-                    if (Misc.HelperMethods.IsPrimitive(itemType))
+                    if (TypeCheckMethods.IsPrimitive(itemType))
                     {
                         DeserializePrimitive(ref tmp, itemType, node);
                     }
-                    else if (Misc.HelperMethods.IsClass(itemType) || Misc.HelperMethods.IsStruct(itemType))
+                    else if (TypeCheckMethods.IsClass(itemType) ||
+                             TypeCheckMethods.IsStruct(itemType))
                     {
                         if (false == string.IsNullOrWhiteSpace(node.InnerText))
                         {
@@ -424,7 +242,7 @@ namespace DotSerial.Core.XML
                     }
                     else
                     {
-                        throw new NotSupportedTypeException(itemType);
+                        throw new DSNotSupportedTypeException(itemType);
                     }
 
                     result.Add(tmp);
@@ -442,18 +260,19 @@ namespace DotSerial.Core.XML
         /// <returns>Dictionary of objects</returns>
         private static Dictionary<object, object?> DeserializeDictionary(XmlNodeList xnodeList, Type type)
         {
-            if (Misc.HelperMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(keyType))
                 {
-                    throw new NotSupportedTypeException(keyType);
+                    throw new DSNotSupportedTypeException(keyType);
                 }
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(valueType))
                 {
-                    throw new NotSupportedTypeException(valueType);
+                    throw new DSNotSupportedTypeException(valueType);
                 }
+
                 Dictionary< object, object ?> result = [];
 
                 foreach (XmlNode node in xnodeList)
@@ -490,7 +309,7 @@ namespace DotSerial.Core.XML
 
                             key = tmpString;
                         }
-                        else if (Misc.HelperMethods.IsDictionary(keyType))
+                        else if (TypeCheckMethods.IsDictionary(keyType))
                         {
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
@@ -507,7 +326,8 @@ namespace DotSerial.Core.XML
 
                             key = tmpDic;
                         }
-                        else if (Misc.HelperMethods.IsList(keyType) || Misc.HelperMethods.IsArray(keyType))
+                        else if (TypeCheckMethods.IsList(keyType) ||
+                                 TypeCheckMethods.IsArray(keyType))
                         {
                             // If xml text equals NullString
                             // => Object was null when it was serialzed.
@@ -526,17 +346,13 @@ namespace DotSerial.Core.XML
                         }
                         else
                         {
-                            object? tmp = Activator.CreateInstance(keyType);
-                            if (null == tmp)
-                            {
-                                throw new NullReferenceException();
-                            }
+                            object? tmp = CreateInstanceMethods.CreateInstanceGeneric(keyType);
 
-                            if (Misc.HelperMethods.IsPrimitive(keyType))
+                            if (TypeCheckMethods.IsPrimitive(keyType))
                             {
                                 DeserializePrimitive(ref tmp, keyType, keyNodeInner);
                             }
-                            else if (Misc.HelperMethods.IsClass(keyType) || Misc.HelperMethods.IsStruct(keyType))
+                            else if (TypeCheckMethods.IsClass(keyType) || TypeCheckMethods.IsStruct(keyType))
                             {
                                 if (false == string.IsNullOrWhiteSpace(keyNodeInner.InnerText))
                                 {
@@ -550,7 +366,7 @@ namespace DotSerial.Core.XML
                             }
                             else
                             {
-                                throw new NotSupportedTypeException(keyType);
+                                throw new DSNotSupportedTypeException(keyType);
                             }
 
                             if (null == tmp)
@@ -583,7 +399,7 @@ namespace DotSerial.Core.XML
 #pragma warning restore CS8604
                             value = tmpString;
                         }
-                        else if (Misc.HelperMethods.IsDictionary(valueType))
+                        else if (TypeCheckMethods.IsDictionary(valueType))
                         {
 #pragma warning disable CS8602
                             // If xml text equals NullString
@@ -599,7 +415,8 @@ namespace DotSerial.Core.XML
                             }
 #pragma warning restore CS8602
                         }
-                        else if (Misc.HelperMethods.IsList(valueType) || Misc.HelperMethods.IsArray(valueType))
+                        else if (TypeCheckMethods.IsList(valueType) ||
+                                 TypeCheckMethods.IsArray(valueType))
                         {
 #pragma warning disable CS8602
                             // If xml text equals NullString
@@ -617,17 +434,13 @@ namespace DotSerial.Core.XML
                         }
                         else
                         {
-                            object? tmp = Activator.CreateInstance(valueType);
-                            if (null == tmp)
-                            {
-                                throw new NullReferenceException();
-                            }
+                            object? tmp = CreateInstanceMethods.CreateInstanceGeneric(valueType);
 
-                            if (Misc.HelperMethods.IsPrimitive(valueType))
+                            if (TypeCheckMethods.IsPrimitive(valueType))
                             {
                                 DeserializePrimitive(ref tmp, valueType, valueNodeInner);
                             }
-                            else if (Misc.HelperMethods.IsClass(valueType) || Misc.HelperMethods.IsStruct(valueType))
+                            else if (TypeCheckMethods.IsClass(valueType) || TypeCheckMethods.IsStruct(valueType))
                             {
                                 if (false == string.IsNullOrWhiteSpace(valueNodeInner?.InnerText))
                                 {
@@ -641,7 +454,7 @@ namespace DotSerial.Core.XML
                             }
                             else
                             {
-                                throw new NotSupportedTypeException(valueType);
+                                throw new DSNotSupportedTypeException(valueType);
                             }
 
                             value = tmp;
@@ -711,9 +524,9 @@ namespace DotSerial.Core.XML
             Type typeObj = primType;
 
             // Check if primitive type
-            if (!Misc.HelperMethods.IsPrimitive(typeObj))
+            if (!TypeCheckMethods.IsPrimitive(typeObj))
             {
-                throw new NotSupportedTypeException(typeObj);
+                throw new DSNotSupportedTypeException(typeObj);
             }
 
             if (node.ChildNodes == null || node.ChildNodes.Count != 1)
@@ -820,7 +633,7 @@ namespace DotSerial.Core.XML
 
                 // Special case bool
                 // Was casted to int in serialze.
-                bool tmpBool = Misc.HelperMethods.IntToBool(tmp);
+                bool tmpBool = HelperMethods.IntToBool(tmp);
                 primObj = tmpBool;
             }
             // DateTime
@@ -849,7 +662,7 @@ namespace DotSerial.Core.XML
             }
             else
             {
-                throw new NotSupportedTypeException(typeObj);
+                throw new DSNotSupportedTypeException(typeObj);
             }
         }
     }

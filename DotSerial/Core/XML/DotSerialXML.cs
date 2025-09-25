@@ -1,5 +1,28 @@
-﻿using System.Xml;
+﻿#region License
+//Copyright (c) 2025 Dennis Sölch
 
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+using System.Xml;
+using System.Xml.Linq;
+using DotSerial.Core.Misc;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.XML
@@ -16,15 +39,15 @@ namespace DotSerial.Core.XML
         /// <summary>
         /// Current Version
         /// </summary>
-        public static readonly Version s_Version = new(0, 0, 1);
+        private static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
-        public static bool SaveToFile(string path, object? obj)
+        public static void SaveToFile(string path, object? obj)
         {           
             try
             {
                 var xmlDocument = Serialize(obj);
-                return SaveToFile(path, xmlDocument);
+                SaveToFile(path, xmlDocument);
             }
             catch 
             {
@@ -33,7 +56,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static bool SaveToFile(string path, DotSerialXML serialObj)
+        public static void SaveToFile(string path, DotSerialXML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -51,7 +74,6 @@ namespace DotSerial.Core.XML
             {
                 using var fileStream = File.Open(path, FileMode.Create);
                 serialObj._document.Save(fileStream);
-                return true;
             }
             catch
             {
@@ -133,7 +155,7 @@ namespace DotSerial.Core.XML
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            var result = Activator.CreateInstance<U>();
+            var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
 
             if (false == result?.GetType().IsClass)
             {
@@ -156,24 +178,21 @@ namespace DotSerial.Core.XML
             return result;
         }
 
-        /// <summary>
-        /// Check if Type is supprted for serialization and deserialization.
-        /// </summary>
-        /// <param name="t">Type</param>
-        /// <returns>True, if supported</returns>
-        internal static bool IsTypeSupported(Type t)
+
+        /// <inheritdoc/>
+        public static bool IsTypeSupported(Type t)
         {
             // Primitive + string.
-            if (Misc.HelperMethods.IsPrimitive(t))
+            if (TypeCheckMethods.IsPrimitive(t))
             {
                 return true;
             }
 
-            if (Misc.HelperMethods.ImplementsIEnumerable(t))
+            if (HelperMethods.ImplementsIEnumerable(t))
             {
-                if (Misc.HelperMethods.IsDictionary(t) ||
-                    Misc.HelperMethods.IsList(t) ||
-                    Misc.HelperMethods.IsArray(t))
+                if (TypeCheckMethods.IsDictionary(t) ||
+                    TypeCheckMethods.IsList(t) ||
+                    TypeCheckMethods.IsArray(t))
                 {
                     return true;
                 }
@@ -183,7 +202,7 @@ namespace DotSerial.Core.XML
                 }
             }
 
-            if (Misc.HelperMethods.IsClass(t) || Misc.HelperMethods.IsStruct(t))
+            if (TypeCheckMethods.IsClass(t) || TypeCheckMethods.IsStruct(t))
             {
                 return true;
             }
@@ -225,12 +244,29 @@ namespace DotSerial.Core.XML
                 return string.Empty;
             }
 
-            using StringWriter sw = new();
-            using XmlTextWriter tx = new(sw);
-            var xmlDoc = _document;
-            xmlDoc.WriteTo(tx);
-            string strXmlText = sw.ToString();
-            return strXmlText;
+            try
+            {
+                XDocument doc = XDocument.Parse(_document.OuterXml);
+
+                // Add decleration
+                string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+
+                // Xml content
+                string xmlString = doc.ToString();
+
+                // Add new line so declaration is seperated in one line
+                result += Environment.NewLine;
+
+                // Add xml content to result
+                result += xmlString;
+
+                return result;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
         }
     }
 }

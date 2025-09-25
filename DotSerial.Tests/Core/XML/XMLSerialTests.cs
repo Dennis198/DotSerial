@@ -1,5 +1,27 @@
-﻿using System.Collections.ObjectModel;
+﻿#region License
+//Copyright (c) 2025 Dennis Sölch
 
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+using System.Collections;
+using System.Collections.ObjectModel;
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
 
@@ -14,33 +36,21 @@ namespace DotSerial.Tests.Core.XML
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
             var xmlDocument = DotSerialXML.Serialize(testDefault);
-            bool result;
 
-            using (var file = new TemporaryFile())
-            {
-                // Act
-                result = DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
-            }
-
-            // Assert
-            Assert.True(result);
+            using var file = new TemporaryFile();
+            // Act
+            DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
         }
 
         [Fact]
         public void Save_Diect_True()
         {
             // Arrange
-            var testDefault = PrimitiveClass.CreateTestDefault();            
-            bool result;
+            var testDefault = PrimitiveClass.CreateTestDefault();
 
-            using (var file = new TemporaryFile())
-            {
-                // Act
-                result = DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
-            }
-
-            // Assert
-            Assert.True(result);
+            using var file = new TemporaryFile();
+            // Act
+            DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
         }
 
         [Fact]
@@ -65,7 +75,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(tmp);
-            HelperMethods.AssertClassEqual(tmp, expected);
+            EqualCheck.AssertClassEqual(tmp, expected);
 
         }
 
@@ -81,7 +91,22 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_AccessModifierClass()
+        {
+            // Arrange
+            var tmp = AccessModifierClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<AccessModifierClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -97,7 +122,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -112,7 +137,22 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_RecordClass()
+        {
+            // Arrange
+            var tmp = RecordClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<RecordClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -127,7 +167,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -147,7 +187,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -193,7 +233,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -214,7 +254,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -244,7 +284,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -259,7 +299,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
 
         }
 
@@ -275,7 +315,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -306,7 +346,7 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
-            HelperMethods.AssertClassEqual(tmp, result);
+            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -316,18 +356,133 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DuplicateIDException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DSDuplicateIDException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClass()
+        public void CreateSerializedObject_NotSupportedTypeHashSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClass();
-            tmp.Value0 = new HashSet<int>();
+            var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<NotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_StackClass()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassStack();
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassHashTable()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassHashTable
+            {
+                Value0 = []
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassStack()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassStack
+            {
+                Value0 = new Stack<int>()
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassQueue()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassQueue
+            {
+                Value0 = new Queue<int>()
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassLinkedList
+            {
+                Value0 = new LinkedList<int>()
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassObservableCollection
+            {
+                Value0 = []
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassSortedList()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassSortedList
+            {
+                Value0 = []
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassSortedSet
+            {
+                Value0 = []
+            };
+
+            // Act & Assert
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+        }
+
+        [Fact]
+        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+
+            // Act & Assert
+            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialXML.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
+
         }
 
         [Fact]
@@ -347,7 +502,7 @@ namespace DotSerial.Tests.Core.XML
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<InvalidIDException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DSInvalidIDException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Theory]
@@ -374,6 +529,7 @@ namespace DotSerial.Tests.Core.XML
         [InlineData(typeof(Dictionary<int, int>))]
         [InlineData(typeof(List<int>))]
         [InlineData(typeof(int[]))]
+        [InlineData(typeof(RecordClass))]
         public void IsTypeSupported_True(Type t)
         {
             bool result = DotSerialXML.IsTypeSupported(t);
@@ -381,9 +537,16 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Theory]        
-        [InlineData(typeof(HashSet<int>))]
         [InlineData(typeof(Collection<int>))]
         [InlineData(typeof(ISet<int>))]
+        [InlineData(typeof(Hashtable))]
+        [InlineData(typeof(Stack<int>))]
+        [InlineData(typeof(Queue<int>))]
+        [InlineData(typeof(LinkedList<int>))]
+        [InlineData(typeof(ObservableCollection<int>))]
+        [InlineData(typeof(SortedList<int, int>))]
+        [InlineData(typeof(SortedSet<int>))]
+        [InlineData(typeof(HashSet<int>))]
         public void IsTypeSupported_False(Type t)
         {
             bool result = DotSerialXML.IsTypeSupported(t);
@@ -393,7 +556,7 @@ namespace DotSerial.Tests.Core.XML
         [Fact]
         public void ToString_Content()
         {
-            var tmp = PrimitiveClass.CreateTestDefault();
+            var tmp = ExampleClass.CreateTestDefault();
             var xml = DotSerialXML.Serialize(tmp);
             string result = xml.ToString();
 
@@ -404,7 +567,6 @@ namespace DotSerial.Tests.Core.XML
         [Fact]
         public void ToString_NoContent()
         {
-            var tmp = PrimitiveClass.CreateTestDefault();
             var xml = new DotSerialXML();
             string result = xml.ToString();
 

@@ -14,8 +14,8 @@ If you encounter any errors, you can create an issues at [GitHub](https://github
 ---
 
 ## 📦 Installation  
-Add **DotSerial** to your project (NuGet package coming soon).  
-For now, include the source in your project.  
+Add **DotSerial** to your project [nuget](https://www.nuget.org/packages/Dennis198.DotSerial).  
+Or include the source in your project.  
 
 ---
 
@@ -57,7 +57,7 @@ Example result = DotSerialXML.Deserialize<Example>(serialized);
 ### Save and Load from File  
 ```csharp
 // Save to file
-bool resultSave = DotSerialXML.SaveToFile("example.xml", obj);
+DotSerialXML.SaveToFile("example.xml", obj);
 
 // Load from file
 Example resultLoad = DotSerialXML.LoadFromFile<Example>("example.xml");
@@ -84,7 +84,8 @@ public int Age { get; set; }
 ---
 
 ## 📌 Notes   
-- Properties without **`DSPropertyID`** are ignored.  
+- Properties without **`DSPropertyID`** are ignored.
+- ID '-1' should not be used.
 - Currently only **XML format** is supported. **JSON**, **YAML**, and other formats will be added in the future. 
 
 ---
