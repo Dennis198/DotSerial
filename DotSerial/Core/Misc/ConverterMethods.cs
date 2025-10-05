@@ -35,7 +35,7 @@ namespace DotSerial.Core.Misc
         /// <param name="list">Deserialzed List</param>
         /// <param name="type">Type</param>
         /// <returns>Converted list</returns>
-        internal static object? ConvertDeserializedList(List<object?> list, Type type)
+        internal static object? ConvertDeserializedList(List<object?>? list, Type type)
         {
             if (null == list)
             {
@@ -155,7 +155,7 @@ namespace DotSerial.Core.Misc
         /// <param name="dic">Deserialzed Dictionary</param>
         /// <param name="type">Type</param>
         /// <returns>Converted dictionary</returns>
-        internal static object? ConvertDeserializedDictionary(Dictionary<object, object?> dic, Type type)
+        internal static object? ConvertDeserializedDictionary(Dictionary<object, object?>? dic, Type type)
         {
             if (null == dic)
             {
@@ -268,6 +268,150 @@ namespace DotSerial.Core.Misc
             {
                 throw;
             }
+        }
+
+        internal static object? ConvertStringToPrimitive(string? str, Type primType)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            // Get type
+            Type typeObj = primType;
+
+            // Check if primitive type
+            if (!TypeCheckMethods.IsPrimitive(typeObj))
+            {
+                throw new DSNotSupportedTypeException(typeObj);
+            }
+
+            object? primObj;
+
+            // Char
+            if (typeObj == typeof(char))
+            {
+                char tmp = char.Parse(str);
+                primObj = tmp;
+            }
+            // Byte
+            else if (typeObj == typeof(byte))
+            {
+                byte tmp = byte.Parse(str);
+                primObj = tmp;
+            }
+            // SByte
+            else if (typeObj == typeof(sbyte))
+            {
+                sbyte tmp = sbyte.Parse(str);
+                primObj = tmp;
+            }
+            // Decimal
+            else if (typeObj == typeof(double))
+            {
+                double tmp = double.Parse(str);
+                primObj = tmp;
+            }
+            // Float
+            else if (typeObj == typeof(float))
+            {
+                float tmp = float.Parse(str);
+                primObj = tmp;
+            }
+            // Double
+            else if (typeObj == typeof(decimal))
+            {
+                decimal tmp = decimal.Parse(str);
+                primObj = tmp;
+            }
+            // Int
+            else if (typeObj == typeof(int))
+            {
+                int tmp = int.Parse(str);
+                primObj = tmp;
+            }
+            // UInt
+            else if (typeObj == typeof(uint))
+            {
+                uint tmp = uint.Parse(str);
+                primObj = tmp;
+            }
+            // NInt
+            else if (typeObj == typeof(nint))
+            {
+                nint tmp = nint.Parse(str);
+                primObj = tmp;
+            }
+            // NUInt
+            else if (typeObj == typeof(nuint))
+            {
+                nuint tmp = nuint.Parse(str);
+                primObj = tmp;
+            }
+            // Long
+            else if (typeObj == typeof(long))
+            {
+                long tmp = long.Parse(str);
+                primObj = tmp;
+            }
+            // ULong
+            else if (typeObj == typeof(ulong))
+            {
+                ulong tmp = ulong.Parse(str);
+                primObj = tmp;
+            }
+            // Short
+            else if (typeObj == typeof(short))
+            {
+                short tmp = short.Parse(str);
+                primObj = tmp;
+            }
+            // UShort
+            else if (typeObj == typeof(ushort))
+            {
+                ushort tmp = ushort.Parse(str);
+                primObj = tmp;
+            }
+            // Boolean
+            else if (typeObj == typeof(bool))
+            {
+                int tmp = int.Parse(str);
+
+                // Special case bool
+                // Was casted to int in serialze.
+                bool tmpBool = HelperMethods.IntToBool(tmp);
+                primObj = tmpBool;
+            }
+            // DateTime
+            else if (typeObj == typeof(DateTime))
+            {
+                DateTime tmp = DateTime.Parse(str);
+                primObj = tmp;
+            }
+            // Enum
+            else if (true == typeObj.IsEnum)
+            {
+                int tmp = int.Parse(str);
+                primObj = tmp;
+            }
+            // String
+            else if (typeObj == typeof(string))
+            {
+                if (str.Equals(Constants.NullString))
+                {
+                    primObj = null;
+                }
+                else
+                {
+                    primObj = str;
+                }
+            }
+            else
+            {
+                throw new DSNotSupportedTypeException(typeObj);
+            }
+
+            return primObj;
         }
     }
 }

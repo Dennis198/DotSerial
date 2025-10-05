@@ -20,9 +20,9 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Attributes;
 using System.Collections;
 using System.Collections.ObjectModel;
-using DotSerial.Attributes;
 
 namespace DotSerial.Tests
 {
@@ -160,6 +160,10 @@ namespace DotSerial.Tests
         public TestEnum[]? EnumArray { get; set; }
         [DSPropertyID(13)]
         public List<TestEnum>? EnumList { get; set; }
+        [DSPropertyID(14)]
+        public Dictionary<int, SimpleClass>? Dictionary { get; set; }
+        [DSPropertyID(15)]
+        public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -179,7 +183,13 @@ namespace DotSerial.Tests
                 StringListWithNulls = [null, null],
                 EnumArray = null,
                 EnumList = null,
+                Dictionary = null,
+                
             };
+
+            tmp.DictionaryWithNulls = [];
+            tmp.DictionaryWithNulls.Add(2, null);
+            tmp.DictionaryWithNulls.Add(4, null);
 
             return tmp;
         }
@@ -740,6 +750,46 @@ namespace DotSerial.Tests
         public TestEnum TestEnum1 { get; set; }
         [DSPropertyID(2)]
         public TestEnum TestEnum2 { get; set; }
+        [DSPropertyID(3)]
+        public TestEnum[]? TestEnumArray { get; set; }
+
+        public static EnumClass CreateTestDefault()
+        {
+            var tmp = new EnumClass
+            {
+                TestEnum0 = TestEnum.Fourth,
+                TestEnum1 = TestEnum.Undefined,
+                TestEnum2 = TestEnum.First,
+                TestEnumArray = [TestEnum.Fourth, TestEnum.Fourth, TestEnum.First]
+            };
+
+            return tmp;
+        }
+    }
+
+    public class DateTimeClass()
+    {
+        [DSPropertyID(0)]
+        public DateTime Date1 { get; set; }
+        [DSPropertyID(1)]
+        public DateTime Date2 { get; set; }
+        [DSPropertyID(2)]
+        public DateTime Date3 { get; set; }
+        [DSPropertyID(3)]
+        public DateTime[]? DateArray { get; set; }
+
+        public static DateTimeClass CreateTestDefault()
+        {
+            var tmp = new DateTimeClass
+            {
+                Date1 = DateTime.MinValue,
+                Date2 = DateTime.MaxValue,
+                Date3 = DateTime.Now,
+                DateArray = [DateTime.Now, DateTime.Now, DateTime.MinValue]
+            };
+
+            return tmp;
+        }
     }
 
     /// <summary>
