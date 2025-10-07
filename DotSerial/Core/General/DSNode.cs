@@ -1,6 +1,7 @@
 ﻿
 using DotSerial.Core.Misc;
 using System.Diagnostics;
+using System.Text;
 
 namespace DotSerial.Core.General
 {
@@ -138,6 +139,18 @@ namespace DotSerial.Core.General
                 {
                     strValue = Convert.ToString((int)value);
                 }
+                else if (type == typeof(float))
+                {
+                    strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(double))
+                {
+                    strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(decimal))
+                {
+                    strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
                 else
                 {
                     strValue = value.ToString();
@@ -159,6 +172,106 @@ namespace DotSerial.Core.General
                 throw new NotImplementedException();
             }
             return ConverterMethods.ConvertStringToPrimitive(Value, type);
+        }
+
+        public bool IsPrimitiveList()
+        {
+            if (PropType != DSNodePropertyType.List)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return false;
+            }
+
+            var child = _children[0];
+
+            if (child.IsNull || child.Type == DSNodeType.Leaf)
+            {
+                return true;
+            }
+
+            return false;
+            
+        }
+
+        public bool IsPrimitiveDictionary()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return false;
+            }
+
+            var keyValuePair = _children[0];
+
+            //if (keyValuePair.IsNull)
+            //{
+            //    return true;
+            //}
+
+            var value = keyValuePair._children[1];
+
+            if (value.IsNull || value.Type == DSNodeType.Leaf)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public List<string> GetDicionaryNodeKeys()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<string> result = [];
+
+            foreach (var child in _children)
+            {
+                var tmp = child.Value.GetChildren();
+                string key = tmp[0].Value;
+                result.Add(key);
+            }
+
+            return result;
+        }
+
+        public List<DSNode> GetDicionaryNodeVales()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<DSNode> result = [];
+
+            foreach (var child in _children)
+            {
+                var tmp = child.Value.GetChildren();
+                DSNode val = tmp[1];
+                result.Add(val);
+            }
+
+            return result;
         }
 
         /// <summary>

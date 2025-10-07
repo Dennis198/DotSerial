@@ -309,19 +309,19 @@ namespace DotSerial.Core.Misc
             // Decimal
             else if (typeObj == typeof(double))
             {
-                double tmp = double.Parse(str);
+                double tmp = double.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
                 primObj = tmp;
             }
             // Float
             else if (typeObj == typeof(float))
             {
-                float tmp = float.Parse(str);
+                float tmp = float.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
                 primObj = tmp;
             }
             // Double
             else if (typeObj == typeof(decimal))
             {
-                decimal tmp = decimal.Parse(str);
+                decimal tmp = decimal.Parse(str, System.Globalization.CultureInfo.InvariantCulture);
                 primObj = tmp;
             }
             // Int
