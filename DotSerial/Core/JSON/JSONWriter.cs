@@ -1,18 +1,18 @@
 ﻿using DotSerial.Core.General;
 using System.Text;
-using System.Xml.Linq;
 
 namespace DotSerial.Core.JSON
 {
     internal static class JSONWriter
     {
-        private const int LEVEL_WIDTH = 2;
-        const string quote = "\"";
+        private const int IndentationSize = 2;
+        private const char Quote = '"';
+        private const string NullString = "\"null\"";
 
         public static string Convert(DSNode node)
         {
             StringBuilder sb = new();
-            sb.AppendLine("{");
+            sb.Append('{');
             ConvertNode(sb, node, 0);
             sb.Remove(sb.Length - 1, 1);
             sb.AppendLine();
@@ -43,46 +43,31 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }
 
-
             if (node.IsNull)
             {
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": \"null\",", node.Key);
+                AddKeyValuePair(sb, node.Key.ToString(), null, level);
                 return;
             }
 
-            //sb.AppendFormat("\"{0}\": ", node.Key);
-
             if (node.PropType == DSNodePropertyType.Class)
             {
-                //sb.Append('{');
-
                 ConvertClassNode(sb, node, level, addKey);
-
-                //sb.AppendLine("}");
             }
             else if (node.PropType == DSNodePropertyType.List)
             {
-                if (node.IsEmpty)
-                {
-                    sb.AppendFormat("\"{0}\": \"{{}}\",", node.Key);
-                    return;
-                }
-
-                ConvertListNode(sb, node, level);
+                ConvertListNode(sb, node, level, addKey);
             }
             else if (node.PropType == DSNodePropertyType.Dictionary)
             {
-                if (node.IsEmpty)
-                {
-                    sb.AppendLine();
-                    sb.Append(' ', level * LEVEL_WIDTH);
-                    sb.AppendFormat("\"{0}\": \"{{}}\",", node.Key);
-                    return;
-                }
-
                 ConvertDictionaryNode(sb, node, level);
+            }
+            else if (node.PropType == DSNodePropertyType.KeyValuePair)
+            {
+                ConvertKeyValuePair(sb, node, level);
+            }
+            else if (node.PropType == DSNodePropertyType.KeyValuePairValue)
+            {
+                ConvertClassNode(sb, node, level, addKey);
             }
             else
             {
@@ -90,18 +75,20 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
+        private static void ConvertKeyValuePair(StringBuilder sb, DSNode node, int level)
         {
-            sb.AppendLine();
-            sb.Append(' ', (level + 1) * LEVEL_WIDTH);
-            string typeName = type switch
+            if (node.PropType != DSNodePropertyType.KeyValuePair)
             {
-                DSNodePropertyType.Class => "Class",
-                DSNodePropertyType.List => "List",
-                DSNodePropertyType.Dictionary => "Dictionary",
-                _ => throw new NotImplementedException(),
-            };
-            sb.AppendFormat("\"{0}\": \"{1}\",", -1, typeName);
+                throw new NotImplementedException();
+            }
+
+            // TODO Überarbeiten
+            var keyNode = node.GetChild(0);
+            int key = int.Parse(keyNode.Value);
+
+            var valueNode = node.GetChild(1);
+            valueNode = valueNode.Clone(key);
+            ConvertClassNode(sb, valueNode, level, true);
         }
 
         private static void ConvertDictionaryNode(StringBuilder sb, DSNode node, int level)
@@ -111,131 +98,148 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }
 
+            if (node.IsEmpty)
+            {
+                AddObjectStart(sb, node.Key.ToString(), level);
+                AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+                AddObjectEnd(sb, level);
+                return;
+            }
+
             if (node.IsPrimitiveDictionary())
             {
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": {{", node.Key);
-
+                AddObjectStart(sb, node.Key.ToString(), level);
                 AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
-                sb.AppendLine();
-                sb.Append(' ', (level + 1) * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": ", node.Key);
+
+                StringBuilder sb2 = new();
+                AddObjectStart(sb2, node.Key.ToString(), level + 1);
 
                 List<string> keys = node.GetDicionaryNodeKeys();
                 List<DSNode> values = node.GetDicionaryNodeVales();
-
-                StringBuilder sb2 = new StringBuilder();
-                
-                sb2.Append('{');
 
                 for (int i = 0; i < keys.Count; i++)
                 {
                     string key = keys[i];
                     var value = values[i];
 
+                    AddKeyValuePair(sb2, key, value.Value, level + 1, false);
+                }
 
-                    sb2.AppendLine();
-                    sb2.Append(' ', (level + 1) * LEVEL_WIDTH);
+                sb2.Remove(sb2.Length - 1, 1);
+                AddObjectEnd(sb2, level + 1, true);
+
+                sb.Append(sb2);
+                AddObjectEnd(sb, level);
+            }
+            else
+            {
+                AddObjectStart(sb, node.Key.ToString(), level);
+                AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+
+                StringBuilder sb2 = new();
+                AddObjectStart(sb2, node.Key.ToString(), level + 1);
+
+                List<DSNode> keyvaluePair = node.GetDictionaryKeyValuePairs();
+
+                for (int i = 0; i < keyvaluePair.Count; i++)
+                {
+                    var keyValuePair = keyvaluePair[i];
+
                     if (false == node.IsNull)
                     {
-                        sb2.AppendFormat("\"{0}\": \"{1}\",", key, value.Value);
+                        StringBuilder sb3 = new();
+                        ConvertNode(sb3, keyValuePair, level + 1);
+                        sb2.Append(sb3);
                     }
                     else
                     {
-                        sb2.AppendFormat("\"{0}\": \"null\",", key);
+
+                        throw new NotImplementedException();
                     }
                 }
 
                 sb2.Remove(sb2.Length - 1, 1);
-                sb2.AppendLine();
-                sb2.Append(' ', (level + 1) * LEVEL_WIDTH);
-                sb2.Append('}');
-
+                AddObjectEnd(sb2, level + 1, true);
 
                 sb.Append(sb2);
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.Append("},");
-            }
-            else
-            {
-                throw new NotImplementedException();
+                AddObjectEnd(sb, level);
             }
         }
 
-        private static void ConvertListNode(StringBuilder sb, DSNode node, int level)
+        private static void ConvertListNode(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
             if (node.PropType != DSNodePropertyType.List)
             {
                 throw new NotImplementedException();
             }
-            
+
+            if (node.IsEmpty)
+            {
+                AddObjectStart(sb, node.Key.ToString(), level);
+                AddTypeInfo(sb, level, DSNodePropertyType.List);
+                AddObjectEnd(sb, level);
+                return;
+            }
 
             if (node.IsPrimitiveList())
             {
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": {{", node.Key);
-
-                AddTypeInfo(sb, level, DSNodePropertyType.List);
-                sb.AppendLine();
-                sb.Append(' ', (level + 1) * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": ", node.Key);
-
-                var children = node.GetChildren();
-
-                string tmp = "[";
-
-                foreach (var keyValue in children)
+                if (addKey)
                 {
-                    tmp += quote;
-                    tmp += keyValue.Value.Value;
-                    tmp += quote;
-                    tmp += ", ";
+                    AddObjectStart(sb, node.Key.ToString(), level);
+                }
+                else
+                {
+                    sb.AppendLine();
+                    sb.Append(' ', level * IndentationSize);
+                    sb.Append('{');
                 }
 
-                tmp = tmp[..^2];
-                tmp += "]";
+                AddTypeInfo(sb, level, DSNodePropertyType.List);
 
+                CreatePrimitiveList(sb, node, level + 1);
 
-                sb.Append(tmp);
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.Append("},");
+                AddObjectEnd(sb, level);
             }
             else
             {
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": {{", node.Key);
+                if (addKey)
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level);
+                }
+                else
+                {
+                    sb.AppendLine();
+                    sb.Append(' ', level * IndentationSize);
+                    sb.Append('{');
+                }
 
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
                 sb.AppendLine();
-                sb.Append(' ', (level + 1) * LEVEL_WIDTH);
-                sb.AppendFormat("\"{0}\": ", node.Key);
+                sb.Append(' ', (level + 1) * IndentationSize);
+                sb.AppendFormat("\"{0}\": ", node.Key);                
 
                 var children = node.GetChildren();
 
-                string tmp = "[";
-                tmp += Environment.NewLine;
+                StringBuilder sb2 = new();
+                sb2.AppendLine();
+                sb2.Append(' ', (level + 1) * IndentationSize);
+                sb2.Append('[');
+
                 foreach (var keyValue in children)
                 {
-                    StringBuilder sb2 = new StringBuilder();
-                    ConvertNode(sb2, keyValue.Value, level + 1, false);
-                    tmp += sb2.ToString();
-                    tmp += Environment.NewLine;
- 
+                    StringBuilder sb3 = new();
+                    ConvertNode(sb3, keyValue.Value, level + 1, false);
+                    sb2.Append(sb3);
                 }
 
-                tmp = tmp[..^3];
-                tmp += "]";
+                sb2.Remove(sb2.Length - 1, 1);
+                sb2.AppendLine();
+                sb2.Append(' ', (level + 1) * IndentationSize);
+                sb2.Append(']');
 
 
-                sb.Append(tmp);
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.Append("},");
+                sb.Append(sb2);
+                AddObjectEnd(sb, level);
             }
         }
 
@@ -246,31 +250,32 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }
 
-            //sb.AppendLine();
-            sb.Append(' ', level * LEVEL_WIDTH);
-
             if (node.IsNull)
             {
                 sb.AppendFormat("\"{0}\": \"null\",", node.Key);
             }
             else if (node.IsEmpty)
             {
-                //sb.AppendFormat("\"{0}\": \"{{}}\",", node.Key);
-                sb.AppendFormat("\"{0}\": {{", node.Key);
+                AddObjectStart(sb, node.Key.ToString(), level);
                 AddTypeInfo(sb, level, DSNodePropertyType.Class);
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.Append("},");
+                AddObjectEnd(sb, level);
             }
             else
             {
                 if (addKey)
-                    sb.AppendFormat("\"{0}\": {{", node.Key);
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level);
+                }
                 else
+                {
+                    sb.Append(' ', level * IndentationSize);
+                    sb.AppendLine();
+                    sb.Append(' ', level * IndentationSize);
                     sb.Append('{');
-
+                }
+                    
                 AddTypeInfo(sb, level, DSNodePropertyType.Class);
 
                 var children = node.GetChildren();
@@ -283,9 +288,7 @@ namespace DotSerial.Core.JSON
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
 
-                sb.AppendLine();
-                sb.Append(' ', level * LEVEL_WIDTH);
-                sb.Append("},");
+                AddObjectEnd(sb, level);
             }
         }
 
@@ -296,57 +299,93 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }
 
-            sb.AppendLine();
-            sb.Append(' ', level * LEVEL_WIDTH);
-            if (false == node.IsNull)
+            AddKeyValuePair(sb, node.Key.ToString(), node.Value, level);
+        }
+
+        private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
+        {
+            string typeName = type switch
             {
-                sb.AppendFormat("\"{0}\": \"{1}\",", node.Key, node.Value);
+                DSNodePropertyType.Class => "Class",
+                DSNodePropertyType.List => "List",
+                DSNodePropertyType.Dictionary => "Dictionary",
+                _ => throw new NotImplementedException(),
+            };
+            AddKeyValuePair(sb, "-1", typeName, level + 1);
+        }
+
+        private static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool allowEmptyClass = true)
+        {
+            sb.AppendLine();
+            AddIndentation(sb, level);
+            if (null == value && allowEmptyClass)
+            {
+                sb.AppendFormat("\"{0}\": \"null\",", key);
+            }
+            else if (value == string.Empty && allowEmptyClass)
+            {
+                sb.AppendFormat("\"{0}\": \"{{}}\",", key);
             }
             else
             {
-                sb.AppendFormat("\"{0}\": \"null\",", node.Key);
-            }            
+                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
+            }
         }
 
-        //private const int LEVELTAB = 2;
-        //internal static string ConvertToString(DSNode node)
-        //{
-        //    StringBuilder sb = new();
-        //    return sb.ToString();
-        //}
+        private static void AddObjectStart(StringBuilder sb, string key, int level)
+        {           
+            sb.AppendLine();
+            AddIndentation(sb, level);
+            sb.AppendFormat("\"{0}\": {{", key);
+        }
 
-        //private static void Test(StringBuilder sb, DSNode node)
-        //{
-        //    ArgumentNullException.ThrowIfNull(node);
+        private static void AddObjectEnd(StringBuilder sb, int level, bool isLastObject = false)
+        {
+            sb.AppendLine();
+            sb.Append(' ', level * IndentationSize);
+            if (isLastObject)
+            {
+                sb.Append('}');
+            }
+            else
+            {
+                sb.Append("},");
+            }
+        }
 
-        //    sb.Append('"');
-        //    sb.Append(node.Key);
-        //    sb.Append('"');
-        //    sb.Append(':');
-        //}
+        private static void CreatePrimitiveList(StringBuilder sb, DSNode node, int level)
+        {
+            sb.AppendLine();
+            sb.Append(' ', level * IndentationSize);
+            sb.AppendFormat("\"{0}\": ", node.Key);
 
-        //private static void AddKeyValueSimple(StringBuilder sb, string key, string value, int level)
-        //{
-        //    sb.Append(' ', level * LEVELTAB);
-        //    sb.Append('"');
-        //    sb.Append(key);
-        //    sb.Append('"');
-        //    sb.Append(':');
-        //    sb.Append(' ');
-        //    sb.Append('"');
-        //    sb.Append(value);
-        //    sb.Append('"');
-        //    sb.Append(',');
-        //    sb.Append(Environment.NewLine);
-        //}
+            var children = node.GetChildren();
 
-        //private static void AddKey(StringBuilder sb, string key, int level)
-        //{
-        //    sb.Append(' ', level * LEVELTAB);
-        //    sb.Append('"');
-        //    sb.Append(key);
-        //    sb.Append('"');
-        //    sb.Append(':');
-        //}
+            sb.Append('[');
+
+            foreach (var keyValue in children)
+            {
+                sb.Append(Quote);
+                if (keyValue.Value.IsNull)
+                {
+                    sb.Append("null");
+                }
+                else
+                {
+                    sb.Append(keyValue.Value.Value);
+                }
+                sb.Append(Quote);
+                sb.Append(", ");
+            }
+
+            sb.Remove(sb.Length - 2, 2);
+            sb.Append(']');
+        }
+
+        private static void AddIndentation(StringBuilder sb, int level)
+        {
+            sb.Append(' ', level * IndentationSize);
+        }
+
     }
 }

@@ -182,7 +182,7 @@ namespace DotSerial.Core.General
                                 int innerDicID = 0;
                                 foreach (var str in castedValue)
                                 {
-                                    var listNode = SerializeDictionary(str, 0);
+                                    var listNode = SerializeDictionary(str, innerDicID);
                                     keyValue.AppendChild(innerDicID, listNode);
                                     innerDicID++;
                                 }
@@ -204,7 +204,7 @@ namespace DotSerial.Core.General
                                 int listID = 0;
                                 foreach (var str in castedValue)
                                 {
-                                    var listNode = SerializeList(str, 0);
+                                    var listNode = SerializeList(str, listID);
                                     keyValue.AppendChild(listID, listNode);
                                     listID++;
                                 }
@@ -294,7 +294,7 @@ namespace DotSerial.Core.General
                     int listID = 0;
                     foreach (var str in castedList)
                     {
-                        var listNode = SerializeList(str, 0);
+                        var listNode = SerializeList(str, listID);
                         node.AppendChild(listID, listNode);
                         listID++;
                     }
@@ -305,7 +305,7 @@ namespace DotSerial.Core.General
                     int listID = 0;
                     foreach (var str in castedList)
                     {
-                        var listNode = SerializeDictionary(str, 0);
+                        var listNode = SerializeDictionary(str, listID);
                         node.AppendChild(listID, listNode);
                         listID++;
                     }
@@ -317,7 +317,7 @@ namespace DotSerial.Core.General
                     int listID = 0;
                     foreach (var entry in castedList)
                     {
-                        var classNode = Serialize(entry, 0);
+                        var classNode = Serialize(entry, listID);
                         node.AppendChild(listID, classNode);
                         listID++;
                     }

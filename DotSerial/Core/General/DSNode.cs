@@ -1,7 +1,6 @@
 ﻿
 using DotSerial.Core.Misc;
 using System.Diagnostics;
-using System.Text;
 
 namespace DotSerial.Core.General
 {
@@ -226,6 +225,30 @@ namespace DotSerial.Core.General
             return false;
         }
 
+        public List<DSNode> GetDictionaryKeyValuePairs()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<DSNode> result = [];
+
+            foreach (var child in _children)
+            {
+                var tmp = child.Value;
+                DSNode val = tmp;
+                result.Add(val);
+            }
+
+            return result;
+        }
+
         public List<string> GetDicionaryNodeKeys()
         {
             if (PropType != DSNodePropertyType.Dictionary)
@@ -340,6 +363,16 @@ namespace DotSerial.Core.General
             }
 
             return max + 1;
+        }
+
+        public DSNode Clone(int newKey = -1)
+        {
+            // TODO Überarbeiten
+            int key = newKey != -1 ? newKey : this.Key;
+            DSNode clone = new DSNode(key, this.Value, this.Type, this.PropType);
+            //var ttt = this._children[1];
+            clone._children.Add(key, this._children[0]);
+            return clone;
         }
     }
 }
