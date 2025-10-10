@@ -10,6 +10,7 @@ namespace DotSerial.Core.General
 
     internal enum DSNodePropertyType
     {
+        Undefined = -1,
         Primitive = 0,
         Class = 1,
         List = 2,
@@ -17,5 +18,6 @@ namespace DotSerial.Core.General
         KeyValuePair = 4,
         KeyValuePairKey = 5,
         KeyValuePairValue = 6,
+        Null = 7
     }
 }

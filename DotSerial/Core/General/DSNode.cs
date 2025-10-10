@@ -7,7 +7,7 @@ namespace DotSerial.Core.General
     /// <summary>
     /// Node of a tree
     /// </summary>
-    [DebuggerDisplay("Key = {Key}, Name = {Name}, Value = {Value}")]
+    [DebuggerDisplay("Key = {Key}, Value = {Value}, Children = {Count}")]
     internal class DSNode
     {
         /// <summary>
@@ -19,11 +19,6 @@ namespace DotSerial.Core.General
         /// Value of the node
         /// </summary>
         public string? Value { get; private set; }
-
-        /// <summary>
-        /// Custom name of node
-        /// </summary>
-        public string? Name { get; private set; }
 
         /// <summary>
         /// Type node
@@ -38,16 +33,15 @@ namespace DotSerial.Core.General
         /// <summary>
         /// Children
         /// </summary>
-        private Dictionary<int, DSNode> _children = [];
+        public Dictionary<int, DSNode> _children { get; private set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
-        /// <param name="name">Name</param>
         /// <param name="type">Type</param>
-        public DSNode(int key, object? value, string name, DSNodeType type, DSNodePropertyType propType) : this(key, name, type, propType)
+        public DSNode(int key, object? value, DSNodeType type, DSNodePropertyType propType) : this(key, type, propType)
         {
             SetValue(value);
         }
@@ -56,14 +50,13 @@ namespace DotSerial.Core.General
         /// Constuctor
         /// </summary>
         /// <param name="key">Key</param>
-        /// <param name="name">Name</param>
         /// <param name="type">Type</param>
-        public DSNode(int key, string name, DSNodeType type, DSNodePropertyType propType)
+        public DSNode(int key, DSNodeType type, DSNodePropertyType propType)
         {
             Key = key;
-            Name = name;
             Type = type;
             PropType = propType;
+            _children = [];
         }
 
         /// <summary>
@@ -373,6 +366,11 @@ namespace DotSerial.Core.General
             //var ttt = this._children[1];
             clone._children.Add(key, this._children[0]);
             return clone;
+        }
+
+        public void SetPropType(DSNodePropertyType propType)
+        {
+            PropType = propType;
         }
     }
 }

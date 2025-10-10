@@ -184,7 +184,7 @@ namespace DotSerial.Tests
                 EnumArray = null,
                 EnumList = null,
                 Dictionary = null,
-                
+
             };
 
             tmp.DictionaryWithNulls = [];
@@ -482,6 +482,7 @@ namespace DotSerial.Tests
         public List<TestEnum>[]? EnumMix { get; set; }
         [DSPropertyID(23)]
         public List<TestEnum[]>? EnumListMix { get; set; }
+        // TODO Dictionary Testen
 
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
@@ -711,10 +712,9 @@ namespace DotSerial.Tests
 
         public static DictionaryClass CreateTestDefault()
         {
-            var result = new DictionaryClass
-            {
-                DicIntInt = []
-            };
+            var result = new DictionaryClass();
+
+            result.DicIntInt = [];
             result.DicIntInt.Add(33, 44);
             result.DicIntInt.Add(-33, 88);
 

@@ -3,6 +3,7 @@ using System.Text;
 
 namespace DotSerial.Core.JSON
 {
+    // https://github.com/zanders3/json/blob/master/src/JSONParser.cs
     internal static class JSONWriter
     {
         private const int IndentationSize = 2;
@@ -318,6 +319,7 @@ namespace DotSerial.Core.JSON
         {
             sb.AppendLine();
             AddIndentation(sb, level);
+            allowEmptyClass = true;
             if (null == value && allowEmptyClass)
             {
                 sb.AppendFormat("\"{0}\": \"null\",", key);

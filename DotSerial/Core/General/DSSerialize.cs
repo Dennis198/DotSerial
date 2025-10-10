@@ -20,14 +20,14 @@ namespace DotSerial.Core.General
             // If classObj is null, create Null node
             if (classObj == null)
             {
-                var nullNode = new DSNode(objectID, null, "Class", DSNodeType.Leaf, DSNodePropertyType.Class);
+                var nullNode = new DSNode(objectID, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                 return nullNode;
             }
 
             Type typeObj = classObj.GetType();
 
             // Create node
-            var node = new DSNode(objectID, typeObj.Name, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            var node = new DSNode(objectID, DSNodeType.InnerNode, DSNodePropertyType.Class);
 
             // Create datastructur to check if every id in a class is only
             // used once.
@@ -68,7 +68,11 @@ namespace DotSerial.Core.General
                     if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                     {
                         // Primitive types || String
-                        DSNode childNode = new(id, value, propName, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                        DSNode childNode = new(id, value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                        if (value == null)
+                        {
+                            childNode.SetPropType(DSNodePropertyType.Null);
+                        }
                         node.AppendChild(id, childNode);
                     }
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
@@ -94,7 +98,7 @@ namespace DotSerial.Core.General
                     else if (value == null)
                     {
                         // Null
-                        DSNode nullNode = new(id, null, "Null", DSNodeType.InnerNode, DSNodePropertyType.Class);
+                        DSNode nullNode = new(id, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                         node.AppendChild(id, nullNode);
                     }
                     else
@@ -118,11 +122,11 @@ namespace DotSerial.Core.General
             if (dic == null)
             {
                 // Null
-                DSNode nullNode = new(id, null, "Dictioanry", DSNodeType.Leaf, DSNodePropertyType.Dictionary);
+                DSNode nullNode = new(id, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                 return nullNode;
             }
 
-            var node = new DSNode(id, "Dictioanry", DSNodeType.InnerNode, DSNodePropertyType.Dictionary);
+            var node = new DSNode(id, DSNodeType.InnerNode, DSNodePropertyType.Dictionary);
 
             if (dic is IDictionary castedDic)
             {
@@ -144,7 +148,7 @@ namespace DotSerial.Core.General
                     {
                         var key = keyValuePair.Key;
                         var value = keyValuePair.Value;
-                        DSNode keyValuepair = new(dicID, "KeyVlauePair", DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair);
+                        DSNode keyValuepair = new(dicID, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair);
                         DSNode keyNode;
                         DSNode keyValue;
 
@@ -158,7 +162,7 @@ namespace DotSerial.Core.General
 
                         if (TypeCheckMethods.IsPrimitive(keyType))
                         {
-                            keyNode = new (0, key, "Key", DSNodeType.Leaf, DSNodePropertyType.KeyValuePairKey);
+                            keyNode = new (0, key, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairKey);
                         }
                         else
                         {
@@ -171,14 +175,14 @@ namespace DotSerial.Core.General
 
                         if (TypeCheckMethods.IsPrimitive(valueType))
                         {
-                            keyValue = new (1, value, "Value", DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
+                            keyValue = new (1, value, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
                         {
                             // Dictionary
                             if (value is IEnumerable castedValue)
                             {
-                                keyValue = new(1, value, "Value", DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
+                                keyValue = new(1, value, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
                                 int innerDicID = 0;
                                 foreach (var str in castedValue)
                                 {
@@ -200,7 +204,7 @@ namespace DotSerial.Core.General
 
                             if (value is IEnumerable castedValue)
                             {
-                                keyValue = new(1, value, "Value", DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
+                                keyValue = new(1, value, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
                                 int listID = 0;
                                 foreach (var str in castedValue)
                                 {
@@ -218,7 +222,7 @@ namespace DotSerial.Core.General
                                  TypeCheckMethods.IsStruct(valueType))
                         {
                             // Class || Struct
-                            keyValue = new(1, "Value", DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
+                            keyValue = new(1, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
                             var classNode = Serialize(value, 0);
                             keyValue.AppendChild(0, classNode);
                         }
@@ -259,12 +263,12 @@ namespace DotSerial.Core.General
             if (list == null)
             {
                 // Null
-                DSNode nullNode = new(id, null, "List", DSNodeType.Leaf, DSNodePropertyType.List);
+                DSNode nullNode = new(id, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                 return nullNode;
             }
 
             // Create node
-            var node = new DSNode(id, "List", DSNodeType.InnerNode, DSNodePropertyType.List);
+            var node = new DSNode(id, DSNodeType.InnerNode, DSNodePropertyType.List);
 
             if (list is IEnumerable castedList)
             {
@@ -282,7 +286,11 @@ namespace DotSerial.Core.General
                     int listID = 0;
                     foreach (var str in castedList)
                     {
-                        DSNode childNode = new(listID, str, string.Empty, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                        DSNode childNode = new(listID, str, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                        if (null == str)
+                        {
+                            childNode.SetPropType(DSNodePropertyType.Null);
+                        }
                         node.AppendChild(listID, childNode);
                         listID++;
                     }
