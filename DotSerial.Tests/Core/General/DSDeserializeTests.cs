@@ -15,7 +15,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<EmptyClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -31,7 +31,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<AccessModifierClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -47,7 +47,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<DictionaryClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -63,7 +63,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<StructClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -79,7 +79,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<RecordClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -95,7 +95,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<PrimitiveClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -116,7 +116,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<NestedClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -163,7 +163,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<NestedNestedClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -179,7 +179,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<EnumClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
 
@@ -198,7 +198,7 @@ namespace DotSerial.Tests.Core.General
         //    var result = CreateInstanceMethods.CreateInstanceGeneric<DateTimeClass>();
 
         //    // Act
-        //    var node = DSSerialize.Serialize(tmp, 0);
+        //    var node = DSSerialize.Serialize(tmp, "0");
         //    DSDeserialize.Deserialize(result, node);
 
 
@@ -215,7 +215,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<NoAttributeClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Arrange
@@ -231,7 +231,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<MultiDimClassIEnumarble>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -247,7 +247,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<NullClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -264,7 +264,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<PrimitiveClassIEnumarable>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -296,7 +296,7 @@ namespace DotSerial.Tests.Core.General
             var result = CreateInstanceMethods.CreateInstanceGeneric<IEnumerableClass>();
 
             // Act
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             DSDeserialize.Deserialize(result, node);
 
             // Assert
@@ -311,7 +311,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSDuplicateIDException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -321,7 +321,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -331,7 +331,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -344,7 +344,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -357,7 +357,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -370,7 +370,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -383,7 +383,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -396,7 +396,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -409,7 +409,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -422,7 +422,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -434,7 +434,7 @@ namespace DotSerial.Tests.Core.General
                 Value0 = new TestRecordNoParameterlessConstructor(5, 7)
             };
             var result = CreateInstanceMethods.CreateInstanceGeneric<NotSupportedTypeClassRecordNoParameterlessConstructor>();
-            var xmlDocument = DSSerialize.Serialize(tmp, 0);
+            var xmlDocument = DSSerialize.Serialize(tmp, "0");
 
             // Act & Assert
             Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DSDeserialize.Deserialize(result, xmlDocument));
@@ -449,7 +449,7 @@ namespace DotSerial.Tests.Core.General
 
             // Act & Assert
             // TODO
-            //Assert.Throws<ArgumentNullException>(() => DSSerialize.Serialize(tmp, 0));
+            //Assert.Throws<ArgumentNullException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -459,7 +459,7 @@ namespace DotSerial.Tests.Core.General
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DSSerialize.Serialize(tmp, 0));
+            Assert.Throws<DSInvalidIDException>(() => DSSerialize.Serialize(tmp, "0"));
         }
 
     }

@@ -191,7 +191,7 @@ namespace DotSerial.Core.Misc
                     {
                         if (TypeCheckMethods.IsDictionary(valueType))
                         {
-                            object? itemResult = null;
+                            object? itemResult = null;                            
                             if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
                             {
                                 throw new InvalidCastException();
@@ -228,7 +228,8 @@ namespace DotSerial.Core.Misc
                                  TypeCheckMethods.IsStruct(valueType) ||
                                  TypeCheckMethods.IsPrimitive(valueType))
                         {
-                            castedDicResult.Add(keyValuePair.Key, keyValuePair.Value);
+                            object? key = ConverterMethods.ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType);
+                            castedDicResult.Add(key, keyValuePair.Value);
                         }
                         else
                         {

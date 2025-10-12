@@ -9,7 +9,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_ExampleClass()
         {
             var tmp = ExampleClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.ExampleClassAsJson, result);
         }
@@ -18,7 +18,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_EmptyClass()
         {
             var tmp = new EmptyClass();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.EmptyClassAsJson, result);
         }
@@ -27,7 +27,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_PrimitiveClass()
         {
             var tmp = PrimitiveClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.PrimitiveClassAsJson, result);
         }
@@ -36,7 +36,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_PrimitiveClassIEnumarable()
         {
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.PrimitiveClassIEnumarableAsJson, result);
         }
@@ -62,7 +62,7 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.List.Add(d);
                 tmp.Dic.Add(i, d);
             }
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.IEnumerableClassAsJson, result);
         }
@@ -72,7 +72,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.DictionaryClassAsJson, result);
         }
@@ -82,7 +82,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = NullClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.NullClassAsJson, result);
         }
@@ -97,7 +97,7 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true,
                 PrimitiveClass = tmp2
             };
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.NestedClassAsJson, result);
         }
@@ -138,7 +138,7 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp4,
                 Boolean = true
             };
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.NestedNestedClassAsJson, result);
         }
@@ -148,7 +148,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string result = JSONWriter.ToJsonString(node);
             Assert.Equal(JSONConstants.MultiDimClassIEnumarbleAsJson, result);
         }

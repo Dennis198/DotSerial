@@ -9,7 +9,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_ExampleClass()
         {
             var tmp = ExampleClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -20,7 +20,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_EmptyClass()
         {
             var tmp = new EmptyClass();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -31,7 +31,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_PrimitiveClass()
         {
             var tmp = PrimitiveClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -42,7 +42,7 @@ namespace DotSerial.Tests.Core.JSON
         public void Convert_PrimitiveClassIEnumarable()
         {
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -70,7 +70,7 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.List.Add(d);
                 tmp.Dic.Add(i, d);
             }
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -82,7 +82,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -94,7 +94,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = NullClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -111,7 +111,7 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true,
                 PrimitiveClass = tmp2
             };
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -154,7 +154,7 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp4,
                 Boolean = true
             };
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 
@@ -166,7 +166,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, 0);
+            var node = DSSerialize.Serialize(tmp, "0");
             string jsonString = JSONWriter.ToJsonString(node);
             DSNode result = JSONParser.ToNode(jsonString);
 

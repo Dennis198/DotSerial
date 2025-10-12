@@ -52,9 +52,6 @@ namespace DotSerial.Core.JSON
             // Add Last '}'
             AddObjectEnd(sb, 0, true);
 
-            // TODO entfernen
-            sb.AppendLine();
-
             return sb.ToString();
         }
 
@@ -120,15 +117,7 @@ namespace DotSerial.Core.JSON
             }
             else if (node.PropType == DSNodePropertyType.Dictionary)
             {
-                ConvertDictionaryNode(sb, node, level);
-            }
-            else if (node.PropType == DSNodePropertyType.KeyValuePair)
-            {
-                ConvertKeyValuePair(sb, node, level);
-            }
-            else if (node.PropType == DSNodePropertyType.KeyValuePairValue)
-            {
-                ClassNodeToJson(sb, node, level, addKey);
+                DictionaryNodeToJson(sb, node, level);
             }
             else
             {
@@ -156,24 +145,48 @@ namespace DotSerial.Core.JSON
             KeyValuePairToJson(sb, node.Key.ToString(), node.Value, level);
         }
 
-        private static void ConvertKeyValuePair(StringBuilder sb, DSNode node, int level)
+        /// <summary>
+        /// Converts a Dictonary KeyValuePair into json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        private static void DictionaryKeyValuePairToJson(StringBuilder sb, DSNode node, int level)
         {
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+            
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
             if (node.PropType != DSNodePropertyType.KeyValuePair)
             {
                 throw new NotImplementedException();
             }
 
-            // TODO Überarbeiten
-            var keyNode = node.GetChild(0);
-            int key = int.Parse(keyNode.Value);
-
-            var valueNode = node.GetChild(1);
-            valueNode = valueNode.Clone(key);
-            ClassNodeToJson(sb, valueNode, level, true);
+            ClassNodeToJson(sb, node.GetFirstChild(), level, true);
         }
 
-        private static void ConvertDictionaryNode(StringBuilder sb, DSNode node, int level)
+        /// <summary>
+        /// Converts a dictioanry to json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        private static void DictionaryNodeToJson(StringBuilder sb, DSNode node, int level)
         {
+            ///     (node) (Dictionary)
+            ///       |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+            
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
             if (node.PropType != DSNodePropertyType.Dictionary)
             {
                 throw new NotImplementedException();
@@ -195,15 +208,12 @@ namespace DotSerial.Core.JSON
                 StringBuilder sb2 = new();
                 AddObjectStart(sb2, node.Key.ToString(), level + 1);
 
-                List<string> keys = node.GetDicionaryNodeKeys();
-                List<DSNode> values = node.GetDicionaryNodeVales();
-
-                for (int i = 0; i < keys.Count; i++)
+                for (int i = 0; i < node.Count; i++)
                 {
-                    string key = keys[i];
-                    var value = values[i];
+                    string key = node.GetNthChild(i).Key;
+                    var value = node.GetNthChild(i).GetFirstChild().Value;
 
-                    KeyValuePairToJson(sb2, key, value.Value, level + 1);
+                    KeyValuePairToJson(sb2, key, value, level + 1);
                 }
 
                 sb2.Remove(sb2.Length - 1, 1);
@@ -220,7 +230,7 @@ namespace DotSerial.Core.JSON
                 StringBuilder sb2 = new();
                 AddObjectStart(sb2, node.Key.ToString(), level + 1);
 
-                List<DSNode> keyvaluePair = node.GetDictionaryKeyValuePairs();
+                List<DSNode> keyvaluePair = node.GetChildren();
 
                 for (int i = 0; i < keyvaluePair.Count; i++)
                 {
@@ -229,7 +239,7 @@ namespace DotSerial.Core.JSON
                     if (false == node.IsNull)
                     {
                         StringBuilder sb3 = new();
-                        NodeToJson(sb3, keyValuePair, level + 1);
+                        DictionaryKeyValuePairToJson(sb3, keyValuePair, level + 2);
                         sb2.Append(sb3);
                     }
                     else
@@ -256,6 +266,12 @@ namespace DotSerial.Core.JSON
         /// <param name="addKey">True if key should be added to json</param>
         private static void ListNodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ///      (node) (List)
+            ///        |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (Items)
+            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
@@ -326,7 +342,7 @@ namespace DotSerial.Core.JSON
                 foreach (var keyValue in children)
                 {
                     StringBuilder sb3 = new();
-                    NodeToJson(sb3, keyValue.Value, level + 1, false);
+                    NodeToJson(sb3, keyValue, level + 1, false);
                     sb2.Append(sb3);
                 }
 
@@ -350,6 +366,12 @@ namespace DotSerial.Core.JSON
         /// <param name="addKey">True if key should be added to json</param>
         private static void ClassNodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ///      (node) (Class)
+            ///        |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (Properties)
+            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
@@ -396,7 +418,7 @@ namespace DotSerial.Core.JSON
 
                 foreach(var keyValue in children)
                 {
-                    NodeToJson(sb, keyValue.Value, level);
+                    NodeToJson(sb, keyValue, level);
                 }
 
                 // Remove last ','
@@ -494,7 +516,7 @@ namespace DotSerial.Core.JSON
 
             foreach (var keyValue in children)
             {
-                string? val = keyValue.Value.IsNull ? Constants.Null : keyValue.Value.Value;
+                string? val = keyValue.IsNull ? Constants.Null : keyValue.Value;
 
                 sb.Append(Constants.Quote);
                 sb.Append(val);

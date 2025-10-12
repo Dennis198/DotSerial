@@ -52,14 +52,16 @@ namespace DotSerial.Core.JSON
 
             var rootDic = ExtractKeyValuePairsFromJsonObject(sb);
 
-            if (rootDic.Count != 1 && !rootDic.ContainsKey("0"))
+            if (rootDic.Count != 1)
             {
                 throw new NotImplementedException();
             }
 
-            var rootNode = new DSNode(0, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            string rootKey = rootDic.Keys.First();
 
-            StringBuilder childSb = new (rootDic["0"]);
+            var rootNode = new DSNode(rootKey, DSNodeType.InnerNode, DSNodePropertyType.Class);
+
+            StringBuilder childSb = new (rootDic[rootKey]);
             ChildrenToNode(rootNode, childSb);
 
             return rootNode;
@@ -86,16 +88,12 @@ namespace DotSerial.Core.JSON
                 foreach(var keyValuepair in dic)
                 {
                     // Convert key to int key
-                    string strKey = keyValuepair.Key;
-                    if (false == int.TryParse(strKey, out int key))
-                    {
-                        throw new NotImplementedException();
-                    }
+                    string key = keyValuepair.Key;
 
                     string strValue = keyValuepair.Value;
 
                     // Check if key is key for property info
-                    if (strKey == Constants.PropertyTypeKey)
+                    if (key == Constants.PropertyTypeKey)
                     {
                         currPropType = ParsePropertyTypeInfo(strValue);
                         parent.SetPropertyType(currPropType);
@@ -107,7 +105,7 @@ namespace DotSerial.Core.JSON
                     {
                         // TODO SCHAUEN; OB MAN DAS über undefined machen kann?
                         DSNode child = new(key, null, DSNodeType.Leaf, DSNodePropertyType.Null);
-                        parent.AppendChild(key, child);
+                        parent.AppendChild(child);
                         continue;
                     }
                     else if (IsStringJsonObject(strValue))
@@ -118,7 +116,7 @@ namespace DotSerial.Core.JSON
                             DSNode child = new(key, DSNodeType.InnerNode, DSNodePropertyType.Class);
                             StringBuilder sbChild = new(strValue);
                             ChildrenToNode(child, sbChild);
-                            parent.AppendChild(key, child);
+                            parent.AppendChild(child);
                         }
                         else
                         {
@@ -140,7 +138,7 @@ namespace DotSerial.Core.JSON
                     else // Primitive
                     {
                         DSNode child = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.Primitive);
-                        parent.AppendChild(key, child);
+                        parent.AppendChild(child);
                     }
                 }
             }
@@ -171,25 +169,25 @@ namespace DotSerial.Core.JSON
                 foreach (var keyValuepair in dic)
                 {
                     dicId++;
-                    string strKey = keyValuepair.Key;
+                    string key = keyValuepair.Key;
 
-                    DSNode keyValuePairNode = new(dicId, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                    DSNode keyValuePairNodeKey = new(0, strKey, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairKey); ;
+                    DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
+                    //DSNode keyValuePairNodeKey = new(0, strKey, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairKey); ;
                     DSNode keyValuePairNodeValue = null;
 
                     string strValue = keyValuepair.Value;
 
                     if (strValue == Constants.Null)
                     {
-                        keyValuePairNodeValue = new(1, null, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
-                        keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
-                        keyValuePairNode.AppendChild(1, keyValuePairNodeValue);
-                        parent.AppendChild(dicId, keyValuePairNode);
+                        keyValuePairNodeValue = new(key, null, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
+                        //keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
+                        keyValuePairNode.AppendChild(keyValuePairNodeValue);
+                        parent.AppendChild(keyValuePairNode);
                         continue;
                     }
                     else if (IsStringJsonObject(strValue))
                     {
-                        keyValuePairNodeValue = new(1, null, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
+                        keyValuePairNodeValue = new(key, null, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePairValue);
                         StringBuilder sbChild = new(strValue);
                         ChildrenToNode(keyValuePairNodeValue, sbChild);
                         keyValuePairNodeValue.SetPropertyType(DSNodePropertyType.KeyValuePairValue);
@@ -201,12 +199,12 @@ namespace DotSerial.Core.JSON
                     }
                     else // Primitive
                     {
-                        keyValuePairNodeValue = new(1, strValue, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
+                        keyValuePairNodeValue = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                     }
 
-                    keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
-                    keyValuePairNode.AppendChild(1, keyValuePairNodeValue);
-                    parent.AppendChild(dicId, keyValuePairNode);
+                    //keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
+                    keyValuePairNode.AppendChild(keyValuePairNodeValue);
+                    parent.AppendChild(keyValuePairNode);
                 }
             }
             else
@@ -239,8 +237,8 @@ namespace DotSerial.Core.JSON
                 for (int i = 0; i < items.Count; i++)
                 {
                     string? value = items[i] == Constants.Null ? null : items[i];
-                    var child = new DSNode(i, value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
-                    parent.AppendChild(i, child);
+                    var child = new DSNode(i.ToString(), value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                    parent.AppendChild(child);
                 }
             }
             else
@@ -249,10 +247,10 @@ namespace DotSerial.Core.JSON
                 var items = ExtractObjectList(sb);
                 for (int i = 0; i < items.Count; i++)
                 {
-                    DSNode childNode = new(i, DSNodeType.InnerNode, DSNodePropertyType.Class);
+                    DSNode childNode = new(i.ToString(), DSNodeType.InnerNode, DSNodePropertyType.Class);
                     StringBuilder sbChild = new(items[i]);
                     ChildrenToNode(childNode, sbChild);
-                    parent.AppendChild(i, childNode);
+                    parent.AppendChild(childNode);
                 }
             }
         }
