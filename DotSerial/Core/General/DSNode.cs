@@ -1,5 +1,4 @@
-﻿
-using DotSerial.Core.Misc;
+﻿using DotSerial.Core.Misc;
 using System.Diagnostics;
 
 namespace DotSerial.Core.General
@@ -7,13 +6,13 @@ namespace DotSerial.Core.General
     /// <summary>
     /// Node of a tree
     /// </summary>
-    [DebuggerDisplay("Key = {Key}, Value = {Value}, Children = {Count}")]
-    internal class DSNode
+    [DebuggerDisplay("Key = {Key}, Value = {Value}, IsNull = {IsNull}, IsEmpty = {IsEmpty}, Children = {Count}")]
+    internal class DSNode(int key)
     {
         /// <summary>
         /// Key of the node
         /// </summary>
-        public int Key { get; private set; }
+        public int Key { get; private set; } = key;
 
         /// <summary>
         /// Value of the node
@@ -33,7 +32,19 @@ namespace DotSerial.Core.General
         /// <summary>
         /// Children
         /// </summary>
-        public Dictionary<int, DSNode> _children { get; private set; }
+        /// TODO: NUR ALS LISTE IMPLEMENTIEREN vlt wegen Liste nicht möglich?
+        public Dictionary<int, DSNode> Children { get; private set; } = [];
+
+        /// <summary>
+        /// Constuctor
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <param name="type">Type</param>
+        public DSNode(int key, DSNodeType type, DSNodePropertyType propType) : this(key)
+        {
+            Type = type;
+            SetPropertyType(propType);
+        }
 
         /// <summary>
         /// Constructor
@@ -44,19 +55,6 @@ namespace DotSerial.Core.General
         public DSNode(int key, object? value, DSNodeType type, DSNodePropertyType propType) : this(key, type, propType)
         {
             SetValue(value);
-        }
-
-        /// <summary>
-        /// Constuctor
-        /// </summary>
-        /// <param name="key">Key</param>
-        /// <param name="type">Type</param>
-        public DSNode(int key, DSNodeType type, DSNodePropertyType propType)
-        {
-            Key = key;
-            Type = type;
-            PropType = propType;
-            _children = [];
         }
 
         /// <summary>
@@ -77,7 +75,7 @@ namespace DotSerial.Core.General
         {
             get
             {
-                return _children.Count == 0 && Type != DSNodeType.Leaf;
+                return Children.Count == 0 && Type != DSNodeType.Leaf;
             }
         }
 
@@ -88,7 +86,7 @@ namespace DotSerial.Core.General
         {
             get
             {
-                return _children.Count > 0;
+                return Children.Count > 0;
             }
         }
 
@@ -99,13 +97,58 @@ namespace DotSerial.Core.General
         {
             get
             {
-                return _children.Count;
+                return Children.Count;
             }
         }
 
+        /// <summary>
+        /// Changes the property type of the node
+        /// </summary>
+        /// <param name="propType">DSNodePropertyType</param>
+        public void SetPropertyType(DSNodePropertyType propType)
+        {
+            if (Type == DSNodeType.Leaf)
+            {
+                // Make sure type is suitable for node
+                if (propType != DSNodePropertyType.Primitive &&
+                    propType != DSNodePropertyType.Null &&
+                    propType != DSNodePropertyType.KeyValuePairKey &&
+                    propType != DSNodePropertyType.KeyValuePairValue)
+                {
+                    throw new NotImplementedException();
+                }
+
+                // If node is leaf and value is null proptype
+                // will be automatically put to Null.
+                if (Type == DSNodeType.Leaf && Value == null)
+                {
+                    PropType = DSNodePropertyType.Null;
+                }
+                else
+                {
+                    PropType = propType;
+                }
+            }
+            else
+            {
+                // Make sure type is suitable for node
+                if (propType == DSNodePropertyType.Primitive || propType == DSNodePropertyType.Null)
+                {
+                    throw new NotImplementedException();
+                }
+
+                PropType = propType;
+            }
+
+        }
+
+        /// <summary>
+        /// Returns the child nodes of this child
+        /// </summary>
+        /// <returns>Dictionary<int, DSNode></returns>
         public Dictionary<int, DSNode> GetChildren()
         {
-            return _children;
+            return Children;
         }
 
         /// <summary>
@@ -166,130 +209,6 @@ namespace DotSerial.Core.General
             return ConverterMethods.ConvertStringToPrimitive(Value, type);
         }
 
-        public bool IsPrimitiveList()
-        {
-            if (PropType != DSNodePropertyType.List)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (IsNull || IsEmpty || !HasChildren)
-            {
-                return false;
-            }
-
-            var child = _children[0];
-
-            if (child.IsNull || child.Type == DSNodeType.Leaf)
-            {
-                return true;
-            }
-
-            return false;
-            
-        }
-
-        public bool IsPrimitiveDictionary()
-        {
-            if (PropType != DSNodePropertyType.Dictionary)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (IsNull || IsEmpty || !HasChildren)
-            {
-                return false;
-            }
-
-            var keyValuePair = _children[0];
-
-            //if (keyValuePair.IsNull)
-            //{
-            //    return true;
-            //}
-
-            var value = keyValuePair._children[1];
-
-            if (value.IsNull || value.Type == DSNodeType.Leaf)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public List<DSNode> GetDictionaryKeyValuePairs()
-        {
-            if (PropType != DSNodePropertyType.Dictionary)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (IsNull || IsEmpty || !HasChildren)
-            {
-                return [];
-            }
-
-            List<DSNode> result = [];
-
-            foreach (var child in _children)
-            {
-                var tmp = child.Value;
-                DSNode val = tmp;
-                result.Add(val);
-            }
-
-            return result;
-        }
-
-        public List<string> GetDicionaryNodeKeys()
-        {
-            if (PropType != DSNodePropertyType.Dictionary)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (IsNull || IsEmpty || !HasChildren)
-            {
-                return [];
-            }
-
-            List<string> result = [];
-
-            foreach (var child in _children)
-            {
-                var tmp = child.Value.GetChildren();
-                string key = tmp[0].Value;
-                result.Add(key);
-            }
-
-            return result;
-        }
-
-        public List<DSNode> GetDicionaryNodeVales()
-        {
-            if (PropType != DSNodePropertyType.Dictionary)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (IsNull || IsEmpty || !HasChildren)
-            {
-                return [];
-            }
-
-            List<DSNode> result = [];
-
-            foreach (var child in _children)
-            {
-                var tmp = child.Value.GetChildren();
-                DSNode val = tmp[1];
-                result.Add(val);
-            }
-
-            return result;
-        }
-
         /// <summary>
         /// Gets child node
         /// </summary>
@@ -298,12 +217,12 @@ namespace DotSerial.Core.General
         public DSNode GetChild(int key)
         {
             // Key is already taken
-            if (false == _children.ContainsKey(key))
+            if (false == Children.ContainsKey(key))
             {
                 throw new NotImplementedException();
             }
 
-            return _children[key];
+            return Children[key];
         }
 
         /// <summary>
@@ -320,12 +239,12 @@ namespace DotSerial.Core.General
             }
 
             // Key is already taken
-            if (_children.ContainsKey(key))
+            if (Children.ContainsKey(key))
             {
                 throw new NotImplementedException();
             }
 
-            _children.Add(key, node);
+            Children.Add(key, node);
         }
 
         /// <summary>
@@ -334,13 +253,13 @@ namespace DotSerial.Core.General
         /// <returns>Height</returns>
         public int GetHeight()
         {
-            if (_children.Count == 0)
+            if (Children.Count == 0)
             {
                 return 1;
             }
 
             int max = -1;
-            foreach(var tmp in _children)
+            foreach(var tmp in Children)
             {
                 DSNode child = tmp.Value;
                 int tmpHeight = child.GetHeight();
@@ -364,13 +283,136 @@ namespace DotSerial.Core.General
             int key = newKey != -1 ? newKey : this.Key;
             DSNode clone = new DSNode(key, this.Value, this.Type, this.PropType);
             //var ttt = this._children[1];
-            clone._children.Add(key, this._children[0]);
+            clone.Children.Add(key, this.Children[0]);
             return clone;
         }
 
-        public void SetPropType(DSNodePropertyType propType)
+        /// <summary>
+        /// Returns true, if List represents list of primitives
+        /// </summary>
+        /// <returns>Bool</returns>
+        public bool IsPrimitiveList()
         {
-            PropType = propType;
+            if (PropType != DSNodePropertyType.List)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return false;
+            }
+
+            var child = Children[0];
+
+            if (child.IsNull || child.Type == DSNodeType.Leaf)
+            {
+                return true;
+            }
+
+            return false;
+
         }
+
+        /// <summary>
+        /// Returns true, if List represents dictionary of primitives
+        /// </summary>
+        /// <returns>Bool</returns>
+        public bool IsPrimitiveDictionary()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return false;
+            }
+
+            var keyValuePair = Children[0];
+            var value = keyValuePair.Children[1];
+
+            if (value.IsNull || value.Type == DSNodeType.Leaf)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public List<DSNode> GetDictionaryKeyValuePairs()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<DSNode> result = [];
+
+            foreach (var child in Children)
+            {
+                var tmp = child.Value;
+                DSNode val = tmp;
+                result.Add(val);
+            }
+
+            return result;
+        }
+
+        public List<string> GetDicionaryNodeKeys()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<string> result = [];
+
+            foreach (var child in Children)
+            {
+                var tmp = child.Value.GetChildren();
+                string key = tmp[0].Value;
+                result.Add(key);
+            }
+
+            return result;
+        }
+
+        public List<DSNode> GetDicionaryNodeVales()
+        {
+            if (PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (IsNull || IsEmpty || !HasChildren)
+            {
+                return [];
+            }
+
+            List<DSNode> result = [];
+
+            foreach (var child in Children)
+            {
+                var tmp = child.Value.GetChildren();
+                DSNode val = tmp[1];
+                result.Add(val);
+            }
+
+            return result;
+        }
+
+
     }
 }

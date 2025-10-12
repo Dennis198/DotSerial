@@ -1,5 +1,4 @@
-﻿
-namespace DotSerial.Core.General
+﻿namespace DotSerial.Core.General
 {
     internal enum DSNodeType
     {

@@ -69,10 +69,6 @@ namespace DotSerial.Core.General
                     {
                         // Primitive types || String
                         DSNode childNode = new(id, value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
-                        if (value == null)
-                        {
-                            childNode.SetPropType(DSNodePropertyType.Null);
-                        }
                         node.AppendChild(id, childNode);
                     }
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
@@ -287,10 +283,6 @@ namespace DotSerial.Core.General
                     foreach (var str in castedList)
                     {
                         DSNode childNode = new(listID, str, DSNodeType.Leaf, DSNodePropertyType.Primitive);
-                        if (null == str)
-                        {
-                            childNode.SetPropType(DSNodePropertyType.Null);
-                        }
                         node.AppendChild(listID, childNode);
                         listID++;
                     }

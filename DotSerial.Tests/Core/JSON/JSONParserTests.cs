@@ -10,8 +10,8 @@ namespace DotSerial.Tests.Core.JSON
         {
             var tmp = ExampleClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -21,8 +21,8 @@ namespace DotSerial.Tests.Core.JSON
         {
             var tmp = new EmptyClass();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -32,8 +32,8 @@ namespace DotSerial.Tests.Core.JSON
         {
             var tmp = PrimitiveClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -43,8 +43,8 @@ namespace DotSerial.Tests.Core.JSON
         {
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -71,8 +71,8 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.Dic.Add(i, d);
             }
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -83,8 +83,8 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -95,8 +95,8 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = NullClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -112,8 +112,8 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp2
             };
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -155,8 +155,8 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true
             };
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -167,8 +167,8 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, 0);
-            string jsonString = JSONWriter.Convert(node);
-            DSNode result = JSONParser.Convert(jsonString);
+            string jsonString = JSONWriter.ToJsonString(node);
+            DSNode result = JSONParser.ToNode(jsonString);
 
             EqualCheck.AssertClassEqual(node, result);
         }

@@ -1,35 +1,84 @@
-﻿using DotSerial.Core.General;
+﻿#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+using DotSerial.Core.General;
 using System.Text;
 
 namespace DotSerial.Core.JSON
 {
-    // https://github.com/zanders3/json/blob/master/src/JSONParser.cs
+    /// <summary>
+    /// Class can converts a node to a json string
+    /// </summary>
     internal static class JSONWriter
     {
-        private const int IndentationSize = 2;
-        private const char Quote = '"';
-        private const string NullString = "\"null\"";
-
-        public static string Convert(DSNode node)
+        /// <summary>
+        /// Converts a node into an json string.
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <returns>Json string</returns>
+        public static string ToJsonString(DSNode node)
         {
+            ArgumentNullException.ThrowIfNull(node);
+
             StringBuilder sb = new();
-            sb.Append('{');
-            ConvertNode(sb, node, 0);
+
+            // Add First '{'
+            sb.Append(Constants.ObjectStart);
+
+            // Starts the convertion to a json string
+            NodeToJson(sb, node, 0);
+
             sb.Remove(sb.Length - 1, 1);
+
+            // Add Last '}'
+            AddObjectEnd(sb, 0, true);
+
+            // TODO entfernen
             sb.AppendLine();
-            sb.AppendLine("}");
+
             return sb.ToString();
         }
 
-        private static void ConvertNode(StringBuilder sb, DSNode node, int level, bool addKey = true)
+        /// <summary>
+        /// Converts node to json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="addKey">True if key should be added to json</param>
+        private static void NodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
             if (node.Type == DSNodeType.InnerNode || node.Type == DSNodeType.Root)
             {
-                ConvertInnerNode(sb, node, level + 1, addKey);
+                // Inner node to json
+                InnerNodeToJson(sb, node, level + 1, addKey);
             }
             else if (node.Type == DSNodeType.Leaf)
             {
-                ConvertLeafNode(sb, node, level + 1);
+                // Leaf node to json
+                LeafNodeToJson(sb, node, level + 1);
             }
             else
             {
@@ -37,8 +86,19 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void ConvertInnerNode(StringBuilder sb, DSNode node, int level, bool addKey = true)
+        /// <summary>
+        /// Converts an inner node to json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="addKey">True if key should be added to json</param>
+        private static void InnerNodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            // Check if type is leaf => error
             if (node.Type == DSNodeType.Leaf)
             {
                 throw new NotImplementedException();
@@ -46,17 +106,17 @@ namespace DotSerial.Core.JSON
 
             if (node.IsNull)
             {
-                AddKeyValuePair(sb, node.Key.ToString(), null, level);
+                KeyValuePairToJson(sb, node.Key.ToString(), null, level);
                 return;
             }
 
             if (node.PropType == DSNodePropertyType.Class)
             {
-                ConvertClassNode(sb, node, level, addKey);
+                ClassNodeToJson(sb, node, level, addKey);
             }
             else if (node.PropType == DSNodePropertyType.List)
             {
-                ConvertListNode(sb, node, level, addKey);
+                ListNodeToJson(sb, node, level, addKey);
             }
             else if (node.PropType == DSNodePropertyType.Dictionary)
             {
@@ -68,12 +128,32 @@ namespace DotSerial.Core.JSON
             }
             else if (node.PropType == DSNodePropertyType.KeyValuePairValue)
             {
-                ConvertClassNode(sb, node, level, addKey);
+                ClassNodeToJson(sb, node, level, addKey);
             }
             else
             {
                 throw new NotImplementedException();
             }
+        }
+
+        /// <summary>
+        /// Converts an inner node to json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        private static void LeafNodeToJson(StringBuilder sb, DSNode node, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            // Check if type is not leaf => error
+            if (node.Type != DSNodeType.Leaf)
+            {
+                throw new NotImplementedException();
+            }
+
+            KeyValuePairToJson(sb, node.Key.ToString(), node.Value, level);
         }
 
         private static void ConvertKeyValuePair(StringBuilder sb, DSNode node, int level)
@@ -89,7 +169,7 @@ namespace DotSerial.Core.JSON
 
             var valueNode = node.GetChild(1);
             valueNode = valueNode.Clone(key);
-            ConvertClassNode(sb, valueNode, level, true);
+            ClassNodeToJson(sb, valueNode, level, true);
         }
 
         private static void ConvertDictionaryNode(StringBuilder sb, DSNode node, int level)
@@ -123,7 +203,7 @@ namespace DotSerial.Core.JSON
                     string key = keys[i];
                     var value = values[i];
 
-                    AddKeyValuePair(sb2, key, value.Value, level + 1, false);
+                    KeyValuePairToJson(sb2, key, value.Value, level + 1);
                 }
 
                 sb2.Remove(sb2.Length - 1, 1);
@@ -149,7 +229,7 @@ namespace DotSerial.Core.JSON
                     if (false == node.IsNull)
                     {
                         StringBuilder sb3 = new();
-                        ConvertNode(sb3, keyValuePair, level + 1);
+                        NodeToJson(sb3, keyValuePair, level + 1);
                         sb2.Append(sb3);
                     }
                     else
@@ -167,13 +247,25 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void ConvertListNode(StringBuilder sb, DSNode node, int level, bool addKey = true)
+        /// <summary>
+        /// Converts a list node to Json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="addKey">True if key should be added to json</param>
+        private static void ListNodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            // Check if type is list => error
             if (node.PropType != DSNodePropertyType.List)
             {
                 throw new NotImplementedException();
             }
 
+            // Check if list is empty
             if (node.IsEmpty)
             {
                 AddObjectStart(sb, node.Key.ToString(), level);
@@ -182,6 +274,7 @@ namespace DotSerial.Core.JSON
                 return;
             }
 
+            // Check if list contains only primitive types
             if (node.IsPrimitiveList())
             {
                 if (addKey)
@@ -191,13 +284,15 @@ namespace DotSerial.Core.JSON
                 else
                 {
                     sb.AppendLine();
-                    sb.Append(' ', level * IndentationSize);
-                    sb.Append('{');
+                    AddIndentation(sb, level);
+                    sb.Append(Constants.ObjectStart);
                 }
 
+                // Add type info
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
 
-                CreatePrimitiveList(sb, node, level + 1);
+                // List to json
+                PrimitiveListToJson(sb, node, level + 1);
 
                 AddObjectEnd(sb, level);
             }
@@ -210,33 +305,35 @@ namespace DotSerial.Core.JSON
                 else
                 {
                     sb.AppendLine();
-                    sb.Append(' ', level * IndentationSize);
-                    sb.Append('{');
+                    AddIndentation(sb, level);
+                    sb.Append(Constants.ObjectStart);
                 }
 
+                // Add type info
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
+
                 sb.AppendLine();
-                sb.Append(' ', (level + 1) * IndentationSize);
+                AddIndentation(sb, level + 1);
                 sb.AppendFormat("\"{0}\": ", node.Key);                
 
                 var children = node.GetChildren();
 
                 StringBuilder sb2 = new();
                 sb2.AppendLine();
-                sb2.Append(' ', (level + 1) * IndentationSize);
-                sb2.Append('[');
+                AddIndentation(sb2, level + 1);
+                sb2.Append(Constants.ListStart);
 
                 foreach (var keyValue in children)
                 {
                     StringBuilder sb3 = new();
-                    ConvertNode(sb3, keyValue.Value, level + 1, false);
+                    NodeToJson(sb3, keyValue.Value, level + 1, false);
                     sb2.Append(sb3);
                 }
 
                 sb2.Remove(sb2.Length - 1, 1);
                 sb2.AppendLine();
-                sb2.Append(' ', (level + 1) * IndentationSize);
-                sb2.Append(']');
+                AddIndentation(sb2, level + 1);
+                sb2.Append(Constants.ListEnd);
 
 
                 sb.Append(sb2);
@@ -244,8 +341,19 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void ConvertClassNode(StringBuilder sb, DSNode node, int level, bool addKey = true)
+        /// <summary>
+        /// Converts a class node to Json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="addKey">True if key should be added to json</param>
+        private static void ClassNodeToJson(StringBuilder sb, DSNode node, int level, bool addKey = true)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            // Check if type is leaf => error
             if (node.Type == DSNodeType.Leaf)
             {
                 throw new NotImplementedException();
@@ -258,9 +366,13 @@ namespace DotSerial.Core.JSON
             else if (node.IsEmpty)
             {
                 AddObjectStart(sb, node.Key.ToString(), level);
+
+                // Add type info
                 AddTypeInfo(sb, level, DSNodePropertyType.Class);
+
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
+
                 AddObjectEnd(sb, level);
             }
             else
@@ -271,19 +383,20 @@ namespace DotSerial.Core.JSON
                 }
                 else
                 {
-                    sb.Append(' ', level * IndentationSize);
+                    AddIndentation(sb, level);
                     sb.AppendLine();
-                    sb.Append(' ', level * IndentationSize);
+                    AddIndentation(sb, level);
                     sb.Append('{');
                 }
-                    
+
+                // Add type info
                 AddTypeInfo(sb, level, DSNodePropertyType.Class);
 
                 var children = node.GetChildren();
 
                 foreach(var keyValue in children)
                 {
-                    ConvertNode(sb, keyValue.Value, level);
+                    NodeToJson(sb, keyValue.Value, level);
                 }
 
                 // Remove last ','
@@ -293,38 +406,136 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void ConvertLeafNode(StringBuilder sb, DSNode node, int level)
+        /// <summary>
+        /// Adds the node proprty type info to an json object
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="type">Node property type</param>
+        private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
         {
-            if (node.Type != DSNodeType.Leaf)
+            ArgumentNullException.ThrowIfNull(sb);
+
+            string typeName = type switch
+            {
+                DSNodePropertyType.Class => Constants.Class,
+                DSNodePropertyType.List => Constants.List,
+                DSNodePropertyType.Dictionary => Constants.Dictionary,
+                _ => throw new NotImplementedException(),
+            };
+            KeyValuePairToJson(sb, Constants.PropertyTypeKey, typeName, level + 1);
+        }
+
+        /// <summary>
+        /// Helper methode to add object start symbol and to json
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        private static void AddObjectStart(StringBuilder sb, string key, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (string.IsNullOrWhiteSpace(key))
             {
                 throw new NotImplementedException();
             }
 
-            AddKeyValuePair(sb, node.Key.ToString(), node.Value, level);
-        }
-
-        private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
-        {
-            string typeName = type switch
-            {
-                DSNodePropertyType.Class => "Class",
-                DSNodePropertyType.List => "List",
-                DSNodePropertyType.Dictionary => "Dictionary",
-                _ => throw new NotImplementedException(),
-            };
-            AddKeyValuePair(sb, "-1", typeName, level + 1);
-        }
-
-        private static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool allowEmptyClass = true)
-        {
             sb.AppendLine();
             AddIndentation(sb, level);
-            allowEmptyClass = true;
-            if (null == value && allowEmptyClass)
+            sb.AppendFormat("\"{0}\": {{", key);
+        }
+
+        /// <summary>
+        /// Helper methode to add object end symbol and to json
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="isLastObject">True, if object is last object</param>
+        private static void AddObjectEnd(StringBuilder sb, int level, bool isLastObject = false)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            sb.AppendLine();
+            AddIndentation(sb, level);
+
+            if (isLastObject)
+            {
+                sb.Append(Constants.ObjectEnd);
+            }
+            else
+            {
+                sb.Append("},");
+            }
+        }
+
+        /// <summary>
+        /// Converts a primitive list into json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Indentation level</param>
+        private static void PrimitiveListToJson(StringBuilder sb, DSNode node, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            sb.AppendLine();
+            AddIndentation(sb, level);
+
+            // Add Key
+            sb.AppendFormat("\"{0}\": ", node.Key);
+
+            // Get all children of node
+            var children = node.GetChildren();
+
+            sb.Append(Constants.ListStart);
+
+            foreach (var keyValue in children)
+            {
+                string? val = keyValue.Value.IsNull ? Constants.Null : keyValue.Value.Value;
+
+                sb.Append(Constants.Quote);
+                sb.Append(val);
+                sb.Append(Constants.Quote);
+
+                sb.Append(", ");
+            }
+
+            // Remove last ", "
+            sb.Remove(sb.Length - 2, 2);
+
+            sb.Append(Constants.ListEnd);
+        }
+
+        /// <summary>
+        /// Converts a key : value pair to an json string.
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Indentation level</param>
+        private static void KeyValuePairToJson(StringBuilder sb, string key, string? value, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new NotImplementedException();
+            }
+
+            // Make sure key:value has its own line.
+            sb.AppendLine();
+
+            AddIndentation(sb, level);
+
+            if (null == value)
             {
                 sb.AppendFormat("\"{0}\": \"null\",", key);
             }
-            else if (value == string.Empty && allowEmptyClass)
+            else if (value == string.Empty)
             {
                 sb.AppendFormat("\"{0}\": \"{{}}\",", key);
             }
@@ -334,59 +545,21 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        private static void AddObjectStart(StringBuilder sb, string key, int level)
-        {           
-            sb.AppendLine();
-            AddIndentation(sb, level);
-            sb.AppendFormat("\"{0}\": {{", key);
-        }
-
-        private static void AddObjectEnd(StringBuilder sb, int level, bool isLastObject = false)
-        {
-            sb.AppendLine();
-            sb.Append(' ', level * IndentationSize);
-            if (isLastObject)
-            {
-                sb.Append('}');
-            }
-            else
-            {
-                sb.Append("},");
-            }
-        }
-
-        private static void CreatePrimitiveList(StringBuilder sb, DSNode node, int level)
-        {
-            sb.AppendLine();
-            sb.Append(' ', level * IndentationSize);
-            sb.AppendFormat("\"{0}\": ", node.Key);
-
-            var children = node.GetChildren();
-
-            sb.Append('[');
-
-            foreach (var keyValue in children)
-            {
-                sb.Append(Quote);
-                if (keyValue.Value.IsNull)
-                {
-                    sb.Append("null");
-                }
-                else
-                {
-                    sb.Append(keyValue.Value.Value);
-                }
-                sb.Append(Quote);
-                sb.Append(", ");
-            }
-
-            sb.Remove(sb.Length - 2, 2);
-            sb.Append(']');
-        }
-
+        /// <summary>
+        /// Adds identation
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="level">Level</param>
         private static void AddIndentation(StringBuilder sb, int level)
         {
-            sb.Append(' ', level * IndentationSize);
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (level < 0)
+            {
+                throw new NotSupportedException();
+            }
+
+            sb.Append(Constants.WhiteSpace, level * Constants.IndentationSize);
         }
 
     }
