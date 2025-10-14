@@ -38,7 +38,7 @@ namespace DotSerial.Core.JSON
         /// <summary>
         /// Current Version
         /// </summary>
-        private static readonly Version s_Version = new(1, 0, 0); // TODO
+        private static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
@@ -124,12 +124,12 @@ namespace DotSerial.Core.JSON
             }
 
             // Create root element
-            var rootNode = new DSNode(Constants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            var versionNode = new DSNode(Constants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
+            var rootNode = new DSNode(JsonConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            var versionNode = new DSNode(JsonConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
             rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            var node = DSSerialize.Serialize(obj, Constants.MainObjectKey);
+            var node = DSSerialize.Serialize(obj, JsonConstants.MainObjectKey);
             rootNode.AppendChild(node);
 
             var result = new DotSerialJSON
@@ -161,7 +161,7 @@ namespace DotSerial.Core.JSON
 
             // Get root element
             var rootNode = serialObj._document.Tree;
-            var node = rootNode?.GetChild(Constants.MainObjectKey);
+            var node = rootNode?.GetChild(JsonConstants.MainObjectKey);
 
             DSDeserialize.Deserialize(result, node);
 

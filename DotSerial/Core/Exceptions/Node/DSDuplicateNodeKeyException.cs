@@ -20,49 +20,10 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.General;
-
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.Exceptions.Node
 {
-    /// <summary>
-    /// Class which represents an Json document
-    /// </summary>
-    internal class JSONDocument : DSDocument
+    [Serializable()]
+    public class DSDuplicateNodeKeyException(string key) : Exception(string.Format("Duplicate key '{0}'", key))
     {
-        /// <inheritdoc/>
-        public override void Load(string fileName)
-        {
-            if (false == LoadFileContent(fileName, out string content))
-            {
-                throw new NotImplementedException();
-            }
-
-            var root = JSONParser.ToNode(content);
-
-            Tree = root;
-        }
-
-        /// <inheritdoc/>
-        public override void Save(string fileName)
-        {
-            try
-            {
-                if (null == Tree)
-                {
-                    throw new NullReferenceException(nameof(Tree));
-                }
-
-                var content = JSONWriter.ToJsonString(Tree);
-
-                if (false == SaveContentToFile(fileName, content))
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            catch
-            {
-                throw;
-            }          
-        }
     }
 }

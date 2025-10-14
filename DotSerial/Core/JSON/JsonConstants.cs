@@ -1,7 +1,7 @@
 ﻿
 namespace DotSerial.Core.JSON
 {
-    internal static class Constants
+    internal static class JsonConstants
     {
         /// <summary>
         /// XML Object display
@@ -16,19 +16,49 @@ namespace DotSerial.Core.JSON
         /// </summary>
         public const string Version = "version";
 
+        /// <summary>
+        /// Indentation Size
+        /// </summary>
         internal const int IndentationSize = 2;
+        /// <summary>
+        /// Json key for prop type
+        /// </summary>
         internal const string PropertyTypeKey = "type";
+        /// <summary>
+        /// Whitespace
+        /// </summary>
         internal const char WhiteSpace = ' ';
+        /// <summary>
+        /// Quote
+        /// </summary>
         internal const char Quote = '"';
+        /// <summary>
+        /// Json object start char
+        /// </summary>
         internal const char ObjectStart = '{';
+        /// <summary>
+        /// Jsoobject end char
+        /// </summary>
         internal const char ObjectEnd = '}';
+        /// <summary>
+        /// Json list start char
+        /// </summary>
         internal const char ListStart = '[';
+        /// <summary>
+        /// Json list end char
+        /// </summary>
         internal const char ListEnd = ']';
+        /// <summary>
+        /// Json null string
+        /// </summary>
         internal const string Null = "null";
+        /// <summary>
+        /// Json null string with Quotes
+        /// </summary>
         internal const string NullWithQuotes = "\"null\"";
+        /// <summary>
+        /// Coma char
+        /// </summary>
         internal const char Comma = ',';
-        internal const string Class = "Class";
-        internal const string List = "List";
-        internal const string Dictionary = "Dictionary";
     }
 }

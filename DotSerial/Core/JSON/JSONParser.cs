@@ -20,6 +20,8 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions.JSON;
+using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
 using System.Text;
 
@@ -39,7 +41,7 @@ namespace DotSerial.Core.JSON
         {
             if (string.IsNullOrWhiteSpace(jsonString))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             // Removes all whitespaces
@@ -54,7 +56,7 @@ namespace DotSerial.Core.JSON
 
             if (rootDic.Count != 1)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(rootDic.Count, 1);
             }
 
             string rootKey = rootDic.Keys.First();
@@ -92,13 +94,13 @@ namespace DotSerial.Core.JSON
 
                     string strValue = keyValuepair.Value;
 
-                    if (key == Constants.Version)
+                    if (key == JsonConstants.Version)
                     {
                         continue;
                     }
 
                     // Check if key is key for property info
-                    if (key == Constants.PropertyTypeKey)
+                    if (key == JsonConstants.PropertyTypeKey)
                     {
                         currPropType = ParsePropertyTypeInfo(strValue);
                         parent.SetPropertyType(currPropType);
@@ -106,9 +108,8 @@ namespace DotSerial.Core.JSON
                     }
 
                     // Check if value is null
-                    if (strValue == Constants.Null)
+                    if (strValue == JsonConstants.Null)
                     {
-                        // TODO SCHAUEN; OB MAN DAS über undefined machen kann?
                         DSNode child = new(key, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                         parent.AppendChild(child);
                         continue;
@@ -123,17 +124,15 @@ namespace DotSerial.Core.JSON
                             ChildrenToNode(child, sbChild);
                             parent.AppendChild(child);
                         }
-                        else
+                        else if (currPropType == DSNodePropertyType.Dictionary)
                         {
-                            // TODO in else if aufnehemen irgendwie
                             StringBuilder sbChild = new(strValue);
                             DictionaryToNode(parent, sbChild);
                         }
-                    }
-                    else if (currPropType == DSNodePropertyType.Dictionary)
-                    {
-                        //StringBuilder sbChild = new(strValue);
-                        //DictionaryToNode(parent, sbChild);
+                        else
+                        {
+                            throw new DSInvalidNodeTypeException(currPropType);
+                        }
                     }
                     else if (currPropType == DSNodePropertyType.List)
                     {
@@ -149,7 +148,7 @@ namespace DotSerial.Core.JSON
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(sb.ToString());
             }
         }
 
@@ -189,7 +188,7 @@ namespace DotSerial.Core.JSON
 
                     string strValue = keyValuepair.Value;
 
-                    if (strValue == Constants.Null)
+                    if (strValue == JsonConstants.Null)
                     {
                         keyValuePairNodeValue = new(key, null, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                         keyValuePairNode.AppendChild(keyValuePairNodeValue);
@@ -219,7 +218,7 @@ namespace DotSerial.Core.JSON
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(sb.ToString());
             }
         }
 
@@ -242,17 +241,17 @@ namespace DotSerial.Core.JSON
             // Check if type is list => error
             if (parent.PropType != DSNodePropertyType.List)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(parent.PropType);
             }
 
             // Check if list is list of primitive or objects
-            if (sb[1] == Constants.Quote)
+            if (sb[1] == JsonConstants.Quote)
             {
                 // Extract primitive list
                 var items = ExtractPrimitiveList(sb);
                 for (int i = 0; i < items.Count; i++)
                 {
-                    string? value = items[i] == Constants.Null ? null : items[i];
+                    string? value = items[i] == JsonConstants.Null ? null : items[i];
                     var child = new DSNode(i.ToString(), value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
                     parent.AppendChild(child);
                 }
@@ -287,7 +286,7 @@ namespace DotSerial.Core.JSON
                 char c = sb[i];
 
                 // Check if opening symbol is found
-                if (c == Constants.ObjectStart)
+                if (c == JsonConstants.ObjectStart)
                 {
                     // Extract object
                     int j = ExtractJsonObject(sb.ToString(), i);
@@ -322,9 +321,8 @@ namespace DotSerial.Core.JSON
                 char c = sb[i];
 
                 // Check if opening quote is found
-                if (c == Constants.Quote)
+                if (c == JsonConstants.Quote)
                 {
-                    // TODO sb nicht wirklich benötigt
                     StringBuilder sb2 = new ();
 
                     // Extract value
@@ -362,12 +360,11 @@ namespace DotSerial.Core.JSON
                 char c = sb[i];
 
                 // Check if opening quote for the key is found
-                if (c == Constants.Quote && keyFound == false)
+                if (c == JsonConstants.Quote && keyFound == false)
                 {
                     // Quote is opening
                     keyFound = true;
 
-                    // TODO sb nicht wirklich benötigt
                     StringBuilder sb2 = new();
                     i = AppendStringValue(sb2, i, sb.ToString());
 
@@ -384,12 +381,11 @@ namespace DotSerial.Core.JSON
                     continue;
                 }
                 // Check if opening quote for the value is found (primitive)
-                else if (c == Constants.Quote && keyFound == true)
+                else if (c == JsonConstants.Quote && keyFound == true)
                 {
                     // value is found
                     keyFound = false;
 
-                    // TODO sb nicht wirklich benötigt
                     StringBuilder sb2 = new();
                     i = AppendStringValue(sb2, i, sb.ToString());
 
@@ -399,7 +395,7 @@ namespace DotSerial.Core.JSON
                    
                     if (false == result.ContainsKey(founedKey))
                     {
-                        throw new NotImplementedException();
+                        throw new KeyNotFoundException();
                     }
 
                     // Add key
@@ -411,7 +407,7 @@ namespace DotSerial.Core.JSON
                     continue;
                 }
                 // Check if opening symbol for the value is found (json object)
-                else if (c == Constants.ObjectStart && keyFound == true)
+                else if (c == JsonConstants.ObjectStart && keyFound == true)
                 {
                     // value is found
                     keyFound = false;
@@ -421,7 +417,7 @@ namespace DotSerial.Core.JSON
 
                     if (false == result.ContainsKey(founedKey))
                     {
-                        throw new NotImplementedException();
+                        throw new KeyNotFoundException();
                     }
 
                     // Add key
@@ -437,7 +433,7 @@ namespace DotSerial.Core.JSON
                     continue;
                 }
                 // Check if opening symbol for the value is found (json list)
-                else if (c == Constants.ListStart && keyFound == true)
+                else if (c == JsonConstants.ListStart && keyFound == true)
                 {
                     // value is found
                     keyFound = false;
@@ -447,7 +443,7 @@ namespace DotSerial.Core.JSON
 
                     if (false == result.ContainsKey(founedKey))
                     {
-                        throw new NotImplementedException();
+                        throw new KeyNotFoundException();
                     }
                     // Add key
                     int len = j - i + 1;
@@ -475,17 +471,17 @@ namespace DotSerial.Core.JSON
         {
             if (string.IsNullOrWhiteSpace(jsonString))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             if (jsonString.Length < startIndex)
             {
-                throw new NotImplementedException();
+                throw new IndexOutOfRangeException();
             }
 
-            if (jsonString[startIndex] != Constants.ObjectStart)
+            if (jsonString[startIndex] != JsonConstants.ObjectStart)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             int numberNewObjects = 0;
@@ -493,28 +489,27 @@ namespace DotSerial.Core.JSON
             for (int i = startIndex + 1; i < jsonString.Length; i++)
             {
                 char c = jsonString[i];
-                if (c == Constants.ObjectEnd && numberNewObjects == 0)
+                if (c == JsonConstants.ObjectEnd && numberNewObjects == 0)
                 {
                     return i;
                 }
-                else if (c == Constants.ObjectEnd)
+                else if (c == JsonConstants.ObjectEnd)
                 {
                     numberNewObjects--;
                 }
-                else if (c == Constants.ObjectStart)
+                else if (c == JsonConstants.ObjectStart)
                 {
                     numberNewObjects++;
                 }
-                else if (c == Constants.Quote)
+                else if (c == JsonConstants.Quote)
                 {
-                    // TODO sb nicht wirklich benötigt
                     StringBuilder sb = new();
                     i = AppendStringValue(sb, i, jsonString);
                     continue;
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSInvalidJSONException(jsonString);
         }
 
         /// <summary>
@@ -527,17 +522,17 @@ namespace DotSerial.Core.JSON
         {
             if (string.IsNullOrWhiteSpace(jsonString))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             if (jsonString.Length < startIndex)
             {
-                throw new NotImplementedException();
+                throw new IndexOutOfRangeException();
             }
 
-            if (jsonString[startIndex] != Constants.ListStart)
+            if (jsonString[startIndex] != JsonConstants.ListStart)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             int numberNewObjects = 0;
@@ -545,28 +540,27 @@ namespace DotSerial.Core.JSON
             for (int i = startIndex + 1; i < jsonString.Length; i++)
             {
                 char c = jsonString[i];
-                if (c == Constants.ListEnd && numberNewObjects == 0)
+                if (c == JsonConstants.ListEnd && numberNewObjects == 0)
                 {
                     return i;
                 }
-                else if (c == Constants.ListEnd)
+                else if (c == JsonConstants.ListEnd)
                 {
                     numberNewObjects--;
                 }
-                else if (c == Constants.ListStart)
+                else if (c == JsonConstants.ListStart)
                 {
                     numberNewObjects++;
                 }
-                else if (c == Constants.Quote)
+                else if (c == JsonConstants.Quote)
                 {
-                    // TODO sb nicht wirklich benötigt
                     StringBuilder sb = new ();
                     i = AppendStringValue(sb, i, jsonString);
                     continue;
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSInvalidJSONException(jsonString);
         }
 
         /// <summary>
@@ -583,20 +577,20 @@ namespace DotSerial.Core.JSON
 
             if (string.IsNullOrWhiteSpace(jsonString))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
             if (jsonString.Length < startIndex)
             {
-                throw new NotImplementedException();
+                throw new IndexOutOfRangeException();
             }
 
-            if (jsonString[startIndex] != Constants.Quote)
+            if (jsonString[startIndex] != JsonConstants.Quote)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(jsonString);
             }
 
-            sb.Append(Constants.Quote);
+            sb.Append(JsonConstants.Quote);
 
             for (int j = startIndex + 1; j < jsonString.Length; j++)
             {
@@ -607,7 +601,7 @@ namespace DotSerial.Core.JSON
                     sb.Append(jsonString[j + 1]);
                     j++;
                 }
-                if (c2 == Constants.Quote)
+                if (c2 == JsonConstants.Quote)
                 {
                     sb.Append(c2);
                     return j;
@@ -644,7 +638,7 @@ namespace DotSerial.Core.JSON
 
                 // If char is a quoto extract everything
                 // till the closing quote is reached
-                if (c == Constants.Quote)
+                if (c == JsonConstants.Quote)
                 {
                     i = AppendStringValue(sb, i, jsonString);
                     continue;
@@ -676,13 +670,13 @@ namespace DotSerial.Core.JSON
             string tmp = RemoveWhiteSpace(str);
 
             // Check if first element is '{'
-            if (tmp[0] != Constants.ObjectStart)
+            if (tmp[0] != JsonConstants.ObjectStart)
             {
                 return false;
             }
 
             // Check if first element is '}'
-            if (tmp[^1] != Constants.ObjectEnd)
+            if (tmp[^1] != JsonConstants.ObjectEnd)
             {
                 return false;
             }
@@ -706,13 +700,13 @@ namespace DotSerial.Core.JSON
             string tmp = RemoveWhiteSpace(str);
 
             // Check if first element is '['
-            if (tmp[0] != Constants.ListStart)
+            if (tmp[0] != JsonConstants.ListStart)
             {
                 return false;
             }
 
             // Check if last element is ']'
-            if (tmp[^1] != Constants.ListEnd)
+            if (tmp[^1] != JsonConstants.ListEnd)
             {
                 return false;
             }
@@ -730,25 +724,10 @@ namespace DotSerial.Core.JSON
             // Check if value has value
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new NotSupportedException();
+                throw new DSInvalidJSONException(value);
             }
 
-            if (value.Equals(Constants.Class))
-            {
-                return DSNodePropertyType.Class;
-            }
-            else if (value.Equals(Constants.List))
-            {
-                return DSNodePropertyType.List;
-            }
-            else if (value.Equals(Constants.Dictionary))
-            {
-                return DSNodePropertyType.Dictionary;
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            return value.ConvertToDSNodePropertyType();
         }
     }
 }

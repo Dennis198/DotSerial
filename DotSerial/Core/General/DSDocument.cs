@@ -52,21 +52,28 @@ namespace DotSerial.Core.General
         /// <returns>True, if success.</returns>
         internal static bool LoadFileContent(string fileName, out string content)
         {
-            content = string.Empty;
-
-            if (false == File.Exists(fileName))
+            try
             {
-                return false;
+                content = string.Empty;
+
+                if (false == File.Exists(fileName))
+                {
+                    return false;
+                }
+
+                content = File.ReadAllText(fileName);
+
+                if (string.IsNullOrWhiteSpace(content))
+                {
+                    return false;
+                }
+
+                return true;
             }
-
-            content = File.ReadAllText(fileName);
-
-            if (string.IsNullOrWhiteSpace(content))
+            catch
             {
-                return false;
+                throw;
             }
-
-            return true;
         }
 
         /// <summary>
@@ -77,8 +84,16 @@ namespace DotSerial.Core.General
         /// <returns>True, if success.</returns>
         internal static bool SaveContentToFile(string fileName, string content)
         {
-            File.WriteAllText(fileName, content);
-            return true;
+            try
+            {
+                File.WriteAllText(fileName, content);
+                return true;
+            }
+            catch
+            {
+                throw;
+            }
+
         }
     }
 }

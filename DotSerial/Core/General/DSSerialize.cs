@@ -189,7 +189,7 @@ namespace DotSerial.Core.General
                         string? keyString = key.ToString();
                         if (string.IsNullOrWhiteSpace(keyString))
                         {
-                            throw new NotImplementedException();
+                            throw new ArgumentException();
                         }
 
                         // Key
@@ -204,7 +204,7 @@ namespace DotSerial.Core.General
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            throw new DSNotSupportedTypeException(valueType);
                         }
 
                         #endregion

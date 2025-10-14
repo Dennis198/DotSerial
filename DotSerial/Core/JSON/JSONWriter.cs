@@ -20,6 +20,9 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions;
+using DotSerial.Core.Exceptions.JSON;
+using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
 using System.Text;
 
@@ -42,7 +45,7 @@ namespace DotSerial.Core.JSON
             StringBuilder sb = new();
 
             // Add First '{'
-            sb.Append(Constants.ObjectStart);
+            sb.Append(JsonConstants.ObjectStart);
 
             // Starts the convertion to a json string
             NodeToJson(sb, node, 0);
@@ -79,7 +82,7 @@ namespace DotSerial.Core.JSON
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.Type);
             }
         }
 
@@ -98,7 +101,7 @@ namespace DotSerial.Core.JSON
             // Check if type is leaf => error
             if (node.Type == DSNodeType.Leaf)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.Type);
             }
 
             if (node.IsNull)
@@ -121,7 +124,7 @@ namespace DotSerial.Core.JSON
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.PropType);
             }
         }
 
@@ -139,7 +142,7 @@ namespace DotSerial.Core.JSON
             // Check if type is not leaf => error
             if (node.Type != DSNodeType.Leaf)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.Type);
             }
 
             KeyValuePairToJson(sb, node.Key.ToString(), node.Value, level);
@@ -162,7 +165,7 @@ namespace DotSerial.Core.JSON
 
             if (node.PropType != DSNodePropertyType.KeyValuePair)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.PropType);
             }
 
             ClassNodeToJson(sb, node.GetFirstChild(), level, true);
@@ -189,7 +192,7 @@ namespace DotSerial.Core.JSON
 
             if (node.PropType != DSNodePropertyType.Dictionary)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.PropType);
             }
 
             if (node.IsEmpty)
@@ -245,7 +248,7 @@ namespace DotSerial.Core.JSON
                     else
                     {
 
-                        throw new NotImplementedException();
+                        throw new NullReferenceException();
                     }
                 }
 
@@ -278,7 +281,7 @@ namespace DotSerial.Core.JSON
             // Check if type is list => error
             if (node.PropType != DSNodePropertyType.List)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.PropType);
             }
 
             // Check if list is empty
@@ -301,7 +304,7 @@ namespace DotSerial.Core.JSON
                 {
                     sb.AppendLine();
                     AddIndentation(sb, level);
-                    sb.Append(Constants.ObjectStart);
+                    sb.Append(JsonConstants.ObjectStart);
                 }
 
                 // Add type info
@@ -322,7 +325,7 @@ namespace DotSerial.Core.JSON
                 {
                     sb.AppendLine();
                     AddIndentation(sb, level);
-                    sb.Append(Constants.ObjectStart);
+                    sb.Append(JsonConstants.ObjectStart);
                 }
 
                 // Add type info
@@ -337,7 +340,7 @@ namespace DotSerial.Core.JSON
                 StringBuilder sb2 = new();
                 sb2.AppendLine();
                 AddIndentation(sb2, level + 1);
-                sb2.Append(Constants.ListStart);
+                sb2.Append(JsonConstants.ListStart);
 
                 foreach (var keyValue in children)
                 {
@@ -349,7 +352,7 @@ namespace DotSerial.Core.JSON
                 sb2.Remove(sb2.Length - 1, 1);
                 sb2.AppendLine();
                 AddIndentation(sb2, level + 1);
-                sb2.Append(Constants.ListEnd);
+                sb2.Append(JsonConstants.ListEnd);
 
 
                 sb.Append(sb2);
@@ -378,7 +381,7 @@ namespace DotSerial.Core.JSON
             // Check if type is leaf => error
             if (node.Type == DSNodeType.Leaf)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(node.Type);
             }
 
             if (node.IsNull)
@@ -437,15 +440,8 @@ namespace DotSerial.Core.JSON
         private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
         {
             ArgumentNullException.ThrowIfNull(sb);
-
-            string typeName = type switch
-            {
-                DSNodePropertyType.Class => Constants.Class,
-                DSNodePropertyType.List => Constants.List,
-                DSNodePropertyType.Dictionary => Constants.Dictionary,
-                _ => throw new NotImplementedException(),
-            };
-            KeyValuePairToJson(sb, Constants.PropertyTypeKey, typeName, level + 1);
+            string typeName = type.ConvertToString();
+            KeyValuePairToJson(sb, JsonConstants.PropertyTypeKey, typeName, level + 1);
         }
 
         /// <summary>
@@ -461,7 +457,7 @@ namespace DotSerial.Core.JSON
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(key);
             }
 
             sb.AppendLine();
@@ -484,7 +480,7 @@ namespace DotSerial.Core.JSON
 
             if (isLastObject)
             {
-                sb.Append(Constants.ObjectEnd);
+                sb.Append(JsonConstants.ObjectEnd);
             }
             else
             {
@@ -512,15 +508,15 @@ namespace DotSerial.Core.JSON
             // Get all children of node
             var children = node.GetChildren();
 
-            sb.Append(Constants.ListStart);
+            sb.Append(JsonConstants.ListStart);
 
             foreach (var keyValue in children)
             {
-                string? val = keyValue.IsNull ? Constants.Null : keyValue.Value;
+                string? val = keyValue.IsNull ? JsonConstants.Null : keyValue.Value;
 
-                sb.Append(Constants.Quote);
+                sb.Append(JsonConstants.Quote);
                 sb.Append(val);
-                sb.Append(Constants.Quote);
+                sb.Append(JsonConstants.Quote);
 
                 sb.Append(", ");
             }
@@ -528,7 +524,7 @@ namespace DotSerial.Core.JSON
             // Remove last ", "
             sb.Remove(sb.Length - 2, 2);
 
-            sb.Append(Constants.ListEnd);
+            sb.Append(JsonConstants.ListEnd);
         }
 
         /// <summary>
@@ -545,7 +541,7 @@ namespace DotSerial.Core.JSON
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new NotImplementedException();
+                throw new DSInvalidJSONException(key);
             }
 
             // Make sure key:value has its own line.
@@ -578,10 +574,10 @@ namespace DotSerial.Core.JSON
 
             if (level < 0)
             {
-                throw new NotSupportedException();
+                throw new ArgumentException(nameof(level));
             }
 
-            sb.Append(Constants.WhiteSpace, level * Constants.IndentationSize);
+            sb.Append(JsonConstants.WhiteSpace, level * JsonConstants.IndentationSize);
         }
 
     }

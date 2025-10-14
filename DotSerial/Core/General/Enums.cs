@@ -25,7 +25,7 @@ namespace DotSerial.Core.General
     /// <summary>
     /// Type of a node
     /// </summary>
-    internal enum DSNodeType
+    public enum DSNodeType
     {
         Root = 0,
         InnerNode = 1,
@@ -35,7 +35,7 @@ namespace DotSerial.Core.General
     /// <summary>
     /// Type of the object the node represents.
     /// </summary>
-    internal enum DSNodePropertyType
+    public enum DSNodePropertyType
     {
         Undefined = -1,
         Primitive = 0,
@@ -46,4 +46,5 @@ namespace DotSerial.Core.General
         KeyValuePairValue = 5,
         Null = 6
     }
+
 }

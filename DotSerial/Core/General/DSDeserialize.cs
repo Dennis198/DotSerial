@@ -198,21 +198,21 @@ namespace DotSerial.Core.General
                     else if (TypeCheckMethods.IsClass(valueType) || TypeCheckMethods.IsStruct(valueType))
                     {
                         object? tmpInstance = CreateInstanceMethods.CreateInstanceGeneric(valueType);
-                        DSNode ttt = valueNode.GetFirstChild();
-                        if (ttt.IsNull || ttt.IsEmpty)
+                        DSNode classNode = valueNode.GetFirstChild();
+                        if (classNode.IsNull || classNode.IsEmpty)
                         {
                             tmpInstance = null;
                         }
                         else
                         {
-                            Deserialize(tmpInstance, ttt);
+                            Deserialize(tmpInstance, classNode);
                         }
 
                         value = tmpInstance;
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        throw new DSNotSupportedTypeException(valueType);
                     }
 
                     result.Add(key, value);

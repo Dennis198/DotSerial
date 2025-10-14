@@ -22,47 +22,17 @@
 
 using DotSerial.Core.General;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.Exceptions.Node
 {
-    /// <summary>
-    /// Class which represents an Json document
-    /// </summary>
-    internal class JSONDocument : DSDocument
+    [Serializable()]
+    public class DSInvalidNodeTypeException : Exception
     {
-        /// <inheritdoc/>
-        public override void Load(string fileName)
-        {
-            if (false == LoadFileContent(fileName, out string content))
-            {
-                throw new NotImplementedException();
-            }
+        public DSInvalidNodeTypeException() : base("Node type is not supported for this funtion.") { }
+        public DSInvalidNodeTypeException(int children, int expected) : base(string.Format("'{0}' number of children, expected: '{1}'", children, expected)) { }
 
-            var root = JSONParser.ToNode(content);
+        public DSInvalidNodeTypeException(DSNodeType nodeType) : base(string.Format("Node type {0} is not supported for this funtion.", nodeType.ConvertToString())) { }
 
-            Tree = root;
-        }
-
-        /// <inheritdoc/>
-        public override void Save(string fileName)
-        {
-            try
-            {
-                if (null == Tree)
-                {
-                    throw new NullReferenceException(nameof(Tree));
-                }
-
-                var content = JSONWriter.ToJsonString(Tree);
-
-                if (false == SaveContentToFile(fileName, content))
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            catch
-            {
-                throw;
-            }          
-        }
+        public DSInvalidNodeTypeException(string str) : base(string.Format("Node prop type {0} is not supported for this funtion.", str)) { }
+        public DSInvalidNodeTypeException(DSNodePropertyType nodePropType) : base(string.Format("Node prop type {0} is not supported for this funtion.", nodePropType.ConvertToString())) { }
     }
 }

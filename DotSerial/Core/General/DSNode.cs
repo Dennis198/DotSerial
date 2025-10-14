@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.Misc;
 using System.Diagnostics;
 
@@ -154,7 +155,7 @@ namespace DotSerial.Core.General
         {
             if (Children.Count < n + 1)
             {
-                throw new NotImplementedException();
+                throw new IndexOutOfRangeException();
             }
 
             return Children[n];
@@ -173,7 +174,7 @@ namespace DotSerial.Core.General
                     propType != DSNodePropertyType.Null &&
                     propType != DSNodePropertyType.KeyValuePairValue)
                 {
-                    throw new NotImplementedException();
+                    throw new DSInvalidNodeTypeException(propType);
                 }
 
                 // If node is leaf and value is null proptype
@@ -192,7 +193,7 @@ namespace DotSerial.Core.General
                 // Make sure type is suitable for node
                 if (propType == DSNodePropertyType.Primitive || propType == DSNodePropertyType.Null)
                 {
-                    throw new NotImplementedException();
+                    throw new DSInvalidNodeTypeException(propType);
                 }
 
                 PropType = propType;
@@ -253,7 +254,7 @@ namespace DotSerial.Core.General
         {
             if (HasChildren)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(this.Type);
             }
             return ConverterMethods.ConvertStringToPrimitive(Value, type);
         }
@@ -273,20 +274,19 @@ namespace DotSerial.Core.General
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSNodeKeyNotFoundException(key);
         }
 
         /// <summary>
         /// Append child node
         /// </summary>
-        /// <param name="key">Key of the child node</param>
         /// <param name="node">Child node</param>
         public void AppendChild(DSNode node)
         {
             // Can't append child to a leaf node
             if (Value != null)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidNodeTypeException(this.Type);
             }
 
             string key = node.Key;
@@ -296,7 +296,7 @@ namespace DotSerial.Core.General
             {
                 if (child.Key.Equals(key))
                 {
-                    throw new NotImplementedException();
+                    throw new DSDuplicateNodeKeyException(key);
                 }
             }
 
@@ -327,7 +327,7 @@ namespace DotSerial.Core.General
 
             if (max < 1)
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException();
             }
 
             return max + 1;
@@ -341,7 +341,7 @@ namespace DotSerial.Core.General
         {
             if (PropType != DSNodePropertyType.List)
             {
-                throw new NotImplementedException();
+                return false;
             }
 
             if (IsNull || IsEmpty || !HasChildren)
@@ -368,7 +368,7 @@ namespace DotSerial.Core.General
         {
             if (PropType != DSNodePropertyType.Dictionary)
             {
-                throw new NotImplementedException();
+                return false;
             }
 
             if (IsNull || IsEmpty || !HasChildren)
