@@ -35,7 +35,7 @@ namespace DotSerial.Core.JSON
         /// </summary>
         /// <param name="node">Node</param>
         /// <returns>Json string</returns>
-        public static string ToJsonString(DSNode node)
+        public static string ToJsonString(DSNode? node)
         {
             ArgumentNullException.ThrowIfNull(node);
 

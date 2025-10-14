@@ -171,7 +171,6 @@ namespace DotSerial.Core.General
                 // Make sure type is suitable for node
                 if (propType != DSNodePropertyType.Primitive &&
                     propType != DSNodePropertyType.Null &&
-                    propType != DSNodePropertyType.KeyValuePairKey &&
                     propType != DSNodePropertyType.KeyValuePairValue)
                 {
                     throw new NotImplementedException();

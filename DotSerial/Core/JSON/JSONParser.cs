@@ -92,6 +92,11 @@ namespace DotSerial.Core.JSON
 
                     string strValue = keyValuepair.Value;
 
+                    if (key == Constants.Version)
+                    {
+                        continue;
+                    }
+
                     // Check if key is key for property info
                     if (key == Constants.PropertyTypeKey)
                     {
@@ -155,6 +160,14 @@ namespace DotSerial.Core.JSON
         /// <param name="sb">Stringbuilder</param>
         private static void DictionaryToNode(DSNode parent, StringBuilder sb)
         {
+            ///     (node) (Dictionary)
+            ///       |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(parent);
 
@@ -172,7 +185,6 @@ namespace DotSerial.Core.JSON
                     string key = keyValuepair.Key;
 
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                    //DSNode keyValuePairNodeKey = new(0, strKey, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairKey); ;
                     DSNode keyValuePairNodeValue = null;
 
                     string strValue = keyValuepair.Value;
@@ -180,7 +192,6 @@ namespace DotSerial.Core.JSON
                     if (strValue == Constants.Null)
                     {
                         keyValuePairNodeValue = new(key, null, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
-                        //keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
                         keyValuePairNode.AppendChild(keyValuePairNodeValue);
                         parent.AppendChild(keyValuePairNode);
                         continue;
@@ -202,7 +213,6 @@ namespace DotSerial.Core.JSON
                         keyValuePairNodeValue = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                     }
 
-                    //keyValuePairNode.AppendChild(0, keyValuePairNodeKey);
                     keyValuePairNode.AppendChild(keyValuePairNodeValue);
                     parent.AppendChild(keyValuePairNode);
                 }
@@ -220,6 +230,12 @@ namespace DotSerial.Core.JSON
         /// <param name="sb">Stringbuilder</param>
         private static void ListToNode(DSNode parent, StringBuilder sb)
         {
+            ///      (node) (List)
+            ///        |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (Items)
+            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(parent);
 
@@ -587,7 +603,6 @@ namespace DotSerial.Core.JSON
                 var c2 = jsonString[j];
                 if (c2 == '\\')
                 {
-
                     sb.Append(c2);
                     sb.Append(jsonString[j + 1]);
                     j++;
