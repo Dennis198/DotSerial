@@ -313,6 +313,25 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void CreateSerializedObject_DateTimeClass()
+        {
+            // Note: Test is failing because DateTime is not parsed correctly (last digits differ)
+            // Expected: 9999-12-31T23:59:59.0000000
+            // Actual: 9999 - 12 - 31T23: 59:59.9999999
+
+            // Arrange
+            var tmp = DateTimeClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var result = DotSerialJSON.Deserialize<DateTimeClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_IEnumerableClass()
         {
             // Arrange
@@ -476,7 +495,6 @@ namespace DotSerial.Tests.Core.JSON
 
             // Act & Assert
             Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialJSON.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
-
         }
 
         [Fact]
@@ -550,10 +568,14 @@ namespace DotSerial.Tests.Core.JSON
         [Fact]
         public void ToString_Content()
         {
+            // Arrange
             var tmp = ExampleClass.CreateTestDefault();
             var xml = DotSerialJSON.Serialize(tmp);
+
+            // Act
             string result = xml.ToString();
 
+            // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
@@ -561,9 +583,13 @@ namespace DotSerial.Tests.Core.JSON
         [Fact]
         public void ToString_NoContent()
         {
+            // Arrange
             var xml = new DotSerialJSON();
+
+            // Act
             string result = xml.ToString();
 
+            // Assert
             Assert.NotNull(result);
             Assert.True(string.IsNullOrWhiteSpace(result));
         }

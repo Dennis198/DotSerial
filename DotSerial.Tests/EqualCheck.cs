@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Reflection;
 
@@ -106,6 +107,10 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(expectedValue, isValue);
                 }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isPropInfo.PropertyType))
+                {
+                    Assert.Equal(expectedValue, isValue);
+                }
                 else
                 {
                     Assert.Fail();
@@ -171,6 +176,10 @@ namespace DotSerial.Tests
                     AssertClassEqual(targetEnum.Current, isEnum.Current);
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
+                {
+                    Assert.Equal(targetEnum.Current, isEnum.Current);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
                 {
                     Assert.Equal(targetEnum.Current, isEnum.Current);
                 }
@@ -242,6 +251,10 @@ namespace DotSerial.Tests
                     AssertClassEqual(targetList[i], isList[i]);
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
+                {
+                    Assert.Equal(targetList[i], isList[i]);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
                 {
                     Assert.Equal(targetList[i], isList[i]);
                 }
@@ -321,6 +334,10 @@ namespace DotSerial.Tests
                     AssertClassEqual(isDic[keyValue.Key], keyValue.Value);
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isDicValueType))
+                {
+                    Assert.Equal(isDic[keyValue.Key], keyValue.Value);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isDicValueType))
                 {
                     Assert.Equal(isDic[keyValue.Key], keyValue.Value);
                 }

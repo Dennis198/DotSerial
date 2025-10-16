@@ -32,14 +32,22 @@ namespace DotSerial.Core.JSON
         /// <inheritdoc/>
         public override void Load(string fileName)
         {
-            if (false == LoadFileContent(fileName, out string content))
+            try
             {
-                throw new NotImplementedException();
+                if (false == LoadFileContent(fileName, out string content))
+                {
+                    throw new NotSupportedException();
+                }
+
+                var root = JSONParser.ToNode(content);
+
+                Tree = root;
+            }
+            catch
+            {
+                throw;
             }
 
-            var root = JSONParser.ToNode(content);
-
-            Tree = root;
         }
 
         /// <inheritdoc/>
@@ -56,7 +64,7 @@ namespace DotSerial.Core.JSON
 
                 if (false == SaveContentToFile(fileName, content))
                 {
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
                 }
             }
             catch

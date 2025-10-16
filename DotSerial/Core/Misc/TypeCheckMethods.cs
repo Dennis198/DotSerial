@@ -158,6 +158,7 @@ namespace DotSerial.Core.Misc
         /// <returns>True if struct</returns>
         internal static bool IsStruct(Type type)
         {
+            if (IsSpecialParsableObject(type)) return false;
             return (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal));
         }
 
@@ -171,7 +172,33 @@ namespace DotSerial.Core.Misc
             if (type == null) return false;
             if (type == typeof(string)) return false;
             if (HelperMethods.ImplementsIEnumerable(type)) return false;
+            if (IsSpecialParsableObject(type)) return false;
             return type.IsClass;
+        }
+
+        /// <summary>
+        /// Check if type is a special parsable type like DateTime
+        /// </summary>
+        /// <param name="obj">object</param>
+        /// <returns>True, if special parsable type.</returns>
+        internal static bool IsSpecialParsableObject(object? obj)
+        {
+            if (obj == null) return false;
+            return IsSpecialParsableObject(obj.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is a special parsable type like DateTime
+        /// </summary>
+        /// <param name="type">Type</param>
+        /// <returns>True, if special parsable type.</returns>
+        internal static bool IsSpecialParsableObject(Type type)
+        {
+            if (type == typeof(DateTime))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

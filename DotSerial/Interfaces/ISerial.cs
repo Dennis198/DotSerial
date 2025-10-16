@@ -68,7 +68,6 @@ namespace DotSerial.Interfaces
         /// <exception cref="TypeAccessException">Type access.</exception>
         /// <exception cref="NullReferenceException">Null reference.</exception>
         /// <exception cref="NotSupportedException">Not supported.</exception>
-        /// <exception cref="XmlException">Not supported.</exception>
         public abstract static void SaveToFile(string path, T serialObj);
 
         /// <summary>
@@ -84,7 +83,6 @@ namespace DotSerial.Interfaces
         /// <exception cref="TypeAccessException">Type access.</exception>
         /// <exception cref="NullReferenceException">Null reference.</exception>
         /// <exception cref="NotSupportedException">Not supported.</exception>
-        /// <exception cref="XmlException">Not supported.</exception>
         public abstract static void SaveToFile(string path, object? obj);
 
         /// <summary>
@@ -100,7 +98,6 @@ namespace DotSerial.Interfaces
         /// <exception cref="TypeAccessException">Type access.</exception>
         /// <exception cref="NullReferenceException">Null reference.</exception>
         /// <exception cref="NotSupportedException">Not supported.</exception>
-        /// <exception cref="XmlException">Not supported.</exception>
         /// <exception cref="FileNotFoundException">Not supported.</exception>
         public abstract static U LoadFromFile<U>(string path);
 

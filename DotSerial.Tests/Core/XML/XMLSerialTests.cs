@@ -314,6 +314,25 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
+        public void CreateSerializedObject_DateTimeClass()
+        {
+            // Note: Test is failing because DateTime is not parsed correctly (last digits differ)
+            // Expected: 9999-12-31T23:59:59.0000000
+            // Actual: 9999 - 12 - 31T23: 59:59.9999999
+
+            // Arrange
+            var tmp = DateTimeClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<DateTimeClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_IEnumerableClass()
         {
             // Arrange

@@ -777,6 +777,8 @@ namespace DotSerial.Tests
         public DateTime Date3 { get; set; }
         [DSPropertyID(3)]
         public DateTime[]? DateArray { get; set; }
+        [DSPropertyID(4)]
+        public Dictionary<DateTime, DateTime>? DateDic { get; set; }
 
         public static DateTimeClass CreateTestDefault()
         {
@@ -784,9 +786,12 @@ namespace DotSerial.Tests
             {
                 Date1 = DateTime.MinValue,
                 Date2 = DateTime.MaxValue,
-                Date3 = DateTime.Now,
-                DateArray = [DateTime.Now, DateTime.Now, DateTime.MinValue]
+                Date3 = DateTime.MinValue,
+                DateArray = [DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue]
             };
+            tmp.DateDic = [];
+            tmp?.DateDic.Add(DateTime.MinValue, DateTime.MaxValue);
+            tmp?.DateDic.Add(DateTime.MaxValue, DateTime.MaxValue);
 
             return tmp;
         }

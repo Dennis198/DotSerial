@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions;
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.Misc;
 using System.Diagnostics;
@@ -202,50 +203,6 @@ namespace DotSerial.Core.General
         }
 
         /// <summary>
-        /// Sets the value
-        /// </summary>
-        /// <param name="value">Value</param>
-        private void SetValue(object? value)
-        {
-            if (value == null)
-            {
-                Value = null;
-            }
-            else
-            {
-                string strValue;
-                Type type = value.GetType();
-                if (type == typeof(bool))
-                {
-                    int tmp = HelperMethods.BoolToInt((bool)value);
-                    strValue = tmp.ToString();
-                }
-                else if (type.IsEnum)
-                {
-                    strValue = Convert.ToString((int)value);
-                }
-                else if (type == typeof(float))
-                {
-                    strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                }
-                else if (type == typeof(double))
-                {
-                    strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                }
-                else if (type == typeof(decimal))
-                {
-                    strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
-                }
-                else
-                {
-                    strValue = value.ToString();
-                }
-
-                Value = strValue;
-            }
-        }
-
-        /// <summary>
         /// Converts the value of the node to a specific type.
         /// </summary>
         /// <param name="type">Type</param>
@@ -256,7 +213,19 @@ namespace DotSerial.Core.General
             {
                 throw new DSInvalidNodeTypeException(this.Type);
             }
-            return ConverterMethods.ConvertStringToPrimitive(Value, type);
+
+            if (TypeCheckMethods.IsPrimitive(type))
+            {
+                return ConverterMethods.ConvertStringToPrimitive(Value, type);
+            }
+            else if (TypeCheckMethods.IsSpecialParsableObject(type))
+            {
+                return ConverterMethods.ConvertStringToSpecialParsableObject(Value, type);
+            }
+            else
+            {
+                throw new DSNotSupportedTypeException(type);
+            }
         }
 
         /// <summary>
@@ -385,6 +354,50 @@ namespace DotSerial.Core.General
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Sets the value
+        /// </summary>
+        /// <param name="value">Value</param>
+        private void SetValue(object? value)
+        {
+            if (value == null)
+            {
+                Value = null;
+            }
+            else
+            {
+                string strValue;
+                Type type = value.GetType();
+                if (type == typeof(bool))
+                {
+                    int tmp = HelperMethods.BoolToInt((bool)value);
+                    strValue = tmp.ToString();
+                }
+                else if (type.IsEnum)
+                {
+                    strValue = Convert.ToString((int)value);
+                }
+                else if (type == typeof(float))
+                {
+                    strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(double))
+                {
+                    strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(decimal))
+                {
+                    strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    strValue = value.ToString();
+                }
+
+                Value = strValue;
+            }
         }
     }
 }

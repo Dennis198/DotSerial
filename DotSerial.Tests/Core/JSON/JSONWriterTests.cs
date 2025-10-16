@@ -8,36 +8,56 @@ namespace DotSerial.Tests.Core.JSON
         [Fact]
         public void Convert_ExampleClass()
         {
+            // Arrange
             var tmp = ExampleClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.ExampleClassAsJson, result);
         }
 
         [Fact]
         public void Convert_EmptyClass()
         {
+            // Arrange
             var tmp = new EmptyClass();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.EmptyClassAsJson, result);
         }
 
         [Fact]
         public void Convert_PrimitiveClass()
         {
+            // Arrange
             var tmp = PrimitiveClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.PrimitiveClassAsJson, result);
         }
 
         [Fact]
         public void Convert_PrimitiveClassIEnumarable()
         {
+            // Arrange
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.PrimitiveClassIEnumarableAsJson, result);
         }
 
@@ -63,7 +83,11 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.Dic.Add(i, d);
             }
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.IEnumerableClassAsJson, result);
         }
 
@@ -73,7 +97,11 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.DictionaryClassAsJson, result);
         }
 
@@ -83,7 +111,11 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = NullClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.NullClassAsJson, result);
         }
 
@@ -98,7 +130,11 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp2
             };
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.NestedClassAsJson, result);
         }
 
@@ -139,7 +175,11 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true
             };
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.NestedNestedClassAsJson, result);
         }
 
@@ -149,8 +189,26 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
             string result = JSONWriter.ToJsonString(node);
+
+            // Assert
             Assert.Equal(JSONConstants.MultiDimClassIEnumarbleAsJson, result);
+        }
+
+        [Fact]
+        public void Convert_DateTimeClass()
+        {
+            // Arrange
+            var tmp = DateTimeClass.CreateTestDefault();
+            var node = DSSerialize.Serialize(tmp, "0");
+
+            // Act
+            string result = JSONWriter.ToJsonString(node);
+
+            // Assert
+            Assert.Equal(JSONConstants.DateTimeClassAsJson, result);
         }
     }
 }

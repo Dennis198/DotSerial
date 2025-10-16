@@ -126,7 +126,8 @@ namespace DotSerial.Core.Misc
                     }
                     else if (TypeCheckMethods.IsClass(itemType) ||
                              TypeCheckMethods.IsStruct(itemType) ||
-                             TypeCheckMethods.IsPrimitive(itemType))
+                             TypeCheckMethods.IsPrimitive(itemType) ||
+                             TypeCheckMethods.IsSpecialParsableObject(itemType))
                     {
                         if (isArray)
                             castedListResult[i] = castedList[i];
@@ -231,6 +232,11 @@ namespace DotSerial.Core.Misc
                             object? key = ConverterMethods.ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType);
                             castedDicResult.Add(key, keyValuePair.Value);
                         }
+                        else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
+                        {
+                            object? key = ConverterMethods.ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+                            castedDicResult.Add(key, keyValuePair.Value);
+                        }
                         else
                         {
                             throw new DSNotSupportedTypeException(valueType);
@@ -271,6 +277,50 @@ namespace DotSerial.Core.Misc
             }
         }
 
+        /// <summary>
+        /// Convert string to special parsable object
+        /// </summary>
+        /// <param name="str">string</param>
+        /// <param name="type">type</param>
+        /// <returns>Object</returns>
+        internal static object? ConvertStringToSpecialParsableObject(string? str, Type type)
+        {
+            if (str == null)
+            {
+                return null;
+            }
+
+            // Get type
+            Type typeObj = type;
+
+            // Check if primitive type
+            if (!TypeCheckMethods.IsSpecialParsableObject(typeObj))
+            {
+                throw new DSNotSupportedTypeException(typeObj);
+            }
+
+            object? primObj;
+
+            // DateTime
+            if (typeObj == typeof(DateTime))
+            {
+                DateTime tmp = DateTime.Parse(str);
+                primObj = tmp;
+            }
+            else
+            {
+                throw new DSNotSupportedTypeException(typeObj);
+            }
+
+            return primObj;
+        }
+
+        /// <summary>
+        /// Convert string to primitive
+        /// </summary>
+        /// <param name="str">string</param>
+        /// <param name="primType">type</param>
+        /// <returns>Object</returns>
         internal static object? ConvertStringToPrimitive(string? str, Type primType)
         {
             if (str == null)
@@ -382,12 +432,6 @@ namespace DotSerial.Core.Misc
                 // Was casted to int in serialze.
                 bool tmpBool = HelperMethods.IntToBool(tmp);
                 primObj = tmpBool;
-            }
-            // DateTime
-            else if (typeObj == typeof(DateTime))
-            {
-                DateTime tmp = DateTime.Parse(str);
-                primObj = tmp;
             }
             // Enum
             else if (true == typeObj.IsEnum)

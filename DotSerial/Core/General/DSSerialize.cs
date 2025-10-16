@@ -95,7 +95,7 @@ namespace DotSerial.Core.General
 
                     string idString = id.ToString();
 
-                    if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
+                    if (TypeCheckMethods.IsPrimitive(prop.PropertyType) || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         // Primitive types || String
                         DSNode childNode = new(idString, value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
@@ -198,7 +198,8 @@ namespace DotSerial.Core.General
                             throw new NullReferenceException();
                         }
 
-                        if (TypeCheckMethods.IsPrimitive(keyType))
+                        if (TypeCheckMethods.IsPrimitive(keyType) ||
+                            TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
                             keyValuepair = new(keyString, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair);
                         }
@@ -211,7 +212,8 @@ namespace DotSerial.Core.General
 
                         #region Value
 
-                        if (TypeCheckMethods.IsPrimitive(valueType))
+                        if (TypeCheckMethods.IsPrimitive(valueType) ||
+                            TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
                             keyValue = new (keyString, value, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                         }
@@ -324,9 +326,9 @@ namespace DotSerial.Core.General
                     throw new DSNotSupportedTypeException(type);
                 }
 
-                if (TypeCheckMethods.IsPrimitive(type))
+                if (TypeCheckMethods.IsPrimitive(type) || TypeCheckMethods.IsSpecialParsableObject(type))
                 {
-                    // Primitive types
+                    // Primitive types | special parsable objects
                     int listID = 0;
                     foreach (var str in castedList)
                     {

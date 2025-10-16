@@ -73,7 +73,7 @@ namespace DotSerial.Core.General
 
                     DSNode value = node.GetChild(id.ToString());
 
-                    if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
+                    if (TypeCheckMethods.IsPrimitive(prop.PropertyType) || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         object? tmp = value.ConvertValue(prop.PropertyType);
                         prop.SetValue(classObj, tmp);
@@ -180,7 +180,7 @@ namespace DotSerial.Core.General
                     object key = keyValuePairNode.Key;
                     object? value;
 
-                    if (TypeCheckMethods.IsPrimitive(valueType))
+                    if (TypeCheckMethods.IsPrimitive(valueType) || TypeCheckMethods.IsSpecialParsableObject(valueType))
                     {
                         value = valueNode.ConvertValue(valueType);
                     }
@@ -271,7 +271,7 @@ namespace DotSerial.Core.General
                 {
                     result.Add(null);
                 }
-                else if (TypeCheckMethods.IsPrimitive(itemType))
+                else if (TypeCheckMethods.IsPrimitive(itemType) || TypeCheckMethods.IsSpecialParsableObject(itemType))
                 {
                     object? tmp2 = tmp.ConvertValue(itemType);
                     result.Add(tmp2);

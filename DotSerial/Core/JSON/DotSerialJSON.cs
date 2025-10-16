@@ -191,7 +191,7 @@ namespace DotSerial.Core.JSON
                 }
             }
 
-            if (TypeCheckMethods.IsClass(t) || TypeCheckMethods.IsStruct(t))
+            if (TypeCheckMethods.IsClass(t) || TypeCheckMethods.IsStruct(t) || TypeCheckMethods.IsSpecialParsableObject(t))
             {
                 return true;
             }

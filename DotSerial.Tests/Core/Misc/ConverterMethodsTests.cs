@@ -86,5 +86,37 @@ namespace DotSerial.Tests.Core.Misc
             Assert.Equal(enu.GetType(), result.GetType());
             Assert.Equal((int)enu, (int)result);
         }
+
+        [Fact]
+        public void ConvertStringToPrimitive_Int()
+        {
+            // Arrange
+            string str = "1893";
+            int expected = 1893;
+
+            // Act
+            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertStringToPrimitive(str, expected.GetType());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(expected.GetType(), result.GetType());
+            Assert.Equal(expected, (int)result);
+        }
+
+        [Fact]
+        public void ConvertStringToSpecialParsableObject_DateTime()
+        {
+            // Arrange
+            string str = DateTime.Now.ToString();
+            DateTime expected = DateTime.Now;
+
+            // Act
+            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertStringToSpecialParsableObject(str, expected.GetType());
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal(expected.GetType(), result.GetType());
+            Assert.Equal(expected, (DateTime)result);
+        }
     }
 }
