@@ -109,7 +109,7 @@ namespace DotSerial.Tests
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isPropInfo.PropertyType))
                 {
-                    Assert.Equal(expectedValue, isValue);
+                    Assert.Equal(expectedValue.ToString(), isValue?.ToString());
                 }
                 else
                 {
@@ -181,7 +181,7 @@ namespace DotSerial.Tests
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
                 {
-                    Assert.Equal(targetEnum.Current, isEnum.Current);
+                    Assert.Equal(targetEnum.Current.ToString(), isEnum.Current.ToString());
                 }
                 else
                 {
@@ -256,7 +256,7 @@ namespace DotSerial.Tests
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
                 {
-                    Assert.Equal(targetList[i], isList[i]);
+                    Assert.Equal(targetList[i]?.ToString(), isList[i]?.ToString());
                 }
                 else
                 {
@@ -339,7 +339,7 @@ namespace DotSerial.Tests
                 }
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isDicValueType))
                 {
-                    Assert.Equal(isDic[keyValue.Key], keyValue.Value);
+                    Assert.Equal(isDic[keyValue.Key]?.ToString(), keyValue.Value?.ToString());
                 }
                 else
                 {

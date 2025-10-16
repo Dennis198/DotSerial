@@ -28,7 +28,7 @@ namespace DotSerial.Core.JSON
 {
     /// <summary> Serialize and Deserialize an object with Json
     /// </summary>
-    internal class DotSerialJSON : ISerial<DotSerialJSON>
+    public class DotSerialJSON : ISerial<DotSerialJSON>
     {
         /// <summary>
         /// Json Document

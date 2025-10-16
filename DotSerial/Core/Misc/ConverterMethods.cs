@@ -229,13 +229,17 @@ namespace DotSerial.Core.Misc
                                  TypeCheckMethods.IsStruct(valueType) ||
                                  TypeCheckMethods.IsPrimitive(valueType))
                         {
-                            object? key = ConverterMethods.ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType);
+                            object? key = TypeCheckMethods.IsPrimitive(keyType) ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType) : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+#pragma warning disable CS8604
                             castedDicResult.Add(key, keyValuePair.Value);
+#pragma warning restore CS8604
                         }
                         else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            object? key = ConverterMethods.ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+                            object? key = TypeCheckMethods.IsPrimitive(keyType) ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType) : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+#pragma warning disable CS8604
                             castedDicResult.Add(key, keyValuePair.Value);
+#pragma warning restore CS8604
                         }
                         else
                         {

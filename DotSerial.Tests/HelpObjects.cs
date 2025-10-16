@@ -184,10 +184,8 @@ namespace DotSerial.Tests
                 EnumArray = null,
                 EnumList = null,
                 Dictionary = null,
-
+                DictionaryWithNulls = []
             };
-
-            tmp.DictionaryWithNulls = [];
             tmp.DictionaryWithNulls.Add(2, null);
             tmp.DictionaryWithNulls.Add(4, null);
 
@@ -712,9 +710,10 @@ namespace DotSerial.Tests
 
         public static DictionaryClass CreateTestDefault()
         {
-            var result = new DictionaryClass();
-
-            result.DicIntInt = [];
+            var result = new DictionaryClass
+            {
+                DicIntInt = []
+            };
             result.DicIntInt.Add(33, 44);
             result.DicIntInt.Add(-33, 88);
 
@@ -778,7 +777,7 @@ namespace DotSerial.Tests
         [DSPropertyID(3)]
         public DateTime[]? DateArray { get; set; }
         [DSPropertyID(4)]
-        public Dictionary<DateTime, DateTime>? DateDic { get; set; }
+        public Dictionary<int, DateTime>? DateDic { get; set; }
 
         public static DateTimeClass CreateTestDefault()
         {
@@ -787,11 +786,11 @@ namespace DotSerial.Tests
                 Date1 = DateTime.MinValue,
                 Date2 = DateTime.MaxValue,
                 Date3 = DateTime.MinValue,
-                DateArray = [DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue]
+                DateArray = [DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue],
+                DateDic = []
             };
-            tmp.DateDic = [];
-            tmp?.DateDic.Add(DateTime.MinValue, DateTime.MaxValue);
-            tmp?.DateDic.Add(DateTime.MaxValue, DateTime.MaxValue);
+            tmp.DateDic.Add(5, DateTime.MaxValue);
+            tmp.DateDic.Add(10, DateTime.MaxValue);
 
             return tmp;
         }

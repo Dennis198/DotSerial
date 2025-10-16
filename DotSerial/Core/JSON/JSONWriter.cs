@@ -199,6 +199,8 @@ namespace DotSerial.Core.JSON
             {
                 AddObjectStart(sb, node.Key.ToString(), level);
                 AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+                // Remove last ','
+                sb.Remove(sb.Length - 1, 1);
                 AddObjectEnd(sb, level);
                 return;
             }
@@ -289,6 +291,8 @@ namespace DotSerial.Core.JSON
             {
                 AddObjectStart(sb, node.Key.ToString(), level);
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
+                // Remove last ','
+                sb.Remove(sb.Length - 1, 1);
                 AddObjectEnd(sb, level);
                 return;
             }

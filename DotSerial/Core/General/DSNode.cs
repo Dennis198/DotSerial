@@ -250,8 +250,10 @@ namespace DotSerial.Core.General
         /// Append child node
         /// </summary>
         /// <param name="node">Child node</param>
-        public void AppendChild(DSNode node)
+        public void AppendChild(DSNode? node)
         {
+            ArgumentNullException.ThrowIfNull(node);
+
             // Can't append child to a leaf node
             if (Value != null)
             {
@@ -368,7 +370,7 @@ namespace DotSerial.Core.General
             }
             else
             {
-                string strValue;
+                string? strValue;
                 Type type = value.GetType();
                 if (type == typeof(bool))
                 {

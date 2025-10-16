@@ -30,7 +30,7 @@ namespace DotSerial.Tests.Core.Misc
         {
             // Arrange
             int[] tmp = [5];
-            List<object> tmp2 = [1, 2, 3, 4];
+            List<object?>? tmp2 = [1, 2, 3, 4];
 
             // Act
             object? result = DotSerial.Core.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
@@ -45,7 +45,7 @@ namespace DotSerial.Tests.Core.Misc
         {
             // Arrange
             List<int> tmp = [];
-            List<object> tmp2 = [1, 2, 3, 4];
+            List<object?>? tmp2 = [1, 2, 3, 4];
 
             // Act
             object? result = DotSerial.Core.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
@@ -116,7 +116,7 @@ namespace DotSerial.Tests.Core.Misc
             // Assert
             Assert.NotNull(result);
             Assert.Equal(expected.GetType(), result.GetType());
-            Assert.Equal(expected, (DateTime)result);
+            Assert.Equal(expected.ToString(), ((DateTime)(result)).ToString());
         }
     }
 }

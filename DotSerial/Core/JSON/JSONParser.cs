@@ -184,7 +184,7 @@ namespace DotSerial.Core.JSON
                     string key = keyValuepair.Key;
 
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                    DSNode keyValuePairNodeValue = null;
+                    DSNode? keyValuePairNodeValue = null;
 
                     string strValue = keyValuepair.Value;
 

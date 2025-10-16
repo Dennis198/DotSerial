@@ -85,7 +85,7 @@ public int Age { get; set; }
 ---
 
 ## 📌 Notes   
-- Use DotSerialXML for Xml and DotSerialJson for Json.
+- Use DotSerialXML for Xml and DotSerialJSON for Json.
 - Properties without **`DSPropertyID`** are ignored.
 - ID '-1' should not be used.
 - Currently only **XML and Json format** is supported. **YAML** and other formats will be added in the future. 
