@@ -20,21 +20,20 @@
 //SOFTWARE.
 #endregion
 
-using System.Xml;
-using System.Xml.Linq;
+using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Interfaces;
 
-namespace DotSerial.Core.XML
+namespace DotSerial.Core.JSON
 {
-    /// <summary> Serialize and Deserialize an object with System.Xml
+    /// <summary> Serialize and Deserialize an object with Json
     /// </summary>
-    public class DotSerialXML : ISerial<DotSerialXML>
+    public class DotSerialJSON : ISerial<DotSerialJSON>
     {
         /// <summary>
-        /// XML Document
+        /// Json Document
         /// </summary>
-        private XmlDocument? _document;
+        private JSONDocument? _document;
 
         /// <summary>
         /// Current Version
@@ -43,20 +42,20 @@ namespace DotSerial.Core.XML
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
-        {           
+        {
             try
             {
-                var xmlDocument = Serialize(obj);
-                SaveToFile(path, xmlDocument);
+                var document = Serialize(obj);
+                SaveToFile(path, document);
             }
-            catch 
+            catch
             {
                 throw;
             }
         }
 
         /// <inheritdoc/>
-        public static void SaveToFile(string path, DotSerialXML serialObj)
+        public static void SaveToFile(string path, DotSerialJSON serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -72,8 +71,7 @@ namespace DotSerial.Core.XML
 
             try
             {
-                using var fileStream = File.Open(path, FileMode.Create);
-                serialObj._document.Save(fileStream);
+                serialObj._document.Save(path);
             }
             catch
             {
@@ -97,16 +95,13 @@ namespace DotSerial.Core.XML
                     throw new FileNotFoundException(path);
                 }
 
-                XmlDocument xmlDoc = new();
+                JSONDocument jsonDoc = new();
 
-                using (var fileStream = File.OpenRead(path))
-                {
-                    xmlDoc.Load(fileStream);
-                }
+                jsonDoc.Load(path);
 
-                var desObj = new DotSerialXML
+                var desObj = new DotSerialJSON
                 {
-                    _document = xmlDoc
+                    _document = jsonDoc
                 };
 
                 var result = Deserialize<U>(desObj);
@@ -119,7 +114,7 @@ namespace DotSerial.Core.XML
         }
 
         /// <inheritdoc/>
-        public static DotSerialXML Serialize(object? obj)
+        public static DotSerialJSON Serialize(object? obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
@@ -128,30 +123,27 @@ namespace DotSerial.Core.XML
                 throw new NotSupportedException();
             }
 
-            XmlDocument xmlDoc = new();
-            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(new Version(1, 0).ToString(), "utf-8", null);
-            xmlDoc.AppendChild(xmlDecl);
-
             // Create root element
-            XmlElement xnodeRoot = xmlDoc.CreateElement(Constants.DotSerial);
-            xmlDoc.AppendChild(xnodeRoot);
-
-            CreateAttribute(xmlDoc, xnodeRoot, Constants.XmlAttributeVersion, s_Version.ToString());
-            CreateAttribute(xmlDoc, xnodeRoot, Constants.XmlAttributeProducer, "DotSerial");
+            var rootNode = new DSNode(JsonConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            var versionNode = new DSNode(JsonConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
+            rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            DotSerialXMLSerialize.Serialize(obj, xmlDoc, xnodeRoot, Constants.MainObjectID);
+            var node = DSSerialize.Serialize(obj, JsonConstants.MainObjectKey);
+            rootNode.AppendChild(node);
 
-            var result = new DotSerialXML
+            var result = new DotSerialJSON
             {
-                _document = xmlDoc
+                _document = new JSONDocument()
             };
+
+            result._document.Tree = rootNode;
 
             return result;
         }
 
         /// <inheritdoc/>
-        public static U Deserialize<U>(DotSerialXML serialObj)
+        public static U Deserialize<U>(DotSerialJSON serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -168,12 +160,10 @@ namespace DotSerial.Core.XML
             }
 
             // Get root element
-            XmlDocument doc = serialObj._document;
-            XmlNodeList s = doc.GetElementsByTagName(Constants.DotSerial) ?? throw new NullReferenceException();
-            XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
-            XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
+            var rootNode = serialObj._document.Tree;
+            var node = rootNode?.GetChild(JsonConstants.MainObjectKey);
 
-            DotSerialXMLDeserialize.Deserialize(result, rootNode);
+            DSDeserialize.Deserialize(result, node);
 
             return result;
         }
@@ -210,29 +200,6 @@ namespace DotSerial.Core.XML
         }
 
         /// <summary>
-        /// Create XML Attribute
-        /// </summary>
-        /// <param name="xmlDoc">XmlDoc</param>
-        /// <param name="xmlElement">XmlElement</param>
-        /// <param name="name">Name of attribute</param>
-        /// <param name="value">Value of attribute</param>
-        internal static void CreateAttribute(XmlDocument xmlDoc, XmlElement xmlElement, string name, string value)
-        {
-            ArgumentNullException.ThrowIfNull(xmlDoc);
-            ArgumentNullException.ThrowIfNull(xmlElement);
-            ArgumentNullException.ThrowIfNull(value);
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(name);
-            }
-
-            // Create Attribute
-            var xnodeParaID = xmlDoc.CreateAttribute(name);
-            xnodeParaID.InnerText = value;
-            xmlElement.Attributes?.Append(xnodeParaID);
-        }
-
-        /// <summary>
         /// Converts the serialized object to an string.
         /// </summary>
         /// <returns>String</returns>
@@ -245,20 +212,7 @@ namespace DotSerial.Core.XML
 
             try
             {
-                XDocument doc = XDocument.Parse(_document.OuterXml);
-
-                // Add decleration
-                string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
-                // Xml content
-                string xmlString = doc.ToString();
-
-                // Add new line so declaration is seperated in one line
-                result += Environment.NewLine;
-
-                // Add xml content to result
-                result += xmlString;
-
+                string result = JSONWriter.ToJsonString(_document.Tree);
                 return result;
             }
             catch (Exception)

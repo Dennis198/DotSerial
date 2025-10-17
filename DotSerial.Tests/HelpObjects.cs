@@ -20,9 +20,11 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Attributes;
 using System.Collections;
 using System.Collections.ObjectModel;
-using DotSerial.Attributes;
+using System.Globalization;
+using System.Net;
 
 namespace DotSerial.Tests
 {
@@ -160,6 +162,12 @@ namespace DotSerial.Tests
         public TestEnum[]? EnumArray { get; set; }
         [DSPropertyID(13)]
         public List<TestEnum>? EnumList { get; set; }
+        [DSPropertyID(14)]
+        public Dictionary<int, SimpleClass>? Dictionary { get; set; }
+        [DSPropertyID(15)]
+        public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
+        [DSPropertyID(16)]
+        public string? StringAsText { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -179,7 +187,12 @@ namespace DotSerial.Tests
                 StringListWithNulls = [null, null],
                 EnumArray = null,
                 EnumList = null,
+                Dictionary = null,
+                DictionaryWithNulls = [],
+                StringAsText = "null"
             };
+            tmp.DictionaryWithNulls.Add(2, null);
+            tmp.DictionaryWithNulls.Add(4, null);
 
             return tmp;
         }
@@ -472,6 +485,7 @@ namespace DotSerial.Tests
         public List<TestEnum>[]? EnumMix { get; set; }
         [DSPropertyID(23)]
         public List<TestEnum[]>? EnumListMix { get; set; }
+        // TODO Dictionary Testen
 
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
@@ -740,6 +754,51 @@ namespace DotSerial.Tests
         public TestEnum TestEnum1 { get; set; }
         [DSPropertyID(2)]
         public TestEnum TestEnum2 { get; set; }
+        [DSPropertyID(3)]
+        public TestEnum[]? TestEnumArray { get; set; }
+
+        public static EnumClass CreateTestDefault()
+        {
+            var tmp = new EnumClass
+            {
+                TestEnum0 = TestEnum.Fourth,
+                TestEnum1 = TestEnum.Undefined,
+                TestEnum2 = TestEnum.First,
+                TestEnumArray = [TestEnum.Fourth, TestEnum.Fourth, TestEnum.First]
+            };
+
+            return tmp;
+        }
+    }
+
+    public class DateTimeClass()
+    {
+        [DSPropertyID(0)]
+        public DateTime Date1 { get; set; }
+        [DSPropertyID(1)]
+        public DateTime Date2 { get; set; }
+        [DSPropertyID(2)]
+        public DateTime Date3 { get; set; }
+        [DSPropertyID(3)]
+        public DateTime[]? DateArray { get; set; }
+        [DSPropertyID(4)]
+        public Dictionary<int, DateTime>? DateDic { get; set; }
+
+        public static DateTimeClass CreateTestDefault()
+        {
+            var tmp = new DateTimeClass
+            {
+                Date1 = DateTime.MinValue,
+                Date2 = DateTime.MaxValue,
+                Date3 = DateTime.MinValue,
+                DateArray = [DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue],
+                DateDic = []
+            };
+            tmp.DateDic.Add(5, DateTime.MaxValue);
+            tmp.DateDic.Add(10, DateTime.MaxValue);
+
+            return tmp;
+        }
     }
 
     /// <summary>
@@ -812,6 +871,41 @@ namespace DotSerial.Tests
                 TestRecord1 = new TestRecord(5, 3),
                 TestRecord2 = new TestRecord(55, 32),
                 TestRecordArray = [new TestRecord(6, 5), new TestRecord(4, 3), new TestRecord(2, 1)]
+            };
+
+            return tmp;
+        }
+    }
+
+    public class ParsableClass()
+    {
+        [DSPropertyID(0)]
+        public DateTime DateTime0 { get; set; }
+        [DSPropertyID(1)]
+        public Guid Guid0 { get; set; }
+        [DSPropertyID(2)]
+        public TimeSpan TimeSpan0 { get; set; }
+        [DSPropertyID(3)]
+        public Uri? Uri0 { get; set; }
+        [DSPropertyID(4)]
+        public IPAddress? IPAddress0 { get; set; }
+        [DSPropertyID(5)]
+        public Version? Version0 { get; set; }
+        [DSPropertyID(6)]
+
+        public CultureInfo? CultureInfo0 { get; set; }
+
+        public static ParsableClass CreateTestDefault()
+        {
+            var tmp = new ParsableClass
+            {
+                DateTime0 = DateTime.MaxValue,
+                Guid0 = Guid.NewGuid(),
+                TimeSpan0 = TimeSpan.Zero,
+                Uri0 = new Uri("http://www.contoso.com/"),
+                IPAddress0 = IPAddress.Parse("127.0.0.1"),
+                Version0 = new Version(1, 2, 3),
+                CultureInfo0 = new CultureInfo("en-US"),
             };
 
             return tmp;

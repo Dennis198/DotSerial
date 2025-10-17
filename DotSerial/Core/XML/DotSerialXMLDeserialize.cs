@@ -1,5 +1,4 @@
-﻿
-#region License
+﻿#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,6 +19,7 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 //SOFTWARE.
 #endregion
+
 using System.Reflection;
 using System.Xml;
 
@@ -89,10 +89,10 @@ namespace DotSerial.Core.XML
                                 DeserializePrimitive(ref tmp, prop.PropertyType, para);
                                 prop.SetValue(classObj, tmp);
                             }
-                            // DateTime
-                            else if (prop.PropertyType == typeof(DateTime))
+                            else if (TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                             {
-                                DateTime tmp = DateTime.Parse(para.InnerText);
+                                object? tmp = null;
+                                DeserializeSpecialParsableObject(ref tmp, prop.PropertyType, para);
                                 prop.SetValue(classObj, tmp);
                             }
                             else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
@@ -227,6 +227,10 @@ namespace DotSerial.Core.XML
                     {
                         DeserializePrimitive(ref tmp, itemType, node);
                     }
+                    else if (TypeCheckMethods.IsSpecialParsableObject(itemType))
+                    {
+                        DeserializeSpecialParsableObject(ref tmp, itemType, node);
+                    }
                     else if (TypeCheckMethods.IsClass(itemType) ||
                              TypeCheckMethods.IsStruct(itemType))
                     {
@@ -309,41 +313,6 @@ namespace DotSerial.Core.XML
 
                             key = tmpString;
                         }
-                        else if (TypeCheckMethods.IsDictionary(keyType))
-                        {
-                            // If xml text equals NullString
-                            // => Object was null when it was serialzed.
-                            if (keyNodeInner.InnerText.Equals(Constants.NullString))
-                            {
-                                throw new NullReferenceException();
-                            }
-                            var tmpDic = DeserializeDictionary(keyNodeInner.ChildNodes, keyType);
-
-                            if (null == tmpDic)
-                            {
-                                throw new NullReferenceException();
-                            }
-
-                            key = tmpDic;
-                        }
-                        else if (TypeCheckMethods.IsList(keyType) ||
-                                 TypeCheckMethods.IsArray(keyType))
-                        {
-                            // If xml text equals NullString
-                            // => Object was null when it was serialzed.
-                            if (keyNodeInner.InnerText.Equals(Constants.NullString))
-                            {
-                                throw new NullReferenceException();
-                            }
-                            var tmpList = DeserializeList(keyNodeInner.ChildNodes, keyType);
-
-                            if (null == tmpList)
-                            {
-                                throw new NullReferenceException();
-                            }
-
-                            key = tmpList;
-                        }
                         else
                         {
                             object? tmp = CreateInstanceMethods.CreateInstanceGeneric(keyType);
@@ -352,17 +321,9 @@ namespace DotSerial.Core.XML
                             {
                                 DeserializePrimitive(ref tmp, keyType, keyNodeInner);
                             }
-                            else if (TypeCheckMethods.IsClass(keyType) || TypeCheckMethods.IsStruct(keyType))
+                            else if (TypeCheckMethods.IsSpecialParsableObject(keyType))
                             {
-                                if (false == string.IsNullOrWhiteSpace(keyNodeInner.InnerText))
-                                {
-                                    Deserialize(tmp, keyNodeInner);
-                                }
-                                else
-                                {
-                                    tmp = null;
-                                }
-
+                                DeserializeSpecialParsableObject(ref tmp, keyType, keyNodeInner);
                             }
                             else
                             {
@@ -439,6 +400,10 @@ namespace DotSerial.Core.XML
                             if (TypeCheckMethods.IsPrimitive(valueType))
                             {
                                 DeserializePrimitive(ref tmp, valueType, valueNodeInner);
+                            }
+                            else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
+                            {
+                                DeserializeSpecialParsableObject(ref tmp, valueType, valueNodeInner);
                             }
                             else if (TypeCheckMethods.IsClass(valueType) || TypeCheckMethods.IsStruct(valueType))
                             {
@@ -542,128 +507,44 @@ namespace DotSerial.Core.XML
                 throw new NullReferenceException();
             }
 
-            // Char
-            if (typeObj == typeof(char))
-            {
-                char tmp = char.Parse(innerText);
-                primObj = tmp;
-            }
-            // Byte
-            else if (typeObj == typeof(byte))
-            {
-                byte tmp = byte.Parse(innerText);
-                primObj = tmp;
-            }
-            // SByte
-            else if (typeObj == typeof(sbyte))
-            {
-                sbyte tmp = sbyte.Parse(innerText);
-                primObj = tmp;
-            }
-            // Decimal
-            else if (typeObj == typeof(double))
-            {
-                double tmp = double.Parse(innerText);
-                primObj = tmp;
-            }
-            // Float
-            else if (typeObj == typeof(float))
-            {
-                float tmp = float.Parse(innerText);
-                primObj = tmp;
-            }
-            // Double
-            else if (typeObj == typeof(decimal))
-            {
-                decimal tmp = decimal.Parse(innerText);
-                primObj = tmp;
-            }
-            // Int
-            else if (typeObj == typeof(int))
-            {
-                int tmp = int.Parse(innerText);
-                primObj = tmp;
-            }
-            // UInt
-            else if (typeObj == typeof(uint))
-            {
-                uint tmp = uint.Parse(innerText);
-                primObj = tmp;
-            }
-            // NInt
-            else if (typeObj == typeof(nint))
-            {
-                nint tmp = nint.Parse(innerText);
-                primObj = tmp;
-            }
-            // NUInt
-            else if (typeObj == typeof(nuint))
-            {
-                nuint tmp = nuint.Parse(innerText);
-                primObj = tmp;
-            }
-            // Long
-            else if (typeObj == typeof(long))
-            {
-                long tmp = long.Parse(innerText);
-                primObj = tmp;
-            }
-            // ULong
-            else if (typeObj == typeof(ulong))
-            {
-                ulong tmp = ulong.Parse(innerText);
-                primObj = tmp;
-            }
-            // Short
-            else if (typeObj == typeof(short))
-            {
-                short tmp = short.Parse(innerText);
-                primObj = tmp;
-            }
-            // UShort
-            else if (typeObj == typeof(ushort))
-            {
-                ushort tmp = ushort.Parse(innerText);
-                primObj = tmp;
-            }
-            // Boolean
-            else if (typeObj == typeof(bool))
-            {
-                int tmp = int.Parse(innerText);
+            object? tmp = ConverterMethods.ConvertStringToPrimitive(innerText, typeObj);
+            primObj = tmp;
+        }
 
-                // Special case bool
-                // Was casted to int in serialze.
-                bool tmpBool = HelperMethods.IntToBool(tmp);
-                primObj = tmpBool;
-            }
-            // DateTime
-            else if (typeObj == typeof(DateTime))
-            {
-                DateTime tmp = DateTime.Parse(innerText);
-                primObj = tmp;
-            }
-            // Enum
-            else if (true == typeObj.IsEnum)
-            {
-                int tmp = int.Parse(innerText);
-                primObj = tmp;
-            }
-            // String
-            else if (typeObj == typeof(string))
-            {
-                if (innerText.Equals(Constants.NullString))
-                {
-                    primObj = null;
-                }
-                else
-                {
-                    primObj = innerText;
-                }
-            }
-            else
+        /// <summary> 
+        /// Deserialze an speical parsable type
+        /// </summary>
+        /// <param name="primObj">Primitive Object</param>
+        /// <param name="node">XMLNode</param>
+        private static void DeserializeSpecialParsableObject(ref object? primObj, Type primType, XmlNode? node)
+        {
+            ArgumentNullException.ThrowIfNull(primType);
+            ArgumentNullException.ThrowIfNull(node);
+
+            // Get type
+            Type typeObj = primType;
+
+            // Check if primitive type
+            if (!TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {
                 throw new DSNotSupportedTypeException(typeObj);
             }
+
+            if (node.ChildNodes == null || node.ChildNodes.Count != 1)
+            {
+                throw new NotSupportedException();
+            }
+
+            // Get text of xmlnode
+            string? innerText = node.ChildNodes[0]?.InnerText;
+
+            if (null == innerText)
+            {
+                throw new NullReferenceException();
+            }
+
+            object? tmp = ConverterMethods.ConvertStringToSpecialParsableObject(innerText, typeObj);
+            primObj = tmp;
         }
     }
 }
