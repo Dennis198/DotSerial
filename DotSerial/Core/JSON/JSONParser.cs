@@ -92,7 +92,7 @@ namespace DotSerial.Core.JSON
                     // Convert key to int key
                     string key = keyValuepair.Key;
 
-                    string strValue = keyValuepair.Value;
+                    string? strValue = keyValuepair.Value;
 
                     if (key == JsonConstants.Version)
                     {
@@ -108,7 +108,7 @@ namespace DotSerial.Core.JSON
                     }
 
                     // Check if value is null
-                    if (strValue == JsonConstants.Null)
+                    if (strValue == null)
                     {
                         DSNode child = new(key, null, DSNodeType.Leaf, DSNodePropertyType.Null);
                         parent.AppendChild(child);
@@ -186,9 +186,9 @@ namespace DotSerial.Core.JSON
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
                     DSNode? keyValuePairNodeValue = null;
 
-                    string strValue = keyValuepair.Value;
+                    string? strValue = keyValuepair.Value;
 
-                    if (strValue == JsonConstants.Null)
+                    if (strValue == null)
                     {
                         keyValuePairNodeValue = new(key, null, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                         keyValuePairNode.AppendChild(keyValuePairNodeValue);
@@ -245,13 +245,13 @@ namespace DotSerial.Core.JSON
             }
 
             // Check if list is list of primitive or objects
-            if (sb[1] == JsonConstants.Quote)
+            if (sb[1] == JsonConstants.Quote || sb[1] == JsonConstants.N)
             {
                 // Extract primitive list
                 var items = ExtractPrimitiveList(sb);
                 for (int i = 0; i < items.Count; i++)
                 {
-                    string? value = items[i] == JsonConstants.Null ? null : items[i];
+                    string? value = items[i];
                     var child = new DSNode(i.ToString(), value, DSNodeType.Leaf, DSNodePropertyType.Primitive);
                     parent.AppendChild(child);
                 }
@@ -310,11 +310,11 @@ namespace DotSerial.Core.JSON
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>List<string></returns>
-        private static List<string> ExtractPrimitiveList(StringBuilder sb)
+        private static List<string?> ExtractPrimitiveList(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            var result = new List<string>();
+            var result = new List<string?>();
 
             for (int i = 0; i < sb.Length; i++)
             {
@@ -335,6 +335,20 @@ namespace DotSerial.Core.JSON
                     // Add value to result
                     result.Add(sb2.ToString());
                 }
+                else if (c == JsonConstants.N)
+                {
+                    if (i + 3 > sb.Length - 1) throw new DSInvalidJSONException(sb.ToString());
+
+                    i++;
+                    if (sb[i] != JsonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    i++;
+                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    i++;
+                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+
+                    // Add value to result
+                    result.Add(null);
+                }
             }
 
             return result;
@@ -345,11 +359,11 @@ namespace DotSerial.Core.JSON
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Dictionary<string, string></returns>
-        private static Dictionary<string, string> ExtractKeyValuePairsFromJsonObject(StringBuilder sb)
+        private static Dictionary<string, string?> ExtractKeyValuePairsFromJsonObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            var result = new Dictionary<string, string>();
+            var result = new Dictionary<string, string?>();
 
             // Helper vars
             bool keyFound = false;
@@ -405,6 +419,27 @@ namespace DotSerial.Core.JSON
                     founedKey = string.Empty;
 
                     continue;
+                }
+                else if (c == JsonConstants.N && keyFound == true)
+                {
+                    // value is found => null
+                    keyFound = false;
+
+                    if (i + 3 > sb.Length -1) throw new DSInvalidJSONException(sb.ToString());
+
+                    i++;
+                    if (sb[i] != JsonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    i++;
+                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    i++;
+                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+
+                    // Add key
+                    result[founedKey] = null;
+
+                    // Reset found key
+                    founedKey = string.Empty;
+
                 }
                 // Check if opening symbol for the value is found (json object)
                 else if (c == JsonConstants.ObjectStart && keyFound == true)
@@ -659,7 +694,7 @@ namespace DotSerial.Core.JSON
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>True, if is a object</returns>
-        private static bool IsStringJsonObject(string str)
+        private static bool IsStringJsonObject(string? str)
         {
             if (string.IsNullOrWhiteSpace(str))
             {
@@ -719,12 +754,12 @@ namespace DotSerial.Core.JSON
         /// </summary>
         /// <param name="value">string</param>
         /// <returns>DSNodePropertyType</returns>
-        private static DSNodePropertyType ParsePropertyTypeInfo(string value)
+        private static DSNodePropertyType ParsePropertyTypeInfo(string? value)
         {
             // Check if value has value
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new DSInvalidJSONException(value);
+                throw new DSInvalidJSONException();
             }
 
             return value.ConvertToDSNodePropertyType();

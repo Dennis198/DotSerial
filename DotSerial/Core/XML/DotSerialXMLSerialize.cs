@@ -20,12 +20,11 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions;
+using DotSerial.Core.Misc;
 using System.Collections;
 using System.Reflection;
 using System.Xml;
-
-using DotSerial.Core.Misc;
-using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
@@ -471,13 +470,35 @@ namespace DotSerial.Core.XML
 
             if (value != null)
             {
+                string? strValue;
                 Type type = value.GetType();
-                if (null == type)
+                if (type == typeof(bool))
                 {
-                    throw new NullReferenceException();
+                    int tmp = HelperMethods.BoolToInt((bool)value);
+                    strValue = tmp.ToString();
+                }
+                else if (type.IsEnum)
+                {
+                    strValue = Convert.ToString((int)value);
+                }
+                else if (type == typeof(float))
+                {
+                    strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(double))
+                {
+                    strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(decimal))
+                {
+                    strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    strValue = value.ToString();
                 }
 #pragma warning disable CS8601
-                xnodeParameter.InnerText = type.IsEnum ? Convert.ToString((int)value) : value.ToString();
+                xnodeParameter.InnerText = strValue;
 #pragma warning restore CS8601
             }
             else

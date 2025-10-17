@@ -155,6 +155,21 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void CreateSerializedObject_ParsableClass()
+        {
+            // Arrange
+            var tmp = ParsableClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var result = DotSerialJSON.Deserialize<ParsableClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange

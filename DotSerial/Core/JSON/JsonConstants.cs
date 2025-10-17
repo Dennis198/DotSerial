@@ -54,6 +54,18 @@ namespace DotSerial.Core.JSON
         /// </summary>
         internal const char Quote = '"';
         /// <summary>
+        /// N
+        /// </summary>
+        internal const char N = 'n';
+        /// <summary>
+        /// N
+        /// </summary>
+        internal const char U = 'u';
+        /// <summary>
+        /// L
+        /// </summary>
+        internal const char L = 'l';
+        /// <summary>
         /// Json object start char
         /// </summary>
         internal const char ObjectStart = '{';
@@ -73,10 +85,6 @@ namespace DotSerial.Core.JSON
         /// Json null string
         /// </summary>
         internal const string Null = "null";
-        /// <summary>
-        /// Json null string with Quotes
-        /// </summary>
-        internal const string NullWithQuotes = "\"null\"";
         /// <summary>
         /// Coma char
         /// </summary>

@@ -20,7 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.Exceptions;
 using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
@@ -388,11 +387,7 @@ namespace DotSerial.Core.JSON
                 throw new DSInvalidNodeTypeException(node.Type);
             }
 
-            if (node.IsNull)
-            {
-                sb.AppendFormat("\"{0}\": \"null\",", node.Key);
-            }
-            else if (node.IsEmpty)
+             if (node.IsEmpty)
             {
                 AddObjectStart(sb, node.Key.ToString(), level);
 
@@ -518,9 +513,16 @@ namespace DotSerial.Core.JSON
             {
                 string? val = keyValue.IsNull ? JsonConstants.Null : keyValue.Value;
 
-                sb.Append(JsonConstants.Quote);
-                sb.Append(val);
-                sb.Append(JsonConstants.Quote);
+                if (keyValue.IsNull)
+                {
+                    sb.Append(val);
+                }
+                else
+                {
+                    sb.Append(JsonConstants.Quote);
+                    sb.Append(val);
+                    sb.Append(JsonConstants.Quote);
+                }
 
                 sb.Append(", ");
             }
@@ -555,7 +557,7 @@ namespace DotSerial.Core.JSON
 
             if (null == value)
             {
-                sb.AppendFormat("\"{0}\": \"null\",", key);
+                sb.AppendFormat("\"{0}\": null,", key);
             }
             else if (value == string.Empty)
             {

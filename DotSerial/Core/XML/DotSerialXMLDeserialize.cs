@@ -507,122 +507,8 @@ namespace DotSerial.Core.XML
                 throw new NullReferenceException();
             }
 
-            // Char
-            if (typeObj == typeof(char))
-            {
-                char tmp = char.Parse(innerText);
-                primObj = tmp;
-            }
-            // Byte
-            else if (typeObj == typeof(byte))
-            {
-                byte tmp = byte.Parse(innerText);
-                primObj = tmp;
-            }
-            // SByte
-            else if (typeObj == typeof(sbyte))
-            {
-                sbyte tmp = sbyte.Parse(innerText);
-                primObj = tmp;
-            }
-            // Decimal
-            else if (typeObj == typeof(double))
-            {
-                double tmp = double.Parse(innerText);
-                primObj = tmp;
-            }
-            // Float
-            else if (typeObj == typeof(float))
-            {
-                float tmp = float.Parse(innerText);
-                primObj = tmp;
-            }
-            // Double
-            else if (typeObj == typeof(decimal))
-            {
-                decimal tmp = decimal.Parse(innerText);
-                primObj = tmp;
-            }
-            // Int
-            else if (typeObj == typeof(int))
-            {
-                int tmp = int.Parse(innerText);
-                primObj = tmp;
-            }
-            // UInt
-            else if (typeObj == typeof(uint))
-            {
-                uint tmp = uint.Parse(innerText);
-                primObj = tmp;
-            }
-            // NInt
-            else if (typeObj == typeof(nint))
-            {
-                nint tmp = nint.Parse(innerText);
-                primObj = tmp;
-            }
-            // NUInt
-            else if (typeObj == typeof(nuint))
-            {
-                nuint tmp = nuint.Parse(innerText);
-                primObj = tmp;
-            }
-            // Long
-            else if (typeObj == typeof(long))
-            {
-                long tmp = long.Parse(innerText);
-                primObj = tmp;
-            }
-            // ULong
-            else if (typeObj == typeof(ulong))
-            {
-                ulong tmp = ulong.Parse(innerText);
-                primObj = tmp;
-            }
-            // Short
-            else if (typeObj == typeof(short))
-            {
-                short tmp = short.Parse(innerText);
-                primObj = tmp;
-            }
-            // UShort
-            else if (typeObj == typeof(ushort))
-            {
-                ushort tmp = ushort.Parse(innerText);
-                primObj = tmp;
-            }
-            // Boolean
-            else if (typeObj == typeof(bool))
-            {
-                int tmp = int.Parse(innerText);
-
-                // Special case bool
-                // Was casted to int in serialze.
-                bool tmpBool = HelperMethods.IntToBool(tmp);
-                primObj = tmpBool;
-            }
-            // Enum
-            else if (true == typeObj.IsEnum)
-            {
-                int tmp = int.Parse(innerText);
-                primObj = tmp;
-            }
-            // String
-            else if (typeObj == typeof(string))
-            {
-                if (innerText.Equals(Constants.NullString))
-                {
-                    primObj = null;
-                }
-                else
-                {
-                    primObj = innerText;
-                }
-            }
-            else
-            {
-                throw new DSNotSupportedTypeException(typeObj);
-            }
+            object? tmp = ConverterMethods.ConvertStringToPrimitive(innerText, typeObj);
+            primObj = tmp;
         }
 
         /// <summary> 
@@ -657,16 +543,8 @@ namespace DotSerial.Core.XML
                 throw new NullReferenceException();
             }
 
-            // DateTime
-            if (typeObj == typeof(DateTime))
-            {
-                DateTime tmp = DateTime.Parse(innerText);
-                primObj = tmp;
-            }
-            else
-            {
-                throw new DSNotSupportedTypeException(typeObj);
-            }
+            object? tmp = ConverterMethods.ConvertStringToSpecialParsableObject(innerText, typeObj);
+            primObj = tmp;
         }
     }
 }

@@ -6,8 +6,8 @@
     <Parameter id="2" display="SByte">41</Parameter>
     <Parameter id="3" display="Char">d</Parameter>
     <Parameter id="4" display="Decimal">40</Parameter>
-    <Parameter id="5" display="Double">39,9</Parameter>
-    <Parameter id="6" display="Float">38,8</Parameter>
+    <Parameter id="5" display="Double">39.9</Parameter>
+    <Parameter id="6" display="Float">38.8</Parameter>
     <Parameter id="7" display="Int">37</Parameter>
     <Parameter id="8" display="UInt">36</Parameter>
     <Parameter id="9" display="NInt">35</Parameter>

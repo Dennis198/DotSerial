@@ -110,6 +110,22 @@ namespace DotSerial.Tests.Core.General
         }
 
         [Fact]
+        public void CreateSerializedObject_ParsableClass()
+        {
+            // Arrange
+            var tmp = ParsableClass.CreateTestDefault();
+            var result = CreateInstanceMethods.CreateInstanceGeneric<ParsableClass>();
+
+            // Act
+            var node = DSSerialize.Serialize(tmp, "0");
+            DSDeserialize.Deserialize(result, node);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange

@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Support for JSON serialization and deserialization.
 
 ### Fixed
-- Resolved a bug with `DateTime` type handling during serialization.
+- Resolved a bug with parsable objects like `DateTime, TimeSpan, ...` type handling during serialization.
 
 ---
 

@@ -23,6 +23,8 @@
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.XML;
 using System.Collections;
+using System.Globalization;
+using System.Net;
 
 namespace DotSerial.Core.Misc
 {
@@ -309,6 +311,36 @@ namespace DotSerial.Core.Misc
             if (typeObj == typeof(DateTime))
             {
                 DateTime tmp = DateTime.Parse(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(Guid))
+            {
+                Guid tmp = Guid.Parse(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(TimeSpan))
+            {
+                TimeSpan tmp = TimeSpan.Parse(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(Uri))
+            {
+                Uri tmp = new(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(IPAddress))
+            {
+                IPAddress tmp = IPAddress.Parse(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(Version))
+            {
+                Version tmp = Version.Parse(str);
+                primObj = tmp;
+            }
+            else if (type == typeof(CultureInfo))
+            {
+                CultureInfo tmp = new(str);
                 primObj = tmp;
             }
             else

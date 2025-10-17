@@ -21,6 +21,8 @@
 #endregion
 
 using System.Collections;
+using System.Globalization;
+using System.Net;
 
 namespace DotSerial.Core.Misc
 {
@@ -195,6 +197,30 @@ namespace DotSerial.Core.Misc
         internal static bool IsSpecialParsableObject(Type type)
         {
             if (type == typeof(DateTime))
+            {
+                return true;
+            }
+            else if (type == typeof(Guid))
+            {
+                return true;
+            }
+            else if (type == typeof(TimeSpan))
+            {
+                return true;
+            }
+            else if (type == typeof(Uri))
+            {
+                return true;
+            }
+            else if (type == typeof(IPAddress))
+            {
+                return true;
+            }
+            else if (type == typeof(Version))
+            {
+                return true;
+            }
+            else if (type == typeof(CultureInfo))
             {
                 return true;
             }

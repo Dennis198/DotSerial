@@ -23,6 +23,8 @@
 using DotSerial.Attributes;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Globalization;
+using System.Net;
 
 namespace DotSerial.Tests
 {
@@ -164,6 +166,8 @@ namespace DotSerial.Tests
         public Dictionary<int, SimpleClass>? Dictionary { get; set; }
         [DSPropertyID(15)]
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
+        [DSPropertyID(16)]
+        public string? StringAsText { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -184,7 +188,8 @@ namespace DotSerial.Tests
                 EnumArray = null,
                 EnumList = null,
                 Dictionary = null,
-                DictionaryWithNulls = []
+                DictionaryWithNulls = [],
+                StringAsText = "null"
             };
             tmp.DictionaryWithNulls.Add(2, null);
             tmp.DictionaryWithNulls.Add(4, null);
@@ -866,6 +871,41 @@ namespace DotSerial.Tests
                 TestRecord1 = new TestRecord(5, 3),
                 TestRecord2 = new TestRecord(55, 32),
                 TestRecordArray = [new TestRecord(6, 5), new TestRecord(4, 3), new TestRecord(2, 1)]
+            };
+
+            return tmp;
+        }
+    }
+
+    public class ParsableClass()
+    {
+        [DSPropertyID(0)]
+        public DateTime DateTime0 { get; set; }
+        [DSPropertyID(1)]
+        public Guid Guid0 { get; set; }
+        [DSPropertyID(2)]
+        public TimeSpan TimeSpan0 { get; set; }
+        [DSPropertyID(3)]
+        public Uri? Uri0 { get; set; }
+        [DSPropertyID(4)]
+        public IPAddress? IPAddress0 { get; set; }
+        [DSPropertyID(5)]
+        public Version? Version0 { get; set; }
+        [DSPropertyID(6)]
+
+        public CultureInfo? CultureInfo0 { get; set; }
+
+        public static ParsableClass CreateTestDefault()
+        {
+            var tmp = new ParsableClass
+            {
+                DateTime0 = DateTime.MaxValue,
+                Guid0 = Guid.NewGuid(),
+                TimeSpan0 = TimeSpan.Zero,
+                Uri0 = new Uri("http://www.contoso.com/"),
+                IPAddress0 = IPAddress.Parse("127.0.0.1"),
+                Version0 = new Version(1, 2, 3),
+                CultureInfo0 = new CultureInfo("en-US"),
             };
 
             return tmp;
