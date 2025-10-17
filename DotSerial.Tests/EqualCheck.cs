@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using System;
 using System.Collections;
 using System.Reflection;
 
@@ -106,6 +107,10 @@ namespace DotSerial.Tests
                 {
                     Assert.Equal(expectedValue, isValue);
                 }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isPropInfo.PropertyType))
+                {
+                    Assert.Equal(expectedValue.ToString(), isValue?.ToString());
+                }
                 else
                 {
                     Assert.Fail();
@@ -173,6 +178,10 @@ namespace DotSerial.Tests
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
                     Assert.Equal(targetEnum.Current, isEnum.Current);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
+                {
+                    Assert.Equal(targetEnum.Current.ToString(), isEnum.Current.ToString());
                 }
                 else
                 {
@@ -244,6 +253,10 @@ namespace DotSerial.Tests
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isItemType))
                 {
                     Assert.Equal(targetList[i], isList[i]);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isItemType))
+                {
+                    Assert.Equal(targetList[i]?.ToString(), isList[i]?.ToString());
                 }
                 else
                 {
@@ -323,6 +336,10 @@ namespace DotSerial.Tests
                 else if (DotSerial.Core.Misc.TypeCheckMethods.IsPrimitive(isDicValueType))
                 {
                     Assert.Equal(isDic[keyValue.Key], keyValue.Value);
+                }
+                else if (DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(isDicValueType))
+                {
+                    Assert.Equal(isDic[keyValue.Key]?.ToString(), keyValue.Value?.ToString());
                 }
                 else
                 {

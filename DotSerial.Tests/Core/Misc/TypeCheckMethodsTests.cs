@@ -62,6 +62,7 @@ namespace DotSerial.Tests.Core.Misc
         [InlineData(typeof(TestStruct))]
         [InlineData(typeof(TestRecord))]
         [InlineData(typeof(HashSet<int>))]
+        [InlineData(typeof(DateTime))]
         public void IsPrimitive_False(Type t)
         {
             // Act
@@ -633,6 +634,19 @@ namespace DotSerial.Tests.Core.Misc
             Assert.False(result);
         }
 
+        [Fact]
+        public void IsStruct_DateTime_False()
+        {
+            // Arrange
+            DateTime tmp = DateTime.Now;
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsStruct(tmp);
+
+            // Assert
+            Assert.False(result);
+        }
+
         #endregion
 
         #region Class
@@ -736,6 +750,76 @@ namespace DotSerial.Tests.Core.Misc
 
             // Act
             bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsClass_DateTimet_False()
+        {
+            // Arrange
+            DateTime tmp = DateTime.Now;
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsClass(tmp.GetType());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        #endregion
+
+        #region Special Parsable
+
+        [Fact]
+        public void IsSpecialParsableObject_DateTimet_True()
+        {
+            // Arrange
+            DateTime tmp = DateTime.Now;
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(tmp.GetType());
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void IsSpecialParsableObject_Struct_False()
+        {
+            // Arrange
+            TestStruct tmp = new();
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(tmp.GetType());
+
+            // Assert
+            Assert.False(result);
+        }
+
+
+        [Fact]
+        public void IsSpecialParsableObject_Class_False()
+        {
+            // Arrange
+            SimpleClass tmp = new();
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(tmp.GetType());
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void IsSpecialParsableObject_Record_False()
+        {
+            // Arrange
+            TestRecord tmp = new();
+
+            // Act
+            bool result = DotSerial.Core.Misc.TypeCheckMethods.IsSpecialParsableObject(tmp.GetType());
 
             // Assert
             Assert.False(result);

@@ -20,12 +20,11 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Exceptions;
+using DotSerial.Core.Misc;
 using System.Collections;
 using System.Reflection;
 using System.Xml;
-
-using DotSerial.Core.Misc;
-using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.XML
 {
@@ -123,6 +122,11 @@ namespace DotSerial.Core.XML
                         // Class || Struct
                         Serialize(value, xmlDoc, xnodeEntry, id);
                     }
+                    else if (TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
+                    {
+                        // Special parsable
+                        SerializeSpecialParsableObject(value, xmlDoc, xnodeEntry, id, propName);
+                    }
                     else if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                     {
                         // Primitive types || String
@@ -175,6 +179,33 @@ namespace DotSerial.Core.XML
             }
         }
 
+        /// <summary> Serialize Primitive type
+        /// </summary>
+        /// <param name="primObj">Primitive Object</param>
+        /// <param name="xmlDoc">XmlDocument</param>
+        /// <param name="xnode">XmlNode</param>
+        /// <param name="primID">id</param>
+        private static void SerializeSpecialParsableObject(object? primObj, XmlDocument xmlDoc, XmlNode xnode, int primID, string? displayName = null)
+        {
+            if (null == primObj)
+            {
+                // Null
+                AddParaXmlNode(xmlDoc, xnode, primID, primObj);
+                return;
+            }
+
+            // Get tyoe
+            Type typeObj = primObj.GetType();
+
+            // Check if object is a primitive
+            if (false == TypeCheckMethods.IsSpecialParsableObject(typeObj))
+            {
+                throw new DSNotSupportedTypeException(typeObj);
+            }
+
+            AddParaXmlNode(xmlDoc, xnode, primID, primObj, displayName);
+        }
+
         /// <summary>
         /// Serialite dictionary
         /// </summary>
@@ -224,56 +255,9 @@ namespace DotSerial.Core.XML
                         {
                             SerializePrimitive(key, xmlDoc, xnodeKey, 0);
                         }
-                        else if (TypeCheckMethods.IsDictionary(key))
+                        else if (TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
-                            // Dictionary
-
-                            if (key is IEnumerable castedKey)
-                            {
-                                int idInner = 0;
-                                foreach (var str in castedKey)
-                                {
-                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.Dictionary);
-                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                    SerializeDictionary(str, xmlDoc, xnodeVersionInner);
-
-                                    xnodeKey.AppendChild(xnodeVersionInner);
-                                    idInner++;
-                                }
-                            }
-                            else
-                            {
-                                throw new InvalidCastException();
-                            }
-                        }
-                        else if (TypeCheckMethods.IsList(key) ||
-                                 TypeCheckMethods.IsArray(key))
-                        {
-                            // List || Array
-
-                            if (key is IEnumerable castedKey)
-                            {
-                                int idInner = 0;
-                                foreach (var str in castedKey)
-                                {
-                                    var xnodeVersionInner = xmlDoc.CreateElement(Constants.List);
-                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
-                                    SerializeList(str, xmlDoc, xnodeVersionInner);
-
-                                    xnodeKey.AppendChild(xnodeVersionInner);
-                                    idInner++;
-                                }
-                            }
-                            else
-                            {
-                                throw new InvalidCastException();
-                            }
-                        }
-                        else if (TypeCheckMethods.IsClass(keyType) ||
-                                 TypeCheckMethods.IsStruct(keyType))
-                        {
-                            // Class || Struct
-                            Serialize(key, xmlDoc, xnodeKey, 0);
+                            SerializeSpecialParsableObject(key, xmlDoc, xnodeKey, 0);
                         }
                         else
                         {
@@ -291,6 +275,10 @@ namespace DotSerial.Core.XML
                         if (TypeCheckMethods.IsPrimitive(valueType))
                         {
                             SerializePrimitive(value, xmlDoc, xnodeValue, 0);
+                        }
+                        else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
+                        {
+                            SerializeSpecialParsableObject(value, xmlDoc, xnodeValue, 0);
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
                         {
@@ -400,6 +388,17 @@ namespace DotSerial.Core.XML
                         id++;
                     }
                 }
+                else if (TypeCheckMethods.IsSpecialParsableObject(type))
+                {
+                    // special parsable objects
+
+                    int id = 0;
+                    foreach (var str in castedList)
+                    {
+                        SerializeSpecialParsableObject(str, xmlDoc, xnode, id);
+                        id++;
+                    }
+                }
                 else if (TypeCheckMethods.IsDictionary(type))
                 {
                     // Dictionary
@@ -471,13 +470,35 @@ namespace DotSerial.Core.XML
 
             if (value != null)
             {
+                string? strValue;
                 Type type = value.GetType();
-                if (null == type)
+                if (type == typeof(bool))
                 {
-                    throw new NullReferenceException();
+                    int tmp = HelperMethods.BoolToInt((bool)value);
+                    strValue = tmp.ToString();
+                }
+                else if (type.IsEnum)
+                {
+                    strValue = Convert.ToString((int)value);
+                }
+                else if (type == typeof(float))
+                {
+                    strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(double))
+                {
+                    strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else if (type == typeof(decimal))
+                {
+                    strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    strValue = value.ToString();
                 }
 #pragma warning disable CS8601
-                xnodeParameter.InnerText = type.IsEnum ? Convert.ToString((int)value) : value.ToString();
+                xnodeParameter.InnerText = strValue;
 #pragma warning restore CS8601
             }
             else
