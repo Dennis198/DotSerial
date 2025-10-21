@@ -82,7 +82,7 @@ namespace DotSerial.Core.YAML
             }
             else if (node.PropType == DSNodePropertyType.Dictionary)
             {
-                // DictionaryNodeToJson(sb, node, level);
+                DictionaryNodeToJson(sb, node, level);
             }
             else
             {
@@ -195,7 +195,7 @@ namespace DotSerial.Core.YAML
                 if (false == string.IsNullOrWhiteSpace(prefix))
                 {
                     level++;
-                }                
+                }
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
                 return;
             }
@@ -250,7 +250,7 @@ namespace DotSerial.Core.YAML
 
                 sb.AppendLine();
                 AddIndentation(sb, level + 1);
-                sb.AppendFormat("{0}: ", node.Key);
+                sb.AppendFormat("\"{0}\": ", node.Key);
 
                 var children = node.GetChildren();
 
@@ -275,7 +275,134 @@ namespace DotSerial.Core.YAML
                 sb.Append(sb2);
                 // AddObjectEnd(sb, level);
             }
-        }        
+        }
+
+        /// <summary>
+        /// Converts a dictioanry to json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        private static void DictionaryNodeToJson(StringBuilder sb, DSNode node, int level, string? prefix = null)
+        {
+            ///     (node) (Dictionary)
+            ///       |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            if (node.PropType != DSNodePropertyType.Dictionary)
+            {
+                throw new DSInvalidNodeTypeException(node.PropType);
+            }
+
+            if (node.IsEmpty)
+            {
+                AddObjectStart(sb, node.Key.ToString(), level, prefix);
+                if (false == string.IsNullOrWhiteSpace(prefix))
+                {
+                    level++;
+                }
+                AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+                return;
+            }
+
+            if (node.IsPrimitiveDictionary())
+            {
+                AddObjectStart(sb, node.Key.ToString(), level, prefix);
+
+                if (false == string.IsNullOrWhiteSpace(prefix))
+                {
+                    level++;
+                }
+
+                AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+
+                StringBuilder sb2 = new();
+                AddObjectStart(sb2, node.Key.ToString(), level + 1, prefix);
+
+                for (int i = 0; i < node.Count; i++)
+                {
+                    string key = node.GetNthChild(i).Key;
+                    var value = node.GetNthChild(i).GetFirstChild().Value;
+
+                    KeyValuePairToYaml(sb2, key, value, level + 2);
+                }
+
+                // sb2.Remove(sb2.Length - 1, 1);
+                // AddObjectEnd(sb2, level + 1, true);
+
+                sb.Append(sb2);
+                // AddObjectEnd(sb, level);
+            }
+            else
+            {
+                AddObjectStart(sb, node.Key.ToString(), level, prefix);
+
+                if (false == string.IsNullOrWhiteSpace(prefix))
+                {
+                    level++;
+                }
+
+                AddTypeInfo(sb, level, DSNodePropertyType.Dictionary);
+
+                StringBuilder sb2 = new();
+                AddObjectStart(sb2, node.Key.ToString(), level + 1, prefix);
+
+                List<DSNode> keyvaluePair = node.GetChildren();
+
+                for (int i = 0; i < keyvaluePair.Count; i++)
+                {
+                    var keyValuePair = keyvaluePair[i];
+
+                    if (false == node.IsNull)
+                    {
+                        StringBuilder sb3 = new();
+                        DictionaryKeyValuePairToJson(sb3, keyValuePair, level + 2);
+                        sb2.Append(sb3);
+                    }
+                    else
+                    {
+
+                        throw new NullReferenceException();
+                    }
+                }
+
+                // sb2.Remove(sb2.Length - 1, 1);
+                // AddObjectEnd(sb2, level + 1, true);
+
+                sb.Append(sb2);
+                // AddObjectEnd(sb, level);
+            }
+        }       
+
+        /// <summary>
+        /// Converts a Dictonary KeyValuePair into json
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        private static void DictionaryKeyValuePairToJson(StringBuilder sb, DSNode node, int level)
+        {
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+            
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            if (node.PropType != DSNodePropertyType.KeyValuePair)
+            {
+                throw new DSInvalidNodeTypeException(node.PropType);
+            }
+
+            ClassNodeToYaml(sb, node.GetFirstChild(), level);
+        }            
         
         /// <summary>
         /// Converts a primitive list into json
@@ -292,7 +419,7 @@ namespace DotSerial.Core.YAML
             AddIndentation(sb, level);
 
             // Add Key
-            sb.AppendFormat("{0}: ", node.Key);
+            sb.AppendFormat("\"{0}\": ", node.Key);
             sb.AppendLine();
 
             // Get all children of node
@@ -304,18 +431,17 @@ namespace DotSerial.Core.YAML
             {
                 string? val = keyValue.IsNull ? "null" : keyValue.Value;
 
-                // if (keyValue.IsNull)
-                // {
-                //     sb.Append(val);
-                // }
-                // else
-                // {
-                //     sb.Append(JsonConstants.Quote);
-                //     sb.Append(val);
-                //     sb.Append(JsonConstants.Quote);
-                // }
-                AddIndentation(sb, level + 1);
-                sb.AppendFormat("- \"{0}\"", val);
+                if (keyValue.IsNull)
+                {
+                    AddIndentation(sb, level + 1);
+                    sb.Append("- null");
+                }
+                else
+                {
+                    AddIndentation(sb, level + 1);
+                    sb.AppendFormat("- \"{0}\"", val);
+                }
+
 
                 // sb.Append(", ");
                 sb.AppendLine();
@@ -343,11 +469,11 @@ namespace DotSerial.Core.YAML
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("{0}:", key);
+                sb.AppendFormat("\"{0}\":", key);
             }
             else
             {
-                sb.AppendFormat("{0} {1}:", prefix, key);
+                sb.AppendFormat("{0} \"{1}\":", prefix, key);
             }
             
         }        
@@ -370,15 +496,15 @@ namespace DotSerial.Core.YAML
 
             if (null == value)
             {
-                sb.AppendFormat("{0}: null", key);
+                sb.AppendFormat("\"{0}\": null", key);
             }
             else if (value == string.Empty)
             {
-                sb.AppendFormat("{0}: \"{{}}\"", key);
+                sb.AppendFormat("\"{0}\": \"{{}}\"", key);
             }
             else
             {
-                sb.AppendFormat("{0}: \"{1}\"", key, value);
+                sb.AppendFormat("\"{0}\": \"{1}\"", key, value);
             }
         }
         

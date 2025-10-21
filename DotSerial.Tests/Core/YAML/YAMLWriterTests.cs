@@ -16,7 +16,7 @@ namespace DotSerial.Tests.Core.YAML
             string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            Assert.Equal(YAMLConstants.ExampleClassasYaml, result);
+            Assert.Equal(YAMLConstants.ExampleClassAsYaml, result);
         }
 
         [Fact]
