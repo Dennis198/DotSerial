@@ -250,7 +250,7 @@ namespace DotSerial.Core.YAML
 
                 sb.AppendLine();
                 AddIndentation(sb, level + 1);
-                sb.AppendFormat("\"{0}\": ", node.Key);
+                sb.AppendFormat("\"{0}\":", node.Key);
 
                 var children = node.GetChildren();
 
@@ -419,7 +419,7 @@ namespace DotSerial.Core.YAML
             AddIndentation(sb, level);
 
             // Add Key
-            sb.AppendFormat("\"{0}\": ", node.Key);
+            sb.AppendFormat("\"{0}\":", node.Key);
             sb.AppendLine();
 
             // Get all children of node

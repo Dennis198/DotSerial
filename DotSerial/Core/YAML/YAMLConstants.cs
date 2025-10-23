@@ -17,6 +17,22 @@ namespace DotSerial.Core.YAML
         /// <summary>
         /// Json key for prop type
         /// </summary>
-        internal const string PropertyTypeKey = "type";        
+        internal const string PropertyTypeKey = "type";
+        /// <summary>
+        /// Version
+        /// </summary>
+        public const string Version = "version"; 
+        /// <summary>
+        /// N
+        /// </summary>
+        internal const char N = 'n';
+        /// <summary>
+        /// N
+        /// </summary>
+        internal const char U = 'u';
+        /// <summary>
+        /// L
+        /// </summary>
+        internal const char L = 'l';    
     }
 }

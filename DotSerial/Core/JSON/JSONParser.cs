@@ -102,6 +102,7 @@ namespace DotSerial.Core.JSON
                     // Check if key is key for property info
                     if (key == JsonConstants.PropertyTypeKey)
                     {
+                        // TODO Da von Reihenfolge abhängig gefährllich!!!!
                         currPropType = ParsePropertyTypeInfo(strValue);
                         parent.SetPropertyType(currPropType);
                         continue;
@@ -176,11 +177,8 @@ namespace DotSerial.Core.JSON
                 // Convert key to int key
                 var dic = ExtractKeyValuePairsFromJsonObject(sb);
 
-                int dicId = -1;
-
                 foreach (var keyValuepair in dic)
                 {
-                    dicId++;
                     string key = keyValuepair.Key;
 
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
@@ -204,6 +202,7 @@ namespace DotSerial.Core.JSON
                     }
                     else if (IsStringJsonList(strValue))
                     {
+                        // TODO KOMME ICH HIER JEMALS RAUS???
                         StringBuilder sbChild = new(strValue);
                         ListToNode(parent, sbChild);
                     }
