@@ -9,9 +9,6 @@ namespace DotSerial.Core.YAML
     /// </summary>
     internal static class YAMLWriter
     {
-        // https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
-        // https://www.yamllint.com/
-
         /// <summary>
         /// Converts Yaml string to a Yaml node
         /// </summary>
@@ -23,13 +20,13 @@ namespace DotSerial.Core.YAML
 
             StringBuilder sb = new();
 
-            sb.Append("---");
+            sb.Append(YAMLConstants.YAMLDocumentStart);
 
             // Starts the convertion to a json string
             NodeToYaml(sb, node, -1);
 
             sb.AppendLine();
-            sb.Append("...");
+            sb.Append(YAMLConstants.YAMLDocumentEnd);
 
             return sb.ToString();
         }
@@ -262,7 +259,7 @@ namespace DotSerial.Core.YAML
                 foreach (var keyValue in children)
                 {
                     StringBuilder sb3 = new();
-                    NodeToYaml(sb3, keyValue, level + 1, "-");
+                    NodeToYaml(sb3, keyValue, level + 1, YAMLConstants.ListItemIndicator);
                     sb2.Append(sb3);
                 }
 
@@ -429,19 +426,10 @@ namespace DotSerial.Core.YAML
 
             foreach (var keyValue in children)
             {
-                string? val = keyValue.IsNull ? "null" : keyValue.Value;
+                string? val = keyValue.IsNull ? YAMLConstants.Null : keyValue.Value;
 
-                if (keyValue.IsNull)
-                {
-                    AddIndentation(sb, level + 1);
-                    sb.Append("- null");
-                }
-                else
-                {
-                    AddIndentation(sb, level + 1);
-                    sb.AppendFormat("- \"{0}\"", val);
-                }
-
+                AddIndentation(sb, level + 1);
+                sb.AppendFormat("- \"{0}\"", val);
 
                 // sb.Append(", ");
                 sb.AppendLine();

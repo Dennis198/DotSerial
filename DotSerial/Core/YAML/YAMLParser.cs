@@ -1,6 +1,5 @@
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 
@@ -213,11 +212,6 @@ namespace DotSerial.Core.YAML
         
         private static List<string?> ExtractPrimitiveList(List<StringBuilder> lines, int startIndex, int endIndex)
         {
-            if (startIndex == 8)
-            {
-                int a = 0;
-            }
-
             var result = new List<string?>();
             int currLevel = LineLevel(lines[startIndex]);
             for (int i = startIndex; i <= endIndex; i++)
@@ -420,7 +414,7 @@ namespace DotSerial.Core.YAML
                 {
                     continue;
                 }
-                else if (c == ':')
+                else if (c == YAMLConstants.KeyValueSeperator)
                 {
                     return true;
                 }

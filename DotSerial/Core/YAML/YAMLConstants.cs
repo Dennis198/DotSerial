@@ -41,6 +41,30 @@ namespace DotSerial.Core.YAML
         /// <summary>
         /// L
         /// </summary>
-        internal const char L = 'l';    
+        internal const char L = 'l';
+        /// <summary>
+        /// Start string of yaml document
+        /// </summary>
+        internal const string YAMLDocumentStart = "---";
+        /// <summary>
+        /// End string of yaml document
+        /// </summary>
+        internal const string YAMLDocumentEnd = "...";
+        /// <summary>
+        /// End string of yaml document
+        /// </summary>
+        internal const string ListItemIndicator = "-";
+        /// <summary>
+        /// End string of yaml document
+        /// </summary>
+        internal const char KeyValueSeperator = ':';        
+        /// <summary>
+        /// Json null string
+        /// </summary>
+        internal const string Null = "null";     
+        /// <summary>
+        /// Json null string
+        /// </summary>
+        internal const string NullListItem = "- null";   
     }
 }
