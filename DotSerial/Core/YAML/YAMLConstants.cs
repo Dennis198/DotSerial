@@ -3,6 +3,14 @@ namespace DotSerial.Core.YAML
     internal static class YAMLConstants
     {
         /// <summary>
+        /// XML Object display
+        /// </summary>
+        public const string DotSerial = "DotSerial";
+        /// <summary>
+        /// MainObject ID
+        /// </summary>
+        public const string MainObjectKey = "0";        
+        /// <summary>
         /// Indentation Size
         /// </summary>
         internal const int IndentationSize = 2;
