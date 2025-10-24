@@ -173,8 +173,7 @@ namespace DotSerial.Core.JSON
 
             // Check if string (parent) is a json object
             if (IsStringJsonObject(sb.ToString()))
-            {
-                // Convert key to int key
+            {                
                 var dic = ExtractKeyValuePairsFromJsonObject(sb);
 
                 foreach (var keyValuepair in dic)

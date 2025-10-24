@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using System.Text;
 using DotSerial.Core.Exceptions.Node;
 
 namespace DotSerial.Core.General
@@ -82,6 +83,25 @@ namespace DotSerial.Core.General
                 DSNodePropertyType.Null => "Null",
                 _ => throw new DSInvalidNodeTypeException(propType),
             };
+        }
+
+        public static StringBuilder TrimEnd(this StringBuilder sb)
+        {
+            // TODO MOVE METHODE
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length == 0) return sb;
+
+            int i = sb.Length - 1;
+
+            for (; i >= 0; i--)
+                if (!char.IsWhiteSpace(sb[i]))
+                    break;
+
+            if (i < sb.Length - 1)
+                sb.Length = i + 1;
+
+            return sb;
         }
     }
 }

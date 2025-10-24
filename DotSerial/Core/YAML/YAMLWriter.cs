@@ -1,4 +1,27 @@
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using DotSerial.Core.Exceptions.Node;
+using DotSerial.Core.Exceptions.YAML;
 using DotSerial.Core.General;
 using System.Text;
 
@@ -20,17 +43,26 @@ namespace DotSerial.Core.YAML
 
             StringBuilder sb = new();
 
+            // Add document start
             sb.Append(YAMLConstants.YAMLDocumentStart);
 
-            // Starts the convertion to a json string
+            // Starts the convertion to a yaml string
             NodeToYaml(sb, node, -1);
 
+            // Add document end
             sb.AppendLine();
             sb.Append(YAMLConstants.YAMLDocumentEnd);
 
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Converts node to yaml
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="prefix">Key-Prefix</param>
         private static void NodeToYaml(StringBuilder sb, DSNode node, int level, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -38,20 +70,27 @@ namespace DotSerial.Core.YAML
 
             if (node.Type == DSNodeType.InnerNode || node.Type == DSNodeType.Root)
             {
-                // Inner node to json
+                // Inner node to yaml
                 InnerNodeToYaml(sb, node, level + 1, prefix);
             }
             else if (node.Type == DSNodeType.Leaf)
             {
-                // Leaf node to json
+                // Leaf node to yaml
                 LeafNodeToYaml(sb, node, level + 1);
             }
             else
             {
                 throw new DSInvalidNodeTypeException(node.Type);
             }
-        }        
+        }
 
+        /// <summary>
+        /// Converts an inner node to yaml
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="prefix">Key-Prefix</param>
         private static void InnerNodeToYaml(StringBuilder sb, DSNode node, int level, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -79,7 +118,7 @@ namespace DotSerial.Core.YAML
             }
             else if (node.PropType == DSNodePropertyType.Dictionary)
             {
-                DictionaryNodeToJson(sb, node, level);
+                DictionaryNodeToYaml(sb, node, level);
             }
             else
             {
@@ -87,6 +126,12 @@ namespace DotSerial.Core.YAML
             }
         }
 
+        /// <summary>
+        /// Converts an inner node to yaml
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
         private static void LeafNodeToYaml(StringBuilder sb, DSNode node, int level)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -101,6 +146,13 @@ namespace DotSerial.Core.YAML
             KeyValuePairToYaml(sb, node.Key.ToString(), node.Value, level);
         }
 
+        /// <summary>
+        /// Converts a class node to yaml
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Level/Height of node in tree</param>
+        /// <param name="prefix">Key-Prefix</param>
         private static void ClassNodeToYaml(StringBuilder sb, DSNode node, int level, string? prefix = null)
         {
             ///      (node) (Class)
@@ -132,17 +184,7 @@ namespace DotSerial.Core.YAML
             }
             else
             {
-                // if (addKey)
-                // {
                 AddObjectStart(sb, node.Key.ToString(), level, prefix);
-                // }
-                // else
-                // {
-                //     AddIndentation(sb, level);
-                //     sb.AppendLine();
-                //     AddIndentation(sb, level);
-                //     sb.Append('{');
-                // }
 
                 if (false == string.IsNullOrWhiteSpace(prefix))
                 {
@@ -162,12 +204,12 @@ namespace DotSerial.Core.YAML
         }
 
         /// <summary>
-        /// Converts a list node to Json
+        /// Converts a list node to yaml
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Level/Height of node in tree</param>
-        /// <param name="addKey">True if key should be added to json</param>
+        /// <param name="prefix">Key-Prefix</param>
         private static void ListNodeToYaml(StringBuilder sb, DSNode node, int level, string? prefix = null)
         {
             ///      (node) (List)
@@ -200,16 +242,7 @@ namespace DotSerial.Core.YAML
             // Check if list contains only primitive types
             if (node.IsPrimitiveList())
             {
-                // if (addKey)
-                // {
                 AddObjectStart(sb, node.Key.ToString(), level, prefix);
-                // }
-                // else
-                // {
-                //     sb.AppendLine();
-                //     AddIndentation(sb, level);
-                //     sb.Append(JsonConstants.ObjectStart);
-                // }
 
                 if (false == string.IsNullOrWhiteSpace(prefix))
                 {
@@ -219,23 +252,12 @@ namespace DotSerial.Core.YAML
                 // Add type info
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
 
-                // List to json
-                PrimitiveListToJson(sb, node, level + 1);
-
-                // AddObjectEnd(sb, level);
+                // List to yaml
+                PrimitiveListToYaml(sb, node, level + 1);
             }
             else
             {
-                // if (addKey)
-                // {
                 AddObjectStart(sb, node.Key.ToString(), level, prefix);
-                // }
-                // else
-                // {
-                //     sb.AppendLine();
-                //     AddIndentation(sb, level);
-                //     sb.Append(JsonConstants.ObjectStart);
-                // }
 
                 if (false == string.IsNullOrWhiteSpace(prefix))
                 {
@@ -252,9 +274,7 @@ namespace DotSerial.Core.YAML
                 var children = node.GetChildren();
 
                 StringBuilder sb2 = new();
-                // sb2.AppendLine();
                 AddIndentation(sb2, level + 1);
-                // sb2.Append(JsonConstants.ListStart);
 
                 foreach (var keyValue in children)
                 {
@@ -263,24 +283,17 @@ namespace DotSerial.Core.YAML
                     sb2.Append(sb3);
                 }
 
-                // sb2.Remove(sb2.Length - 1, 1);
-                // sb2.AppendLine();
-                // AddIndentation(sb2, level + 1);
-                // sb2.Append(JsonConstants.ListEnd);
-
-
                 sb.Append(sb2);
-                // AddObjectEnd(sb, level);
             }
         }
 
         /// <summary>
-        /// Converts a dictioanry to json
+        /// Converts a dictioanry to yaml
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Level/Height of node in tree</param>
-        private static void DictionaryNodeToJson(StringBuilder sb, DSNode node, int level, string? prefix = null)
+        private static void DictionaryNodeToYaml(StringBuilder sb, DSNode node, int level, string? prefix = null)
         {
             ///     (node) (Dictionary)
             ///       |
@@ -331,11 +344,7 @@ namespace DotSerial.Core.YAML
                     KeyValuePairToYaml(sb2, key, value, level + 2);
                 }
 
-                // sb2.Remove(sb2.Length - 1, 1);
-                // AddObjectEnd(sb2, level + 1, true);
-
                 sb.Append(sb2);
-                // AddObjectEnd(sb, level);
             }
             else
             {
@@ -360,7 +369,7 @@ namespace DotSerial.Core.YAML
                     if (false == node.IsNull)
                     {
                         StringBuilder sb3 = new();
-                        DictionaryKeyValuePairToJson(sb3, keyValuePair, level + 2);
+                        DictionaryKeyValuePairToYaml(sb3, keyValuePair, level + 2);
                         sb2.Append(sb3);
                     }
                     else
@@ -370,21 +379,17 @@ namespace DotSerial.Core.YAML
                     }
                 }
 
-                // sb2.Remove(sb2.Length - 1, 1);
-                // AddObjectEnd(sb2, level + 1, true);
-
                 sb.Append(sb2);
-                // AddObjectEnd(sb, level);
             }
         }       
 
         /// <summary>
-        /// Converts a Dictonary KeyValuePair into json
+        /// Converts a Dictonary KeyValuePair into yaml
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Level/Height of node in tree</param>
-        private static void DictionaryKeyValuePairToJson(StringBuilder sb, DSNode node, int level)
+        private static void DictionaryKeyValuePairToYaml(StringBuilder sb, DSNode node, int level)
         {
             /// (A)   (B)   (C) (KeyValuePairs)
             ///  :     |     :
@@ -399,15 +404,15 @@ namespace DotSerial.Core.YAML
             }
 
             ClassNodeToYaml(sb, node.GetFirstChild(), level);
-        }            
-        
+        }
+
         /// <summary>
-        /// Converts a primitive list into json
+        /// Converts a primitive list into yaml
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Indentation level</param>
-        private static void PrimitiveListToJson(StringBuilder sb, DSNode node, int level)
+        private static void PrimitiveListToYaml(StringBuilder sb, DSNode node, int level)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
@@ -422,25 +427,35 @@ namespace DotSerial.Core.YAML
             // Get all children of node
             var children = node.GetChildren();
 
-            // sb.Append(JsonConstants.ListStart);
-
             foreach (var keyValue in children)
             {
                 string? val = keyValue.IsNull ? YAMLConstants.Null : keyValue.Value;
 
                 AddIndentation(sb, level + 1);
-                sb.AppendFormat("- \"{0}\"", val);
 
-                // sb.Append(", ");
+                if (keyValue.IsNull)
+                {
+                    sb.AppendFormat("- {0}", YAMLConstants.Null);
+                }
+                else
+                {
+                    sb.AppendFormat("- \"{0}\"", val);
+                }               
+
                 sb.AppendLine();
             }
 
             // Remove last New Line
             sb.Remove(sb.Length - 1, 1);
+        }
 
-            // sb.Append(JsonConstants.ListEnd);
-        }        
-        
+        /// <summary>
+        /// Helper methode to add object start to yaml
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="prefix">Key-Prefix</param>
         private static void AddObjectStart(StringBuilder sb, string key, int level, string? prefix)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -448,8 +463,7 @@ namespace DotSerial.Core.YAML
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                // throw new DSInvalidJSONException(key);
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             sb.AppendLine();
@@ -463,8 +477,16 @@ namespace DotSerial.Core.YAML
             {
                 sb.AppendFormat("{0} \"{1}\":", prefix, key);
             }
-            
-        }        
+
+        }
+
+        /// <summary>
+        /// Converts a key : value pair to an yaml string.
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Indentation level</param>
 
         private static void KeyValuePairToYaml(StringBuilder sb, string key, string? value, int level)
         {
@@ -473,8 +495,7 @@ namespace DotSerial.Core.YAML
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                // throw new DSInvalidJSONException(key);
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             // Make sure key:value has its own line.
@@ -496,6 +517,12 @@ namespace DotSerial.Core.YAML
             }
         }
         
+        /// <summary>
+        /// Adds the node proprty type info to an jyaml object
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="type">Node property type</param>
         private static void AddTypeInfo(StringBuilder sb, int level, DSNodePropertyType type)
         {
             ArgumentNullException.ThrowIfNull(sb);

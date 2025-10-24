@@ -410,7 +410,7 @@ namespace DotSerial.Core.JSON
                     AddIndentation(sb, level);
                     sb.AppendLine();
                     AddIndentation(sb, level);
-                    sb.Append('{');
+                    sb.Append(JsonConstants.ObjectStart);
                 }
 
                 // Add type info

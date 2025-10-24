@@ -1,4 +1,27 @@
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using DotSerial.Core.Exceptions.Node;
+using DotSerial.Core.Exceptions.YAML;
 using DotSerial.Core.General;
 using System.Diagnostics;
 using System.Text;
@@ -10,18 +33,32 @@ namespace DotSerial.Core.YAML
     /// </summary>
     internal static class YAMLParser
     {
+        /// <summary>
+        /// Help object for yaml parsing
+        /// </summary>
         [DebuggerDisplay("Key = {Key}, Level = {Level}, Start = {startLineIndex}, End = {endLineIndex}")]
         internal class YamlHelpObject
         {
             internal string Key;
             internal int Level;
-            internal int startLineIndex;
-            internal int endLineIndex;
-            internal DSNodePropertyType type;
+            internal int StartLineIndex;
+            internal int EndLineIndex;
 
+            internal YamlHelpObject(string key, int level, int startLineIndex, int endLineIndex)
+            {
+                Key = key;
+                Level = level;
+                this.StartLineIndex = startLineIndex;
+                this.EndLineIndex = endLineIndex;
+            }
+
+            /// <summary>
+            /// Check if object is a yaml object or just a key value pair
+            /// </summary>
+            /// <returns>True, if object</returns>
             internal bool IsYamlObject()
             {
-                return startLineIndex != endLineIndex;
+                return StartLineIndex != EndLineIndex;
             }
         }
 
@@ -34,18 +71,15 @@ namespace DotSerial.Core.YAML
         {
             if (string.IsNullOrWhiteSpace(yamlString))
             {
-                // throw new DSInvalidJSONException(jsonString);
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             StringBuilder sb = new(yamlString);
             sb.Remove(sb.Length - 4, 4);
             sb.Remove(0, 4);
 
-            var lines = DSTest(sb);
-
-            // TODO Remove empty lines
-            // TODO Whitespace at end
+            var lines = CreateLines(sb);
+            TrimLines(lines);
 
             var rootDic = ExtractKeyValuePairsFromYamlObject(lines, 0);
 
@@ -60,15 +94,28 @@ namespace DotSerial.Core.YAML
             ChildrenToNode(rootNode, lines, rootDic[rootKey]);
 
             return rootNode;
-        }
+        }    
 
+        /// <summary>
+        /// Converts a yaml string to children of a node
+        /// </summary>
+        /// <param name="parent">Parent node</param>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="helpObj">Help-Obejct</param>
         private static void ChildrenToNode(DSNode parent, List<StringBuilder> lines, YamlHelpObject helpObj)
         {
+            ArgumentNullException.ThrowIfNull(parent);
+            ArgumentNullException.ThrowIfNull(lines);
+            ArgumentNullException.ThrowIfNull(helpObj);
+
+            // Check if helpObj is yaml-Object
             if (helpObj.IsYamlObject())
             {
                 // Extract key, value pairs
-                var dic = ExtractKeyValuePairsFromYamlObject(lines, helpObj.startLineIndex + 1);
+                var dic = ExtractKeyValuePairsFromYamlObject(lines, helpObj.StartLineIndex + 1);
                 var currPropType = GetPropertyTypeFromYamlObject(lines, helpObj);
+
+                // Set property type of parent
                 parent.SetPropertyType(currPropType);
 
                 foreach (var keyValuePair in dic)
@@ -84,10 +131,10 @@ namespace DotSerial.Core.YAML
 
                     if (key == YAMLConstants.PropertyTypeKey)
                     {
-                        // TODO
                         continue;
                     }
 
+                    // Check if value is yaml object or key value pair
                     if (value.IsYamlObject())
                     {
                         if (currPropType == DSNodePropertyType.Class)
@@ -106,25 +153,14 @@ namespace DotSerial.Core.YAML
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            throw new DSInvalidNodeTypeException(currPropType);
                         }
                     }
                     else
                     {
-                        string? strValue = ExtractValueFromLine(lines[value.startLineIndex]);
-                        if (strValue == null)
-                        {
-                            // TODO if kann weg oder?
-                            DSNode child = new(key, null, DSNodeType.Leaf, DSNodePropertyType.Null);
-                            parent.AppendChild(child);
-                            continue;
-                        }
-                        else
-                        {
-                            DSNode child = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.Primitive);
-                            parent.AppendChild(child);
-                        }
-
+                        string? strValue = ExtractValueFromLine(lines[value.StartLineIndex]);
+                        DSNode child = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.Primitive);
+                        parent.AppendChild(child);
                     }
                 }
             }
@@ -134,24 +170,41 @@ namespace DotSerial.Core.YAML
             }
         }
 
+        /// <summary>
+        /// Converts dictionaty to node
+        /// </summary>
+        /// <param name="parent">Parent node</param>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="helpObj">Help-Obejct</param>
         private static void DictionaryToNode(DSNode parent, List<StringBuilder> lines, YamlHelpObject helpObj)
         {
+            ///     (node) (Dictionary)
+            ///       |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (KeyValuePairs)
+            ///  :     |     :
+            ///  :    (D)    :  (Value of KeyvaluePairs)
+                        
+            ArgumentNullException.ThrowIfNull(parent);
+            ArgumentNullException.ThrowIfNull(lines);
+            ArgumentNullException.ThrowIfNull(helpObj);
+
             // Check if type is list => error
             if (parent.PropType != DSNodePropertyType.Dictionary)
             {
                 throw new DSInvalidNodeTypeException(parent.PropType);
             }
 
-            var dic = ExtractKeyValuePairsFromYamlObject(lines, helpObj.startLineIndex + 1);
+            var dic = ExtractKeyValuePairsFromYamlObject(lines, helpObj.StartLineIndex + 1);
             
             foreach (var keyValuePair in dic)
             {
-                // Convert key to int key
                 string key = keyValuePair.Key;
                 var value = keyValuePair.Value;
                     
                 DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                DSNode? keyValuePairNodeValue = null;
+                DSNode? keyValuePairNodeValue;
 
                 if (value == null)
                 {
@@ -168,7 +221,7 @@ namespace DotSerial.Core.YAML
                 }
                 else // Primitive
                 {
-                    string? strValue = ExtractValueFromLine(lines[value.startLineIndex]);
+                    string? strValue = ExtractValueFromLine(lines[value.StartLineIndex]);
                     keyValuePairNodeValue = new(key, strValue, DSNodeType.Leaf, DSNodePropertyType.KeyValuePairValue);
                 }
 
@@ -177,8 +230,24 @@ namespace DotSerial.Core.YAML
             }
         }
 
+        /// <summary>
+        /// Converts list to node
+        /// </summary>
+        /// <param name="parent">Parent node</param>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="helpObj">Help-Obejct</param>
         private static void ListToNode(DSNode parent, List<StringBuilder> lines, YamlHelpObject helpObj)
         {
+            ///      (node) (List)
+            ///        |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (Items)
+
+            ArgumentNullException.ThrowIfNull(parent);
+            ArgumentNullException.ThrowIfNull(lines);
+            ArgumentNullException.ThrowIfNull(helpObj);
+
             // Check if type is list => error
             if (parent.PropType != DSNodePropertyType.List)
             {
@@ -186,10 +255,10 @@ namespace DotSerial.Core.YAML
             }
 
             // Check if list is list of primitive or objects
-            if (false == IsKeyLine(lines[helpObj.startLineIndex + 1]))
+            if (false == IsKeyLine(lines[helpObj.StartLineIndex + 1]))
             {
                 // Extract primitive list
-                var items = ExtractPrimitiveList(lines, helpObj.startLineIndex + 1, helpObj.endLineIndex);
+                var items = ExtractPrimitiveList(lines, helpObj.StartLineIndex + 1, helpObj.EndLineIndex);
                 for (int i = 0; i < items.Count; i++)
                 {
                     string? value = items[i];
@@ -200,7 +269,7 @@ namespace DotSerial.Core.YAML
             else
             {
                 // Extract object list
-                var items = ExtractKeyValuePairsFromYamlObject(lines, helpObj.startLineIndex + 1);
+                var items = ExtractKeyValuePairsFromYamlObject(lines, helpObj.StartLineIndex + 1);
                 for (int i = 0; i < items.Count; i++)
                 {
                     DSNode childNode = new(i.ToString(), DSNodeType.InnerNode, DSNodePropertyType.Class);
@@ -209,11 +278,28 @@ namespace DotSerial.Core.YAML
                 }
             }
         }
-        
+
+        /// <summary>
+        /// Extracts list of primitives from yaml string
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="startIndex">Start index if list</param>
+        /// <param name="endIndex">End index of list</param>
+        /// <returns>List<string></returns>
         private static List<string?> ExtractPrimitiveList(List<StringBuilder> lines, int startIndex, int endIndex)
         {
+            ArgumentNullException.ThrowIfNull(lines);
+
+            if (startIndex < 0 || startIndex > endIndex || startIndex > lines.Count - 1)
+            {
+                throw new DSInvalidYAMLException();
+            }
+            if (startIndex > lines.Count - 1)
+            {
+                throw new DSInvalidYAMLException();
+            }
+
             var result = new List<string?>();
-            int currLevel = LineLevel(lines[startIndex]);
             for (int i = startIndex; i <= endIndex; i++)
             {
                 for (int j = 0; j < lines[i].Length; j++)
@@ -223,8 +309,11 @@ namespace DotSerial.Core.YAML
                     {
                         StringBuilder dontNeed = new();
                         j = AppendStringValue(dontNeed, j, lines[i].ToString());
-                        dontNeed.Remove(dontNeed.Length - 1, 1); // Remove ending quote
-                        dontNeed.Remove(0, 1); // Remove starting quote
+                        // Remove ending quote
+                        dontNeed.Remove(dontNeed.Length - 1, 1);
+                        // Remove starting quote
+                        dontNeed.Remove(0, 1);
+
                         result.Add(dontNeed.ToString());
                     }
                     else if (c == YAMLConstants.N)
@@ -246,16 +335,24 @@ namespace DotSerial.Core.YAML
             return result;
         }
 
+        /// <summary>
+        /// Extracts key value pairs from yaml object
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="startIndex">Start index if object</param>
+        /// <returns></returns>
         private static Dictionary<string, YamlHelpObject> ExtractKeyValuePairsFromYamlObject(List<StringBuilder> lines, int startIndex)
         {
-            if (lines.Count - 1 < startIndex)
+            ArgumentNullException.ThrowIfNull(lines);
+
+            if (startIndex < 0 || lines.Count - 1 < startIndex)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             var result = new Dictionary<string, YamlHelpObject>();
-
             int objLevel = LineLevel(lines[startIndex]);
+
             for (int i = startIndex; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
@@ -268,29 +365,16 @@ namespace DotSerial.Core.YAML
                 if (false == IsKeyLine(lines[i]))
                 {
                     string key = ExtractKeyFromLine(lines[i]);
-                    string? value = ExtractValueFromLine(lines[i]);
-                    var helpObj = new YamlHelpObject
-                    {
-                        Key = key,
-                        Level = currLevel,
-                        startLineIndex = i,
-                        endLineIndex = i
-                    };
+                    var helpObj = new YamlHelpObject(key, currLevel, i, i);
+                   
 
                     result.Add(key, helpObj);
                 }
                 else
                 {
                     string key = ExtractKeyFromLine(lines[i]);
-                    // string value = ExtractValueFromLine(lines[i]);
                     int endIndex = GetEndIndexOfYamlObject(lines, i);
-                    var helpObj = new YamlHelpObject
-                    {
-                        Key = key,
-                        Level = currLevel,
-                        startLineIndex = i,
-                        endLineIndex = endIndex
-                    };
+                    var helpObj = new YamlHelpObject(key, currLevel, i, endIndex);
                     result.Add(key, helpObj);
                     i = endIndex;
                 }
@@ -298,33 +382,49 @@ namespace DotSerial.Core.YAML
 
             return result;
         }
-        
+
+        /// <summary>
+        /// Gets the property type from yaml object
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="helpObj">Help-Obejct</param>
+        /// <returns>DSNodePropertyType</returns>
         private static DSNodePropertyType GetPropertyTypeFromYamlObject(List<StringBuilder> lines, YamlHelpObject helpObj)
         {
-            var result = DSNodePropertyType.Undefined;
-            int startIndex = helpObj.startLineIndex;
-            int endIndex = helpObj.endLineIndex;
+            ArgumentNullException.ThrowIfNull(lines);
+            ArgumentNullException.ThrowIfNull(helpObj);
+
+            int startIndex = helpObj.StartLineIndex;
+            int endIndex = helpObj.EndLineIndex;
 
             for (int i = startIndex + 1; i <= endIndex; i++)
             {
                 if (false == IsKeyLine(lines[i]))
                 {
                     string key = ExtractKeyFromLine(lines[i]);
-                    if(key == YAMLConstants.PropertyTypeKey)
+                    if (key == YAMLConstants.PropertyTypeKey)
                     {
                         string? value = ExtractValueFromLine(lines[i]);
-                        result = ParsePropertyTypeInfo(value);
-                        return result;
+                        var tmp = ParsePropertyTypeInfo(value);
+                        return tmp;
                     }
-                   
+
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSInvalidYAMLException();
         }
 
-        private static List<StringBuilder> DSTest(StringBuilder sb)
+        /// <summary>
+        /// Create a list of stringbuilders representing each lines of the
+        /// yaml string
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <returns>List<StringBuilder></returns>
+        private static List<StringBuilder> CreateLines(StringBuilder sb)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+
             List<StringBuilder> result = [];
             bool createNewLine = false;
             StringBuilder currentLine = new();
@@ -357,16 +457,25 @@ namespace DotSerial.Core.YAML
 
             return result;
         }
-        
+
+        /// <summary>
+        /// Returns the end index of a yaml object
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="startIndex">Start index of object</param>
+        /// <returns></returns>
         private static int GetEndIndexOfYamlObject(List<StringBuilder> lines, int startIndex)
         {
+            ArgumentNullException.ThrowIfNull(lines);
+
             if (lines.Count - 1 <= startIndex)
             {
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             int endIndex = -1;
             int objLevel = LineLevel(lines[startIndex]);
+
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
@@ -382,12 +491,19 @@ namespace DotSerial.Core.YAML
             {
                 endIndex = lines.Count - 1;
             }
-            
+
             return endIndex;
         }
 
+        /// <summary>
+        /// Returns the indentation level of a line
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <returns>indentation level of a line</returns>
         private static int LineLevel(StringBuilder line)
         {
+            ArgumentNullException.ThrowIfNull(line);
+
             int level = 0;
             for (int i = 0; i < line.Length; i++)
             {
@@ -402,11 +518,18 @@ namespace DotSerial.Core.YAML
                 }
             }
 
-            return level/YAMLConstants.IndentationSize;
+            return level / YAMLConstants.IndentationSize;
         }
 
+        /// <summary>
+        /// Check if line is a key line
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <returns>True, if line is key line</returns>
         private static bool IsKeyLine(StringBuilder line)
         {
+            ArgumentNullException.ThrowIfNull(line);
+             
             for (int i = line.Length - 1; i >= 0; i--)
             {
                 var c = line[i];
@@ -427,12 +550,14 @@ namespace DotSerial.Core.YAML
             return false;
         }
 
+        /// <summary>
+        /// Extracts the value from a line
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <returns>Value of the line</returns>
         private static string? ExtractValueFromLine(StringBuilder line)
         {
-            // if (true == IsKeyLine(line))
-            // {
-            //     throw new NotImplementedException();
-            // }
+            ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
             bool keyWasFound = false;
@@ -444,9 +569,12 @@ namespace DotSerial.Core.YAML
                 {
                     if (keyWasFound)
                     {
-                        i = AppendStringValue(keyBuilder, i, line.ToString());
-                        keyBuilder.Remove(keyBuilder.Length - 1, 1); // Remove ending quote
-                        keyBuilder.Remove(0, 1); // Remove starting quote
+                        _ = AppendStringValue(keyBuilder, i, line.ToString());
+                        // Remove ending quote
+                        keyBuilder.Remove(keyBuilder.Length - 1, 1);
+                        // Remove starting quote
+                        keyBuilder.Remove(0, 1);
+                        
                         return keyBuilder.ToString();
                     }
                     else
@@ -470,15 +598,17 @@ namespace DotSerial.Core.YAML
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSInvalidYAMLException();
         }
 
+        /// <summary>
+        /// Extracts the key from a line
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <returns>Key of the line</returns>
         private static string ExtractKeyFromLine(StringBuilder line)
         {
-            // if(false == IsKeyLine(line))
-            // {
-            //     throw new NotImplementedException();
-            // }
+            ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
             for (int i = 0; i < line.Length; i++)
@@ -486,14 +616,16 @@ namespace DotSerial.Core.YAML
                 var c = line[i];
                 if (c == YAMLConstants.Quote)
                 {
-                    i = AppendStringValue(keyBuilder, i, line.ToString());
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1); // Remove ending quote
-                    keyBuilder.Remove(0, 1); // Remove starting quote
+                    _ = AppendStringValue(keyBuilder, i, line.ToString());
+                    // Remove ending quote
+                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
+                     // Remove starting quote
+                    keyBuilder.Remove(0, 1);
                     return keyBuilder.ToString();
                 }
             }
 
-            throw new NotImplementedException();
+            throw new DSInvalidYAMLException();
         }
 
         /// <summary>
@@ -510,8 +642,7 @@ namespace DotSerial.Core.YAML
 
             if (string.IsNullOrWhiteSpace(yamlString))
             {
-                // throw new DSInvalidJSONException(jsonString);
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException(yamlString);
             }
 
             if (yamlString.Length < startIndex)
@@ -521,8 +652,7 @@ namespace DotSerial.Core.YAML
 
             if (yamlString[startIndex] != YAMLConstants.Quote)
             {
-                // throw new DSInvalidJSONException(jsonString);
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException(yamlString);
             }
 
             sb.Append(YAMLConstants.Quote);
@@ -548,7 +678,7 @@ namespace DotSerial.Core.YAML
             }
 
             return yamlString.Length - 1;
-        }        
+        }
 
         /// <summary>
         /// Parse the node property type info
@@ -560,11 +690,33 @@ namespace DotSerial.Core.YAML
             // Check if value has value
             if (string.IsNullOrWhiteSpace(value))
             {
-                // throw new DSInvalidJSONException();
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
 
             return value.ConvertToDSNodePropertyType();
+        }        
+        
+        /// <summary>
+        /// Trims the lines by removing empty lines and trailing whitespace
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        private static void TrimLines(List<StringBuilder> lines)
+        {
+            // Remove Empty Lines
+            for (int i = lines.Count - 1; i >= 0; i--)
+            {
+                string lineStr = lines[i].ToString();
+                if (string.IsNullOrWhiteSpace(lineStr))
+                {
+                    lines.RemoveAt(i);
+                }
+            }
+            
+            // Remove trailing whitespace
+            for (int i = 0; i < lines.Count; i++)
+            {
+                lines[i] = lines[i].TrimEnd();
+            }
         }        
     }
 }
