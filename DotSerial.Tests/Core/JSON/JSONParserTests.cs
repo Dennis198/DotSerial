@@ -22,6 +22,7 @@
 
 using DotSerial.Core.General;
 using DotSerial.Core.JSON;
+using DotSerial.Core.Tree;
 
 namespace DotSerial.Tests.Core.JSON
 {

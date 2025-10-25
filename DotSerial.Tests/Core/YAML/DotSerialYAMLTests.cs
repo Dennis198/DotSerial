@@ -59,8 +59,8 @@ namespace DotSerial.Tests.Core.YAML
             PrimitiveClass? tmp = null;
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
-            path = Path.GetFullPath(Path.Combine(path, @"..\..\.."));
-            path = Path.Combine(path, @"Resources\YamlTest.yml");
+            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
+            path = Path.Combine(path,string.Format("Resources{0}YamlTest.yml", Path.DirectorySeparatorChar));
 
             try
             {

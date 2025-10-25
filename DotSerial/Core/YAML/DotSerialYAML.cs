@@ -22,6 +22,7 @@
 
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.YAML
@@ -124,12 +125,12 @@ namespace DotSerial.Core.YAML
             }
 
             // Create root element
-            var rootNode = new DSNode(YAMLConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            var versionNode = new DSNode(YAMLConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
+            var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
             rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            var node = DSSerialize.Serialize(obj, YAMLConstants.MainObjectKey);
+            var node = DSSerialize.Serialize(obj, GeneralConstants.MainObjectKey);
             rootNode.AppendChild(node);
 
             var result = new DotSerialYAML
@@ -161,7 +162,7 @@ namespace DotSerial.Core.YAML
 
             // Get root element
             var rootNode = serialObj._document.Tree;
-            var node = rootNode?.GetChild(YAMLConstants.MainObjectKey);
+            var node = rootNode?.GetChild(GeneralConstants.MainObjectKey);
 
             DSDeserialize.Deserialize(result, node);
 

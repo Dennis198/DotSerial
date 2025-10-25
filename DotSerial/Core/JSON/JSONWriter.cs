@@ -23,6 +23,8 @@
 using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
+using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using System.Text;
 
 namespace DotSerial.Core.JSON
@@ -306,7 +308,7 @@ namespace DotSerial.Core.JSON
                 else
                 {
                     sb.AppendLine();
-                    AddIndentation(sb, level);
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
@@ -327,7 +329,7 @@ namespace DotSerial.Core.JSON
                 else
                 {
                     sb.AppendLine();
-                    AddIndentation(sb, level);
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
@@ -335,14 +337,14 @@ namespace DotSerial.Core.JSON
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
 
                 sb.AppendLine();
-                AddIndentation(sb, level + 1);
+                WriteMethods.AddIndentation(sb, level + 1, JsonConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\": ", node.Key);                
 
                 var children = node.GetChildren();
 
                 StringBuilder sb2 = new();
                 sb2.AppendLine();
-                AddIndentation(sb2, level + 1);
+                WriteMethods.AddIndentation(sb2, level + 1, JsonConstants.IndentationSize);
                 sb2.Append(JsonConstants.ListStart);
 
                 foreach (var keyValue in children)
@@ -354,7 +356,7 @@ namespace DotSerial.Core.JSON
 
                 sb2.Remove(sb2.Length - 1, 1);
                 sb2.AppendLine();
-                AddIndentation(sb2, level + 1);
+                WriteMethods.AddIndentation(sb2, level + 1, JsonConstants.IndentationSize);
                 sb2.Append(JsonConstants.ListEnd);
 
 
@@ -407,9 +409,9 @@ namespace DotSerial.Core.JSON
                 }
                 else
                 {
-                    AddIndentation(sb, level);
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.AppendLine();
-                    AddIndentation(sb, level);
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
@@ -440,7 +442,7 @@ namespace DotSerial.Core.JSON
         {
             ArgumentNullException.ThrowIfNull(sb);
             string typeName = type.ConvertToString();
-            KeyValuePairToJson(sb, JsonConstants.PropertyTypeKey, typeName, level + 1);
+            KeyValuePairToJson(sb, GeneralConstants.PropertyTypeKey, typeName, level + 1);
         }
 
         /// <summary>
@@ -460,7 +462,7 @@ namespace DotSerial.Core.JSON
             }
 
             sb.AppendLine();
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
             sb.AppendFormat("\"{0}\": {{", key);
         }
 
@@ -475,7 +477,7 @@ namespace DotSerial.Core.JSON
             ArgumentNullException.ThrowIfNull(sb);
 
             sb.AppendLine();
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
             if (isLastObject)
             {
@@ -499,7 +501,7 @@ namespace DotSerial.Core.JSON
             ArgumentNullException.ThrowIfNull(node);
 
             sb.AppendLine();
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
             // Add Key
             sb.AppendFormat("\"{0}\": ", node.Key);
@@ -511,7 +513,7 @@ namespace DotSerial.Core.JSON
 
             foreach (var keyValue in children)
             {
-                string? val = keyValue.IsNull ? JsonConstants.Null : keyValue.Value;
+                string? val = keyValue.IsNull ? GeneralConstants.Null : keyValue.Value;
 
                 if (keyValue.IsNull)
                 {
@@ -519,9 +521,9 @@ namespace DotSerial.Core.JSON
                 }
                 else
                 {
-                    sb.Append(JsonConstants.Quote);
+                    sb.Append(GeneralConstants.Quote);
                     sb.Append(val);
-                    sb.Append(JsonConstants.Quote);
+                    sb.Append(GeneralConstants.Quote);
                 }
 
                 sb.Append(", ");
@@ -553,7 +555,7 @@ namespace DotSerial.Core.JSON
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
             if (null == value)
             {
@@ -567,23 +569,6 @@ namespace DotSerial.Core.JSON
             {
                 sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
             }
-        }
-
-        /// <summary>
-        /// Adds identation
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="level">Level</param>
-        private static void AddIndentation(StringBuilder sb, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (level < 0)
-            {
-                throw new ArgumentException(nameof(level));
-            }
-
-            sb.Append(JsonConstants.WhiteSpace, level * JsonConstants.IndentationSize);
         }
 
     }

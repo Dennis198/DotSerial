@@ -1,4 +1,5 @@
 using DotSerial.Core.General;
+using DotSerial.Core.Tree;
 using DotSerial.Core.YAML;
 
 namespace DotSerial.Tests.Core.YAML

@@ -22,6 +22,7 @@
 
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.JSON
@@ -124,12 +125,12 @@ namespace DotSerial.Core.JSON
             }
 
             // Create root element
-            var rootNode = new DSNode(JsonConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            var versionNode = new DSNode(JsonConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
+            var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
             rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            var node = DSSerialize.Serialize(obj, JsonConstants.MainObjectKey);
+            var node = DSSerialize.Serialize(obj, GeneralConstants.MainObjectKey);
             rootNode.AppendChild(node);
 
             var result = new DotSerialJSON
@@ -161,7 +162,7 @@ namespace DotSerial.Core.JSON
 
             // Get root element
             var rootNode = serialObj._document.Tree;
-            var node = rootNode?.GetChild(JsonConstants.MainObjectKey);
+            var node = rootNode?.GetChild(GeneralConstants.MainObjectKey);
 
             DSDeserialize.Deserialize(result, node);
 

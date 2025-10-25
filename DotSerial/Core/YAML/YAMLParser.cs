@@ -23,6 +23,8 @@
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.Exceptions.YAML;
 using DotSerial.Core.General;
+using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using System.Diagnostics;
 using System.Text;
 
@@ -124,12 +126,12 @@ namespace DotSerial.Core.YAML
                     string key = keyValuePair.Key;
                     var value = keyValuePair.Value;
 
-                    if (key == YAMLConstants.Version)
+                    if (key == GeneralConstants.Version)
                     {
                         continue;
                     }
 
-                    if (key == YAMLConstants.PropertyTypeKey)
+                    if (key == GeneralConstants.PropertyTypeKey)
                     {
                         continue;
                     }
@@ -305,10 +307,10 @@ namespace DotSerial.Core.YAML
                 for (int j = 0; j < lines[i].Length; j++)
                 {
                     var c = lines[i][j];
-                    if (c == YAMLConstants.Quote)
+                    if (c == GeneralConstants.Quote)
                     {
                         StringBuilder dontNeed = new();
-                        j = AppendStringValue(dontNeed, j, lines[i].ToString());
+                        j = ParseMethods.AppendStringValue(dontNeed, j, lines[i].ToString());
                         // Remove ending quote
                         dontNeed.Remove(dontNeed.Length - 1, 1);
                         // Remove starting quote
@@ -316,16 +318,16 @@ namespace DotSerial.Core.YAML
 
                         result.Add(dontNeed.ToString());
                     }
-                    else if (c == YAMLConstants.N)
+                    else if (c == GeneralConstants.N)
                     {
                         if (j + 3 > lines[i].Length - 1) throw new NotImplementedException();
 
                         j++;
-                        if (lines[i][j] != YAMLConstants.U) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.U) throw new NotImplementedException();
                         j++;
-                        if (lines[i][j] != YAMLConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
                         j++;
-                        if (lines[i][j] != YAMLConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
 
                         result.Add(null);
                     }
@@ -402,10 +404,10 @@ namespace DotSerial.Core.YAML
                 if (false == IsKeyLine(lines[i]))
                 {
                     string key = ExtractKeyFromLine(lines[i]);
-                    if (key == YAMLConstants.PropertyTypeKey)
+                    if (key == GeneralConstants.PropertyTypeKey)
                     {
                         string? value = ExtractValueFromLine(lines[i]);
-                        var tmp = ParsePropertyTypeInfo(value);
+                        var tmp = ParseMethods.ParsePropertyTypeInfo(value);
                         return tmp;
                     }
 
@@ -441,9 +443,9 @@ namespace DotSerial.Core.YAML
                 }
 
                 var c = sb[i];
-                if (c == YAMLConstants.Quote)
+                if (c == GeneralConstants.Quote)
                 {
-                    i = AppendStringValue(currentLine, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(currentLine, i, sb.ToString());
                 }
                 else if (c.ToString() == Environment.NewLine)
                 {
@@ -508,7 +510,7 @@ namespace DotSerial.Core.YAML
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == YAMLConstants.WhiteSpace)
+                if (c == GeneralConstants.WhiteSpace)
                 {
                     level++;
                 }
@@ -533,7 +535,7 @@ namespace DotSerial.Core.YAML
             for (int i = line.Length - 1; i >= 0; i--)
             {
                 var c = line[i];
-                if (c == YAMLConstants.WhiteSpace)
+                if (c == GeneralConstants.WhiteSpace)
                 {
                     continue;
                 }
@@ -565,11 +567,11 @@ namespace DotSerial.Core.YAML
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == YAMLConstants.Quote)
+                if (c == GeneralConstants.Quote)
                 {
                     if (keyWasFound)
                     {
-                        _ = AppendStringValue(keyBuilder, i, line.ToString());
+                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line.ToString());
                         // Remove ending quote
                         keyBuilder.Remove(keyBuilder.Length - 1, 1);
                         // Remove starting quote
@@ -580,20 +582,20 @@ namespace DotSerial.Core.YAML
                     else
                     {
                         StringBuilder dontNeed = new();
-                        i = AppendStringValue(dontNeed, i, line.ToString());
+                        i = ParseMethods.AppendStringValue(dontNeed, i, line.ToString());
                         keyWasFound = true;
                     }
                 }
-                else if (keyWasFound && c == YAMLConstants.N)
+                else if (keyWasFound && c == GeneralConstants.N)
                 {
                     if (i + 3 > line.Length - 1) throw new NotImplementedException();
 
                     i++;
-                    if (line[i] != YAMLConstants.U) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.U) throw new NotImplementedException();
                     i++;
-                    if (line[i] != YAMLConstants.L) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
                     i++;
-                    if (line[i] != YAMLConstants.L) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
                     return null;
                 }
             }
@@ -614,9 +616,9 @@ namespace DotSerial.Core.YAML
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == YAMLConstants.Quote)
+                if (c == GeneralConstants.Quote)
                 {
-                    _ = AppendStringValue(keyBuilder, i, line.ToString());
+                    _ = ParseMethods.AppendStringValue(keyBuilder, i, line.ToString());
                     // Remove ending quote
                     keyBuilder.Remove(keyBuilder.Length - 1, 1);
                      // Remove starting quote
@@ -626,75 +628,7 @@ namespace DotSerial.Core.YAML
             }
 
             throw new DSInvalidYAMLException();
-        }
-
-        /// <summary>
-        /// Apends the whole string from starting quote to end quote to
-        /// the sting
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="startIndex">Index of the opeing quote</param>
-        /// <param name="yamlString">string</param>
-        /// <returns>Index of the closing quote</returns>
-        private static int AppendStringValue(StringBuilder sb, int startIndex, string yamlString)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (string.IsNullOrWhiteSpace(yamlString))
-            {
-                throw new DSInvalidYAMLException(yamlString);
-            }
-
-            if (yamlString.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            if (yamlString[startIndex] != YAMLConstants.Quote)
-            {
-                throw new DSInvalidYAMLException(yamlString);
-            }
-
-            sb.Append(YAMLConstants.Quote);
-
-            for (int j = startIndex + 1; j < yamlString.Length; j++)
-            {
-                var c2 = yamlString[j];
-                if (c2 == '\\')
-                {
-                    sb.Append(c2);
-                    sb.Append(yamlString[j + 1]);
-                    j++;
-                }
-                if (c2 == YAMLConstants.Quote)
-                {
-                    sb.Append(c2);
-                    return j;
-                }
-                else
-                {
-                    sb.Append(c2);
-                }
-            }
-
-            return yamlString.Length - 1;
-        }
-
-        /// <summary>
-        /// Parse the node property type info
-        /// </summary>
-        /// <param name="value">string</param>
-        /// <returns>DSNodePropertyType</returns>
-        private static DSNodePropertyType ParsePropertyTypeInfo(string? value)
-        {
-            // Check if value has value
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new DSInvalidYAMLException();
-            }
-
-            return value.ConvertToDSNodePropertyType();
-        }        
+        }    
         
         /// <summary>
         /// Trims the lines by removing empty lines and trailing whitespace

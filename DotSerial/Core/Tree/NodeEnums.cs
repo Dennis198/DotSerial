@@ -20,30 +20,31 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.Tree
 {
-    internal static class JsonConstants
+    /// <summary>
+    /// Type of a node
+    /// </summary>
+    public enum DSNodeType
     {
-        /// <summary>
-        /// Indentation Size
-        /// </summary>
-        internal const int IndentationSize = 2;
-
-        /// <summary>
-        /// Json object start char
-        /// </summary>
-        internal const char ObjectStart = '{';
-        /// <summary>
-        /// Jsoobject end char
-        /// </summary>
-        internal const char ObjectEnd = '}';
-        /// <summary>
-        /// Json list start char
-        /// </summary>
-        internal const char ListStart = '[';
-        /// <summary>
-        /// Json list end char
-        /// </summary>
-        internal const char ListEnd = ']';
+        Root = 0,
+        InnerNode = 1,
+        Leaf = 2,
     }
+
+    /// <summary>
+    /// Type of the object the node represents.
+    /// </summary>
+    public enum DSNodePropertyType
+    {
+        Undefined = -1,
+        Primitive = 0,
+        Class = 1,
+        List = 2,
+        Dictionary = 3,
+        KeyValuePair = 4,
+        KeyValuePairValue = 5,
+        Null = 6
+    }
+
 }

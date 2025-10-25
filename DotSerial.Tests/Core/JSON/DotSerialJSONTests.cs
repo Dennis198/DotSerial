@@ -60,8 +60,8 @@ namespace DotSerial.Tests.Core.JSON
             PrimitiveClass? tmp = null;
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
-            path = Path.GetFullPath(Path.Combine(path, @"..\..\.."));
-            path = Path.Combine(path, @"Resources\JsonTest.json");
+            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
+            path = Path.Combine(path,string.Format("Resources{0}JsonTest.json", Path.DirectorySeparatorChar));
 
             try
             {

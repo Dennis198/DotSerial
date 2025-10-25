@@ -23,6 +23,8 @@
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.Exceptions.YAML;
 using DotSerial.Core.General;
+using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using System.Text;
 
 namespace DotSerial.Core.YAML
@@ -268,13 +270,13 @@ namespace DotSerial.Core.YAML
                 AddTypeInfo(sb, level, DSNodePropertyType.List);
 
                 sb.AppendLine();
-                AddIndentation(sb, level + 1);
+                WriteMethods.AddIndentation(sb, level + 1, YAMLConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\":", node.Key);
 
                 var children = node.GetChildren();
 
                 StringBuilder sb2 = new();
-                AddIndentation(sb2, level + 1);
+                WriteMethods.AddIndentation(sb2, level + 1, YAMLConstants.IndentationSize);
 
                 foreach (var keyValue in children)
                 {
@@ -418,7 +420,7 @@ namespace DotSerial.Core.YAML
             ArgumentNullException.ThrowIfNull(node);
 
             sb.AppendLine();
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
 
             // Add Key
             sb.AppendFormat("\"{0}\":", node.Key);
@@ -429,13 +431,13 @@ namespace DotSerial.Core.YAML
 
             foreach (var keyValue in children)
             {
-                string? val = keyValue.IsNull ? YAMLConstants.Null : keyValue.Value;
+                string? val = keyValue.IsNull ? GeneralConstants.Null : keyValue.Value;
 
-                AddIndentation(sb, level + 1);
+                WriteMethods.AddIndentation(sb, level + 1, YAMLConstants.IndentationSize);
 
                 if (keyValue.IsNull)
                 {
-                    sb.AppendFormat("- {0}", YAMLConstants.Null);
+                    sb.AppendFormat("- {0}", GeneralConstants.Null);
                 }
                 else
                 {
@@ -467,7 +469,7 @@ namespace DotSerial.Core.YAML
             }
 
             sb.AppendLine();
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
@@ -501,7 +503,7 @@ namespace DotSerial.Core.YAML
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            AddIndentation(sb, level);
+            WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
 
             if (null == value)
             {
@@ -527,24 +529,8 @@ namespace DotSerial.Core.YAML
         {
             ArgumentNullException.ThrowIfNull(sb);
             string typeName = type.ConvertToString();
-            KeyValuePairToYaml(sb, YAMLConstants.PropertyTypeKey, typeName, level + 1);
+            KeyValuePairToYaml(sb, GeneralConstants.PropertyTypeKey, typeName, level + 1);
         }        
 
-        /// <summary>
-        /// Adds identation
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="level">Level</param>
-        private static void AddIndentation(StringBuilder sb, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (level < 0)
-            {
-                throw new ArgumentException(nameof(level));
-            }
-
-            sb.Append(YAMLConstants.WhiteSpace, level * YAMLConstants.IndentationSize);
-        }        
     }
 }
