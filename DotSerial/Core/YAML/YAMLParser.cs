@@ -447,7 +447,8 @@ namespace DotSerial.Core.YAML
                 {
                     i = ParseMethods.AppendStringValue(currentLine, i, sb.ToString());
                 }
-                else if (c.ToString() == Environment.NewLine)
+                // Both is needed for crossplatform
+                else if (c == '\n' || c == '\r')
                 {
                     createNewLine = true;
                 }
