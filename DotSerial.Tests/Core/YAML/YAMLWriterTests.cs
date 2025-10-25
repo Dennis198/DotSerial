@@ -1,32 +1,9 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using DotSerial.Core.General;
-using DotSerial.Core.JSON;
-using DotSerial.Core.Tree;
+using DotSerial.Core.YAML;
 
-namespace DotSerial.Tests.Core.JSON
+namespace DotSerial.Tests.Core.YAML
 {
-    public class JSONParserTests
+    public class YAMLWriterTests
     {
         [Fact]
         public void Convert_ExampleClass()
@@ -34,13 +11,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -49,13 +25,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = new EmptyClass();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
-            //Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            // Act
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -64,13 +39,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = PrimitiveClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -79,13 +53,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -110,13 +83,12 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.Dic.Add(i, d);
             }
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -125,13 +97,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -140,13 +111,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = NullClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -160,13 +130,12 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp2
             };
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
-            // Arrange
-            EqualCheck.AssertClassEqual(node, result);
+            // Assert
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -206,13 +175,12 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true
             };
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -221,14 +189,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
-
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
 
         [Fact]
@@ -237,14 +203,12 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = DateTimeClass.CreateTestDefault();
             var node = DSSerialize.Serialize(tmp, "0");
-            string jsonString = JSONWriter.ToJsonString(node);
 
             // Act
-            DSNode result = JSONParser.ToNode(jsonString);
-
+            string result = YAMLWriter.ToYamlString(node);
 
             // Assert
-            EqualCheck.AssertClassEqual(node, result);
+            Assert.NotEqual(string.Empty, result);
         }
     }
 }

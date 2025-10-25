@@ -48,7 +48,7 @@ namespace DotSerial.Core.Misc
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
-            // TODO vom Interace abhänhgig machen:
+            // TODO make dependent on the interface_
             // https://stackoverflow.com/questions/196661/calling-a-static-method-on-a-generic-type-parameter
             if (false == DotSerialXML.IsTypeSupported(itemType))
             {

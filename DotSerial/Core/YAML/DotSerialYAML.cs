@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,16 +25,16 @@ using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 using DotSerial.Interfaces;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.YAML
 {
-    /// <summary> Serialize and Deserialize an object with Json
+    /// <summary> Serialize and Deserialize an object with Yaml
     /// </summary>
-    public class DotSerialJSON : ISerial<DotSerialJSON>
+    public class DotSerialYAML : ISerial<DotSerialYAML>
     {
         /// <summary>
-        /// Json Document
+        /// Yaml Document
         /// </summary>
-        private JSONDocument? _document;
+        private YAMLDocument? _document;
 
         /// <summary>
         /// Current Version
@@ -56,7 +56,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public static void SaveToFile(string path, DotSerialJSON serialObj)
+        public static void SaveToFile(string path, DotSerialYAML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -96,13 +96,13 @@ namespace DotSerial.Core.JSON
                     throw new FileNotFoundException(path);
                 }
 
-                JSONDocument jsonDoc = new();
+                YAMLDocument yamlDoc = new();
 
-                jsonDoc.Load(path);
+                yamlDoc.Load(path);
 
-                var desObj = new DotSerialJSON
+                var desObj = new DotSerialYAML
                 {
-                    _document = jsonDoc
+                    _document = yamlDoc
                 };
 
                 var result = Deserialize<U>(desObj);
@@ -115,7 +115,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public static DotSerialJSON Serialize(object? obj)
+        public static DotSerialYAML Serialize(object? obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
 
@@ -133,9 +133,9 @@ namespace DotSerial.Core.JSON
             var node = DSSerialize.Serialize(obj, GeneralConstants.MainObjectKey);
             rootNode.AppendChild(node);
 
-            var result = new DotSerialJSON
+            var result = new DotSerialYAML
             {
-                _document = new JSONDocument()
+                _document = new YAMLDocument()
             };
 
             result._document.Tree = rootNode;
@@ -144,7 +144,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public static U Deserialize<U>(DotSerialJSON serialObj)
+        public static U Deserialize<U>(DotSerialYAML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -198,7 +198,7 @@ namespace DotSerial.Core.JSON
             }
 
             return false;
-        }
+        }        
 
         /// <summary>
         /// Converts the serialized object to an string.
@@ -213,13 +213,13 @@ namespace DotSerial.Core.JSON
 
             try
             {
-                string result = JSONWriter.ToJsonString(_document.Tree);
+                string result = YAMLWriter.ToYamlString(_document.Tree);
                 return result;
             }
             catch (Exception)
             {
                 throw;
             }
-        }
+        }                     
     }
 }

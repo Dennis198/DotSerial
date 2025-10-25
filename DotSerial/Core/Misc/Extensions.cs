@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,31 +20,33 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.General
+using System.Text;
+
+namespace DotSerial.Core.Misc
 {
-    /// <summary>
-    /// Type of a node
-    /// </summary>
-    public enum DSNodeType
+    internal static class Extensions
     {
-        Root = 0,
-        InnerNode = 1,
-        Leaf = 2,
-    }
+        /// <summary>
+        /// Trim end whitespace from StringBuilder
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <returns>Stringbuilder</returns>
+        public static StringBuilder TrimEnd(this StringBuilder sb)
+        {            
+            ArgumentNullException.ThrowIfNull(sb);
 
-    /// <summary>
-    /// Type of the object the node represents.
-    /// </summary>
-    public enum DSNodePropertyType
-    {
-        Undefined = -1,
-        Primitive = 0,
-        Class = 1,
-        List = 2,
-        Dictionary = 3,
-        KeyValuePair = 4,
-        KeyValuePairValue = 5,
-        Null = 6
-    }
+            if (sb.Length == 0) return sb;
 
+            int i = sb.Length - 1;
+
+            for (; i >= 0; i--)
+                if (!char.IsWhiteSpace(sb[i]))
+                    break;
+
+            if (i < sb.Length - 1)
+                sb.Length = i + 1;
+
+            return sb;
+        }
+    }
 }

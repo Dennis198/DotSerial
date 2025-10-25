@@ -4,10 +4,10 @@
 	<TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <FileVersion>1.1.0.0</FileVersion>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-	<InformationalVersion>1.1.0.0</InformationalVersion>
-	<PackageVersion>1.1.0</PackageVersion>
+    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+	<InformationalVersion>1.2.0.0</InformationalVersion>
+	<PackageVersion>1.2.0</PackageVersion>
 	<PackageId>Dennis198.DotSerial</PackageId>
 	<Authors>Dennis Sölch</Authors>
 	<Product>DotSerial</Product>
@@ -15,11 +15,11 @@
 	<PackageReadmeFile>README.md</PackageReadmeFile>
 	<RepositoryUrl>https://github.com/Dennis198/DotSerial</RepositoryUrl>
 	<PackageLicenseFile>LICENSE</PackageLicenseFile>
-	<Description>DotSerial is a lightweight C# library for serializing and deserializing .NET objects.</Description>
+	<Description>DotSerial is a lightweight cross-platform C# library for serializing and deserializing .NET objects.</Description>
 	<Title>DotSerial</Title>
-	<Version>1.1.0</Version>
+	<Version>1.2.0</Version>
 	<PackageProjectUrl>https://github.com/Dennis198/DotSerial</PackageProjectUrl>
-	<PackageTags>Serialization, Deserialization, Serialize, Deserialize, Xml, Json </PackageTags>
+	<PackageTags>Serialization, Deserialization, Serialize, Deserialize, cross-platform, Xml, Json, Yaml</PackageTags>
 	<Copyright>Copyright (c) 2025 Dennis Sölch</Copyright>
   </PropertyGroup>
 

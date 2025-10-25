@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,30 +20,54 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.General
 {
-    internal static class JsonConstants
+    internal static class GeneralConstants
     {
         /// <summary>
-        /// Indentation Size
+        /// DotSerial
         /// </summary>
-        internal const int IndentationSize = 2;
+        public const string DotSerial = "DotSerial";
+        /// <summary>
+        /// MainObject ID
+        /// </summary>
+        public const string MainObjectKey = "0";
+        /// <summary>
+        /// Version
+        /// </summary>
+        public const string Version = "version";
+        /// <summary>
+        /// Property type key
+        /// </summary>
+        internal const string PropertyTypeKey = "type";
 
         /// <summary>
-        /// Json object start char
+        /// Whitespace
         /// </summary>
-        internal const char ObjectStart = '{';
+        internal const char WhiteSpace = ' ';
         /// <summary>
-        /// Jsoobject end char
+        /// Quote
         /// </summary>
-        internal const char ObjectEnd = '}';
+        internal const char Quote = '"';
         /// <summary>
-        /// Json list start char
+        /// N
         /// </summary>
-        internal const char ListStart = '[';
+        internal const char N = 'n';
         /// <summary>
-        /// Json list end char
+        /// N
         /// </summary>
-        internal const char ListEnd = ']';
+        internal const char U = 'u';
+        /// <summary>
+        /// L
+        /// </summary>
+        internal const char L = 'l';
+        /// <summary>
+        /// Json null string
+        /// </summary>
+        internal const string Null = "null";
+        /// <summary>
+        /// Coma char
+        /// </summary>
+        internal const char Comma = ',';
     }
 }

@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,30 +20,24 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
-{
-    internal static class JsonConstants
-    {
-        /// <summary>
-        /// Indentation Size
-        /// </summary>
-        internal const int IndentationSize = 2;
+using System.Text;
+using DotSerial.Core.Misc;
 
-        /// <summary>
-        /// Json object start char
-        /// </summary>
-        internal const char ObjectStart = '{';
-        /// <summary>
-        /// Jsoobject end char
-        /// </summary>
-        internal const char ObjectEnd = '}';
-        /// <summary>
-        /// Json list start char
-        /// </summary>
-        internal const char ListStart = '[';
-        /// <summary>
-        /// Json list end char
-        /// </summary>
-        internal const char ListEnd = ']';
+namespace DotSerial.Tests.Core.Misc
+{
+    public class ExtensionsTests
+    {
+        [Fact]
+        public void TrimEnd()
+        {
+            // Arrange
+            StringBuilder sb = new("Hello World!     ");
+
+            // Act
+            var result = sb.TrimEnd();
+
+            // Assert
+            Assert.Equal("Hello World!", result.ToString());
+        }
     }
 }

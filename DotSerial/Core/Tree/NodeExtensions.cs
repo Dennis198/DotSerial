@@ -22,7 +22,7 @@
 
 using DotSerial.Core.Exceptions.Node;
 
-namespace DotSerial.Core.General
+namespace DotSerial.Core.Tree
 {
     internal static  class NodeExtensions
     {
@@ -83,5 +83,6 @@ namespace DotSerial.Core.General
                 _ => throw new DSInvalidNodeTypeException(propType),
             };
         }
+
     }
 }

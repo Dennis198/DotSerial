@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Core.General;
+using DotSerial.Core.Tree;
 
 namespace DotSerial.Core.Exceptions.Node
 {
