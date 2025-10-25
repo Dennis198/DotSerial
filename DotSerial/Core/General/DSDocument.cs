@@ -20,6 +20,8 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Core.Tree;
+
 namespace DotSerial.Core.General
 {
     /// <summary>

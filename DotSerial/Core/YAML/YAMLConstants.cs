@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,30 +20,33 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.YAML
 {
-    internal static class JsonConstants
+    internal static class YAMLConstants
     {
         /// <summary>
         /// Indentation Size
         /// </summary>
         internal const int IndentationSize = 2;
-
         /// <summary>
-        /// Json object start char
+        /// Start string of yaml document
         /// </summary>
-        internal const char ObjectStart = '{';
+        internal const string YAMLDocumentStart = "---";
         /// <summary>
-        /// Jsoobject end char
+        /// End string of yaml document
         /// </summary>
-        internal const char ObjectEnd = '}';
+        internal const string YAMLDocumentEnd = "...";
         /// <summary>
-        /// Json list start char
+        /// End string of yaml document
         /// </summary>
-        internal const char ListStart = '[';
+        internal const string ListItemIndicator = "-";
         /// <summary>
-        /// Json list end char
+        /// End string of yaml document
         /// </summary>
-        internal const char ListEnd = ']';
+        internal const char KeyValueSeperator = ':';
+        /// <summary>
+        /// Json null string
+        /// </summary>
+        internal const string NullListItem = "- null";
     }
 }

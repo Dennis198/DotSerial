@@ -23,6 +23,8 @@
 using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.General;
+using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using System.Text;
 
 namespace DotSerial.Core.JSON
@@ -45,7 +47,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Removes all whitespaces
-            string tmp = RemoveWhiteSpace(jsonString);
+            string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
             StringBuilder sb = new(tmp);
 
             // Remove start and end brackets
@@ -81,11 +83,18 @@ namespace DotSerial.Core.JSON
 
             // Check if string (parent) is a json object
             if (IsStringJsonObject(sb.ToString()))
-            {           
+            {
                 // Extract key, value pairs
                 var dic = ExtractKeyValuePairsFromJsonObject(sb);
 
-                var currPropType = DSNodePropertyType.Undefined;
+                if (false == dic.ContainsKey(GeneralConstants.PropertyTypeKey))
+                {
+                    throw new DSInvalidJSONException(sb.ToString());
+                }
+                
+                // Set property type of parent
+                var currPropType = ParseMethods.ParsePropertyTypeInfo(dic[GeneralConstants.PropertyTypeKey]);
+                parent.SetPropertyType(currPropType);
 
                 foreach(var keyValuepair in dic)
                 {
@@ -94,16 +103,14 @@ namespace DotSerial.Core.JSON
 
                     string? strValue = keyValuepair.Value;
 
-                    if (key == JsonConstants.Version)
+                    if (key == GeneralConstants.Version)
                     {
                         continue;
                     }
 
                     // Check if key is key for property info
-                    if (key == JsonConstants.PropertyTypeKey)
+                    if (key == GeneralConstants.PropertyTypeKey)
                     {
-                        currPropType = ParsePropertyTypeInfo(strValue);
-                        parent.SetPropertyType(currPropType);
                         continue;
                     }
 
@@ -172,19 +179,15 @@ namespace DotSerial.Core.JSON
 
             // Check if string (parent) is a json object
             if (IsStringJsonObject(sb.ToString()))
-            {
-                // Convert key to int key
+            {                
                 var dic = ExtractKeyValuePairsFromJsonObject(sb);
-
-                int dicId = -1;
 
                 foreach (var keyValuepair in dic)
                 {
-                    dicId++;
                     string key = keyValuepair.Key;
 
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                    DSNode? keyValuePairNodeValue = null;
+                    DSNode? keyValuePairNodeValue;
 
                     string? strValue = keyValuepair.Value;
 
@@ -201,11 +204,6 @@ namespace DotSerial.Core.JSON
                         StringBuilder sbChild = new(strValue);
                         ChildrenToNode(keyValuePairNodeValue, sbChild);
                         keyValuePairNodeValue.SetPropertyType(DSNodePropertyType.KeyValuePairValue);
-                    }
-                    else if (IsStringJsonList(strValue))
-                    {
-                        StringBuilder sbChild = new(strValue);
-                        ListToNode(parent, sbChild);
                     }
                     else // Primitive
                     {
@@ -245,7 +243,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Check if list is list of primitive or objects
-            if (sb[1] == JsonConstants.Quote || sb[1] == JsonConstants.N)
+            if (sb[1] == GeneralConstants.Quote || sb[1] == GeneralConstants.N)
             {
                 // Extract primitive list
                 var items = ExtractPrimitiveList(sb);
@@ -321,12 +319,12 @@ namespace DotSerial.Core.JSON
                 char c = sb[i];
 
                 // Check if opening quote is found
-                if (c == JsonConstants.Quote)
+                if (c == GeneralConstants.Quote)
                 {
                     StringBuilder sb2 = new ();
 
                     // Extract value
-                    i = AppendStringValue(sb2, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
 
                     // Remove opening and closing value
                     sb2.Remove(0, 1);
@@ -335,16 +333,16 @@ namespace DotSerial.Core.JSON
                     // Add value to result
                     result.Add(sb2.ToString());
                 }
-                else if (c == JsonConstants.N)
+                else if (c == GeneralConstants.N)
                 {
                     if (i + 3 > sb.Length - 1) throw new DSInvalidJSONException(sb.ToString());
 
                     i++;
-                    if (sb[i] != JsonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.U) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
 
                     // Add value to result
                     result.Add(null);
@@ -374,13 +372,13 @@ namespace DotSerial.Core.JSON
                 char c = sb[i];
 
                 // Check if opening quote for the key is found
-                if (c == JsonConstants.Quote && keyFound == false)
+                if (c == GeneralConstants.Quote && keyFound == false)
                 {
                     // Quote is opening
                     keyFound = true;
 
                     StringBuilder sb2 = new();
-                    i = AppendStringValue(sb2, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
 
                     // Remove opening and closing quote
                     sb2.Remove(0, 1);
@@ -395,13 +393,13 @@ namespace DotSerial.Core.JSON
                     continue;
                 }
                 // Check if opening quote for the value is found (primitive)
-                else if (c == JsonConstants.Quote && keyFound == true)
+                else if (c == GeneralConstants.Quote && keyFound == true)
                 {
                     // value is found
                     keyFound = false;
 
                     StringBuilder sb2 = new();
-                    i = AppendStringValue(sb2, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
 
                     // Remove opening and closing quote
                     sb2.Remove(0, 1);
@@ -420,7 +418,7 @@ namespace DotSerial.Core.JSON
 
                     continue;
                 }
-                else if (c == JsonConstants.N && keyFound == true)
+                else if (c == GeneralConstants.N && keyFound == true)
                 {
                     // value is found => null
                     keyFound = false;
@@ -428,11 +426,11 @@ namespace DotSerial.Core.JSON
                     if (i + 3 > sb.Length -1) throw new DSInvalidJSONException(sb.ToString());
 
                     i++;
-                    if (sb[i] != JsonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.U) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != JsonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
 
                     // Add key
                     result[founedKey] = null;
@@ -536,10 +534,10 @@ namespace DotSerial.Core.JSON
                 {
                     numberNewObjects++;
                 }
-                else if (c == JsonConstants.Quote)
+                else if (c == GeneralConstants.Quote)
                 {
                     StringBuilder sb = new();
-                    i = AppendStringValue(sb, i, jsonString);
+                    i = ParseMethods.AppendStringValue(sb, i, jsonString);
                     continue;
                 }
             }
@@ -587,106 +585,15 @@ namespace DotSerial.Core.JSON
                 {
                     numberNewObjects++;
                 }
-                else if (c == JsonConstants.Quote)
+                else if (c == GeneralConstants.Quote)
                 {
                     StringBuilder sb = new ();
-                    i = AppendStringValue(sb, i, jsonString);
+                    i = ParseMethods.AppendStringValue(sb, i, jsonString);
                     continue;
                 }
             }
 
             throw new DSInvalidJSONException(jsonString);
-        }
-
-        /// <summary>
-        /// Apends the whole string from starting quote to end quote to
-        /// the sting
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="startIndex">Index of the opeing quote</param>
-        /// <param name="jsonString">string</param>
-        /// <returns>Index of the closing quote</returns>
-        private static int AppendStringValue(StringBuilder sb, int startIndex, string jsonString)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new DSInvalidJSONException(jsonString);
-            }
-
-            if (jsonString.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            if (jsonString[startIndex] != JsonConstants.Quote)
-            {
-                throw new DSInvalidJSONException(jsonString);
-            }
-
-            sb.Append(JsonConstants.Quote);
-
-            for (int j = startIndex + 1; j < jsonString.Length; j++)
-            {
-                var c2 = jsonString[j];
-                if (c2 == '\\')
-                {
-                    sb.Append(c2);
-                    sb.Append(jsonString[j + 1]);
-                    j++;
-                }
-                if (c2 == JsonConstants.Quote)
-                {
-                    sb.Append(c2);
-                    return j;
-                }
-                else
-                {
-                    sb.Append(c2);
-                }
-            }
-
-            return jsonString.Length - 1;
-        }
-
-        /// <summary>
-        /// Removes all whitespaces inside a string
-        /// except is whitespace is between quotes.
-        /// </summary>
-        /// <param name="jsonString">String</param>
-        /// <returns>String without whitespaces.</returns>
-        private static string RemoveWhiteSpace(string jsonString)
-        {
-            // Check if value has value
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                return jsonString;
-            }
-
-            StringBuilder sb = new();
-            int stringLength = jsonString.Length;
-
-            for (int i = 0; i < stringLength; i++)
-            {
-                var c = jsonString[i];
-
-                // If char is a quoto extract everything
-                // till the closing quote is reached
-                if (c == JsonConstants.Quote)
-                {
-                    i = AppendStringValue(sb, i, jsonString);
-                    continue;
-                }
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-
-                sb.Append(c);
-            }
-
-            return sb.ToString();
         }
 
         /// <summary>
@@ -702,7 +609,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Remove all whitespaces
-            string tmp = RemoveWhiteSpace(str);
+            string tmp = ParseMethods.RemoveWhiteSpace(str);
 
             // Check if first element is '{'
             if (tmp[0] != JsonConstants.ObjectStart)
@@ -732,7 +639,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Remove all whitespaces
-            string tmp = RemoveWhiteSpace(str);
+            string tmp = ParseMethods.RemoveWhiteSpace(str);
 
             // Check if first element is '['
             if (tmp[0] != JsonConstants.ListStart)
@@ -749,20 +656,5 @@ namespace DotSerial.Core.JSON
             return true;
         }
 
-        /// <summary>
-        /// Parse the node property type info
-        /// </summary>
-        /// <param name="value">string</param>
-        /// <returns>DSNodePropertyType</returns>
-        private static DSNodePropertyType ParsePropertyTypeInfo(string? value)
-        {
-            // Check if value has value
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new DSInvalidJSONException();
-            }
-
-            return value.ConvertToDSNodePropertyType();
-        }
     }
 }

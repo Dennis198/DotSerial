@@ -485,8 +485,7 @@ namespace DotSerial.Tests
         public List<TestEnum>[]? EnumMix { get; set; }
         [DSPropertyID(23)]
         public List<TestEnum[]>? EnumListMix { get; set; }
-        // TODO Dictionary Testen
-
+        
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
             var tmp = new MultiDimClassIEnumarble

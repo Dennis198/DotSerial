@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
+## [1.2.0] - 2025-10-25
+
+### Added
+- Support for YAML serialization and deserialization.
+
+---
 
 ## [1.1.0] - 2025-10-17
 

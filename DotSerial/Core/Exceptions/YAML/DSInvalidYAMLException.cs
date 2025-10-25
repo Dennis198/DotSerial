@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,30 +20,12 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.Exceptions.YAML
 {
-    internal static class JsonConstants
+    [Serializable()]
+    public class DSInvalidYAMLException : Exception
     {
-        /// <summary>
-        /// Indentation Size
-        /// </summary>
-        internal const int IndentationSize = 2;
-
-        /// <summary>
-        /// Json object start char
-        /// </summary>
-        internal const char ObjectStart = '{';
-        /// <summary>
-        /// Jsoobject end char
-        /// </summary>
-        internal const char ObjectEnd = '}';
-        /// <summary>
-        /// Json list start char
-        /// </summary>
-        internal const char ListStart = '[';
-        /// <summary>
-        /// Json list end char
-        /// </summary>
-        internal const char ListEnd = ']';
+        public DSInvalidYAMLException() : base("String is not valid yaml.") { }
+        public DSInvalidYAMLException(string str) : base(string.Format("String {0} is not valid yaml.", str)) { }
     }
 }

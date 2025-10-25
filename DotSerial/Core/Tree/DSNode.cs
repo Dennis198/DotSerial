@@ -25,7 +25,7 @@ using DotSerial.Core.Exceptions.Node;
 using DotSerial.Core.Misc;
 using System.Diagnostics;
 
-namespace DotSerial.Core.General
+namespace DotSerial.Core.Tree
 {
     /// <summary>
     /// Node of a tree

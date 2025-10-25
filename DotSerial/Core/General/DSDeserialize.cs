@@ -22,6 +22,7 @@
 
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.Misc;
+using DotSerial.Core.Tree;
 using DotSerial.Core.XML;
 using System.Reflection;
 

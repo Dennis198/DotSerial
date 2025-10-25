@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,26 +20,25 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.Exceptions;
-using DotSerial.Core.JSON;
 using System.Collections;
 using System.Collections.ObjectModel;
+using DotSerial.Core.Exceptions;
+using DotSerial.Core.YAML;
 
-namespace DotSerial.Tests.Core.JSON
+namespace DotSerial.Tests.Core.YAML
 {
-    public class DotSerialJSONTests
+    public class DotSerialYAMLTests
     {
-
         [Fact]
         public void Save_True()
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var xmlDocument = DotSerialJSON.Serialize(testDefault);
+            var xmlDocument = DotSerialYAML.Serialize(testDefault);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialJSON.SaveToFile(file.FileInfo.FullName, xmlDocument);
+            DotSerialYAML.SaveToFile(file.FileInfo.FullName, xmlDocument);
         }
 
         [Fact]
@@ -50,7 +49,7 @@ namespace DotSerial.Tests.Core.JSON
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialJSON.SaveToFile(file.FileInfo.FullName, testDefault);
+            DotSerialYAML.SaveToFile(file.FileInfo.FullName, testDefault);
         }
 
         [Fact]
@@ -61,12 +60,12 @@ namespace DotSerial.Tests.Core.JSON
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
             path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
-            path = Path.Combine(path,string.Format("Resources{0}JsonTest.json", Path.DirectorySeparatorChar));
+            path = Path.Combine(path,string.Format("Resources{0}YamlTest.yml", Path.DirectorySeparatorChar));
 
             try
             {
                 // Act
-                tmp = DotSerialJSON.LoadFromFile<PrimitiveClass>(path);
+                tmp = DotSerialYAML.LoadFromFile<PrimitiveClass>(path);
             }
             catch (Exception ex)
             {
@@ -85,8 +84,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new EmptyClass();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<EmptyClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<EmptyClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -100,8 +99,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<AccessModifierClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<AccessModifierClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -116,8 +115,8 @@ namespace DotSerial.Tests.Core.JSON
 
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<DictionaryClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<DictionaryClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -131,8 +130,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<StructClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<StructClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -146,8 +145,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<RecordClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<RecordClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -161,8 +160,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<ParsableClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ParsableClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -176,8 +175,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<PrimitiveClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PrimitiveClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -196,8 +195,8 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<NestedClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NestedClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -242,8 +241,8 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<NestedNestedClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NestedNestedClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -257,8 +256,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<EnumClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<EnumClass>(xmlDocument);
 
 
             // Assert
@@ -273,8 +272,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<NoAttributeClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NoAttributeClass>(xmlDocument);
 
             // Arrange
             Assert.NotNull(result);
@@ -288,8 +287,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -303,8 +302,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<NullClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NullClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -319,8 +318,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -338,8 +337,8 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<DateTimeClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<DateTimeClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -369,8 +368,8 @@ namespace DotSerial.Tests.Core.JSON
             }
 
             // Act
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-            var result = DotSerialJSON.Deserialize<IEnumerableClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<IEnumerableClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -384,7 +383,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSDuplicateIDException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -394,7 +393,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -404,7 +403,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -417,7 +416,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -430,7 +429,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -443,7 +442,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -456,7 +455,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -469,7 +468,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -482,7 +481,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -495,7 +494,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -506,10 +505,10 @@ namespace DotSerial.Tests.Core.JSON
             {
                 Value0 = new TestRecordNoParameterlessConstructor(5, 7)
             };
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
 
             // Act & Assert
-            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialJSON.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
+            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialYAML.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
         }
 
         [Fact]
@@ -519,7 +518,7 @@ namespace DotSerial.Tests.Core.JSON
             object? tmp = null;
 
             // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<ArgumentNullException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -529,7 +528,7 @@ namespace DotSerial.Tests.Core.JSON
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DSInvalidIDException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Theory]
@@ -559,7 +558,7 @@ namespace DotSerial.Tests.Core.JSON
         [InlineData(typeof(RecordClass))]
         public void IsTypeSupported_True(Type t)
         {
-            bool result = DotSerialJSON.IsTypeSupported(t);
+            bool result = DotSerialYAML.IsTypeSupported(t);
             Assert.True(result);
         }
 
@@ -576,7 +575,7 @@ namespace DotSerial.Tests.Core.JSON
         [InlineData(typeof(HashSet<int>))]
         public void IsTypeSupported_False(Type t)
         {
-            bool result = DotSerialJSON.IsTypeSupported(t);
+            bool result = DotSerialYAML.IsTypeSupported(t);
             Assert.False(result);
         }
 
@@ -585,7 +584,7 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var xml = DotSerialJSON.Serialize(tmp);
+            var xml = DotSerialYAML.Serialize(tmp);
 
             // Act
             string result = xml.ToString();
@@ -599,7 +598,7 @@ namespace DotSerial.Tests.Core.JSON
         public void ToString_NoContent()
         {
             // Arrange
-            var xml = new DotSerialJSON();
+            var xml = new DotSerialYAML();
 
             // Act
             string result = xml.ToString();

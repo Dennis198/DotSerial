@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,30 +20,29 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.JSON
-{
-    internal static class JsonConstants
-    {
-        /// <summary>
-        /// Indentation Size
-        /// </summary>
-        internal const int IndentationSize = 2;
+using System.Text;
 
-        /// <summary>
-        /// Json object start char
-        /// </summary>
-        internal const char ObjectStart = '{';
-        /// <summary>
-        /// Jsoobject end char
-        /// </summary>
-        internal const char ObjectEnd = '}';
-        /// <summary>
-        /// Json list start char
-        /// </summary>
-        internal const char ListStart = '[';
-        /// <summary>
-        /// Json list end char
-        /// </summary>
-        internal const char ListEnd = ']';
+namespace DotSerial.Tests.Core.Misc
+{
+    public class WriterMethodsTests
+    {
+        [Theory]
+        [InlineData("HelloWorld", 0)]
+        [InlineData("HelloWorld", 2)]
+        [InlineData("HelloWorld", 4)]
+        [InlineData("HelloWorld", 10)]
+        public void AddIndentation(string str, int count)
+        {
+            // Arrange
+            StringBuilder sb = new();
+
+            // Act
+            DotSerial.Core.Misc.WriteMethods.AddIndentation(sb, count, 4);
+            sb.Append(str);
+
+            // Assert
+            Assert.Equal(new string(' ', count * 4) + str, sb.ToString());
+        }
+
     }
 }
