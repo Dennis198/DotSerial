@@ -115,9 +115,9 @@ namespace DotSerial.Core.YAML
             {
                 // Extract key, value pairs
                 var dic = ExtractKeyValuePairsFromYamlObject(lines, helpObj.StartLineIndex + 1);
-                var currPropType = GetPropertyTypeFromYamlObject(lines, helpObj);
 
                 // Set property type of parent
+                var currPropType = GetPropertyTypeFromYamlObject(lines, helpObj);
                 parent.SetPropertyType(currPropType);
 
                 foreach (var keyValuePair in dic)
@@ -168,7 +168,7 @@ namespace DotSerial.Core.YAML
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSInvalidYAMLException();
             }
         }
 
@@ -320,14 +320,14 @@ namespace DotSerial.Core.YAML
                     }
                     else if (c == GeneralConstants.N)
                     {
-                        if (j + 3 > lines[i].Length - 1) throw new NotImplementedException();
+                        if (j + 3 > lines[i].Length - 1) throw new DSInvalidYAMLException();
 
                         j++;
-                        if (lines[i][j] != GeneralConstants.U) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.U) throw new DSInvalidYAMLException();
                         j++;
-                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.L) throw new DSInvalidYAMLException();
                         j++;
-                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != GeneralConstants.L) throw new DSInvalidYAMLException();
 
                         result.Add(null);
                     }
@@ -588,14 +588,14 @@ namespace DotSerial.Core.YAML
                 }
                 else if (keyWasFound && c == GeneralConstants.N)
                 {
-                    if (i + 3 > line.Length - 1) throw new NotImplementedException();
+                    if (i + 3 > line.Length - 1) throw new DSInvalidYAMLException();
 
                     i++;
-                    if (line[i] != GeneralConstants.U) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.U) throw new DSInvalidYAMLException();
                     i++;
-                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.L) throw new DSInvalidYAMLException();
                     i++;
-                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
+                    if (line[i] != GeneralConstants.L) throw new DSInvalidYAMLException();
                     return null;
                 }
             }

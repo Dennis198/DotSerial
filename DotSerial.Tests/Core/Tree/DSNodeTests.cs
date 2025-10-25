@@ -22,7 +22,7 @@
 
 using DotSerial.Core.Tree;
 
-namespace DotSerial.Tests.Core.General
+namespace DotSerial.Tests.Core.Tree
 {
     public class DSNodeTests
     {

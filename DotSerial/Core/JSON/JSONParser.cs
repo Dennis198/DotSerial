@@ -83,11 +83,18 @@ namespace DotSerial.Core.JSON
 
             // Check if string (parent) is a json object
             if (IsStringJsonObject(sb.ToString()))
-            {           
+            {
                 // Extract key, value pairs
                 var dic = ExtractKeyValuePairsFromJsonObject(sb);
 
-                var currPropType = DSNodePropertyType.Undefined;
+                if (false == dic.ContainsKey(GeneralConstants.PropertyTypeKey))
+                {
+                    throw new DSInvalidJSONException(sb.ToString());
+                }
+                
+                // Set property type of parent
+                var currPropType = ParseMethods.ParsePropertyTypeInfo(dic[GeneralConstants.PropertyTypeKey]);
+                parent.SetPropertyType(currPropType);
 
                 foreach(var keyValuepair in dic)
                 {
@@ -104,9 +111,6 @@ namespace DotSerial.Core.JSON
                     // Check if key is key for property info
                     if (key == GeneralConstants.PropertyTypeKey)
                     {
-                        // TODO Da von Reihenfolge abhängig gefährllich!!!!
-                        currPropType = ParseMethods.ParsePropertyTypeInfo(strValue);
-                        parent.SetPropertyType(currPropType);
                         continue;
                     }
 
@@ -183,7 +187,7 @@ namespace DotSerial.Core.JSON
                     string key = keyValuepair.Key;
 
                     DSNode keyValuePairNode = new(key, DSNodeType.InnerNode, DSNodePropertyType.KeyValuePair); ;
-                    DSNode? keyValuePairNodeValue = null;
+                    DSNode? keyValuePairNodeValue;
 
                     string? strValue = keyValuepair.Value;
 
@@ -200,12 +204,6 @@ namespace DotSerial.Core.JSON
                         StringBuilder sbChild = new(strValue);
                         ChildrenToNode(keyValuePairNodeValue, sbChild);
                         keyValuePairNodeValue.SetPropertyType(DSNodePropertyType.KeyValuePairValue);
-                    }
-                    else if (IsStringJsonList(strValue))
-                    {
-                        // TODO KOMME ICH HIER JEMALS RAUS???
-                        StringBuilder sbChild = new(strValue);
-                        ListToNode(parent, sbChild);
                     }
                     else // Primitive
                     {

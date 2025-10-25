@@ -38,7 +38,7 @@ namespace DotSerial.Core.Misc
             // Check if value has value
             if (string.IsNullOrWhiteSpace(value))
             {
-                throw new NotImplementedException(); // TODO
+                throw new ArgumentException(value);
             }
 
             return value.ConvertToDSNodePropertyType();
@@ -46,40 +46,40 @@ namespace DotSerial.Core.Misc
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
-        /// the sting
+        /// the stringbuilder.
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="startIndex">Index of the opeing quote</param>
-        /// <param name="yamlString">string</param>
+        /// <param name="str">string</param>
         /// <returns>Index of the closing quote</returns>
-        internal static int AppendStringValue(StringBuilder sb, int startIndex, string yamlString)
+        internal static int AppendStringValue(StringBuilder sb, int startIndex, string str)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (string.IsNullOrWhiteSpace(yamlString))
+            if (string.IsNullOrWhiteSpace(str))
             {
-                throw new NotImplementedException(); // TODO
+                throw new ArgumentException(str);
             }
 
-            if (yamlString.Length < startIndex)
+            if (str.Length < startIndex)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (yamlString[startIndex] != GeneralConstants.Quote)
+            if (str[startIndex] != GeneralConstants.Quote)
             {
-                throw new NotImplementedException(); // TODO
+                throw new ArgumentException(str);
             }
 
             sb.Append(GeneralConstants.Quote);
 
-            for (int j = startIndex + 1; j < yamlString.Length; j++)
+            for (int j = startIndex + 1; j < str.Length; j++)
             {
-                var c2 = yamlString[j];
+                var c2 = str[j];
                 if (c2 == '\\')
                 {
                     sb.Append(c2);
-                    sb.Append(yamlString[j + 1]);
+                    sb.Append(str[j + 1]);
                     j++;
                 }
                 if (c2 == GeneralConstants.Quote)
@@ -93,35 +93,35 @@ namespace DotSerial.Core.Misc
                 }
             }
 
-            return yamlString.Length - 1;
+            return str.Length - 1;
         }     
 
         /// <summary>
         /// Removes all whitespaces inside a string
         /// except whitespace is between quotes.
         /// </summary>
-        /// <param name="jsonString">String</param>
+        /// <param name="str">String</param>
         /// <returns>String without whitespaces.</returns>
-        internal static string RemoveWhiteSpace(string jsonString)
+        internal static string RemoveWhiteSpace(string str)
         {
             // Check if value has value
-            if (string.IsNullOrWhiteSpace(jsonString))
+            if (string.IsNullOrWhiteSpace(str))
             {
-                return jsonString;
+                return str;
             }
 
             StringBuilder sb = new();
-            int stringLength = jsonString.Length;
+            int stringLength = str.Length;
 
             for (int i = 0; i < stringLength; i++)
             {
-                var c = jsonString[i];
+                var c = str[i];
 
                 // If char is a quoto extract everything
                 // till the closing quote is reached
                 if (c == GeneralConstants.Quote)
                 {
-                    i = AppendStringValue(sb, i, jsonString);
+                    i = AppendStringValue(sb, i, str);
                     continue;
                 }
                 if (char.IsWhiteSpace(c))

@@ -21,28 +21,23 @@
 #endregion
 
 using System.Text;
-using DotSerial.Core.General;
+using DotSerial.Core.Misc;
 
-namespace DotSerial.Core.Misc
+namespace DotSerial.Tests.Core.Misc
 {
-    internal static class WriteMethods
+    public class ExtensionsTests
     {
-        /// <summary>
-        /// Adds identation
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="count">Count of intdentaion</param>
-        /// <param name="size">Size of one intdentaion</param>
-        internal static void AddIndentation(StringBuilder sb, int count, int size)
+        [Fact]
+        public void TrimEnd()
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            // Arrange
+            StringBuilder sb = new("Hello World!     ");
 
-            if (count < 0)
-            {
-                throw new ArgumentException(count.ToString());
-            }
+            // Act
+            var result = sb.TrimEnd();
 
-            sb.Append(GeneralConstants.WhiteSpace, count * size);
+            // Assert
+            Assert.Equal("Hello World!", result.ToString());
         }
     }
 }

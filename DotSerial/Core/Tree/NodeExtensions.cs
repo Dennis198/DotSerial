@@ -20,7 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using System.Text;
 using DotSerial.Core.Exceptions.Node;
 
 namespace DotSerial.Core.Tree
