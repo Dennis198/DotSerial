@@ -82,7 +82,7 @@ namespace DotSerial.Core.Misc
                     sb.Append(str[j + 1]);
                     j++;
                 }
-                if (c2 == GeneralConstants.Quote)
+                else if (c2 == GeneralConstants.Quote)
                 {
                     sb.Append(c2);
                     return j;

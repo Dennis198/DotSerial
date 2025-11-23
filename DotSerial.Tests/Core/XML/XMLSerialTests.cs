@@ -171,6 +171,36 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<PathClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_ClassWithoutParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange
@@ -379,6 +409,25 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new ClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+
+        }
+
+        [Fact]
         public void CreateSerializedObject_DuplicateIDClass()
         {
             // Arrange
@@ -497,21 +546,6 @@ namespace DotSerial.Tests.Core.XML
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
-            {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
-            };
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-
-            // Act & Assert
-            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialXML.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
-
         }
 
         [Fact]

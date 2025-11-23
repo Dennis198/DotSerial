@@ -29,6 +29,7 @@ namespace DotSerial.Tests.Core.YAML
 {
     public class DotSerialYAMLTests
     {
+
         [Fact]
         public void Save_True()
         {
@@ -162,6 +163,36 @@ namespace DotSerial.Tests.Core.YAML
             // Act
             var xmlDocument = DotSerialYAML.Serialize(tmp);
             var result = DotSerialYAML.Deserialize<ParsableClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PathClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_ClassWithoutParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -377,6 +408,24 @@ namespace DotSerial.Tests.Core.YAML
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new ClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_DuplicateIDClass()
         {
             // Arrange
@@ -495,20 +544,6 @@ namespace DotSerial.Tests.Core.YAML
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
-            {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
-            };
-            var xmlDocument = DotSerialYAML.Serialize(tmp);
-
-            // Act & Assert
-            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialYAML.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
         }
 
         [Fact]
