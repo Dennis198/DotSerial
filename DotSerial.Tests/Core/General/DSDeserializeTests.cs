@@ -142,6 +142,22 @@ namespace DotSerial.Tests.Core.General
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassWithoutParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
+            var result = CreateInstanceMethods.CreateInstanceGeneric<ClassWithoutParameterlessConstructor>();
+
+            // Act
+            var node = DSSerialize.Serialize(tmp, "0");
+            DSDeserialize.Deserialize(result, node);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange
@@ -361,6 +377,26 @@ namespace DotSerial.Tests.Core.General
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new ClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
+            var result = CreateInstanceMethods.CreateInstanceGeneric<ClassRecordNoParameterlessConstructor>();
+
+            // Act
+            var node = DSSerialize.Serialize(tmp, "0");
+            DSDeserialize.Deserialize(result, node);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+
+        }
+
+        [Fact]
         public void CreateSerializedObject_DuplicateIDClass()
         {
             // Arrange
@@ -479,22 +515,6 @@ namespace DotSerial.Tests.Core.General
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize(tmp, "0"));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
-            {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
-            };
-            var result = CreateInstanceMethods.CreateInstanceGeneric<NotSupportedTypeClassRecordNoParameterlessConstructor>();
-            var xmlDocument = DSSerialize.Serialize(tmp, "0");
-
-            // Act & Assert
-            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DSDeserialize.Deserialize(result, xmlDocument));
-
         }
 
         [Fact]

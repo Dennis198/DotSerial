@@ -185,6 +185,21 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassWithoutParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var result = DotSerialJSON.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange
@@ -393,6 +408,24 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var tmp = new ClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+            };
+
+            // Act
+            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var result = DotSerialJSON.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_DuplicateIDClass()
         {
             // Arrange
@@ -511,20 +544,6 @@ namespace DotSerial.Tests.Core.JSON
 
             // Act & Assert
             Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassRecordNoParameterlessConstructor()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassRecordNoParameterlessConstructor
-            {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
-            };
-            var xmlDocument = DotSerialJSON.Serialize(tmp);
-
-            // Act & Assert
-            Assert.Throws<DSNoParameterlessConstructorDefinedException>(() => DotSerialJSON.Deserialize<NotSupportedTypeClassRecordNoParameterlessConstructor>(xmlDocument));
         }
 
         [Fact]

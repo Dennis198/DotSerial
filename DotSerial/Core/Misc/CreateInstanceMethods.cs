@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using System.Runtime.Serialization;
 using DotSerial.Core.Exceptions;
 
 namespace DotSerial.Core.Misc
@@ -41,9 +42,8 @@ namespace DotSerial.Core.Misc
             }
             catch (MissingMethodException)
             {
-                // Hack, currently if a "record" without a parameterless constructor is
-                // deserialized it will crash with "Activator.CreateInstance"
-                throw new DSNoParameterlessConstructorDefinedException(type.Name);
+                object? unTmp = CreateUninitializedObject(type);
+                return unTmp ?? throw new NullReferenceException();
             }
             catch (Exception) 
             {
@@ -54,7 +54,7 @@ namespace DotSerial.Core.Misc
         /// <summary>
         /// Creates a instance of the given type
         /// </summary>
-        /// <param name="type">Type of instance</param>
+        /// <typeparam name="T">Object to create</typeparam>
         /// <returns>Object</returns>
         public static T CreateInstanceGeneric<T>()
         {
@@ -66,13 +66,52 @@ namespace DotSerial.Core.Misc
             }
             catch (MissingMethodException)
             {
-                // Hack, currently if a "record" without a parameterless constructor is
-                // deserialized it will crash with "Activator.CreateInstance"
-                throw new DSNoParameterlessConstructorDefinedException();
+                T unTmp = CreateUninitializedObject<T>();
+                return unTmp ?? throw new NullReferenceException();
             }
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Creates an unintialized object
+        /// </summary>
+        /// <typeparam name="T">Object to create</typeparam>
+        /// <returns>Object</returns>
+        private static T CreateUninitializedObject<T>()
+        {
+            try
+            {
+#pragma warning disable SYSLIB0050
+                // Try create instance without a constructor.
+                return (T)FormatterServices.GetUninitializedObject(typeof(T));
+#pragma warning restore SYSLIB0050
+            }
+            catch
+            {
+                throw new DSNoParameterlessConstructorDefinedException();
+            }
+        }
+
+        /// <summary>
+        /// Creates an unintialized object
+        /// </summary>
+        /// <typeparam name="T">Object to create</typeparam>
+        /// <returns>Object</returns>
+        private static object CreateUninitializedObject(Type type)
+        {
+            try
+            {
+#pragma warning disable SYSLIB0050
+                // Try create instance without a constructor.
+                return FormatterServices.GetUninitializedObject(type);
+#pragma warning restore SYSLIB0050
+            }
+            catch
+            {
+                throw new DSNoParameterlessConstructorDefinedException();
             }
         }
 

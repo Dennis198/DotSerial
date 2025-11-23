@@ -942,6 +942,30 @@ namespace DotSerial.Tests
         }
     }
 
+    /// <summary>
+    /// Class without a parameterless constructor.
+    /// </summary>
+    public class ClassWithoutParameterlessConstructor(string name)
+    {
+        [DSPropertyID(0)]
+        public string Name { get; set; } = name;
+
+        public static ClassWithoutParameterlessConstructor CreateTestDefault()
+        {
+            var tmp = new ClassWithoutParameterlessConstructor("test");
+            return tmp;
+        }
+    }
+
+    /// <summary>
+    /// Class with struct without parameterless constructor.
+    /// </summary>
+    public class ClassRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(1893)]
+        public TestRecordNoParameterlessConstructor? Value0 { get; set; }
+    }
+
     #region Helper Class, Enum, Struct, ...
 
     /// <summary>
@@ -981,6 +1005,23 @@ namespace DotSerial.Tests
         { }
 
         public TestRecord(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
+    }
+
+    /// <summary>
+    /// Record without parameterless constructor
+    /// </summary>
+    public record TestRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(0)]
+        public int Value0 { get; set; }
+        [DSPropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestRecordNoParameterlessConstructor(int x, int y)
         {
             Value0 = x;
             Value1 = y;
@@ -1037,26 +1078,6 @@ namespace DotSerial.Tests
     {
         [DSPropertyID(1893)]
         public SortedSet<int>? Value0 { get; set; }
-    }
-
-    public record TestRecordNoParameterlessConstructor
-    {
-        [DSPropertyID(0)]
-        public int Value0 { get; set; }
-        [DSPropertyID(1)]
-        public int Value1 { get; set; }
-
-        public TestRecordNoParameterlessConstructor(int x, int y)
-        {
-            Value0 = x;
-            Value1 = y;
-        }
-    }
-
-    public class NotSupportedTypeClassRecordNoParameterlessConstructor
-    {
-        [DSPropertyID(1893)]
-        public TestRecordNoParameterlessConstructor? Value0 { get; set; }
     }
 
     #endregion
