@@ -28,6 +28,7 @@ namespace DotSerial.Tests.Core.JSON
 {
     public class JSONParserTests
     {
+
         [Fact]
         public void Convert_ExampleClass()
         {

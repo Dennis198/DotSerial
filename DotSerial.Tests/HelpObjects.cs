@@ -169,6 +169,8 @@ namespace DotSerial.Tests
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
         [DSPropertyID(16)]
         public string? StringAsText { get; set; }
+        [DSPropertyID(17)]
+        public string? StringEmpty { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -190,7 +192,8 @@ namespace DotSerial.Tests
                 EnumList = null,
                 Dictionary = null,
                 DictionaryWithNulls = [],
-                StringAsText = "null"
+                StringAsText = "null",
+                StringEmpty = String.Empty,
             };
             tmp.DictionaryWithNulls.Add(2, null);
             tmp.DictionaryWithNulls.Add(4, null);
