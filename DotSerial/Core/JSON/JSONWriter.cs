@@ -563,7 +563,7 @@ namespace DotSerial.Core.JSON
             }
             else if (value == string.Empty)
             {
-                sb.AppendFormat("\"{0}\": \"{{}}\",", key);
+                sb.AppendFormat("\"{0}\": \"\",", key);
             }
             else
             {

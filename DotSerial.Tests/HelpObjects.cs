@@ -28,6 +28,7 @@ using System.Net;
 
 namespace DotSerial.Tests
 {
+
     /// <summary>
     /// Example class (ReadMe.md)
     /// </summary>
@@ -168,6 +169,8 @@ namespace DotSerial.Tests
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
         [DSPropertyID(16)]
         public string? StringAsText { get; set; }
+        [DSPropertyID(17)]
+        public string? StringEmpty { get; set; }
 
         public static NullClass CreateTestDefault()
         {
@@ -189,7 +192,8 @@ namespace DotSerial.Tests
                 EnumList = null,
                 Dictionary = null,
                 DictionaryWithNulls = [],
-                StringAsText = "null"
+                StringAsText = "null",
+                StringEmpty = String.Empty,
             };
             tmp.DictionaryWithNulls.Add(2, null);
             tmp.DictionaryWithNulls.Add(4, null);
@@ -876,6 +880,9 @@ namespace DotSerial.Tests
         }
     }
 
+    /// <summary>
+    /// Class with parsable objects
+    /// </summary>
     public class ParsableClass()
     {
         [DSPropertyID(0)]
@@ -909,6 +916,54 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+    }
+
+    /// <summary>
+    /// Path class
+    /// </summary>
+    public class PathClass
+    {
+        [DSPropertyID(0)]
+        public string? Path1 { get; set; }
+        [DSPropertyID(1)]
+        public string? Path2 { get; set; }
+        [DSPropertyID(2)]
+        public string? Path3 { get; set; }
+
+        public static PathClass CreateTestDefault()
+        {
+            var tmp = new PathClass
+            {
+                Path1 = @"C:\Users\Dennis\AppData\Roaming\cbkit\cbkit.json",
+                Path2 = "C:\\Users\\Dennis\\AppData\\Roaming\\cbkit\\cbkit.json",
+                Path3 = "C:/Users/Dennis/AppData/Roaming/cbkit/cbkit.json",
+            };
+            return tmp;
+        }
+    }
+
+    /// <summary>
+    /// Class without a parameterless constructor.
+    /// </summary>
+    public class ClassWithoutParameterlessConstructor(string name)
+    {
+        [DSPropertyID(0)]
+        public string Name { get; set; } = name;
+
+        public static ClassWithoutParameterlessConstructor CreateTestDefault()
+        {
+            var tmp = new ClassWithoutParameterlessConstructor("test");
+            return tmp;
+        }
+    }
+
+    /// <summary>
+    /// Class with struct without parameterless constructor.
+    /// </summary>
+    public class ClassRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(1893)]
+        public TestRecordNoParameterlessConstructor? Value0 { get; set; }
     }
 
     #region Helper Class, Enum, Struct, ...
@@ -950,6 +1005,23 @@ namespace DotSerial.Tests
         { }
 
         public TestRecord(int x, int y)
+        {
+            Value0 = x;
+            Value1 = y;
+        }
+    }
+
+    /// <summary>
+    /// Record without parameterless constructor
+    /// </summary>
+    public record TestRecordNoParameterlessConstructor
+    {
+        [DSPropertyID(0)]
+        public int Value0 { get; set; }
+        [DSPropertyID(1)]
+        public int Value1 { get; set; }
+
+        public TestRecordNoParameterlessConstructor(int x, int y)
         {
             Value0 = x;
             Value1 = y;
@@ -1006,26 +1078,6 @@ namespace DotSerial.Tests
     {
         [DSPropertyID(1893)]
         public SortedSet<int>? Value0 { get; set; }
-    }
-
-    public record TestRecordNoParameterlessConstructor
-    {
-        [DSPropertyID(0)]
-        public int Value0 { get; set; }
-        [DSPropertyID(1)]
-        public int Value1 { get; set; }
-
-        public TestRecordNoParameterlessConstructor(int x, int y)
-        {
-            Value0 = x;
-            Value1 = y;
-        }
-    }
-
-    public class NotSupportedTypeClassRecordNoParameterlessConstructor
-    {
-        [DSPropertyID(1893)]
-        public TestRecordNoParameterlessConstructor? Value0 { get; set; }
     }
 
     #endregion
