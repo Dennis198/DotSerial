@@ -28,6 +28,7 @@ using System.Net;
 
 namespace DotSerial.Tests
 {
+
     /// <summary>
     /// Example class (ReadMe.md)
     /// </summary>
@@ -876,6 +877,9 @@ namespace DotSerial.Tests
         }
     }
 
+    /// <summary>
+    /// Class with parsable objects
+    /// </summary>
     public class ParsableClass()
     {
         [DSPropertyID(0)]
@@ -907,6 +911,30 @@ namespace DotSerial.Tests
                 CultureInfo0 = new CultureInfo("en-US"),
             };
 
+            return tmp;
+        }
+    }
+
+    /// <summary>
+    /// Path class
+    /// </summary>
+    public class PathClass
+    {
+        [DSPropertyID(0)]
+        public string? Path1 { get; set; }
+        [DSPropertyID(1)]
+        public string? Path2 { get; set; }
+        [DSPropertyID(2)]
+        public string? Path3 { get; set; }
+
+        public static PathClass CreateTestDefault()
+        {
+            var tmp = new PathClass
+            {
+                Path1 = @"C:\Users\Dennis\AppData\Roaming\cbkit\cbkit.json",
+                Path2 = "C:\\Users\\Dennis\\AppData\\Roaming\\cbkit\\cbkit.json",
+                Path3 = "C:/Users/Dennis/AppData/Roaming/cbkit/cbkit.json",
+            };
             return tmp;
         }
     }

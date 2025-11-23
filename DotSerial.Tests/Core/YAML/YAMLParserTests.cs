@@ -6,6 +6,7 @@ namespace DotSerial.Tests.Core.YAML
 {
     public class YAMLParserTests
     {
+
         [Fact]
         public void Convert_ExampleClass()
         {
@@ -220,6 +221,21 @@ namespace DotSerial.Tests.Core.YAML
             // Act
             DSNode result = YAMLParser.ToNode(jsonString);
 
+
+            // Assert
+            EqualCheck.AssertClassEqual(node, result);
+        }
+
+        [Fact]
+        public void Convert_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+            var node = DSSerialize.Serialize(tmp, "0");
+            string jsonString = YAMLWriter.ToYamlString(node);
+
+            // Act
+            DSNode result = YAMLParser.ToNode(jsonString);
 
             // Assert
             EqualCheck.AssertClassEqual(node, result);

@@ -170,6 +170,21 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialJSON.Serialize(tmp);
+            var result = DotSerialJSON.Deserialize<PathClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange

@@ -126,6 +126,22 @@ namespace DotSerial.Tests.Core.General
         }
 
         [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+            var result = CreateInstanceMethods.CreateInstanceGeneric<PathClass>();
+
+            // Act
+            var node = DSSerialize.Serialize(tmp, "0");
+            DSDeserialize.Deserialize(result, node);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange

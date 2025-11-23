@@ -29,6 +29,7 @@ namespace DotSerial.Tests.Core.YAML
 {
     public class DotSerialYAMLTests
     {
+
         [Fact]
         public void Save_True()
         {
@@ -162,6 +163,21 @@ namespace DotSerial.Tests.Core.YAML
             // Act
             var xmlDocument = DotSerialYAML.Serialize(tmp);
             var result = DotSerialYAML.Deserialize<ParsableClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PathClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);

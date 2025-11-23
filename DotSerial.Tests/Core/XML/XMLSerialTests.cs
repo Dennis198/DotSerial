@@ -171,6 +171,21 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
+        public void CreateSerializedObject_PathClass()
+        {
+            // Arrange
+            var tmp = PathClass.CreateTestDefault();
+
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<PathClass>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            EqualCheck.AssertClassEqual(tmp, result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_PrimitiveClass()
         {
             // Arrange
