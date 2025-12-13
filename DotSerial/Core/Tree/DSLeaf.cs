@@ -1,0 +1,50 @@
+namespace DotSerial.Core.Tree
+{
+    /// <summary>
+    /// Lead node
+    /// </summary>
+    internal class DSLeaf : IDSNode
+    {
+        /// <inheritdoc/>
+        public string Key {get; private set;}
+        /// <summary>
+        /// Value of the leaf
+        /// </summary>
+        private string _value;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="key">Key of node</param>
+        /// <param name="value">Value of node</param>
+        public DSLeaf(string key, string value)
+        {
+            Key = key;
+            _value = value;
+        }
+
+        /// <inheritdoc/>
+        public string GetValue()
+        {
+            return _value;
+        }
+
+        /// <inheritdoc/>
+        public bool HasChildren()
+        {
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public IDSNode GetChild(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void AddChild(IDSNode? node)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

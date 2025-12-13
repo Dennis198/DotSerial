@@ -1,0 +1,87 @@
+namespace DotSerial.Core.Tree
+{
+    /// <summary>
+    /// Inner node
+    /// </summary>
+    internal class DSInnerNode : IDSNode
+    {
+        /// <inheritdoc/>
+        public string Key {get; private set;}
+
+        /// <summary>
+        /// Children of the node
+        /// </summary>
+        private List<IDSNode> _children = [];
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="key">Key of the node</param>
+        public DSInnerNode(string key)
+        {
+            Key = key;
+        }
+
+        /// <inheritdoc/>
+        public void AddChild(IDSNode? node)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            if (null == _children)
+            {
+                throw new NotImplementedException();
+            }
+
+            string key = node.Key;
+
+            // Key is already taken
+            foreach (var child in _children)
+            {
+                if (child.Key.Equals(key))
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            _children.Add(node);
+        }
+
+        /// <inheritdoc/>
+        public IDSNode GetChild(string key)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (null == _children)
+            {
+                throw new NotImplementedException();
+            }
+
+            foreach (var child in _children)
+            {
+                if (child.Key.Equals(key))
+                {
+                    return child;
+                }
+            }
+
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public string GetValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public bool HasChildren()
+        {
+            if (null == _children)
+            {
+                return false;
+            }
+
+            return _children.Count > 0;        
+        }
+    }
+}
