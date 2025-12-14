@@ -1,6 +1,6 @@
 namespace DotSerial.Core.Tree
 {
-    internal abstract class DSInnerNodeWrapper : IDSNode
+    internal abstract class InnerNodeDecorater : IDSNode
     {
         /// <summary>
         /// The wrapped argument layout.
@@ -14,9 +14,9 @@ namespace DotSerial.Core.Tree
         /// Construcot
         /// </summary>
         /// <param name="wrappedNode">Innernode to wrap</param>
-        protected DSInnerNodeWrapper(IDSNode wrappedNode)
+        protected InnerNodeDecorater(IDSNode wrappedNode)
         {
-            if (wrappedNode is not DSInnerNode)
+            if (wrappedNode is not InnerNode)
             {
                 throw new NotImplementedException();
             }
@@ -37,13 +37,13 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
-        public IDSNode GetChild(string key)
+        public virtual IDSNode GetChild(string key)
         {
             return _wrappedInnerNode.GetChild(key);
         }
 
         /// <inheritdoc/>
-        public void AddChild(IDSNode? node)
+        public virtual void AddChild(IDSNode? node)
         {
             _wrappedInnerNode.AddChild(node);
         }

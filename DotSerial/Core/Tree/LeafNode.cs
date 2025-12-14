@@ -3,21 +3,21 @@ namespace DotSerial.Core.Tree
     /// <summary>
     /// Lead node
     /// </summary>
-    internal class DSLeaf : IDSNode
+    internal class LeafNode : IDSNode
     {
         /// <inheritdoc/>
         public string Key {get; private set;}
         /// <summary>
         /// Value of the leaf
         /// </summary>
-        private string _value;
+        private readonly string _value;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="key">Key of node</param>
         /// <param name="value">Value of node</param>
-        public DSLeaf(string key, string value)
+        public LeafNode(string key, string value)
         {
             Key = key;
             _value = value;

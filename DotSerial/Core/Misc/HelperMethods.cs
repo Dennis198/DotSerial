@@ -69,5 +69,50 @@ namespace DotSerial.Core.Misc
             return i == 1;
         }
 
+        /// <summary>
+        /// Converts primitive to string
+        /// </summary>
+        /// <param name="value">Primitive obj</param>
+        /// <returns>String</returns>
+        internal static string PrimitiveToString(object? value)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            string? strValue;
+            Type type = value.GetType();
+            if (type == typeof(bool))
+            {
+                int tmp = HelperMethods.BoolToInt((bool)value);
+                strValue = tmp.ToString();
+            }
+            else if (type.IsEnum)
+            {
+                strValue = Convert.ToString((int)value);
+            }
+            else if (type == typeof(float))
+            {
+                strValue = ((float)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+            else if (type == typeof(double))
+            {
+                strValue = ((double)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+            else if (type == typeof(decimal))
+            {
+                strValue = ((decimal)value).ToString(System.Globalization.CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                strValue = value.ToString();
+            }
+
+            if (null == strValue)
+            {
+                throw new InvalidOperationException("Could not convert primitive to string.");
+            }
+
+            return strValue;
+        }
+
     }
 }

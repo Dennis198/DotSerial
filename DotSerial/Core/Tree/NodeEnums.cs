@@ -32,6 +32,14 @@ namespace DotSerial.Core.Tree
         Leaf = 2,
     }
 
+    public enum NodeType
+    {
+        Leaf = 0,
+        InnerNode = 1,
+        ListNode = 2,
+        DictionaryNode = 3
+    }
+
     /// <summary>
     /// Type of the object the node represents.
     /// </summary>

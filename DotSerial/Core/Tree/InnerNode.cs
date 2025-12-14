@@ -3,7 +3,7 @@ namespace DotSerial.Core.Tree
     /// <summary>
     /// Inner node
     /// </summary>
-    internal class DSInnerNode : IDSNode
+    internal class InnerNode : IDSNode
     {
         /// <inheritdoc/>
         public string Key {get; private set;}
@@ -17,7 +17,7 @@ namespace DotSerial.Core.Tree
         /// Constructor
         /// </summary>
         /// <param name="key">Key of the node</param>
-        public DSInnerNode(string key)
+        public InnerNode(string key)
         {
             Key = key;
         }
