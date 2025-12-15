@@ -59,6 +59,25 @@ namespace DotSerial.Core.JSON
             return sb.ToString();
         }
 
+        public static string ToJsonString2(IDSNode? node)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            StringBuilder sb = new();
+
+            // Add First '{'
+            sb.Append(JsonConstants.ObjectStart);
+
+            node.Accept(new JSONVisitor(), sb, 1);
+
+            sb.Remove(sb.Length - 1, 1);
+
+            // Add Last '}'
+            AddObjectEnd(sb, 0, true);
+
+            return sb.ToString();
+        }        
+
         /// <summary>
         /// Converts node to json
         /// </summary>

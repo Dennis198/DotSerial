@@ -54,10 +54,15 @@ namespace DotSerial.Core.Tree
                 case NodeType.InnerNode:
                     return new InnerNode(key);
                 case NodeType.ListNode:
+                {
                     var wrapper = new InnerNode(key);
                     return new ListNode(wrapper);
+                }
                 case NodeType.DictionaryNode:
-                    throw new NotImplementedException();
+                {
+                    var wrapper = new InnerNode(key);
+                    return new DictionaryNode(wrapper);
+                }
                 default:
                     throw new NotImplementedException();
             }

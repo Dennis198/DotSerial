@@ -155,16 +155,16 @@ namespace DotSerial.Core.General
             ///        |
             ///  -------------
             ///  |     |     |
-            /// (A)   (B)   (C) (Properties)
-            
-            // Create node
-            var result = _nodeFactory.CreateNode(objectID, null, NodeType.InnerNode);
+            /// (A)   (B)   (C) (Properties)        
             
             // If classObj is null, create Null node
             if (classObj == null)
             {
-                return result;
+                return _nodeFactory.CreateNode(objectID, null, NodeType.Leaf);
             }
+
+            // Create node
+            var result = _nodeFactory.CreateNode(objectID, null, NodeType.InnerNode);
 
             Type typeObj = classObj.GetType();
 
@@ -413,17 +413,16 @@ namespace DotSerial.Core.General
             ///  |     |     |
             /// (A)   (B)   (C) (KeyValuePairs)
             ///  :     |     :
-            ///  :    (D)    :  (Value of KeyvaluePairs)
-            
-            
-            // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.DictionaryNode);
+            ///  :    (D)    :  (Value of KeyvaluePairs)            
             
             // If classObj is list, create Null node
             if (dic == null)
             {
-                return result;
+                return _nodeFactory.CreateNode(id, null, NodeType.Leaf);
             }
+
+            // Create node
+            var result = _nodeFactory.CreateNode(id, null, NodeType.DictionaryNode);            
 
             if (dic is IDictionary castedDic)
             {
@@ -667,16 +666,16 @@ namespace DotSerial.Core.General
             ///        |
             ///  -------------
             ///  |     |     |
-            /// (A)   (B)   (C) (Items)
-            
-            // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.ListNode);
+            /// (A)   (B)   (C) (Items)        
             
             // If classObj is list, create Null node
             if (list == null)
             {
-                return result;
+                return _nodeFactory.CreateNode(id, null, NodeType.Leaf);
             }
+
+            // Create node
+            var result = _nodeFactory.CreateNode(id, null, NodeType.ListNode);
 
             if (list is IEnumerable castedList)
             {

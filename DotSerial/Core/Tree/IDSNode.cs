@@ -1,3 +1,5 @@
+using System.Text;
+
 namespace DotSerial.Core.Tree
 {
     /// <summary>
@@ -14,7 +16,7 @@ namespace DotSerial.Core.Tree
         /// Returns the value of the node.
         /// </summary>
         /// <returns>Value of node</returns>
-        public abstract string GetValue();
+        public abstract string? GetValue();
 
         /// <summary>
         /// Get info, if node has children.
@@ -30,9 +32,23 @@ namespace DotSerial.Core.Tree
         public abstract IDSNode GetChild(string key);
 
         /// <summary>
+        /// Get all children
+        /// </summary>
+        /// <returns>List of children</returns>
+        public abstract List<IDSNode> GetChildren();
+
+        /// <summary>
         /// Append child node
         /// </summary>
         /// <param name="node">Child node</param>
         public abstract void AddChild(IDSNode? node);
+
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="visitor"></param>
+        /// <param name="sb"></param>
+        /// <param name="level"></param>
+        public abstract void Accept(INodeVisitor visitor, StringBuilder sb, int level);
     }
 }

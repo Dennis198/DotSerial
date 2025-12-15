@@ -1,9 +1,11 @@
+using System.Text;
+
 namespace DotSerial.Core.Tree
 {
     /// <summary>
     /// Inner node
     /// </summary>
-    internal class InnerNode : IDSNode
+    public class InnerNode : IDSNode
     {
         /// <inheritdoc/>
         public string Key {get; private set;}
@@ -68,6 +70,17 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
+        public List<IDSNode> GetChildren()
+        {
+            if (null == _children)
+            {
+                throw new NotImplementedException();
+            }
+
+            return _children;
+        }
+
+        /// <inheritdoc/>
         public string GetValue()
         {
             throw new NotImplementedException();
@@ -82,6 +95,12 @@ namespace DotSerial.Core.Tree
             }
 
             return _children.Count > 0;        
+        }
+
+        /// <inheritdoc/>
+        public void Accept (INodeVisitor visitor, StringBuilder sb, int level)
+        {
+            visitor.VisitInnerNode(this, sb, level);
         }
     }
 }

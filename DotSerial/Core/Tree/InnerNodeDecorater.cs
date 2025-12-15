@@ -1,6 +1,8 @@
+using System.Text;
+
 namespace DotSerial.Core.Tree
 {
-    internal abstract class InnerNodeDecorater : IDSNode
+    public abstract class InnerNodeDecorater : IDSNode
     {
         /// <summary>
         /// The wrapped argument layout.
@@ -43,9 +45,21 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
+        public virtual List<IDSNode> GetChildren()
+        {
+            return _wrappedInnerNode.GetChildren();
+        }
+
+        /// <inheritdoc/>
         public virtual void AddChild(IDSNode? node)
         {
             _wrappedInnerNode.AddChild(node);
         }
+
+        /// <inheritdoc/>
+        public virtual void Accept (INodeVisitor visitor, StringBuilder sb, int level)
+        {
+            throw new NotImplementedException();
+        }        
     }
 }

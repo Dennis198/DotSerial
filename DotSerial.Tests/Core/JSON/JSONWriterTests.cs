@@ -42,6 +42,20 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void Convert_ExampleClass2()
+        {
+            // Arrange
+            var tmp = ExampleClass.CreateTestDefault();
+            var node = DSSerialize.Serialize2(tmp, "0");
+
+            // Act
+            string result = JSONWriter.ToJsonString2(node);
+
+            // Assert
+            Assert.NotEqual(string.Empty, result);
+        }        
+
+        [Fact]
         public void Convert_EmptyClass()
         {
             // Arrange
