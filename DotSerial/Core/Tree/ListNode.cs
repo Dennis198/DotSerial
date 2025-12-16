@@ -12,9 +12,9 @@ namespace DotSerial.Core.Tree
         {}
 
         /// <inheritdoc/>
-        public override void Accept (INodeVisitor visitor, StringBuilder sb, int level)
+        public override void Accept (INodeVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
         {
-            visitor.VisitListNode(this, sb, level);
+            visitor.VisitListNode(this, sb, options);
         } 
 
         /// <summary>

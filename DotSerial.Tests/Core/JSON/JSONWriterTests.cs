@@ -84,6 +84,20 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
+        public void Convert_PrimitiveClass2()
+        {
+            // Arrange
+            var tmp = PrimitiveClass.CreateTestDefault();
+            var node = DSSerialize.Serialize2(tmp, "0");
+
+            // Act
+            string result = JSONWriter.ToJsonString2(node);
+
+            // Assert
+            Assert.NotEqual(string.Empty, result);
+        }        
+
+        [Fact]
         public void Convert_PrimitiveClassIEnumarable()
         {
             // Arrange
@@ -96,6 +110,20 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotEqual(string.Empty, result);
         }
+
+        [Fact]
+        public void Convert_PrimitiveClassIEnumarable2()
+        {
+            // Arrange
+            var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
+            var node = DSSerialize.Serialize2(tmp, "0");
+
+            // Act
+            string result = JSONWriter.ToJsonString2(node);
+
+            // Assert
+            Assert.NotEqual(string.Empty, result);
+        }        
 
         [Fact]
         public void Convert_IEnumerableClass()
@@ -126,6 +154,36 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotEqual(string.Empty, result);
         }
+
+        [Fact]
+        public void Convert_IEnumerableClass2()
+        {
+            // Arrange
+            var tmp = new IEnumerableClass
+            {
+                Array = new SimpleClass[3],
+                List = [],
+                Dic = null
+            };
+            for (int i = 0; i < 3; i++)
+            {
+                var d = new SimpleClass
+                {
+                    Boolean = true
+                };
+
+                tmp.Array[i] = d;
+                tmp.List.Add(d);
+                // tmp.Dic.Add(i, d);
+            }
+            var node = DSSerialize.Serialize2(tmp, "0");
+
+            // Act
+            string result = JSONWriter.ToJsonString2(node);
+
+            // Assert
+            Assert.NotEqual(string.Empty, result);
+        }        
 
         [Fact]
         public void Convert_DictionaryClass()

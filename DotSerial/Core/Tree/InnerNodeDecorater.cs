@@ -57,7 +57,7 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
-        public virtual void Accept (INodeVisitor visitor, StringBuilder sb, int level)
+        public virtual void Accept (INodeVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
         {
             throw new NotImplementedException();
         }        

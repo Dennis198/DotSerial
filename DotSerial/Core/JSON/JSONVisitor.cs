@@ -10,10 +10,14 @@ namespace DotSerial.Core.JSON
     /// </summary>
     public class JSONVisitor : INodeVisitor
     {
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, int level)
+        // TODO
+        // AdditionalOptions Object übergeben mit AddKey, Prefix,...
+
+        public void VisitLeafNode(LeafNode node, StringBuilder sb, NodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
+            int level = options.Level;
 
             // Make sure key:value has its own line.
             sb.AppendLine();
@@ -37,19 +41,31 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, int level)
+        public void VisitInnerNode(InnerNode node, StringBuilder sb, NodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
+            int level = options.Level;
 
             if (node.HasChildren())
             {
-                AddObjectStart(sb, node.Key.ToString(), level);
+                if (options.AddKey)
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level);    
+                }
+                else
+                {
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.AppendLine();
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.Append(JsonConstants.ObjectStart);
+                }
+                
 
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    keyValue.Accept(this, sb, level + 1);
+                    keyValue.Accept(this, sb, new NodeVisitorOptions(level + 1));
                 }
 
                 // Remove last ','
@@ -68,16 +84,52 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        public void VisitListNode(ListNode node, StringBuilder sb, int level)
+        public void VisitListNode(ListNode node, StringBuilder sb, NodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
+            int level = options.Level;
 
             if (node.HasChildren())
             {
+
                 var children = node.GetChildren();
                 if (false == node.IsPrimitiveList())
                 {
+                    if (options.AddKey)
+                    {
+                        // AddObjectStart(sb, node.Key.ToString(), level);
+                        sb.AppendLine();
+                        WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                        sb.AppendFormat("\"{0}\": [", node.Key);
+                    }
+                    else
+                    {
+                        sb.AppendLine();
+                        WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                        sb.Append(JsonConstants.ObjectStart);
+                    }
+
+                    StringBuilder sb2 = new();
+                    // sb2.AppendLine();
+                    // WriteMethods.AddIndentation(sb2, level + 1, JsonConstants.IndentationSize);
+                    // sb2.Append(JsonConstants.ListStart);
+
+                    foreach (var keyValue in children)
+                    {
+                        StringBuilder sb3 = new();
+                        keyValue.Accept(this, sb3, new NodeVisitorOptions(level + 1, false));
+                        sb2.Append(sb3);
+                    }
+
+                    sb2.Remove(sb2.Length - 1, 1);
+                    sb2.AppendLine();
+                    WriteMethods.AddIndentation(sb2, level, JsonConstants.IndentationSize);
+                    sb2.Append(JsonConstants.ListEnd + ",");
+
+
+                    sb.Append(sb2);
+                    // AddObjectEnd(sb, level);
 
                 }
                 else
@@ -111,6 +163,7 @@ namespace DotSerial.Core.JSON
                     sb.Remove(sb.Length - 2, 2);
 
                     sb.Append(JsonConstants.ListEnd);
+                    sb.Append(",");
                 }
             }
             else
@@ -121,8 +174,12 @@ namespace DotSerial.Core.JSON
             }
         }
 
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, int level)
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
         {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(sb);
+            int level = options.Level;
+
             throw new NotImplementedException();
         }
 

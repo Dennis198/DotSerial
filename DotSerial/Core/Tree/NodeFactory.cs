@@ -37,10 +37,10 @@ namespace DotSerial.Core.Tree
                 throw new NotImplementedException();
             }
 
-            if (null == value && (type == NodeType.Leaf))
-            {
-                throw new NotImplementedException();
-            }
+            // if (null == value && (type == NodeType.Leaf))
+            // {
+            //     throw new NotImplementedException();
+            // }
 
             if (null != value && (type != NodeType.Leaf))
             {
@@ -50,7 +50,7 @@ namespace DotSerial.Core.Tree
             switch(type)
             {
                 case NodeType.Leaf:
-                    return new LeafNode(key, value ?? string.Empty);
+                    return new LeafNode(key, value);
                 case NodeType.InnerNode:
                     return new InnerNode(key);
                 case NodeType.ListNode:
