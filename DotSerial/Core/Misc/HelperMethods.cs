@@ -74,9 +74,12 @@ namespace DotSerial.Core.Misc
         /// </summary>
         /// <param name="value">Primitive obj</param>
         /// <returns>String</returns>
-        internal static string PrimitiveToString(object? value)
+        internal static string? PrimitiveToString(object? value)
         {
-            ArgumentNullException.ThrowIfNull(value);
+            if (null == value)
+            {
+                return null;
+            }
 
             string? strValue;
             Type type = value.GetType();

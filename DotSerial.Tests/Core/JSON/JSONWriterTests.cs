@@ -32,20 +32,6 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
-
-            // Act
-            string result = JSONWriter.ToJsonString(node);
-
-            // Assert
-            Assert.NotEqual(string.Empty, result);
-        }
-
-        [Fact]
-        public void Convert_ExampleClass2()
-        {
-            // Arrange
-            var tmp = ExampleClass.CreateTestDefault();
             var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
@@ -53,17 +39,17 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotEqual(string.Empty, result);
-        }        
+        }     
 
         [Fact]
         public void Convert_EmptyClass()
         {
             // Arrange
             var tmp = new EmptyClass();
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);
@@ -74,20 +60,6 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = PrimitiveClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
-
-            // Act
-            string result = JSONWriter.ToJsonString(node);
-
-            // Assert
-            Assert.NotEqual(string.Empty, result);
-        }
-
-        [Fact]
-        public void Convert_PrimitiveClass2()
-        {
-            // Arrange
-            var tmp = PrimitiveClass.CreateTestDefault();
             var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
@@ -95,27 +67,13 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotEqual(string.Empty, result);
-        }        
+        }    
 
         [Fact]
         public void Convert_PrimitiveClassIEnumarable()
         {
             // Arrange
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
-
-            // Act
-            string result = JSONWriter.ToJsonString(node);
-
-            // Assert
-            Assert.NotEqual(string.Empty, result);
-        }
-
-        [Fact]
-        public void Convert_PrimitiveClassIEnumarable2()
-        {
-            // Arrange
-            var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
             var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
@@ -123,7 +81,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotEqual(string.Empty, result);
-        }        
+        }      
 
         [Fact]
         public void Convert_IEnumerableClass()
@@ -146,36 +104,35 @@ namespace DotSerial.Tests.Core.JSON
                 tmp.List.Add(d);
                 tmp.Dic.Add(i, d);
             }
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);
         }
+     
 
         [Fact]
-        public void Convert_IEnumerableClass2()
+        public void Convert_DictionaryClass()
         {
             // Arrange
-            var tmp = new IEnumerableClass
-            {
-                Array = new SimpleClass[3],
-                List = [],
-                Dic = null
-            };
-            for (int i = 0; i < 3; i++)
-            {
-                var d = new SimpleClass
-                {
-                    Boolean = true
-                };
+            var tmp = DictionaryClass.CreateTestDefault();
+            var node = DSSerialize.Serialize2(tmp, "0");
 
-                tmp.Array[i] = d;
-                tmp.List.Add(d);
-                // tmp.Dic.Add(i, d);
-            }
+            // Act
+            string result = JSONWriter.ToJsonString2(node);
+
+            // Assert
+            Assert.NotEqual(string.Empty, result);
+        }      
+
+        [Fact]
+        public void Convert_NullClass()
+        {
+            // Arrange
+            var tmp = NullClass.CreateTestDefault();
             var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
@@ -184,34 +141,6 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotEqual(string.Empty, result);
         }        
-
-        [Fact]
-        public void Convert_DictionaryClass()
-        {
-            // Arrange
-            var tmp = DictionaryClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
-
-            // Act
-            string result = JSONWriter.ToJsonString(node);
-
-            // Assert
-            Assert.NotEqual(string.Empty, result);
-        }
-
-        [Fact]
-        public void Convert_NullClass()
-        {
-            // Arrange
-            var tmp = NullClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
-
-            // Act
-            string result = JSONWriter.ToJsonString(node);
-
-            // Assert
-            Assert.NotEqual(string.Empty, result);
-        }
 
         [Fact]
         public void Convert_NestedClass()
@@ -223,14 +152,14 @@ namespace DotSerial.Tests.Core.JSON
                 Boolean = true,
                 PrimitiveClass = tmp2
             };
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);
-        }
+        }       
 
         [Fact]
         public void Convert_NestedNestedClass()
@@ -268,10 +197,10 @@ namespace DotSerial.Tests.Core.JSON
                 PrimitiveClass = tmp4,
                 Boolean = true
             };
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);
@@ -282,10 +211,10 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);
@@ -296,10 +225,10 @@ namespace DotSerial.Tests.Core.JSON
         {
             // Arrange
             var tmp = DateTimeClass.CreateTestDefault();
-            var node = DSSerialize.Serialize(tmp, "0");
+            var node = DSSerialize.Serialize2(tmp, "0");
 
             // Act
-            string result = JSONWriter.ToJsonString(node);
+            string result = JSONWriter.ToJsonString2(node);
 
             // Assert
             Assert.NotEqual(string.Empty, result);

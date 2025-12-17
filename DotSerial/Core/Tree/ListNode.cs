@@ -25,7 +25,7 @@ namespace DotSerial.Core.Tree
             var children = GetChildren();
             foreach(var child in children)
             {
-                if (child is InnerNode)
+                if (child is not LeafNode)
                 {
                     return false;
                 }

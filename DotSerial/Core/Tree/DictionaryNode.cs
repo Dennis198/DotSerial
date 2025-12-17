@@ -16,5 +16,25 @@ namespace DotSerial.Core.Tree
         {
             visitor.VisitDictionaryNode(this, sb, options);
         } 
+
+        public bool IsPrimitiveDictionary()
+        {
+            var children = GetChildren();
+            foreach(var child in children)
+            {
+                if (child.HasChildren())
+                {
+                    if (child.GetChildren()[0] is not LeafNode)
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+            return true;
+        }
     }
 }

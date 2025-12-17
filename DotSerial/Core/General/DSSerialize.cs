@@ -209,7 +209,7 @@ namespace DotSerial.Core.General
                     if (TypeCheckMethods.IsPrimitive(prop.PropertyType) || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         // Primitive types || String
-                        string strValue = HelperMethods.PrimitiveToString(value);
+                        string? strValue = HelperMethods.PrimitiveToString(value);
                         var childNode = _nodeFactory.CreateNode(idString, strValue, NodeType.Leaf);
                         result.AddChild(childNode);
                     }
@@ -457,7 +457,11 @@ namespace DotSerial.Core.General
                         if (TypeCheckMethods.IsPrimitive(keyType) ||
                             TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
-                            string  tmpKey = HelperMethods.PrimitiveToString(key);
+                            string? tmpKey = HelperMethods.PrimitiveToString(key);
+                            if (tmpKey == null)
+                            {
+                                throw new ArgumentException(tmpKey);
+                            }
                             keyValuepair = _nodeFactory.CreateNode(tmpKey, null, NodeType.InnerNode);
                         }
                         else
@@ -474,7 +478,7 @@ namespace DotSerial.Core.General
                         if (TypeCheckMethods.IsPrimitive(valueType) ||
                             TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            string  tmpValue = HelperMethods.PrimitiveToString(key);
+                            string? tmpValue = HelperMethods.PrimitiveToString(key);
                             keyValue = _nodeFactory.CreateNode(keyString, tmpValue, NodeType.Leaf);
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
@@ -493,7 +497,11 @@ namespace DotSerial.Core.General
                                     keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.DictionaryNode);
                                     foreach (DictionaryEntry str in castedValue)
                                     {
-                                        string innerDicID = HelperMethods.PrimitiveToString(str.Key);
+                                        string? innerDicID = HelperMethods.PrimitiveToString(str.Key);
+                                        if (innerDicID == null)
+                                        {
+                                            throw new ArgumentException(innerDicID);
+                                        }
                                         var childNode = SerializeDictionary2(str, innerDicID);
                                         keyValue.AddChild(childNode);
                                     }
@@ -694,7 +702,7 @@ namespace DotSerial.Core.General
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        string strValue = HelperMethods.PrimitiveToString(str);
+                        string? strValue = HelperMethods.PrimitiveToString(str);
                         var childNode = _nodeFactory.CreateNode(listIDString, strValue, NodeType.Leaf);
                         result.AddChild(childNode);
                         listID++;
