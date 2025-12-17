@@ -422,7 +422,7 @@ namespace DotSerial.Core.General
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.DictionaryNode);            
+            var result = _nodeFactory.CreateNode(id, null, NodeType.InnerNode);            
 
             if (dic is IDictionary castedDic)
             {
@@ -443,9 +443,9 @@ namespace DotSerial.Core.General
                     {
                         var key = keyValuePair.Key;
                         var value = keyValuePair.Value;
-                        IDSNode keyValuepair;
+                        // IDSNode keyValuepair;
                         IDSNode keyValue;
-
+                        string? keyString = null;
                         #region Key
 
                         // Key
@@ -457,19 +457,25 @@ namespace DotSerial.Core.General
                         if (TypeCheckMethods.IsPrimitive(keyType) ||
                             TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
-                            string? tmpKey = HelperMethods.PrimitiveToString(key);
-                            if (tmpKey == null)
-                            {
-                                throw new ArgumentException(tmpKey);
-                            }
-                            keyValuepair = _nodeFactory.CreateNode(tmpKey, null, NodeType.InnerNode);
+                            keyString = HelperMethods.PrimitiveToString(key);
+                            // string? tmpKey = HelperMethods.PrimitiveToString(key);
+                            // if (tmpKey == null)
+                            // {
+                            //     throw new ArgumentException(tmpKey);
+                            // }
+                            // keyValuepair = _nodeFactory.CreateNode(tmpKey, null, NodeType.InnerNode);
                         }
                         else
                         {
                             throw new DSNotSupportedTypeException(valueType);
                         }
 
-                        string? keyString = keyValuepair.Key;
+                        if (null == keyString)
+                        {
+                            throw new ArgumentException(keyString);
+                        }
+
+                        // string? keyString = keyValuepair.Key;
 
                         #endregion
 
@@ -494,7 +500,7 @@ namespace DotSerial.Core.General
                                         throw new DSNotSupportedTypeException(valueType);
                                     }
 
-                                    keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.DictionaryNode);
+                                    keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.InnerNode);
                                     foreach (DictionaryEntry str in castedValue)
                                     {
                                         string? innerDicID = HelperMethods.PrimitiveToString(str.Key);
@@ -554,8 +560,8 @@ namespace DotSerial.Core.General
 
                         #endregion
 
-                        keyValuepair.AddChild(keyValue);
-                        result.AddChild(keyValuepair);
+                        // keyValuepair.AddChild(keyValue);
+                        result.AddChild(keyValue);
                     }
 
                     return result;

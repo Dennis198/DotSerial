@@ -8,7 +8,7 @@ namespace DotSerial.Core.JSON
     /// <summary>
     /// Visitor interface for tree nodes.
     /// </summary>
-    public class JSONVisitor : INodeVisitor
+    public class JSONWritterVisitor : INodeWritterVisitor
     {
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, NodeVisitorOptions options)
@@ -66,7 +66,7 @@ namespace DotSerial.Core.JSON
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    keyValue.Accept(this, sb, new NodeVisitorOptions(level + 1));
+                    keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
                 }
 
                 // Remove last ','
@@ -114,7 +114,7 @@ namespace DotSerial.Core.JSON
                     foreach (var keyValue in children)
                     {
                         StringBuilder sb3 = new();
-                        keyValue.Accept(this, sb3, new NodeVisitorOptions(level + 1, false));
+                        keyValue.WritterAccept(this, sb3, new NodeVisitorOptions(level + 1, false));
                         sb2.Append(sb3);
                     }
 
@@ -171,55 +171,55 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(sb);
+        // public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
+        // {
+        //     ArgumentNullException.ThrowIfNull(node);
+        //     ArgumentNullException.ThrowIfNull(sb);
             
-            int level = options.Level;
+        //     int level = options.Level;
 
-            if (node.HasChildren())
-            {
-                var children = node.GetChildren();
-                if (options.AddKey)
-                {
-                    AddObjectStart(sb, node.Key.ToString(), level);    
-                }
-                else
-                {
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                    sb.AppendLine();
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                    sb.Append(JsonConstants.ObjectStart);
-                }
+        //     if (node.HasChildren())
+        //     {
+        //         var children = node.GetChildren();
+        //         if (options.AddKey)
+        //         {
+        //             AddObjectStart(sb, node.Key.ToString(), level);    
+        //         }
+        //         else
+        //         {
+        //             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+        //             sb.AppendLine();
+        //             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+        //             sb.Append(JsonConstants.ObjectStart);
+        //         }
 
-                foreach(var keyValue in children)
-                {
-                    if (keyValue.HasChildren())
-                    {
-                        var valNode = keyValue.GetChild(keyValue.Key);
-                        valNode.Accept(this, sb, new NodeVisitorOptions(level + 1));
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
-                }
+        //         foreach(var keyValue in children)
+        //         {
+        //             if (keyValue.HasChildren())
+        //             {
+        //                 var valNode = keyValue.GetChild(keyValue.Key);
+        //                 valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
+        //             }
+        //             else
+        //             {
+        //                 throw new NotImplementedException();
+        //             }
+        //         }
 
-                // Remove last ','
-                sb.Remove(sb.Length - 1, 1);
+        //         // Remove last ','
+        //         sb.Remove(sb.Length - 1, 1);
 
-                AddObjectEnd(sb, level); 
-            }
-            else
-            {
-                // Empty node
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("{},");
-            }
+        //         AddObjectEnd(sb, level); 
+        //     }
+        //     else
+        //     {
+        //         // Empty node
+        //         sb.AppendLine();
+        //         WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+        //         sb.Append("{},");
+        //     }
 
-        }
+        // }
 
         /// <summary>
         /// Helper methode to add object start symbol and to json

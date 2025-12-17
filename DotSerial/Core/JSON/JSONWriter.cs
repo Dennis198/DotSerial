@@ -68,7 +68,7 @@ namespace DotSerial.Core.JSON
             // Add First '{'
             sb.Append(JsonConstants.ObjectStart);
 
-            node.Accept(new JSONVisitor(), sb, new NodeVisitorOptions(1));
+            node.WritterAccept(new JSONWritterVisitor(), sb, new NodeVisitorOptions(1));
 
             sb.Remove(sb.Length - 1, 1);
 

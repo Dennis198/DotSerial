@@ -49,6 +49,6 @@ namespace DotSerial.Core.Tree
         /// <param name="visitor"></param>
         /// <param name="sb"></param>
         /// <param name="options"></param>
-        public abstract void Accept(INodeVisitor visitor, StringBuilder sb, NodeVisitorOptions options);
+        public abstract void WritterAccept(INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options);
     }
 }

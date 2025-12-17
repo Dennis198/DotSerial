@@ -21,6 +21,8 @@
 #endregion
 
 using System.Collections;
+using System.Reflection;
+using DotSerial.Core.XML;
 
 namespace DotSerial.Core.Misc
 {
@@ -67,6 +69,28 @@ namespace DotSerial.Core.Misc
         internal static bool IntToBool(int i)
         {
             return i == 1;
+        }
+
+        internal static PropertyInfo? GetPropertyInfoByName(Type type, string propertyName)
+        {
+            ArgumentNullException.ThrowIfNull(type);
+            ArgumentNullException.ThrowIfNull(propertyName);
+
+            PropertyInfo[] props = type.GetProperties();
+
+            foreach (var prop in props)
+            {
+                // Get ID attribute
+                int id = Attributes.HelperMethods.GetPropertyID(prop);
+
+                if (Constants.NoAttributeID != id)
+                {
+                    return prop;
+                }
+            }
+
+            PropertyInfo? propInfo = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+            return propInfo;
         }
 
         /// <summary>

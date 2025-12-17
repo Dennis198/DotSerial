@@ -12,7 +12,7 @@ namespace DotSerial.Core.Tree
         {}
 
         /// <inheritdoc/>
-        public override void Accept (INodeVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
+        public override void WritterAccept(INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
         {
             visitor.VisitListNode(this, sb, options);
         } 
