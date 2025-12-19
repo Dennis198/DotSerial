@@ -104,9 +104,9 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
-        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? type)
+        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
         {
-            visitor.VisitInnerNode(this, parent, sb, type);
+            visitor.VisitInnerNode(this, parent, sb);
         }
     }
 }

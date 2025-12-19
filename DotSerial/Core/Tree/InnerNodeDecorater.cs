@@ -63,7 +63,7 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
-        public virtual void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj)
+        public virtual void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
         {
             throw new NotImplementedException();
         }

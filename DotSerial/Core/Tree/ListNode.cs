@@ -18,9 +18,9 @@ namespace DotSerial.Core.Tree
         } 
 
         /// <inheritdoc/>
-        public override void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj)
+        public override void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
         {
-            visitor.VisitListNode(this, parent, sb, obj);
+            visitor.VisitListNode(this, parent, sb);
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace DotSerial.Core.JSON
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, IDSNode? parent, StringBuilder sb, object? obj)
+        public void VisitLeafNode(LeafNode node, IDSNode? parent, StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -27,7 +27,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, IDSNode? parent, StringBuilder sb, object? obj)
+        public void VisitInnerNode(InnerNode node, IDSNode? parent, StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -57,7 +57,7 @@ namespace DotSerial.Core.JSON
                         StringBuilder innerSb = new (strValue);
 
                         // Parse inner node
-                        innerNode.ParserAccept(new JSONParserVisitor(), node, innerSb, obj);
+                        innerNode.ParserAccept(new JSONParserVisitor(), node, innerSb);
 
                         // Add inner node to parent
                         // node.AddChild(innerNode);
@@ -74,7 +74,7 @@ namespace DotSerial.Core.JSON
                         StringBuilder listSb = new (strValue);
 
                         // Parse list node
-                        listNode.ParserAccept(new JSONParserVisitor(), node, listSb, obj);
+                        listNode.ParserAccept(new JSONParserVisitor(), node, listSb);
 
                         // Add list node to parent // TODO
                         // node.AddChild(listNode);
@@ -98,7 +98,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, IDSNode? parent, StringBuilder sb, object? obj)
+        public void VisitListNode(ListNode node, IDSNode? parent, StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -136,7 +136,7 @@ namespace DotSerial.Core.JSON
                             StringBuilder innerSb = new (items[i]);
 
                             // Parse inner node
-                            innerNode.ParserAccept(new JSONParserVisitor(), node, innerSb, obj);
+                            innerNode.ParserAccept(new JSONParserVisitor(), node, innerSb);
 
                             // Add inner node to parent
                             // node.AddChild(innerNode);
@@ -153,7 +153,7 @@ namespace DotSerial.Core.JSON
                             StringBuilder listSb = new (items[i]);
 
                             // Parse list node
-                            listNode.ParserAccept(new JSONParserVisitor(), node, listSb, obj);
+                            listNode.ParserAccept(new JSONParserVisitor(), node, listSb);
 
                             // Add list node to parent // TODO
                             // node.AddChild(listNode);

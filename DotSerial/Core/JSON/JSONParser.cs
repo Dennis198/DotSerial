@@ -99,7 +99,7 @@ namespace DotSerial.Core.JSON
             var rootNode = _nodeFactory.CreateNode(rootKey, null, NodeType.InnerNode);
             StringBuilder childSb = new (rootDic[rootKey]);
 
-            rootNode.ParserAccept(new JSONParserVisitor(), null, childSb, classObj);
+            rootNode.ParserAccept(new JSONParserVisitor(), null, childSb);
 
             return rootNode;
         }

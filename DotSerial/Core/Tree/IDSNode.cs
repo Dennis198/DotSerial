@@ -51,6 +51,6 @@ namespace DotSerial.Core.Tree
         /// <param name="options"></param>
         public abstract void WritterAccept(INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options);
 
-        public abstract void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj);
+        public abstract void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb);
     }
 }
