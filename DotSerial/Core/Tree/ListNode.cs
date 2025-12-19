@@ -17,6 +17,12 @@ namespace DotSerial.Core.Tree
             visitor.VisitListNode(this, sb, options);
         } 
 
+        /// <inheritdoc/>
+        public override void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj)
+        {
+            visitor.VisitListNode(this, parent, sb, obj);
+        }
+
         /// <summary>
         /// Check if list is of primitive types only or null
         /// </summary>

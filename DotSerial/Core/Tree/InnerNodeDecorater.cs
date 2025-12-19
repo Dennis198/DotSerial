@@ -60,6 +60,12 @@ namespace DotSerial.Core.Tree
         public virtual void WritterAccept(INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
         {
             throw new NotImplementedException();
-        }        
+        }
+
+        /// <inheritdoc/>
+        public virtual void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -102,5 +102,11 @@ namespace DotSerial.Core.Tree
         {
             visitor.VisitInnerNode(this, sb, options);
         }
+
+        /// <inheritdoc/>
+        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? type)
+        {
+            visitor.VisitInnerNode(this, parent, sb, type);
+        }
     }
 }

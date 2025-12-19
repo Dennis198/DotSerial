@@ -107,7 +107,7 @@ namespace DotSerial.Core.JSON
                     {
                         sb.AppendLine();
                         WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                        sb.Append(JsonConstants.ObjectStart);
+                        sb.Append(JsonConstants.ListStart);
                     }
 
                     StringBuilder sb2 = new();
@@ -132,9 +132,16 @@ namespace DotSerial.Core.JSON
                     sb.AppendLine();
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
-                    // Add Key
-                    sb.AppendFormat("\"{0}\": ", node.Key);
-                    sb.Append(JsonConstants.ListStart);
+                    if (options.AddKey)
+                    {
+                        // Add Key
+                        sb.AppendFormat("\"{0}\": ", node.Key);
+                        sb.Append(JsonConstants.ListStart);
+                    }
+                    else
+                    {
+                        sb.Append(JsonConstants.ListStart);
+                    }
 
                     foreach (var keyValue in children)
                     {

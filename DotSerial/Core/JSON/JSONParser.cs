@@ -35,6 +35,11 @@ namespace DotSerial.Core.JSON
     internal static class JSONParser
     {
         /// <summary>
+        /// Node factory;
+        /// </summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        /// <summary>
         /// Converts a json string to anode
         /// </summary>
         /// <param name="jsonString">String</param>
@@ -67,6 +72,34 @@ namespace DotSerial.Core.JSON
 
             StringBuilder childSb = new (rootDic[rootKey]);
             ChildrenToNode(rootNode, childSb);
+
+            return rootNode;
+        }
+
+        public static IDSNode ToNode2(string jsonString, object? classObj)
+        {
+            // Removes all whitespaces
+            string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
+            StringBuilder sb = new(tmp);
+
+            // Remove start and end brackets
+            sb.Remove(sb.Length - 1, 1);
+            sb.Remove(0, 1);
+
+            var rootDic = ExtractKeyValuePairsFromJsonObject(sb);
+
+            if (rootDic.Count != 1)
+            {
+                var node = _nodeFactory.CreateNode("TODO", null, NodeType.InnerNode);
+                return node;        
+            }
+
+            string rootKey = rootDic.Keys.First();
+
+            var rootNode = _nodeFactory.CreateNode(rootKey, null, NodeType.InnerNode);
+            StringBuilder childSb = new (rootDic[rootKey]);
+
+            rootNode.ParserAccept(new JSONParserVisitor(), null, childSb, classObj);
 
             return rootNode;
         }

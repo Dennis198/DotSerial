@@ -61,5 +61,11 @@ namespace DotSerial.Core.Tree
             visitor.VisitLeafNode(this, sb, options);
         }
 
+        /// <inheritdoc/>
+        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb, object? obj)
+        {
+            visitor.VisitLeafNode(this, parent, sb, obj);
+        }
+
     }
 }
