@@ -67,5 +67,10 @@ namespace DotSerial.Core.Tree
         {
             throw new NotImplementedException();
         }
+
+        public virtual object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

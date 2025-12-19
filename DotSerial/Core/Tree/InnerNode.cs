@@ -108,5 +108,10 @@ namespace DotSerial.Core.Tree
         {
             visitor.VisitInnerNode(this, parent, sb);
         }
+
+        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitInnerNode(this, type);
+        }
     }
 }

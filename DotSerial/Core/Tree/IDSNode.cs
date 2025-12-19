@@ -52,5 +52,7 @@ namespace DotSerial.Core.Tree
         public abstract void WritterAccept(INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options);
 
         public abstract void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb);
+
+        public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
     }
 }

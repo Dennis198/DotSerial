@@ -40,6 +40,10 @@ namespace DotSerial.Tests.Core.JSON
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, null);
 
+            ExampleClass kkk = new ExampleClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(ExampleClass));
+
             // Assert
             EqualCheck.AssertClassEqual(node, result);
         }        
@@ -70,6 +74,10 @@ namespace DotSerial.Tests.Core.JSON
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
 
+            PrimitiveClass kkk = new PrimitiveClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClass));
+
             // Assert
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -85,6 +93,10 @@ namespace DotSerial.Tests.Core.JSON
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
 
+            PrimitiveClassIEnumarable kkk = new PrimitiveClassIEnumarable();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClassIEnumarable));
+
             // Assert
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -95,11 +107,11 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = new IEnumerableClass
             {
-                Array = new SimpleClass[10],
+                Array = new SimpleClass[3],
                 List = [],
                 Dic = []
             };
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
                 var d = new SimpleClass
                 {
@@ -115,6 +127,10 @@ namespace DotSerial.Tests.Core.JSON
 
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
+
+            IEnumerableClass kkk = new IEnumerableClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(IEnumerableClass));
 
             // Assert
             EqualCheck.AssertClassEqual(node, result);

@@ -67,5 +67,9 @@ namespace DotSerial.Core.Tree
             visitor.VisitLeafNode(this, parent, sb);
         }
 
+        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitLeafNode(this, type);
+        }
     }
 }

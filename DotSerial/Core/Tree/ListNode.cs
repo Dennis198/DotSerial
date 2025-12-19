@@ -23,6 +23,11 @@ namespace DotSerial.Core.Tree
             visitor.VisitListNode(this, parent, sb);
         }
 
+        public override object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitListNode(this, type);
+        }
+
         /// <summary>
         /// Check if list is of primitive types only or null
         /// </summary>

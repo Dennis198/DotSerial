@@ -236,9 +236,6 @@ namespace DotSerial.Core.General
                     else if (value == null)
                     {
                         throw new NotImplementedException();
-                        // Null
-                        // DSNode nullNode = new(idString, null, DSNodeType.Leaf, DSNodePropertyType.Null);
-                        // node.AppendChild(nullNode);
                     }
                     else
                     {

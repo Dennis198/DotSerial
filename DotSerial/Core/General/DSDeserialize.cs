@@ -126,7 +126,7 @@ namespace DotSerial.Core.General
                     }
                 }
             }
-        }
+        }      
 
         /// <summary>
         /// Deserialze Dictionary
