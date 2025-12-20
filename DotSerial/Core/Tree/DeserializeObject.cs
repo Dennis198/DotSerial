@@ -165,5 +165,10 @@ namespace DotSerial.Core.Tree
             }
 
         }
+
+        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

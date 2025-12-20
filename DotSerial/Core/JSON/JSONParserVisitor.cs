@@ -24,6 +24,7 @@ namespace DotSerial.Core.JSON
 
             // Implementation for parsing leaf node from JSON can be added here
             // This is a placeholder for demonstration purposes
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -177,6 +178,16 @@ namespace DotSerial.Core.JSON
 
             parent?.AddChild(node);
         }
+
+        public void VisitDictionaryNode(DictionaryNode node, IDSNode? parent, StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(sb);
+
+            // Implementation for parsing leaf node from JSON can be added here
+            // This is a placeholder for demonstration purposes
+            throw new NotImplementedException();
+        }        
 
         /// <summary>
         /// Extracts key value pairs from json object
@@ -564,6 +575,7 @@ namespace DotSerial.Core.JSON
             }
 
             return result;
-        }                                
+        }
+
     }
 }

@@ -178,6 +178,79 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(sb);
+            
+            int level = options.Level;
+
+            if (node.HasChildren())
+            {
+                var children = node.GetChildren();
+                if (options.AddKey)
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level);    
+                }
+                else
+                {
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.AppendLine();
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.Append(JsonConstants.ObjectStart);
+                }
+
+                if (false == node.IsPrimitiveDictionary())
+                {
+                    foreach(var keyValue in children)
+                    {
+                        if (keyValue.HasChildren())
+                        {
+                            var valNode = keyValue.GetChild(keyValue.Key);
+                            valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                }
+                else
+                {
+                    foreach(var keyValue in children)
+                    {
+                       var valNode = keyValue;
+                       valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
+                    } 
+                }
+
+
+                // Remove last ','
+                sb.Remove(sb.Length - 1, 1);
+
+                AddObjectEnd(sb, level); 
+            }
+            else
+            {
+                if (options.AddKey)
+                {
+                    // Empty node
+                    sb.AppendLine();
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.AppendFormat("\"{0}\": {{}},", node.Key);
+                }
+                else
+                {
+                    // Empty node
+                    sb.AppendLine();
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.Append("{},");
+                }
+
+            }
+        }
+
+        /// <inheritdoc/>
         // public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
         // {
         //     ArgumentNullException.ThrowIfNull(node);
@@ -270,7 +343,6 @@ namespace DotSerial.Core.JSON
             {
                 sb.Append(JsonConstants.ObjectEnd + ",");
             }
-        }        
-
+        }
     }
 }

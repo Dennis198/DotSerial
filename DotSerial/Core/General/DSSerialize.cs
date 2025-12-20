@@ -419,7 +419,7 @@ namespace DotSerial.Core.General
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.InnerNode);            
+            var result = _nodeFactory.CreateNode(id, null, NodeType.DictionaryNode);            
 
             if (dic is IDictionary castedDic)
             {
@@ -497,7 +497,7 @@ namespace DotSerial.Core.General
                                         throw new DSNotSupportedTypeException(valueType);
                                     }
 
-                                    keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.InnerNode);
+                                    keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.DictionaryNode);
                                     foreach (DictionaryEntry str in castedValue)
                                     {
                                         string? innerDicID = HelperMethods.PrimitiveToString(str.Key);

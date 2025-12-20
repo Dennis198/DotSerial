@@ -58,11 +58,11 @@ namespace DotSerial.Core.Tree
                     var wrapper = new InnerNode(key);
                     return new ListNode(wrapper);
                 }
-                // case NodeType.DictionaryNode:
-                // {
-                //     var wrapper = new InnerNode(key);
-                //     return new DictionaryNode(wrapper);
-                // }
+                case NodeType.DictionaryNode:
+                {
+                    var wrapper = new InnerNode(key);
+                    return new DictionaryNode(wrapper);
+                }
                 default:
                     throw new NotImplementedException();
             }
