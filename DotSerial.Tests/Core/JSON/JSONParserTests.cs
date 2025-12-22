@@ -147,7 +147,11 @@ namespace DotSerial.Tests.Core.JSON
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
 
-            // Assert
+            DictionaryClass kkk = new DictionaryClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(DictionaryClass));
+
+            // Assert   
             EqualCheck.AssertClassEqual(node, result);
         }
 
@@ -161,6 +165,10 @@ namespace DotSerial.Tests.Core.JSON
 
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
+
+            NullClass kkk = new NullClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(NullClass));
 
             // Assert
             EqualCheck.AssertClassEqual(node, result);
@@ -228,6 +236,10 @@ namespace DotSerial.Tests.Core.JSON
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
 
+            NestedNestedClass kkk = new NestedNestedClass();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(NestedNestedClass));
+
             // Assert
             EqualCheck.AssertClassEqual(node, result);
         }
@@ -242,6 +254,10 @@ namespace DotSerial.Tests.Core.JSON
 
             // Act
             IDSNode result = JSONParser.ToNode2(jsonString, tmp);
+
+            MultiDimClassIEnumarble kkk = new MultiDimClassIEnumarble();
+
+            var fff = result.DeserializeAccept(new DeserializeObject(), typeof(MultiDimClassIEnumarble));
 
             // Assert
             EqualCheck.AssertClassEqual(node, result);

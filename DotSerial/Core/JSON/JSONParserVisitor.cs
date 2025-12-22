@@ -444,12 +444,26 @@ namespace DotSerial.Core.JSON
 
             var list = new List<string>();
 
-            for (int i = 0; i < sb.Length; i++)
+            for (int i = 1; i < sb.Length-1; i++)
             {
                 char c = sb[i];
 
+                if (c == JsonConstants.ListStart)
+                {
+                     // Extract value
+                    int j = ExtractJsonList(sb.ToString(), i);
+
+                    // Add key
+                    int len = j - i + 1;
+                    string tmp = sb.ToString(i, len);
+
+                    // Add object to result
+                    list.Add(tmp);
+
+                    i = j;
+                }
                 // Check if opening symbol is found
-                if (c == JsonConstants.ObjectStart)
+                else if (c == JsonConstants.ObjectStart)
                 {
                     // Extract object
                     int j = ExtractJsonObject(sb.ToString(), i);

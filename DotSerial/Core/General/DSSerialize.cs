@@ -481,7 +481,7 @@ namespace DotSerial.Core.General
                         if (TypeCheckMethods.IsPrimitive(valueType) ||
                             TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            string? tmpValue = HelperMethods.PrimitiveToString(key);
+                            string? tmpValue = HelperMethods.PrimitiveToString(value);
                             keyValue = _nodeFactory.CreateNode(keyString, tmpValue, NodeType.Leaf);
                         }
                         else if (TypeCheckMethods.IsDictionary(value))

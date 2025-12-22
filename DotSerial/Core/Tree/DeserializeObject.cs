@@ -17,6 +17,11 @@ namespace DotSerial.Core.Tree
             string? strValue = node.GetValue();
             object? tmp = null;
 
+            if (null == strValue)
+            {
+                return null;
+            }
+
             if (TypeCheckMethods.IsPrimitive(type))
             {
                 tmp = ConverterMethods.ConvertStringToPrimitive(strValue, type);
@@ -142,6 +147,18 @@ namespace DotSerial.Core.Tree
                 if (false == DotSerialXML.IsTypeSupported(valueType))
                 {
                     throw new NotImplementedException();
+                }
+
+                if (node is LeafNode leaf)
+                {
+                    if (leaf.GetValue() == null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        throw new InvalidOperationException("Node is a leaf but dictionary expected");
+                    }
                 }
 
                 Dictionary<object, object?> result = [];

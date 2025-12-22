@@ -98,9 +98,18 @@ namespace DotSerial.Core.Misc
                         object? itemResult;
                         if (castedList[i] is not List<object?> castedListItemObj)
                         {
-                            throw new InvalidCastException();
+                             if (castedList[i] != null)
+                            {
+                                if (isArray)
+                                    castedListResult[i] = castedList[i];
+                                else
+                                    castedListResult.Add(castedList[i]);
+                            }
+                            // throw new InvalidCastException();
+                            continue;
                         }
 
+                        // TODO
                         itemResult = ConvertDeserializedList(castedListItemObj, itemType);
 
                         if (itemResult != null)
