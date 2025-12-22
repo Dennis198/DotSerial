@@ -168,8 +168,15 @@ namespace DotSerial.Core.Tree
                 {
                     string key = child.Key;
                     object? value;
-
-                    value = child.DeserializeAccept(this, valueType);
+                    if (child is LeafNode)
+                    {
+                        value = child.DeserializeAccept(this, valueType);
+                    }
+                    else
+                    {
+                        var ggg = child.GetChild(key);
+                        value = ggg.DeserializeAccept(this, valueType);
+                    }
 
                     result.Add(key, value);
                 }

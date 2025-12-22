@@ -3,13 +3,37 @@ using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.JSON.Writer
 {
     /// <summary>
     /// Visitor interface for tree nodes.
     /// </summary>
-    public class JSONWritterVisitor : INodeWritterVisitor
+    public class JSONWriterVisitor : INodeWriterVisitor
     {
+        /// <summary>
+        /// Converts the node to a string.
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <returns>String</returns>
+        public static string ToString(IDSNode? node)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            StringBuilder sb = new();
+
+            // Add First '{'
+            sb.Append(JsonConstants.ObjectStart);
+
+            node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(1));
+
+            sb.Remove(sb.Length - 1, 1);
+
+            // Add Last '}'
+            AddObjectEnd(sb, 0, true);
+
+            return sb.ToString();
+        } 
+
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, NodeVisitorOptions options)
         {

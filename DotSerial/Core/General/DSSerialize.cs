@@ -478,7 +478,11 @@ namespace DotSerial.Core.General
 
                         #region Value
 
-                        if (TypeCheckMethods.IsPrimitive(valueType) ||
+                        if (null == value)
+                        {
+                            keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.Leaf);
+                        }
+                        else if (TypeCheckMethods.IsPrimitive(valueType) ||
                             TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
                             string? tmpValue = HelperMethods.PrimitiveToString(value);

@@ -28,7 +28,6 @@ namespace DotSerial.Core.JSON
         /// Indentation Size
         /// </summary>
         internal const int IndentationSize = 2;
-
         /// <summary>
         /// Json object start char
         /// </summary>

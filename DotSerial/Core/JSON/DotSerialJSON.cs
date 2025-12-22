@@ -22,7 +22,6 @@
 
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
-using DotSerial.Core.Tree;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.JSON
@@ -35,11 +34,6 @@ namespace DotSerial.Core.JSON
         /// Json Document
         /// </summary>
         private JSONDocument? _document;
-
-        /// <summary>
-        /// Current Version
-        /// </summary>
-        private static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
@@ -124,21 +118,15 @@ namespace DotSerial.Core.JSON
                 throw new NotSupportedException();
             }
 
-            // Create root element
-            var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
-            rootNode.AppendChild(versionNode);
-
             // Serialze Object
-            var node = DSSerialize.Serialize(obj, GeneralConstants.MainObjectKey);
-            rootNode.AppendChild(node);
+            var rootNode = DSSerialize.Serialize2(obj, GeneralConstants.MainObjectKey);            
 
             var result = new DotSerialJSON
             {
                 _document = new JSONDocument()
             };
 
-            result._document.Tree = rootNode;
+            result._document.RootNode = new DSJsonNode(rootNode);
 
             return result;
         }
@@ -148,23 +136,15 @@ namespace DotSerial.Core.JSON
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
-
-            if (false == result?.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
             if (null == serialObj._document)
             {
                 throw new NullReferenceException();
             }
 
             // Get root element
-            var rootNode = serialObj._document.Tree;
-            var node = rootNode?.GetChild(GeneralConstants.MainObjectKey);
-
-            DSDeserialize.Deserialize(result, node);
+            var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
+            var tmp = rootNode.GetChild(GeneralConstants.MainObjectKey);
+            var result = rootNode.ToObject<U>();
 
             return result;
         }
@@ -213,7 +193,7 @@ namespace DotSerial.Core.JSON
 
             try
             {
-                string result = JSONWriter.ToJsonString(_document.Tree);
+                string result = _document.RootNode?.ToJsonString() ?? string.Empty;
                 return result;
             }
             catch (Exception)

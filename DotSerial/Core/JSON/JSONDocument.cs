@@ -29,6 +29,11 @@ namespace DotSerial.Core.JSON
     /// </summary>
     internal class JSONDocument : DSDocument
     {
+        /// <summary>
+        /// Root node
+        /// </summary>
+        internal DSJsonNode? RootNode;
+
         /// <inheritdoc/>
         public override void Load(string fileName)
         {
@@ -39,9 +44,8 @@ namespace DotSerial.Core.JSON
                     throw new NotSupportedException();
                 }
 
-                var root = JSONParser.ToNode(content);
-
-                Tree = root;
+                var tmp = DSJsonNode.FromJsonString(content);
+                RootNode = tmp;
             }
             catch
             {
@@ -55,12 +59,12 @@ namespace DotSerial.Core.JSON
         {
             try
             {
-                if (null == Tree)
+                if (null == RootNode)
                 {
-                    throw new NullReferenceException(nameof(Tree));
+                    throw new NullReferenceException(nameof(RootNode));
                 }
 
-                var content = JSONWriter.ToJsonString(Tree);
+                var content = RootNode.ToJsonString();
 
                 if (false == SaveContentToFile(fileName, content))
                 {

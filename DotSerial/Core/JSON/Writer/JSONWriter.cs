@@ -27,7 +27,7 @@ using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 using System.Text;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.JSON.Writer
 {
     /// <summary>
     /// Class can converts a node to a json string
@@ -68,7 +68,7 @@ namespace DotSerial.Core.JSON
             // Add First '{'
             sb.Append(JsonConstants.ObjectStart);
 
-            node.WritterAccept(new JSONWritterVisitor(), sb, new NodeVisitorOptions(1));
+            node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(1));
 
             sb.Remove(sb.Length - 1, 1);
 

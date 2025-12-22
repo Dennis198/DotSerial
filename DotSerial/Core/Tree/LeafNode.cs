@@ -56,7 +56,7 @@ namespace DotSerial.Core.Tree
         }
 
         /// <inheritdoc/>
-        public void WritterAccept (INodeWritterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
+        public void WritterAccept (INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
         {
             visitor.VisitLeafNode(this, sb, options);
         }

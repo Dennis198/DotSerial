@@ -27,7 +27,7 @@ using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 using System.Text;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.JSON.Parser
 {
     /// <summary>
     /// Class can converts a json string to node/tree
@@ -76,7 +76,7 @@ namespace DotSerial.Core.JSON
             return rootNode;
         }
 
-        public static IDSNode ToNode2(string jsonString, object? classObj)
+        public static IDSNode ToNode2(string jsonString)
         {
             // Removes all whitespaces
             string tmp = ParseMethods.RemoveWhiteSpace(jsonString);

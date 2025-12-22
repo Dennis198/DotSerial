@@ -4,7 +4,7 @@ using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.JSON.Parser
 {
     /// <summary>
     /// Visitor interface for tree nodes.
@@ -15,6 +15,39 @@ namespace DotSerial.Core.JSON
         /// Node factory;
         /// </summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        /// <summary>
+        /// Create the node from a given string
+        /// </summary>
+        /// <param name="jsonString">String to parse</param>
+        /// <returns>IDSNode</returns>
+        public static IDSNode ToNode(string jsonString)
+        {
+            // Removes all whitespaces
+            string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
+            StringBuilder sb = new(tmp);
+
+            // Remove start and end brackets
+            sb.Remove(sb.Length - 1, 1);
+            sb.Remove(0, 1);
+
+            var rootDic = ExtractKeyValuePairsFromJsonObject(sb);
+
+            if (rootDic.Count != 1)
+            {
+                var node = _nodeFactory.CreateNode("TODO", null, NodeType.InnerNode);
+                return node;        
+            }
+
+            string rootKey = rootDic.Keys.First();
+
+            var rootNode = _nodeFactory.CreateNode(rootKey, null, NodeType.InnerNode);
+            StringBuilder childSb = new (rootDic[rootKey]);
+
+            rootNode.ParserAccept(new JSONParserVisitor(), null, childSb);
+
+            return rootNode;
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, IDSNode? parent, StringBuilder sb)
