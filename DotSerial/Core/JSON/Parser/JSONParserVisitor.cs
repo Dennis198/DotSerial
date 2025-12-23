@@ -21,30 +21,30 @@ namespace DotSerial.Core.JSON.Parser
         /// </summary>
         /// <param name="jsonString">String to parse</param>
         /// <returns>IDSNode</returns>
-        public static IDSNode ToNode(string jsonString)
+        public static IDSNode Parse(string jsonString)
         {
             // Removes all whitespaces
             string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
             StringBuilder sb = new(tmp);
 
             // Remove start and end brackets
-            sb.Remove(sb.Length - 1, 1);
-            sb.Remove(0, 1);
+            // sb.Remove(sb.Length - 1, 1);
+            // sb.Remove(0, 1);
 
-            var rootDic = ExtractKeyValuePairsFromJsonObject(sb);
+            // var rootDic = ExtractKeyValuePairsFromJsonObject(sb);
 
-            if (rootDic.Count != 1)
-            {
-                var node = _nodeFactory.CreateNode("TODO", null, NodeType.InnerNode);
-                return node;        
-            }
+            // if (rootDic.Count != 1)
+            // {
+            //     var node = _nodeFactory.CreateNode("TODO", null, NodeType.InnerNode);
+            //     return node;        
+            // }
 
-            string rootKey = rootDic.Keys.First();
+            string rootKey = GeneralConstants.MainObjectKey;//rootDic.Keys.First();
 
             var rootNode = _nodeFactory.CreateNode(rootKey, null, NodeType.InnerNode);
-            StringBuilder childSb = new (rootDic[rootKey]);
+            // StringBuilder childSb = new (rootDic[rootKey]);
 
-            rootNode.ParserAccept(new JSONParserVisitor(), null, childSb);
+            rootNode.ParserAccept(new JSONParserVisitor(), null, sb);
 
             return rootNode;
         }

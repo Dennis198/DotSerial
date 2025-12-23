@@ -174,8 +174,8 @@ namespace DotSerial.Core.Tree
                     }
                     else
                     {
-                        var ggg = child.GetChild(key);
-                        value = ggg.DeserializeAccept(this, valueType);
+                        // var ggg = child.GetChild(key); // TODO????
+                        value = child.DeserializeAccept(this, valueType);
                     }
 
                     result.Add(key, value);

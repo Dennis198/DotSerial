@@ -15,21 +15,21 @@ namespace DotSerial.Core.JSON.Writer
         /// </summary>
         /// <param name="node">Node</param>
         /// <returns>String</returns>
-        public static string ToString(IDSNode? node)
+        public static string Write(IDSNode? node)
         {
             ArgumentNullException.ThrowIfNull(node);
 
             StringBuilder sb = new();
 
             // Add First '{'
-            sb.Append(JsonConstants.ObjectStart);
+            // sb.Append(JsonConstants.ObjectStart);
 
-            node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(1));
+            node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(0, false));
 
             sb.Remove(sb.Length - 1, 1);
 
             // Add Last '}'
-            AddObjectEnd(sb, 0, true);
+            // AddObjectEnd(sb, 0, true);
 
             return sb.ToString();
         } 

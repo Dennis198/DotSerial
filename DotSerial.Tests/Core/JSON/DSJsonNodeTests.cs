@@ -83,7 +83,7 @@ namespace DotSerial.Tests.Core.JSON
         }            
 
         [Fact]
-        public void ToObject_FromString()
+        public void ToObject_ExampleClass()
         {   
             // Arrange
             var example = ExampleClass.CreateTestDefault();
@@ -95,9 +95,279 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal(example.Boolean, result.Boolean);
-            Assert.Equal(example.Number, result.Number);
-            Assert.Equal(example.Text, result.Text);
+            Assert.True(example.AssertTest(result));
         }
+
+        [Fact]
+        public void ToObject_EmptyClass()
+        {   
+            // Arrange
+            var example = new EmptyClass();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<EmptyClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+        }   
+
+        [Fact]
+        public void ToObject_NoAttributeClass()
+        {   
+            // Arrange
+            var example = NoAttributeClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<NoAttributeClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }  
+
+        [Fact]
+        public void ToObject_AccessModifierClass()
+        {   
+            // Arrange
+            var example = AccessModifierClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<AccessModifierClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }  
+
+        [Fact]
+        public void ToObject_SimpleClass()
+        {   
+            // Arrange
+            var example = SimpleClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<SimpleClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }      
+
+        [Fact]
+        public void ToObject_NullClass()
+        {   
+            // Arrange
+            var example = NullClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<NullClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }  
+
+        [Fact]
+        public void ToObject_IEnumerableClass()
+        {   
+            // Arrange
+            var example = IEnumerableClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<IEnumerableClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }      
+
+        [Fact]
+        public void ToObject_NestedClasss()
+        {   
+            // Arrange
+            var example = NestedClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<NestedClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }    
+
+        [Fact]
+        public void ToObject_NestedNestedClass()
+        {   
+            // Arrange
+            var example = NestedNestedClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<NestedNestedClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }     
+
+        [Fact]
+        public void ToObject_DictionaryClass()
+        {   
+            // Arrange
+            var example = DictionaryClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<DictionaryClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }      
+
+        [Fact]
+        public void ToObject_EnumClass()
+        {   
+            // Arrange
+            var example = EnumClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<EnumClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }     
+
+        [Fact]
+        public void ToObject_DateTimeClass()
+        {   
+            // Arrange
+            var example = DateTimeClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<DateTimeClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_StructClass()
+        {   
+            // Arrange
+            var example = StructClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<StructClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }     
+
+        [Fact]
+        public void ToObject_RecordClass()
+        {   
+            // Arrange
+            var example = RecordClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<RecordClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }     
+
+        [Fact]
+        public void ToObject_ParsableClass()
+        {   
+            // Arrange
+            var example = ParsableClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<ParsableClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }  
+
+        [Fact]
+        public void ToObject_PathClass()
+        {   
+            // Arrange
+            var example = PathClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<PathClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }    
+
+        [Fact]
+        public void ToObject_ClassWithoutParameterlessConstructor()
+        {   
+            // Arrange
+            var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassWithoutParameterlessConstructor>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_ClassRecordNoParameterlessConstructor()
+        {   
+            // Arrange
+            var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassRecordNoParameterlessConstructor>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                   
+     
     }
 }

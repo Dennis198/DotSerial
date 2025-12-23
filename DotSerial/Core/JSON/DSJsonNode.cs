@@ -1,8 +1,6 @@
-using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.JSON.Parser;
 using DotSerial.Core.JSON.Writer;
-using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 
 namespace DotSerial.Core.JSON
@@ -96,7 +94,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Convert
-            string jsonString = JSONWriterVisitor.ToString(_node);
+            string jsonString = JSONWriterVisitor.Write(_node);
 
             return jsonString;
         }
@@ -113,7 +111,7 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }   
 
-            var root = JSONParserVisitor.ToNode(jsonString);        
+            var root = JSONParserVisitor.Parse(jsonString);        
 
             return new DSJsonNode(root);
         }
