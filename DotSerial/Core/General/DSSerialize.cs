@@ -550,9 +550,11 @@ namespace DotSerial.Core.General
                                  TypeCheckMethods.IsStruct(valueType))
                         {
                             // Class || Struct
-                            keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.InnerNode);
-                            var classNode = Serialize2(value, keyString);
-                            keyValue.AddChild(classNode);
+                            // keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.InnerNode);
+                            // var classNode = Serialize2(value, keyString);
+                            // keyValue.AddChild(classNode);
+
+                            keyValue = Serialize2(value, keyString);
                         }
                         else
                         {

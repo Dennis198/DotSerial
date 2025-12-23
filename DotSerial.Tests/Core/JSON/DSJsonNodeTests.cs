@@ -28,8 +28,8 @@ namespace DotSerial.Tests.Core.JSON
             // Arrange
             var tmp = _nodeFactory.CreateNode("child", "value", NodeType.Leaf);
             var tmp2 = _nodeFactory.CreateNode("key", null, NodeType.InnerNode);
-            tmp.AddChild(tmp2);
-            var resultNode = new DSJsonNode(tmp);
+            tmp2.AddChild(tmp);
+            var resultNode = new DSJsonNode(tmp2);
 
             // Act
             var result = resultNode.GetChild("child");
@@ -184,7 +184,7 @@ namespace DotSerial.Tests.Core.JSON
             var example = IEnumerableClass.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
             var jsonString = tmp.ToJsonString();
-
+            
             // Act
             var result = DSJsonNode.ToObject<IEnumerableClass>(jsonString);
 
@@ -224,6 +224,22 @@ namespace DotSerial.Tests.Core.JSON
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
         }     
+
+        [Fact]
+        public void ToObject_PrimitiveClass()
+        {   
+            // Arrange
+            var example = PrimitiveClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<PrimitiveClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }           
 
         [Fact]
         public void ToObject_DictionaryClass()
@@ -367,7 +383,39 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                                                                                                                   
+        }       
+
+        [Fact]
+        public void ToObject_PrimitiveClassIEnumarable()
+        {   
+            // Arrange
+            var example = PrimitiveClassIEnumarable.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<PrimitiveClassIEnumarable>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }    
+
+        [Fact]
+        public void ToObject_MultiDimClassIEnumarble()
+        {   
+            // Arrange
+            var example = MultiDimClassIEnumarble.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.ToJsonString();
+
+            // Act
+            var result = DSJsonNode.ToObject<MultiDimClassIEnumarble>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                           
      
     }
 }

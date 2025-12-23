@@ -143,8 +143,9 @@ namespace DotSerial.Core.JSON
 
             // Get root element
             var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
-            var tmp = rootNode.GetChild(GeneralConstants.MainObjectKey);
+            // var tmp = rootNode.GetChild(GeneralConstants.MainObjectKey);
             var result = rootNode.ToObject<U>();
+            // var result = tmp.ToObject<U>();
 
             return result;
         }

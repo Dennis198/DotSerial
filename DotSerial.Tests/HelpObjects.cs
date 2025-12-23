@@ -628,7 +628,7 @@ namespace DotSerial.Tests
     /// <summary>
     /// Class with all primitives in arrays/list
     /// </summary>
-    public class PrimitiveClassIEnumarable
+    public class PrimitiveClassIEnumarable : ITestable<PrimitiveClassIEnumarable>
     {
         [DSPropertyID(0)]
         public bool[]? Boolean { get; set; }
@@ -741,12 +741,360 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(PrimitiveClassIEnumarable actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean.Length != actual.Boolean.Length)
+                return false;
+            for (int i = 0; i < expected.Boolean.Length; i++)
+            {
+                if (expected.Boolean[i] != actual.Boolean[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.BooleanList.Count != actual.BooleanList.Count)
+                return false;
+            for (int i = 0; i < expected.BooleanList.Count; i++)
+            {
+                if (expected.BooleanList[i] != actual.BooleanList[i])
+                {
+                    return false;
+                }
+            }        
+
+            if (expected.Byte.Length != actual.Byte.Length)
+                return false;
+            for (int i = 0; i < expected.Byte.Length; i++)
+            {
+                if (expected.Byte[i] != actual.Byte[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.ByteList.Count != actual.ByteList.Count)
+                return false;
+            for (int i = 0; i < expected.ByteList.Count; i++)
+            {
+                if (expected.ByteList[i] != actual.ByteList[i])
+                {
+                    return false;
+                }
+            }             
+
+            if (expected.SByte.Length != actual.SByte.Length)
+                return false;
+            for (int i = 0; i < expected.SByte.Length; i++)
+            {
+                if (expected.SByte[i] != actual.SByte[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.SByteList.Count != actual.SByteList.Count)
+                return false;
+            for (int i = 0; i < expected.SByteList.Count; i++)
+            {
+                if (expected.SByteList[i] != actual.SByteList[i])
+                {
+                    return false;
+                }
+            }          
+
+            if (expected.Char.Length != actual.Char.Length)
+                return false;
+            for (int i = 0; i < expected.Char.Length; i++)
+            {
+                if (expected.Char[i] != actual.Char[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.CharList.Count != actual.CharList.Count)
+                return false;
+            for (int i = 0; i < expected.CharList.Count; i++)
+            {
+                if (expected.CharList[i] != actual.CharList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Decimal.Length != actual.Decimal.Length)
+                return false;
+            for (int i = 0; i < expected.Decimal.Length; i++)
+            {
+                if (expected.Decimal[i] != actual.Decimal[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.DecimalList.Count != actual.DecimalList.Count)
+                return false;
+            for (int i = 0; i < expected.DecimalList.Count; i++)
+            {
+                if (expected.DecimalList[i] != actual.DecimalList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Double.Length != actual.Double.Length)
+                return false;
+            for (int i = 0; i < expected.Double.Length; i++)
+            {
+                if (expected.Double[i] != actual.Double[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.DoubleList.Count != actual.DoubleList.Count)
+                return false;
+            for (int i = 0; i < expected.DoubleList.Count; i++)
+            {
+                if (expected.DoubleList[i] != actual.DoubleList[i])
+                {
+                    return false;
+                }
+            }        
+
+            if (expected.Float.Length != actual.Float.Length)
+                return false;
+            for (int i = 0; i < expected.Float.Length; i++)
+            {
+                if (expected.Float[i] != actual.Float[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.FloatList.Count != actual.FloatList.Count)
+                return false;
+            for (int i = 0; i < expected.FloatList.Count; i++)
+            {
+                if (expected.FloatList[i] != actual.FloatList[i])
+                {
+                    return false;
+                }
+            }           
+
+            if (expected.Int.Length != actual.Int.Length)
+                return false;
+            for (int i = 0; i < expected.Int.Length; i++)
+            {
+                if (expected.Int[i] != actual.Int[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.IntList.Count != actual.IntList.Count)
+                return false;
+            for (int i = 0; i < expected.IntList.Count; i++)
+            {
+                if (expected.IntList[i] != actual.IntList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.UInt.Length != actual.UInt.Length)
+                return false;
+            for (int i = 0; i < expected.UInt.Length; i++)
+            {
+                if (expected.UInt[i] != actual.UInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.UIntList.Count != actual.UIntList.Count)
+                return false;
+            for (int i = 0; i < expected.UIntList.Count; i++)
+            {
+                if (expected.UIntList[i] != actual.UIntList[i])
+                {
+                    return false;
+                }
+            }    
+
+            if (expected.NInt.Length != actual.NInt.Length)
+                return false;
+            for (int i = 0; i < expected.NInt.Length; i++)
+            {
+                if (expected.NInt[i] != actual.NInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.NIntList.Count != actual.NIntList.Count)
+                return false;
+            for (int i = 0; i < expected.NIntList.Count; i++)
+            {
+                if (expected.NIntList[i] != actual.NIntList[i])
+                {
+                    return false;
+                }
+            }      
+
+            if (expected.NUInt.Length != actual.NUInt.Length)
+                return false;
+            for (int i = 0; i < expected.NUInt.Length; i++)
+            {
+                if (expected.NUInt[i] != actual.NUInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.NUIntList.Count != actual.NUIntList.Count)
+                return false;
+            for (int i = 0; i < expected.NUIntList.Count; i++)
+            {
+                if (expected.NUIntList[i] != actual.NUIntList[i])
+                {
+                    return false;
+                }
+            }       
+
+            if (expected.Long.Length != actual.Long.Length)
+                return false;
+            for (int i = 0; i < expected.Long.Length; i++)
+            {
+                if (expected.Long[i] != actual.Long[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.LongList.Count != actual.LongList.Count)
+                return false;
+            for (int i = 0; i < expected.LongList.Count; i++)
+            {
+                if (expected.LongList[i] != actual.LongList[i])
+                {
+                    return false;
+                }
+            }           
+
+            if (expected.ULong.Length != actual.ULong.Length)
+                return false;
+            for (int i = 0; i < expected.ULong.Length; i++)
+            {
+                if (expected.ULong[i] != actual.ULong[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.ULongList.Count != actual.ULongList.Count)
+                return false;
+            for (int i = 0; i < expected.ULongList.Count; i++)
+            {
+                if (expected.ULongList[i] != actual.ULongList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Short.Length != actual.Short.Length)
+                return false;
+            for (int i = 0; i < expected.Short.Length; i++)
+            {
+                if (expected.Short[i] != actual.Short[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.ShortList.Count != actual.ShortList.Count)
+                return false;
+            for (int i = 0; i < expected.ShortList.Count; i++)
+            {
+                if (expected.ShortList[i] != actual.ShortList[i])
+                {
+                    return false;
+                }
+            }    
+
+            if (expected.UShort.Length != actual.UShort.Length)
+                return false;
+            for (int i = 0; i < expected.UShort.Length; i++)
+            {
+                if (expected.UShort[i] != actual.UShort[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.UShortList.Count != actual.UShortList.Count)
+                return false;
+            for (int i = 0; i < expected.UShortList.Count; i++)
+            {
+                if (expected.UShortList[i] != actual.UShortList[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.String.Length != actual.String.Length)
+                return false;
+            for (int i = 0; i < expected.String.Length; i++)
+            {
+                if (!expected.String[i].Equals(actual.String[i]))
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.StringList.Count != actual.StringList.Count)
+                return false;
+            for (int i = 0; i < expected.StringList.Count; i++)
+            {
+                if (!expected.StringList[i].Equals(actual.StringList[i]))
+                {
+                    return false;
+                }
+            }                 
+
+            if (expected.Enum.Length != actual.Enum.Length)
+                return false;
+            for (int i = 0; i < expected.Enum.Length; i++)
+            {
+                if (expected.Enum[i] != actual.Enum[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.EnumList.Count != actual.EnumList.Count)
+                return false;
+            for (int i = 0; i < expected.EnumList.Count; i++)
+            {
+                if (expected.EnumList[i] != actual.EnumList[i])
+                {
+                    return false;
+                }
+            }                                                                                                                  
+
+
+            return true;
+        }
     }
 
     /// <summary>
     /// Multidim IEnumarable Class
     /// </summary>
-    public class MultiDimClassIEnumarble
+    public class MultiDimClassIEnumarble : ITestable<MultiDimClassIEnumarble>
     {
         [DSPropertyID(0)]
         public int[][]? Int { get; set; }
@@ -1005,6 +1353,12 @@ namespace DotSerial.Tests
             tmp.EnumListMix = [[TestEnum.None, TestEnum.Second], [TestEnum.Fourth, TestEnum.Second, TestEnum.Fourth]];
 
             return tmp;
+        }
+
+        public bool AssertTest(MultiDimClassIEnumarble actual)
+        {
+            // TODO...
+            return true;
         }
     }
 

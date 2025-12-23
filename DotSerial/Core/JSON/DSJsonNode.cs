@@ -13,9 +13,6 @@ namespace DotSerial.Core.JSON
         /// <summary>Wrapped node </summary>
         private readonly IDSNode _node;
 
-        /// <summary> Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-
         /// <summary>
         /// Constructor
         /// </summary>
@@ -52,17 +49,17 @@ namespace DotSerial.Core.JSON
         /// <returns>All chidlren</returns>
         public List<DSJsonNode>? GetChildren()
         {
-            return [];
-        }
+            if (false == HasChildren)
+                return null;
 
-        /// <summary>
-        /// Adds a child node.
-        /// </summary>
-        /// <param name="node">Child node</param>
-        public void AddChild(DSJsonNode? node)
-        {
-            // TODO NUR Leafs erlauben
-            throw new NotImplementedException();
+            var children = new List<DSJsonNode>();
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
+            {
+                children.Add(new DSJsonNode(c));
+            }
+
+            return children;
         }
 
         /// <summary>

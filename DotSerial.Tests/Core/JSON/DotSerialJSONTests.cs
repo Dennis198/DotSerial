@@ -90,7 +90,6 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -121,7 +120,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -136,7 +135,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -151,7 +150,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -166,7 +165,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -181,7 +180,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -196,7 +195,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -211,19 +210,14 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
         public void CreateSerializedObject_NestedClass()
         {
             // Arrange
-            var tmp2 = PrimitiveClass.CreateTestDefault();
-            var tmp = new NestedClass
-            {
-                Boolean = true,
-                PrimitiveClass = tmp2
-            };
+            var tmp = NestedClass.CreateTestDefault();
 
             // Act
             var xmlDocument = DotSerialJSON.Serialize(tmp);
@@ -231,45 +225,13 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
         public void CreateSerializedObject_NestedNestedClass()
         {
-            //Arrange
-            var tmp3 = PrimitiveClass.CreateTestDefault();
-            var tmp4 = new PrimitiveClass
-            {
-                Boolean = true,
-                Byte = 1,
-                SByte = 2,
-                Char = 'e',
-                Decimal = 3,
-                Double = 4.9,
-                Float = 5.8F,
-                Int = 6,
-                UInt = 7,
-                NInt = 8,
-                NUInt = 9,
-                Long = 10,
-                ULong = 11,
-                Short = 12,
-                UShort = 13,
-                String = "HelloWorld",
-                Enum = TestEnum.Second
-            };
-            var tmp2 = new NestedClass
-            {
-                Boolean = true,
-                PrimitiveClass = tmp3
-            };
-            var tmp = new NestedNestedClass
-            {
-                NestedClass = tmp2,
-                PrimitiveClass = tmp4,
-                Boolean = true
-            };
+            var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
             var xmlDocument = DotSerialJSON.Serialize(tmp);
@@ -277,7 +239,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -293,7 +255,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -323,7 +285,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -338,7 +300,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
 
         }
 
@@ -354,7 +316,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -373,30 +335,14 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
         public void CreateSerializedObject_IEnumerableClass()
         {
             // Arrange
-            var tmp = new IEnumerableClass
-            {
-                Array = new SimpleClass[10],
-                List = [],
-                Dic = []
-            };
-            for (int i = 0; i < 10; i++)
-            {
-                var d = new SimpleClass
-                {
-                    Boolean = true
-                };
-
-                tmp.Array[i] = d;
-                tmp.List.Add(d);
-                tmp.Dic.Add(i, d);
-            }
+            var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
             var xmlDocument = DotSerialJSON.Serialize(tmp);
@@ -404,7 +350,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -422,7 +368,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]

@@ -228,15 +228,17 @@ namespace DotSerial.Core.JSON.Writer
                 {
                     foreach(var keyValue in children)
                     {
-                        if (keyValue.HasChildren())
-                        {
-                            var valNode = keyValue.GetChild(keyValue.Key);
-                            valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
+                        // var valNode = keyValue.GetChild(keyValue.Key);
+                        keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
+                        // if (keyValue.HasChildren())
+                        // {
+                        //     var valNode = keyValue.GetChild(keyValue.Key);
+                        //     valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
+                        // }
+                        // else
+                        // {
+                        //     throw new NotImplementedException();
+                        // }
                     }
                 }
                 else
