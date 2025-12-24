@@ -26,7 +26,7 @@ namespace DotSerial.Core.JSON.Writer
 
             // node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(0, false));
             var internalNode = node.GetInternalData();
-            DSJsonNode.WritterAccept(internalNode, new JSONWriterVisitor(), sb, new NodeVisitorOptions(0, false));
+            DSJsonNode.WritterAccept(internalNode, new JSONWriterVisitor(), sb, new JsonNodeVisitorOptions(0, false));
 
             sb.Remove(sb.Length - 1, 1);
 
@@ -37,7 +37,7 @@ namespace DotSerial.Core.JSON.Writer
         } 
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, NodeVisitorOptions options)
+        public void VisitLeafNode(LeafNode node, StringBuilder sb, JsonNodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -67,7 +67,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, NodeVisitorOptions options)
+        public void VisitInnerNode(InnerNode node, StringBuilder sb, JsonNodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -93,7 +93,7 @@ namespace DotSerial.Core.JSON.Writer
                 foreach(var keyValue in children)
                 {
                     // keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                    DSJsonNode.WritterAccept(keyValue, this, sb, new NodeVisitorOptions(level + 1));
+                    DSJsonNode.WritterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                 }
 
                 // Remove last ','
@@ -111,7 +111,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, StringBuilder sb, NodeVisitorOptions options)
+        public void VisitListNode(ListNode node, StringBuilder sb, JsonNodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -142,7 +142,7 @@ namespace DotSerial.Core.JSON.Writer
                     {
                         StringBuilder sb3 = new();
                         // keyValue.WritterAccept(this, sb3, new NodeVisitorOptions(level + 1, false));
-                        DSJsonNode.WritterAccept(keyValue, this, sb3, new NodeVisitorOptions(level + 1, false));
+                        DSJsonNode.WritterAccept(keyValue, this, sb3, new JsonNodeVisitorOptions(level + 1, false));
                         sb2.Append(sb3);
                     }
 
@@ -206,7 +206,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, JsonNodeVisitorOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -234,7 +234,7 @@ namespace DotSerial.Core.JSON.Writer
                     {
                         // var valNode = keyValue.GetChild(keyValue.Key);
                         // keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                        DSJsonNode.WritterAccept(keyValue, this, sb, new NodeVisitorOptions(level + 1));
+                        DSJsonNode.WritterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                         // if (keyValue.HasChildren())
                         // {
                         //     var valNode = keyValue.GetChild(keyValue.Key);
@@ -252,7 +252,7 @@ namespace DotSerial.Core.JSON.Writer
                     {
                        var valNode = keyValue;
                     //    valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                       DSJsonNode.WritterAccept(valNode, this, sb, new NodeVisitorOptions(level + 1));
+                       DSJsonNode.WritterAccept(valNode, this, sb, new JsonNodeVisitorOptions(level + 1));
                     } 
                 }
 

@@ -56,18 +56,6 @@ namespace DotSerial.Core.Tree
             _wrappedInnerNode.AddChild(node);
         }
 
-        /// <inheritdoc/>
-        public virtual void WritterAccept(INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public virtual void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
-        {
-            throw new NotImplementedException();
-        }
-
         public virtual object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {
             throw new NotImplementedException();

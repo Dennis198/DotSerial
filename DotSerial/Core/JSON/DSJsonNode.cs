@@ -170,7 +170,7 @@ namespace DotSerial.Core.JSON
         }
 
         /// <inheritdoc/>
-        internal static void WritterAccept(IDSNode node, IJsonNodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
+        internal static void WritterAccept(IDSNode node, IJsonNodeWriterVisitor visitor, StringBuilder sb, JsonNodeVisitorOptions options)
         {
             if (node is LeafNode leafNode)
             {
@@ -195,23 +195,23 @@ namespace DotSerial.Core.JSON
         }    
 
         /// <inheritdoc/>
-        public static void ParserAccept (IDSNode node, IJsonNodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
+        public static void ParserAccept(IDSNode node, IJsonNodeParserVisitor visitor, StringBuilder sb)
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, null, sb);    
+                visitor.VisitLeafNode(leafNode, sb);    
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, null, sb);    
+                visitor.VisitInnerNode(innerNode, sb);    
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, null, sb);    
+                visitor.VisitListNode(listNode, sb);    
             }
             else if (node is DictionaryNode dicNode)
             {
-                visitor.VisitDictionaryNode(dicNode, null, sb);
+                visitor.VisitDictionaryNode(dicNode, sb);
             }
             else
             {

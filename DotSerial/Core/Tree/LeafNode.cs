@@ -55,18 +55,6 @@ namespace DotSerial.Core.Tree
             throw new NotImplementedException();
         }
 
-        /// <inheritdoc/>
-        public void WritterAccept (INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
-        {
-            visitor.VisitLeafNode(this, sb, options);
-        }
-
-        /// <inheritdoc/>
-        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
-        {
-            visitor.VisitLeafNode(this, parent, sb);
-        }
-
         public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {
             return visitor.VisitLeafNode(this, type);

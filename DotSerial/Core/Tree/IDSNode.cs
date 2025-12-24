@@ -43,16 +43,6 @@ namespace DotSerial.Core.Tree
         /// <param name="node">Child node</param>
         public abstract void AddChild(IDSNode? node);
 
-        /// <summary>
-        /// TODO
-        /// </summary>
-        /// <param name="visitor"></param>
-        /// <param name="sb"></param>
-        /// <param name="options"></param>
-        public abstract void WritterAccept(INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options);
-
-        public abstract void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb);
-
         public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
     }
 }

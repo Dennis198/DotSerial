@@ -97,18 +97,6 @@ namespace DotSerial.Core.Tree
             return _children.Count > 0;        
         }
 
-        /// <inheritdoc/>
-        public void WritterAccept(INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
-        {
-            visitor.VisitInnerNode(this, sb, options);
-        }
-
-        /// <inheritdoc/>
-        public void ParserAccept (INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
-        {
-            visitor.VisitInnerNode(this, parent, sb);
-        }
-
         public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {
             return visitor.VisitInnerNode(this, type);

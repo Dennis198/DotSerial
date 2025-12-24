@@ -11,18 +11,6 @@ namespace DotSerial.Core.Tree
         public DictionaryNode(IDSNode wrappedNode) : base(wrappedNode)
         {}
 
-        /// <inheritdoc/>
-        public override void WritterAccept(INodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
-        {
-            visitor.VisitDictionaryNode(this, sb, options);
-        } 
-
-        /// <inheritdoc/>
-        public override void ParserAccept(INodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
-        {
-            visitor.VisitDictionaryNode(this, parent, sb);
-        }
-
         public override object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {
             return visitor.VisitDictionaryNode(this, type);

@@ -1,15 +1,15 @@
-namespace DotSerial.Core.Tree
+namespace DotSerial.Core.JSON.Writer
 {
     /// <summary>
     /// Options for node visitors.
     /// </summary>
-    public struct NodeVisitorOptions
+    public struct JsonNodeVisitorOptions
     {
         internal int Level { get; private set; }
         internal bool AddKey { get; private set; }
         internal string? Prefix { get; private set; }
 
-        public NodeVisitorOptions(int level, bool addKey = true, string? prefix = null)
+        public JsonNodeVisitorOptions(int level, bool addKey = true, string? prefix = null)
         {
             Level = level;
             AddKey = addKey;

@@ -9,9 +9,9 @@ namespace DotSerial.Core.JSON.Writer
     public interface IJsonNodeWriterVisitor
     {
         public static abstract string Write(DSJsonNode node);
-        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, NodeVisitorOptions options);
-        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, NodeVisitorOptions options);
-        public abstract void VisitListNode(ListNode node,StringBuilder sb,NodeVisitorOptions options);
-        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options);
+        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, JsonNodeVisitorOptions options);
+        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, JsonNodeVisitorOptions options);
+        public abstract void VisitListNode(ListNode node,StringBuilder sb,JsonNodeVisitorOptions options);
+        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, JsonNodeVisitorOptions options);
     }
 }
