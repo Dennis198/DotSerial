@@ -45,10 +45,40 @@ namespace DotSerial.Core.JSON.Parser
 
             var rootNode = _nodeFactory.CreateNode(GeneralConstants.MainObjectKey, null, NodeType.InnerNode);
 
-            DSJsonNode.ParserAccept(rootNode, new JSONParserVisitor(), sb);
+            ParserAccept(rootNode, new JSONParserVisitor(), sb);
 
             return new DSJsonNode(rootNode);
         }
+
+        /// <summary>
+        /// Parser for json
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="sb">Stringbuilder</param>
+        private static void ParserAccept(IDSNode node, JSONParserVisitor visitor, StringBuilder sb)
+        {
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, sb);    
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, sb);    
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, sb);    
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, sb);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }   
+        }            
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb)
@@ -88,7 +118,7 @@ namespace DotSerial.Core.JSON.Parser
                         StringBuilder innerSb = new (strValue);
 
                         // Parse inner node
-                        DSJsonNode.ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
+                        ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
@@ -105,7 +135,7 @@ namespace DotSerial.Core.JSON.Parser
                         StringBuilder listSb = new (strValue);
 
                         // Parse list node
-                        DSJsonNode.ParserAccept(listNode, new JSONParserVisitor(), listSb);
+                        ParserAccept(listNode, new JSONParserVisitor(), listSb);
 
                         node.AddChild(listNode);
                     }
@@ -161,7 +191,7 @@ namespace DotSerial.Core.JSON.Parser
                             StringBuilder innerSb = new (items[i]);
 
                             // Parse inner node
-                            DSJsonNode.ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
+                            ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
 
                             // Add inner node to parent
                             node.AddChild(innerNode);
@@ -178,7 +208,7 @@ namespace DotSerial.Core.JSON.Parser
                             StringBuilder listSb = new (items[i]);
 
                             // Parse list node
-                            DSJsonNode.ParserAccept(listNode, new JSONParserVisitor(), listSb);
+                            ParserAccept(listNode, new JSONParserVisitor(), listSb);
 
                             node.AddChild(listNode);
                         }

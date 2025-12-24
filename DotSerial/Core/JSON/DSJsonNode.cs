@@ -1,4 +1,25 @@
-using System.Text;
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using DotSerial.Core.General;
 using DotSerial.Core.JSON.Parser;
 using DotSerial.Core.JSON.Writer;
@@ -32,6 +53,15 @@ namespace DotSerial.Core.JSON
         /// True, if node contains children
         /// </summary>
         public bool HasChildren => _node.HasChildren();
+
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
+        {
+            return _node;
+        }
 
         /// <summary>
         /// Returns the child with the given key, otherwise null.
@@ -162,61 +192,6 @@ namespace DotSerial.Core.JSON
             {
                 throw new NotImplementedException();
             }    
-        }
-
-        internal IDSNode GetInternalData()
-        {
-            return _node;
-        }
-
-        /// <inheritdoc/>
-        internal static void WritterAccept(IDSNode node, IJsonNodeWriterVisitor visitor, StringBuilder sb, JsonNodeVisitorOptions options)
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, sb, options);    
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, sb, options);    
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, sb, options);    
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, sb, options);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }            
-        }    
-
-        /// <inheritdoc/>
-        public static void ParserAccept(IDSNode node, IJsonNodeParserVisitor visitor, StringBuilder sb)
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, sb);    
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, sb);    
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, sb);    
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, sb);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }   
-        }            
+        }        
     }
 }

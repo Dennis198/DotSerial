@@ -1,3 +1,25 @@
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
@@ -6,35 +28,54 @@ using DotSerial.Core.Tree;
 namespace DotSerial.Core.JSON.Writer
 {
     /// <summary>
-    /// Visitor interface for tree nodes.
+    /// Implementation of the visitor for json writer.
     /// </summary>
     public class JSONWriterVisitor : IJsonNodeWriterVisitor
     {
-        /// <summary>
-        /// Converts the node to a string.
-        /// </summary>
-        /// <param name="node">Node</param>
-        /// <returns>String</returns>
+        /// <inheritdoc/>
         public static string Write(DSJsonNode? node)
         {
             ArgumentNullException.ThrowIfNull(node);
 
             StringBuilder sb = new();
-
-            // Add First '{'
-            // sb.Append(JsonConstants.ObjectStart);
-
-            // node.WritterAccept(new JSONWriterVisitor(), sb, new NodeVisitorOptions(0, false));
             var internalNode = node.GetInternalData();
-            DSJsonNode.WritterAccept(internalNode, new JSONWriterVisitor(), sb, new JsonNodeVisitorOptions(0, false));
+            WriterAccept(internalNode, new JSONWriterVisitor(), sb, new JsonNodeVisitorOptions(0, false));
 
             sb.Remove(sb.Length - 1, 1);
 
-            // Add Last '}'
-            // AddObjectEnd(sb, 0, true);
-
             return sb.ToString();
         } 
+
+        /// <summary>
+        /// Writer for json
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="sb">Stringbuild</param>
+        /// <param name="options">Additional options</param>
+        private static void WriterAccept(IDSNode node, JSONWriterVisitor visitor, StringBuilder sb, JsonNodeVisitorOptions options)
+        {
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, sb, options);    
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, sb, options);    
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, sb, options);    
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, sb, options);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }            
+        }            
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, JsonNodeVisitorOptions options)
@@ -78,7 +119,7 @@ namespace DotSerial.Core.JSON.Writer
             {
                 if (options.AddKey)
                 {
-                    AddObjectStart(sb, node.Key.ToString(), level);    
+                    JsonWriterHelper.AddObjectStart(sb, node.Key.ToString(), level);    
                 }
                 else
                 {
@@ -92,14 +133,13 @@ namespace DotSerial.Core.JSON.Writer
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    // keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                    DSJsonNode.WritterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
+                    WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                 }
 
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
 
-                AddObjectEnd(sb, level);
+                JsonWriterHelper.AddObjectEnd(sb, level);
             }
             else
             {
@@ -141,8 +181,7 @@ namespace DotSerial.Core.JSON.Writer
                     foreach (var keyValue in children)
                     {
                         StringBuilder sb3 = new();
-                        // keyValue.WritterAccept(this, sb3, new NodeVisitorOptions(level + 1, false));
-                        DSJsonNode.WritterAccept(keyValue, this, sb3, new JsonNodeVisitorOptions(level + 1, false));
+                        WriterAccept(keyValue, this, sb3, new JsonNodeVisitorOptions(level + 1, false));
                         sb2.Append(sb3);
                     }
 
@@ -218,7 +257,7 @@ namespace DotSerial.Core.JSON.Writer
                 var children = node.GetChildren();
                 if (options.AddKey)
                 {
-                    AddObjectStart(sb, node.Key.ToString(), level);    
+                    JsonWriterHelper.AddObjectStart(sb, node.Key.ToString(), level);    
                 }
                 else
                 {
@@ -232,27 +271,14 @@ namespace DotSerial.Core.JSON.Writer
                 {
                     foreach(var keyValue in children)
                     {
-                        // var valNode = keyValue.GetChild(keyValue.Key);
-                        // keyValue.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                        DSJsonNode.WritterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
-                        // if (keyValue.HasChildren())
-                        // {
-                        //     var valNode = keyValue.GetChild(keyValue.Key);
-                        //     valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                        // }
-                        // else
-                        // {
-                        //     throw new NotImplementedException();
-                        // }
+                        WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                     }
                 }
                 else
                 {
                     foreach(var keyValue in children)
                     {
-                       var valNode = keyValue;
-                    //    valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-                       DSJsonNode.WritterAccept(valNode, this, sb, new JsonNodeVisitorOptions(level + 1));
+                       WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                     } 
                 }
 
@@ -260,7 +286,7 @@ namespace DotSerial.Core.JSON.Writer
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
 
-                AddObjectEnd(sb, level); 
+                JsonWriterHelper.AddObjectEnd(sb, level); 
             }
             else
             {
@@ -279,101 +305,6 @@ namespace DotSerial.Core.JSON.Writer
                     sb.Append("{},");
                 }
 
-            }
-        }
-
-        /// <inheritdoc/>
-        // public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, NodeVisitorOptions options)
-        // {
-        //     ArgumentNullException.ThrowIfNull(node);
-        //     ArgumentNullException.ThrowIfNull(sb);
-            
-        //     int level = options.Level;
-
-        //     if (node.HasChildren())
-        //     {
-        //         var children = node.GetChildren();
-        //         if (options.AddKey)
-        //         {
-        //             AddObjectStart(sb, node.Key.ToString(), level);    
-        //         }
-        //         else
-        //         {
-        //             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-        //             sb.AppendLine();
-        //             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-        //             sb.Append(JsonConstants.ObjectStart);
-        //         }
-
-        //         foreach(var keyValue in children)
-        //         {
-        //             if (keyValue.HasChildren())
-        //             {
-        //                 var valNode = keyValue.GetChild(keyValue.Key);
-        //                 valNode.WritterAccept(this, sb, new NodeVisitorOptions(level + 1));
-        //             }
-        //             else
-        //             {
-        //                 throw new NotImplementedException();
-        //             }
-        //         }
-
-        //         // Remove last ','
-        //         sb.Remove(sb.Length - 1, 1);
-
-        //         AddObjectEnd(sb, level); 
-        //     }
-        //     else
-        //     {
-        //         // Empty node
-        //         sb.AppendLine();
-        //         WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-        //         sb.Append("{},");
-        //     }
-
-        // }
-
-        /// <summary>
-        /// Helper methode to add object start symbol and to json
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
-        /// <param name="level">Indentation level</param>
-        private static void AddObjectStart(StringBuilder sb, string key, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
-
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
-            }
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-            sb.AppendFormat("\"{0}\": {{", key);
-        }
-
-        /// <summary>
-        /// Helper methode to add object end symbol and to json
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="level">Indentation level</param>
-        /// <param name="isLastObject">True, if object is last object</param>
-        private static void AddObjectEnd(StringBuilder sb, int level, bool isLastObject = false)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-
-            if (isLastObject)
-            {
-                sb.Append(JsonConstants.ObjectEnd);
-            }
-            else
-            {
-                sb.Append(JsonConstants.ObjectEnd + ",");
             }
         }
     }
