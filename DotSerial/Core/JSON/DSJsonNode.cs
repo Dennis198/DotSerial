@@ -1,3 +1,4 @@
+using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.JSON.Parser;
 using DotSerial.Core.JSON.Writer;
@@ -91,7 +92,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Convert
-            string jsonString = JSONWriterVisitor.Write(_node);
+            string jsonString = JSONWriterVisitor.Write(this);
 
             return jsonString;
         }
@@ -110,7 +111,7 @@ namespace DotSerial.Core.JSON
 
             var root = JSONParserVisitor.Parse(jsonString);        
 
-            return new DSJsonNode(root);
+            return root;
         }
 
         /// <summary>
@@ -162,5 +163,60 @@ namespace DotSerial.Core.JSON
                 throw new NotImplementedException();
             }    
         }
+
+        internal IDSNode GetInternalData()
+        {
+            return _node;
+        }
+
+        /// <inheritdoc/>
+        internal static void WritterAccept(IDSNode node, IJsonNodeWriterVisitor visitor, StringBuilder sb, NodeVisitorOptions options)
+        {
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, sb, options);    
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, sb, options);    
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, sb, options);    
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, sb, options);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }            
+        }    
+
+        /// <inheritdoc/>
+        public static void ParserAccept (IDSNode node, IJsonNodeParserVisitor visitor, IDSNode? parent, StringBuilder sb)
+        {
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, null, sb);    
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, null, sb);    
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, null, sb);    
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, null, sb);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }   
+        }            
     }
 }
