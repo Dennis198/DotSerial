@@ -1,36 +1,13 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using DotSerial.Core.General;
-using DotSerial.Core.JSON.Parser;
-using DotSerial.Core.JSON.Writer;
 using DotSerial.Core.Tree;
+using DotSerial.Core.YAML.Writer;
 
-namespace DotSerial.Core.JSON
+namespace DotSerial.Core.YAML
 {
     /// <summary>
-    /// JSON Node
+    /// YAML Node
     /// </summary>
-    public class DSJsonNode
+    public class DSYamlNode
     {
         /// <summary>Internal node </summary>
         private readonly IDSNode _node;
@@ -39,7 +16,7 @@ namespace DotSerial.Core.JSON
         /// Constructor
         /// </summary>
         /// <param name="node">Node</param>
-        internal DSJsonNode(IDSNode node)
+        internal DSYamlNode(IDSNode node)
         {
             _node = node;
         }
@@ -61,36 +38,17 @@ namespace DotSerial.Core.JSON
         internal IDSNode GetInternalData()
         {
             return _node;
-        }
+        }        
 
         /// <summary>
         /// Returns the child with the given key, otherwise null.
         /// </summary>
         /// <param name="key">Key of child</param>
         /// <returns>Child node</returns>
-        public DSJsonNode? GetChild(string key)
+        public DSYamlNode? GetChild(string key)
         {
             var child = _node.GetChild(key);
-            return new DSJsonNode(child);
-        }
-
-        /// <summary>
-        /// Returns all children of the node.
-        /// </summary>
-        /// <returns>All chidlren</returns>
-        public List<DSJsonNode>? GetChildren()
-        {
-            if (false == HasChildren)
-                return null;
-
-            var children = new List<DSJsonNode>();
-            var tmp = _node.GetChildren();
-            foreach (var c in tmp)
-            {
-                children.Add(new DSJsonNode(c));
-            }
-
-            return children;
+            return new DSYamlNode(child);
         }
 
         /// <summary>
@@ -99,7 +57,7 @@ namespace DotSerial.Core.JSON
         /// <param name="obj">Object</param>
         /// <param name="key">Key of the object</param>
         /// <returns>DSJsonNode</returns>
-        public static DSJsonNode ToNode(object? obj, string? key = null)
+        public static DSYamlNode ToNode(object? obj, string? key = null)
         {
             // Determine key
             string currKey = key ?? GeneralConstants.MainObjectKey;
@@ -107,42 +65,43 @@ namespace DotSerial.Core.JSON
             // Serialize object
             var rootNode = DSSerialize.Serialize2(obj, currKey);
 
-            return new DSJsonNode(rootNode);
-        }
+            return new DSYamlNode(rootNode);
+        }       
 
         /// <summary>
         /// Converts the node to a JSON string.
         /// </summary>
-        /// <returns>Json string</returns>
-        public string ToJsonString()
-        {
+        /// <returns>Yaml string</returns>
+        public string ToYamlString()
+        {            
             if (null == _node)
             {
                 throw new NotImplementedException();
             }
 
             // Convert
-            string jsonString = JSONWriterVisitor.Write(this);
+            string yamlString = YamlWriterVisitor.Write(this);
 
-            return jsonString;
-        }
+            return yamlString;
+        }         
 
         /// <summary>
         /// Parses a json string to a DSJsonNode
         /// </summary>
         /// <param name="jsonString">Json string</param>
         /// <returns>DSJsonNode</returns>
-        public static DSJsonNode FromJsonString(string jsonString)
+        public static DSYamlNode FromYamlString(string jsonString)
         {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new NotImplementedException();
-            }   
+            throw new NotImplementedException();
+            // if (string.IsNullOrWhiteSpace(jsonString))
+            // {
+            //     throw new NotImplementedException();
+            // }   
 
-            var root = JSONParserVisitor.Parse(jsonString);        
+            // var root = JSONParserVisitor.Parse(jsonString);        
 
-            return root;
-        }
+            // return root;
+        }        
 
         /// <summary>
         /// Deserializes a json string to an object of type U
@@ -158,7 +117,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Parse json string to node
-            DSJsonNode dsNode = FromJsonString(jsonString);
+            DSYamlNode dsNode = FromYamlString(jsonString);
 
             return dsNode.ToObject<U>();
         }
@@ -192,6 +151,8 @@ namespace DotSerial.Core.JSON
             {
                 throw new NotImplementedException();
             }    
-        }        
+        }           
+
+        
     }
 }
