@@ -267,21 +267,10 @@ namespace DotSerial.Core.JSON.Writer
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
-                if (false == node.IsPrimitiveDictionary())
+                foreach(var keyValue in children)
                 {
-                    foreach(var keyValue in children)
-                    {
-                        WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
-                    }
+                    WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
                 }
-                else
-                {
-                    foreach(var keyValue in children)
-                    {
-                       WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
-                    } 
-                }
-
 
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);

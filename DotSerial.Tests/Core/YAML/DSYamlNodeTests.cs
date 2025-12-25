@@ -57,7 +57,7 @@ namespace DotSerial.Tests.Core.YAML
         public void ToYamlString()
         {
             // Arrange
-            var example = ExampleClass.CreateTestDefault();
+            var example = NestedNestedClass.CreateTestDefault();
             var tmp = DSYamlNode.ToNode(example);
 
             // Act

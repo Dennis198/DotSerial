@@ -37,5 +37,11 @@ namespace DotSerial.Core.YAML.Writer
             AddKey = addKey;
             Prefix = prefix;
         }
+
+        internal static YamlNodeVisitorOptions CreateHigher(YamlNodeVisitorOptions opt)
+        {
+            var result = new YamlNodeVisitorOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
+            return result;
+        }
     }
 }

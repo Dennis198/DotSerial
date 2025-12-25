@@ -1,5 +1,6 @@
 
 using System.Text;
+using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 
@@ -66,7 +67,7 @@ namespace DotSerial.Core.YAML.Writer
 
             int level = options.Level;
 
-            KeyValuePairToYaml(sb, node.Key.ToString(), node.GetValue(), level);
+            KeyValuePairToYaml(sb, node.Key.ToString(), node.GetValue(), level, options.Prefix);
         }           
 
         /// <inheritdoc/>
@@ -87,27 +88,92 @@ namespace DotSerial.Core.YAML.Writer
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlNodeVisitorOptions(level + 1));
+                    WriterAccept(keyValue, this, sb, new YamlNodeVisitorOptions(level + 1, true, options.Prefix));
                 }
             }
             else
             {
                 AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
-                sb.Append(": {}");
+                sb.Append(" {}");
             }
         } 
 
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlNodeVisitorOptions options)
-        {
-            throw new NotImplementedException();
-        }   
 
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, YamlNodeVisitorOptions options)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            int level = options.Level;
+
+            if (node.HasChildren())
+            {
+                if (false == node.IsPrimitiveList())
+                {    
+                    var children = node.GetChildren();  
+
+                    if (options.AddKey)
+                    {
+                        AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
+                    }
+
+                    StringBuilder sb2 = new();
+                    foreach (var keyValue in children)
+                    {
+                        StringBuilder sb3 = new();
+                        WriterAccept(keyValue, this, sb3, new YamlNodeVisitorOptions(level + 1, false, YAMLConstants.ListItemIndicator));
+                        sb2.Append(sb3);
+                    }
+
+                    sb.Append(sb2);
+                }
+                else
+                {
+                    if (options.AddKey)
+                    {
+                        AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
+                    }
+
+                    // List to yaml
+                    PrimitiveListToYaml(sb, node, level + 1);
+                }
+            }
+            else
+            {
+                AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
+                sb.Append(" []");
+            }
         }
+
+        /// <inheritdoc/>
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlNodeVisitorOptions options)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            int level = options.Level;
+
+            if (node.HasChildren())
+            {
+                var children = node.GetChildren();  
+
+                if (options.AddKey)
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
+                }
+
+                foreach(var keyValue in children)
+                {
+                    WriterAccept(keyValue, this, sb, new YamlNodeVisitorOptions(level + 1, false));
+                }
+            }
+            else
+            {
+                AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
+                sb.Append(" {}");
+            }
+        }   
 
         // ==================================================================================================
 
@@ -151,7 +217,7 @@ namespace DotSerial.Core.YAML.Writer
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
 
-        private static void KeyValuePairToYaml(StringBuilder sb, string key, string? value, int level)
+        private static void KeyValuePairToYaml(StringBuilder sb, string key, string? value, int level, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -166,6 +232,11 @@ namespace DotSerial.Core.YAML.Writer
 
             WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
 
+            if (null != prefix)
+            {
+                sb.AppendFormat("{0} ", prefix);
+            }
+
             if (null == value)
             {
                 sb.AppendFormat("\"{0}\": null", key);
@@ -179,5 +250,56 @@ namespace DotSerial.Core.YAML.Writer
                 sb.AppendFormat("\"{0}\": \"{1}\"", key, value);
             }
         }
+
+        /// <summary>
+        /// Converts a primitive list into yaml
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Node</param>
+        /// <param name="level">Indentation level</param>
+        private static void PrimitiveListToYaml(StringBuilder sb, ListNode node, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            sb.AppendLine();
+            // WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
+
+            // // Add Key
+            // sb.AppendFormat("\"{0}\":", node.Key);
+            // sb.AppendLine();
+
+            // Get all children of node
+            var children = node.GetChildren();
+
+            foreach (var keyValue in children)
+            {
+                if (keyValue is LeafNode leaf)
+                {
+
+                    string? val = leaf.GetValue();
+
+                    WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
+
+                    if (null == val)
+                    {
+                        sb.AppendFormat("- {0}", GeneralConstants.Null);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("- \"{0}\"", val);
+                    }               
+
+                    sb.AppendLine();
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+            }
+
+            // Remove last New Line
+            sb.Remove(sb.Length - 1, 1);
+        }        
     }
 }
