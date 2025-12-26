@@ -19,7 +19,7 @@ namespace DotSerial.Core.YAML.Writer
             sb.Append(YAMLConstants.YAMLDocumentStart);
 
             var internalNode = node.GetInternalData();
-            WriterAccept(internalNode, new YamlWriterVisitor(), sb, new YamlNodeVisitorOptions(0, false));
+            WriterAccept(internalNode, new YamlWriterVisitor(), sb, new YamlWriterOptions(-1, false));
 
             // Add document end
             sb.AppendLine();
@@ -35,7 +35,7 @@ namespace DotSerial.Core.YAML.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, YamlWriterVisitor visitor, StringBuilder sb, YamlNodeVisitorOptions options)
+        private static void WriterAccept(IDSNode node, YamlWriterVisitor visitor, StringBuilder sb, YamlWriterOptions options)
         {
             if (node is LeafNode leafNode)
             {
@@ -60,7 +60,7 @@ namespace DotSerial.Core.YAML.Writer
         }       
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, YamlNodeVisitorOptions options)
+        public void VisitLeafNode(LeafNode node, StringBuilder sb, YamlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
@@ -71,7 +71,7 @@ namespace DotSerial.Core.YAML.Writer
         }           
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, YamlNodeVisitorOptions options)
+        public void VisitInnerNode(InnerNode node, StringBuilder sb, YamlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
@@ -88,7 +88,7 @@ namespace DotSerial.Core.YAML.Writer
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlNodeVisitorOptions(level + 1, true, options.Prefix));
+                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level + 1, true, options.Prefix));
                 }
             }
             else
@@ -100,7 +100,7 @@ namespace DotSerial.Core.YAML.Writer
 
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, StringBuilder sb, YamlNodeVisitorOptions options)
+        public void VisitListNode(ListNode node, StringBuilder sb, YamlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
@@ -122,7 +122,7 @@ namespace DotSerial.Core.YAML.Writer
                     foreach (var keyValue in children)
                     {
                         StringBuilder sb3 = new();
-                        WriterAccept(keyValue, this, sb3, new YamlNodeVisitorOptions(level + 1, false, YAMLConstants.ListItemIndicator));
+                        WriterAccept(keyValue, this, sb3, new YamlWriterOptions(level + 1, false, YAMLConstants.ListItemIndicator));
                         sb2.Append(sb3);
                     }
 
@@ -147,7 +147,7 @@ namespace DotSerial.Core.YAML.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlNodeVisitorOptions options)
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
@@ -165,7 +165,7 @@ namespace DotSerial.Core.YAML.Writer
 
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlNodeVisitorOptions(level + 1, false));
+                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level + 1, false));
                 }
             }
             else

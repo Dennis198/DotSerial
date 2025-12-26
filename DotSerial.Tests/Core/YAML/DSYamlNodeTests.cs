@@ -57,7 +57,7 @@ namespace DotSerial.Tests.Core.YAML
         public void ToYamlString()
         {
             // Arrange
-            var example = NestedNestedClass.CreateTestDefault();
+            var example = ExampleClass.CreateTestDefault();
             var tmp = DSYamlNode.ToNode(example);
 
             // Act
@@ -67,7 +67,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.NotNull(result);
         }
 
-        //[Fact]
+        [Fact]
         public void FromYamlString()
         {
             // Arrange

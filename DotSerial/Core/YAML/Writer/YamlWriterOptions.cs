@@ -25,22 +25,22 @@ namespace DotSerial.Core.YAML.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    public struct YamlNodeVisitorOptions
+    public struct YamlWriterOptions
     {
         internal int Level { get; private set; }
         internal bool AddKey { get; private set; }
         internal string? Prefix { get; private set; }
 
-        public YamlNodeVisitorOptions(int level, bool addKey = true, string? prefix = null)
+        public YamlWriterOptions(int level, bool addKey = true, string? prefix = null)
         {
             Level = level;
             AddKey = addKey;
             Prefix = prefix;
         }
 
-        internal static YamlNodeVisitorOptions CreateHigher(YamlNodeVisitorOptions opt)
+        internal static YamlWriterOptions CreateHigher(YamlWriterOptions opt)
         {
-            var result = new YamlNodeVisitorOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
+            var result = new YamlWriterOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
             return result;
         }
     }

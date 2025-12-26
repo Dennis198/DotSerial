@@ -23,46 +23,46 @@
 using System.Text;
 using DotSerial.Core.Tree;
 
-namespace DotSerial.Core.JSON.Writer
+namespace DotSerial.Core.YAML.Parser
 {
     /// <summary>
-    /// Visitor interface for tree nodes (json).
+    /// Visitor interface for tree nodes (yaml).
     /// </summary>
-    public interface IJsonNodeWriterVisitor
+    public interface IYamlNodeParserVisitor
     {
         /// <summary>
-        /// Writes the tree to a json string.
+        /// Parse the yaml string to create tree structure
         /// </summary>
-        /// <param name="node">Node</param>
-        /// <returns>Json string</returns>
-        public static abstract string Write(DSJsonNode node);
+        /// <param name="str">Yaml string</param>
+        /// <returns>Root node of tree.</returns>
+        public static abstract DSYamlNode Parse(string str);
         /// <summary>
-        /// Visit leaf node
+        /// Visitor for leaf node
         /// </summary>
         /// <param name="node">Leaf node</param>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="lines">Lines</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, JsonWriterOptions options);
+        public abstract void VisitLeafNode(LeafNode node, List<StringBuilder> lines, YamlParserOptions options);
         /// <summary>
-        /// Visit inner node
+        /// Visitor for inner node
         /// </summary>
         /// <param name="node">Inner node</param>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="lines">Lines</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, JsonWriterOptions options);
+        public abstract void VisitInnerNode(InnerNode node, List<StringBuilder> lines, YamlParserOptions options);
         /// <summary>
-        /// Visit list node
+        /// Visitor for list node
         /// </summary>
         /// <param name="node">List node</param>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="lines">Lines</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitListNode(ListNode node,StringBuilder sb,JsonWriterOptions options);
+        public abstract void VisitListNode(ListNode node, List<StringBuilder> lines, YamlParserOptions options);
         /// <summary>
-        /// Visit dictionary node
+        /// Visitor for directory node
         /// </summary>
-        /// <param name="node">Dictioanry node</param>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">Inner node</param>
+        /// <param name="lines">Lines</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, JsonWriterOptions options);
+        public abstract void VisitDictionaryNode(DictionaryNode node, List<StringBuilder> lines, YamlParserOptions options);
     }
 }

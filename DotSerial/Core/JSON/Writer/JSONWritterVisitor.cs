@@ -39,7 +39,7 @@ namespace DotSerial.Core.JSON.Writer
 
             StringBuilder sb = new();
             var internalNode = node.GetInternalData();
-            WriterAccept(internalNode, new JSONWriterVisitor(), sb, new JsonNodeVisitorOptions(0, false));
+            WriterAccept(internalNode, new JSONWriterVisitor(), sb, new JsonWriterOptions(0, false));
 
             sb.Remove(sb.Length - 1, 1);
 
@@ -53,7 +53,7 @@ namespace DotSerial.Core.JSON.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, JSONWriterVisitor visitor, StringBuilder sb, JsonNodeVisitorOptions options)
+        private static void WriterAccept(IDSNode node, JSONWriterVisitor visitor, StringBuilder sb, JsonWriterOptions options)
         {
             if (node is LeafNode leafNode)
             {
@@ -78,7 +78,7 @@ namespace DotSerial.Core.JSON.Writer
         }            
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, JsonNodeVisitorOptions options)
+        public void VisitLeafNode(LeafNode node, StringBuilder sb, JsonWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -108,7 +108,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, JsonNodeVisitorOptions options)
+        public void VisitInnerNode(InnerNode node, StringBuilder sb, JsonWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -133,7 +133,7 @@ namespace DotSerial.Core.JSON.Writer
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
+                    WriterAccept(keyValue, this, sb, new JsonWriterOptions(level + 1));
                 }
 
                 // Remove last ','
@@ -151,7 +151,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, StringBuilder sb, JsonNodeVisitorOptions options)
+        public void VisitListNode(ListNode node, StringBuilder sb, JsonWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -181,7 +181,7 @@ namespace DotSerial.Core.JSON.Writer
                     foreach (var keyValue in children)
                     {
                         StringBuilder sb3 = new();
-                        WriterAccept(keyValue, this, sb3, new JsonNodeVisitorOptions(level + 1, false));
+                        WriterAccept(keyValue, this, sb3, new JsonWriterOptions(level + 1, false));
                         sb2.Append(sb3);
                     }
 
@@ -245,7 +245,7 @@ namespace DotSerial.Core.JSON.Writer
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, JsonNodeVisitorOptions options)
+        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, JsonWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
@@ -269,7 +269,7 @@ namespace DotSerial.Core.JSON.Writer
 
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new JsonNodeVisitorOptions(level + 1));
+                    WriterAccept(keyValue, this, sb, new JsonWriterOptions(level + 1));
                 }
 
                 // Remove last ','

@@ -1,5 +1,6 @@
 using DotSerial.Core.General;
 using DotSerial.Core.Tree;
+using DotSerial.Core.YAML.Parser;
 using DotSerial.Core.YAML.Writer;
 
 namespace DotSerial.Core.YAML
@@ -92,15 +93,14 @@ namespace DotSerial.Core.YAML
         /// <returns>DSJsonNode</returns>
         public static DSYamlNode FromYamlString(string jsonString)
         {
-            throw new NotImplementedException();
-            // if (string.IsNullOrWhiteSpace(jsonString))
-            // {
-            //     throw new NotImplementedException();
-            // }   
+            if (string.IsNullOrWhiteSpace(jsonString))
+            {
+                throw new NotImplementedException();
+            }   
 
-            // var root = JSONParserVisitor.Parse(jsonString);        
+            var root = YamlParserVisitor.Parse(jsonString);        
 
-            // return root;
+            return root;
         }        
 
         /// <summary>

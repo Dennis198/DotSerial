@@ -42,27 +42,27 @@ namespace DotSerial.Core.YAML.Writer
         /// <param name="node">Leaf node</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, YamlNodeVisitorOptions options);
+        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, YamlWriterOptions options);
         /// <summary>
         /// Visit inner node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, YamlNodeVisitorOptions options);
+        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, YamlWriterOptions options);
         /// <summary>
         /// Visit list node
         /// </summary>
         /// <param name="node">List node</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitListNode(ListNode node,StringBuilder sb, YamlNodeVisitorOptions options);
+        public abstract void VisitListNode(ListNode node,StringBuilder sb, YamlWriterOptions options);
         /// <summary>
         /// Visit dictionary node
         /// </summary>
         /// <param name="node">Dictioanry node</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlNodeVisitorOptions options);
+        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, YamlWriterOptions options);
     }
 }
