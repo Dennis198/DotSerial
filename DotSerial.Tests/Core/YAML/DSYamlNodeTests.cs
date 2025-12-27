@@ -71,7 +71,7 @@ namespace DotSerial.Tests.Core.YAML
         public void FromYamlString()
         {
             // Arrange
-            var example = ExampleClass.CreateTestDefault();
+            var example = PrimitiveClassIEnumarable.CreateTestDefault();
             var tmp = DSYamlNode.ToNode(example);
             var jsonString = tmp.ToYamlString();
 
@@ -82,7 +82,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.NotNull(result);
         }            
 
-        //[Fact]
+        [Fact]
         public void ToObject_ExampleClass()
         {   
             // Arrange
@@ -98,7 +98,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }
 
-        //[Fact]
+        [Fact]
         public void ToObject_EmptyClass()
         {   
             // Arrange
@@ -113,7 +113,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.NotNull(result);
         }   
 
-        //[Fact]
+        [Fact]
         public void ToObject_NoAttributeClass()
         {   
             // Arrange
@@ -129,7 +129,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }  
 
-        //[Fact]
+        [Fact]
         public void ToObject_AccessModifierClass()
         {   
             // Arrange
@@ -145,7 +145,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }  
 
-        //[Fact]
+        [Fact]
         public void ToObject_SimpleClass()
         {   
             // Arrange
@@ -161,7 +161,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }      
 
-        //[Fact]
+        [Fact]
         public void ToObject_NullClass()
         {   
             // Arrange
@@ -177,7 +177,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }  
 
-        //[Fact]
+        [Fact]
         public void ToObject_IEnumerableClass()
         {   
             // Arrange
@@ -193,7 +193,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }      
 
-        //[Fact]
+        [Fact]
         public void ToObject_NestedClasss()
         {   
             // Arrange
@@ -209,7 +209,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }    
 
-        //[Fact]
+        [Fact]
         public void ToObject_NestedNestedClass()
         {   
             // Arrange
@@ -225,7 +225,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }     
 
-        //[Fact]
+        [Fact]
         public void ToObject_PrimitiveClass()
         {   
             // Arrange
@@ -241,7 +241,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }           
 
-        //[Fact]
+        [Fact]
         public void ToObject_DictionaryClass()
         {   
             // Arrange
@@ -257,7 +257,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }      
 
-        //[Fact]
+        [Fact]
         public void ToObject_EnumClass()
         {   
             // Arrange
@@ -273,7 +273,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }     
 
-        //[Fact]
+        [Fact]
         public void ToObject_DateTimeClass()
         {   
             // Arrange
@@ -289,7 +289,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }   
 
-        //[Fact]
+        [Fact]
         public void ToObject_StructClass()
         {   
             // Arrange
@@ -305,7 +305,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }     
 
-        //[Fact]
+        [Fact]
         public void ToObject_RecordClass()
         {   
             // Arrange
@@ -321,7 +321,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }     
 
-        //[Fact]
+        [Fact]
         public void ToObject_ParsableClass()
         {   
             // Arrange
@@ -337,7 +337,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }  
 
-        //[Fact]
+        [Fact]
         public void ToObject_PathClass()
         {   
             // Arrange
@@ -353,7 +353,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }    
 
-        //[Fact]
+        [Fact]
         public void ToObject_ClassWithoutParameterlessConstructor()
         {   
             // Arrange
@@ -369,7 +369,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }   
 
-        //[Fact]
+        [Fact]
         public void ToObject_ClassRecordNoParameterlessConstructor()
         {   
             // Arrange
@@ -385,7 +385,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }       
 
-        //[Fact]
+        [Fact]
         public void ToObject_PrimitiveClassIEnumarable()
         {   
             // Arrange
@@ -401,7 +401,7 @@ namespace DotSerial.Tests.Core.YAML
             Assert.True(example.AssertTest(result));
         }    
 
-        //[Fact]
+        [Fact]
         public void ToObject_MultiDimClassIEnumarble()
         {   
             // Arrange

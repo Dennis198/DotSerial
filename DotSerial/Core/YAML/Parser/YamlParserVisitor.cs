@@ -1,3 +1,4 @@
+using System.Reflection.PortableExecutable;
 using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
@@ -15,7 +16,7 @@ namespace DotSerial.Core.YAML.Parser
         {
             StringBuilder sb = new(yamlString);
             sb.Remove(sb.Length - 4, 4);
-            sb.Remove(0, 4);
+            sb.Remove(0, 3);
 
             var lines = CreateLines(sb);
             TrimLines(lines);
@@ -24,7 +25,10 @@ namespace DotSerial.Core.YAML.Parser
 
             var options = new YamlParserOptions(GeneralConstants.MainObjectKey, 0, -1, lines.Count - 1);
 
-            ParserAccept(rootNode, new YamlParserVisitor(), lines, options);
+            if (lines.Count > 0)
+            {
+                ParserAccept(rootNode, new YamlParserVisitor(), lines, options);
+            }
 
             return new DSYamlNode(rootNode);
         }
@@ -62,6 +66,7 @@ namespace DotSerial.Core.YAML.Parser
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, List<StringBuilder> lines, YamlParserOptions options)
         {
+            // Currenlty not needed
             throw new NotImplementedException();
         }
 
@@ -87,7 +92,32 @@ namespace DotSerial.Core.YAML.Parser
                     // Check if value is yaml object or key value pair
                     if (value.IsYamlObject())
                     {
+                        if (false == value.IsList)
+                        {
+                            // Create inner node
+                            var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
 
+                            // Parse inner node
+                            ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
+
+                            // Add inner node to parent
+                            node.AddChild(innerNode);
+                        }
+                        else if (value.IsList)
+                        {
+                            // Create list node
+                            var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+
+                            // Parse inner node
+                            ParserAccept(listNode, new YamlParserVisitor(), lines, value);
+
+                            // Add inner node to parent
+                            node.AddChild(listNode);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
                     }
                     else
                     {
@@ -106,17 +136,127 @@ namespace DotSerial.Core.YAML.Parser
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, List<StringBuilder> lines, YamlParserOptions options)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(lines);
+            ArgumentNullException.ThrowIfNull(options);
+
+            // Check if list is list of primitive or objects
+            if (false == IsKeyLine(lines[options.StartLineIndex + 1]))
+            {
+                // Extract primitive list
+                var items = ExtractPrimitiveList(lines, options.StartLineIndex + 1, options.EndLineIndex);
+                for (int i = 0; i < items.Count; i++)
+                {
+                    string? value = items[i];
+                    var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
+                    node.AddChild(child);
+                }
+            }
+            else
+            {
+                // Extract object list
+                var items = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
+                foreach (var keyValuePair in items)
+                {
+                     // Convert key to int key
+                    string key = keyValuePair.Key;
+                    var value = keyValuePair.Value;
+
+                    if (false == value.IsList)
+                    {
+                        // Create inner node
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+
+                        // Parse inner node
+                        ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
+
+                        // Add inner node to parent
+                        node.AddChild(innerNode);
+                    }
+                    else if (value.IsList)
+                    {
+                        // Create list node
+                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+
+                        // Parse inner node
+                        ParserAccept(listNode, new YamlParserVisitor(), lines, value);
+
+                        // Add inner node to parent
+                        node.AddChild(listNode);
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }                    
+                }
+            }
         }
 
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, List<StringBuilder> lines, YamlParserOptions options)
         {
+            // Currenlty not needed
             throw new NotImplementedException();
         }
 
         // =========================================================================================
 
+
+        /// <summary>
+        /// Extracts list of primitives from yaml string
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="startIndex">Start index if list</param>
+        /// <param name="endIndex">End index of list</param>
+        /// <returns>List<string></returns>
+        private static List<string?> ExtractPrimitiveList(List<StringBuilder> lines, int startIndex, int endIndex)
+        {
+            ArgumentNullException.ThrowIfNull(lines);
+
+            if (startIndex < 0 || startIndex > endIndex || startIndex > lines.Count - 1)
+            {
+                throw new NotImplementedException();
+            }
+            if (startIndex > lines.Count - 1)
+            {
+                throw new NotImplementedException();
+            }
+
+            var result = new List<string?>();
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                for (int j = 0; j < lines[i].Length; j++)
+                {
+                    var c = lines[i][j];
+                    if (c == GeneralConstants.Quote)
+                    {
+                        StringBuilder dontNeed = new();
+                        j = ParseMethods.AppendStringValue(dontNeed, j, lines[i].ToString());
+                        // Remove ending quote
+                        dontNeed.Remove(dontNeed.Length - 1, 1);
+                        // Remove starting quote
+                        dontNeed.Remove(0, 1);
+
+                        result.Add(dontNeed.ToString());
+                    }
+                    else if (c == GeneralConstants.N)
+                    {
+                        if (j + 3 > lines[i].Length - 1) throw new NotImplementedException();
+
+                        j++;
+                        if (lines[i][j] != GeneralConstants.U) throw new NotImplementedException();
+                        j++;
+                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+                        j++;
+                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+
+                        result.Add(null);
+                    }
+                }
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Extracts key value pairs from yaml object
@@ -156,13 +296,44 @@ namespace DotSerial.Core.YAML.Parser
                 {
                     string key = ExtractKeyFromLine(lines[i]);
                     int endIndex = GetEndIndexOfYamlObject(lines, i);
-                    var helpObj = new YamlParserOptions(key, currLevel, i, endIndex);
+                    bool isList = false;
+                    if (i != endIndex)
+                    {
+                        // TODO Sonderfall empty
+                        isList = IsLineListItem(lines, i + 1);
+                    }
+
+                    var helpObj = new YamlParserOptions(key, currLevel, i, endIndex, isList);
                     result.Add(key, helpObj);
                     i = endIndex;
                 }
             }
 
             return result;
+        }
+
+        private static bool IsLineListItem(List<StringBuilder> lines, int index)
+        {
+            var sb = lines[index];
+            for (int i = 0; i < sb.Length; i++)
+            {
+                char c = sb[i];
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c.ToString() == YAMLConstants.ListItemIndicator)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

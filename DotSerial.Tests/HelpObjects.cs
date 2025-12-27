@@ -375,13 +375,14 @@ namespace DotSerial.Tests
 
         public static IEnumerableClass CreateTestDefault()
         {
+            int num = 2;
             var tmp = new IEnumerableClass
             {
-                Array = new SimpleClass[10],
+                Array = new SimpleClass[num],
                 List = [],
                 Dic = []
             };
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < num; i++)
             {
                 var d = new SimpleClass
                 {

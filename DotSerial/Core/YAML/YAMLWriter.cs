@@ -281,7 +281,7 @@ namespace DotSerial.Core.YAML
                 foreach (var keyValue in children)
                 {
                     StringBuilder sb3 = new();
-                    NodeToYaml(sb3, keyValue, level + 1, YAMLConstants.ListItemIndicator);
+                    NodeToYaml(sb3, keyValue, level + 1, YAMLConstants.ListItemIndicator.ToString());
                     sb2.Append(sb3);
                 }
 

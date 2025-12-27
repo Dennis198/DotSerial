@@ -39,7 +39,7 @@ namespace DotSerial.Core.YAML
         /// <summary>
         /// End string of yaml document
         /// </summary>
-        internal const string ListItemIndicator = "-";
+        internal const char ListItemIndicator = '-';
         /// <summary>
         /// End string of yaml document
         /// </summary>

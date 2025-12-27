@@ -93,8 +93,11 @@ namespace DotSerial.Core.YAML.Writer
             }
             else
             {
-                AddObjectStart(sb, node.Key.ToString(), level, options.Prefix);
-                sb.Append(" {}");
+                if (options.AddKey)
+                {
+                    AddObjectStart(sb, node.Key.ToString(), level + 1, options.Prefix);
+                    sb.Append(" {}");
+                }
             }
         } 
 
@@ -122,7 +125,7 @@ namespace DotSerial.Core.YAML.Writer
                     foreach (var keyValue in children)
                     {
                         StringBuilder sb3 = new();
-                        WriterAccept(keyValue, this, sb3, new YamlWriterOptions(level + 1, false, YAMLConstants.ListItemIndicator));
+                        WriterAccept(keyValue, this, sb3, new YamlWriterOptions(level + 1, false, YAMLConstants.ListItemIndicator.ToString()));
                         sb2.Append(sb3);
                     }
 
@@ -165,7 +168,7 @@ namespace DotSerial.Core.YAML.Writer
 
                 foreach(var keyValue in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level + 1, false));
+                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level + 1, true));
                 }
             }
             else
