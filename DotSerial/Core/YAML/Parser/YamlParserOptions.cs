@@ -6,17 +6,30 @@ namespace DotSerial.Core.YAML.Parser
         internal int Level;
         internal int StartLineIndex;
         internal int EndLineIndex;
-        internal bool IsList;
-        internal bool IsYamlListObject;
 
-        internal YamlParserOptions(string key, int level, int startLineIndex, int endLineIndex, bool isList = false, bool isYamlObject = false)
+        internal bool IsList;
+        internal bool IsObject;
+
+        internal YamlParserOptions(string key, int level, int startLineIndex, int endLineIndex)
         {
             Key = key;
             Level = level;
             this.StartLineIndex = startLineIndex;
             this.EndLineIndex = endLineIndex;
-            IsList = isList;
-            IsYamlListObject = isYamlObject;
+            // IsList = isList;
+            // IsYamlListObject = isYamlObject;
+        }
+
+        // TODO SET ISList & IsObject extra
+
+        internal void SetIsList()
+        {   
+            IsList = true;
+        }
+
+        internal void SetIsYamlObject()
+        {
+            IsObject = true;
         }
 
         /// <summary>
@@ -25,12 +38,12 @@ namespace DotSerial.Core.YAML.Parser
         /// <returns>True, if object</returns>
         internal bool IsYamlObject()
         {
-            if (IsYamlListObject)
-            {
-                return true;
-            }
+            // if (IsYamlListObject)
+            // {
+            //     return true;
+            // }
 
-            return StartLineIndex != EndLineIndex;
+            return IsObject;
         }
     }
 }

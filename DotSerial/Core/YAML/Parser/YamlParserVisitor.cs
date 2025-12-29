@@ -1,4 +1,3 @@
-using System.Reflection.PortableExecutable;
 using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
@@ -23,7 +22,8 @@ namespace DotSerial.Core.YAML.Parser
 
             var rootNode = _nodeFactory.CreateNode(GeneralConstants.MainObjectKey, null, NodeType.InnerNode);
 
-            var options = new YamlParserOptions(GeneralConstants.MainObjectKey, 0, -1, lines.Count - 1);
+            var options = new YamlParserOptions(GeneralConstants.MainObjectKey, 0, 0, lines.Count - 1);
+            options.SetIsYamlObject();
 
             if (lines.Count > 0)
             {
@@ -81,7 +81,7 @@ namespace DotSerial.Core.YAML.Parser
             if (options.IsYamlObject())
             {
                 // Extract key, value pairs
-                var dic = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
+                var dic = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex, options.EndLineIndex);
 
                 foreach (var keyValuePair in dic)
                 {
@@ -141,10 +141,10 @@ namespace DotSerial.Core.YAML.Parser
             ArgumentNullException.ThrowIfNull(options);
 
             // Check if list is list of primitive or objects
-            if (false == IsKeyLine(lines[options.StartLineIndex + 1]))
+            if (true == IsPrimitiveList(lines[options.StartLineIndex]))
             {
                 // Extract primitive list
-                var items = ExtractPrimitiveList(lines, options.StartLineIndex + 1, options.EndLineIndex);
+                var items = ExtractPrimitiveList(lines, options.StartLineIndex, options.EndLineIndex);
                 for (int i = 0; i < items.Count; i++)
                 {
                     string? value = items[i];
@@ -155,12 +155,14 @@ namespace DotSerial.Core.YAML.Parser
             else
             {
                 // Extract object list
-                var items = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
-                foreach (var keyValuePair in items)
+                var items2 = ExtractObjectList(lines,options.StartLineIndex);
+                // var items = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
+                int index = 0;
+                foreach (var keyValuePair in items2)
                 {
                      // Convert key to int key
-                    string key = keyValuePair.Key;
-                    var value = keyValuePair.Value;
+                    string key = index.ToString();
+                    var value = keyValuePair;
 
                     if (false == value.IsList)
                     {
@@ -187,7 +189,9 @@ namespace DotSerial.Core.YAML.Parser
                     else
                     {
                         throw new NotImplementedException();
-                    }                    
+                    }       
+
+                    index++;             
                 }
             }
         }
@@ -258,13 +262,7 @@ namespace DotSerial.Core.YAML.Parser
             return result;
         }
 
-        /// <summary>
-        /// Extracts key value pairs from yaml object
-        /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
-        /// <param name="startIndex">Start index if object</param>
-        /// <returns></returns>
-        private static Dictionary<string, YamlParserOptions> ExtractKeyValuePairsFromYamlObject(List<StringBuilder> lines, int startIndex)
+        private static List<YamlParserOptions> ExtractObjectList(List<StringBuilder> lines, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -273,10 +271,115 @@ namespace DotSerial.Core.YAML.Parser
                 throw new NotImplementedException();
             }
 
+            var result = new List<YamlParserOptions>();
+            int objLevel = LineLevel(lines[startIndex]);
+            int index = 0;
+
+            for (int i = startIndex; i < lines.Count; i++)
+            {
+                // Check if we reached the end of the object
+                int currLevel = LineLevel(lines[i]);
+                if (currLevel < objLevel)
+                {
+                    break;
+                }
+
+                if (true == CheckFirstNoWhiteSpaceChar(lines[i], YAMLConstants.ListItemIndicator))
+                {
+                    string key = index.ToString();
+                    int endIndex = GetEndIndexOfYamlObject(lines, i);
+                    bool isList = false;
+                    if (i != endIndex)
+                    {
+                        // TODO Sonderfall empty
+                        isList = IsLineListItem(lines, i + 1);
+                    }
+
+                    var helpObj = new YamlParserOptions(key, currLevel, i, endIndex);
+                    helpObj.SetIsYamlObject();
+                    if (isList)
+                        helpObj.SetIsList();
+
+                    result.Add(helpObj);
+                    RemoveListItemIndicator(lines, i, endIndex);
+                    i = endIndex;
+                }
+                
+            }
+
+            return result;
+        }
+
+        private static void RemoveListItemIndicator(List<StringBuilder> lines, int startIndex, int endIndex)
+        {
+            int index = LineLevel(lines[startIndex]) * YAMLConstants.IndentationSize;
+
+            if (lines[startIndex][index] != YAMLConstants.ListItemIndicator)
+            {
+                throw new NotImplementedException();
+            }
+
+            lines[startIndex].Remove(index, 1);
+
+            for (int i = startIndex; i <= endIndex; i++)
+            {
+                for(int j = index; j < lines[i].Length; j++)
+                {
+                    if (Char.IsWhiteSpace(lines[i][index]))
+                    {
+                        lines[i].Remove(index, 1);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }   
+            }
+        }
+
+        private static bool CheckFirstNoWhiteSpaceChar(StringBuilder line, char c)
+        {
+            ArgumentNullException.ThrowIfNull(line);
+
+            for (int i = 0; i < line.Length; i++)
+            {
+                var currChar = line[i];
+                if (Char.IsWhiteSpace(currChar))
+                {
+                    continue;
+                }
+                else if (currChar == c)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Extracts key value pairs from yaml object
+        /// </summary>
+        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="startIndex">Start index if object</param>
+        /// <returns></returns>
+        private static Dictionary<string, YamlParserOptions> ExtractKeyValuePairsFromYamlObject(List<StringBuilder> lines, int startIndex, int endIndex)
+        {
+            ArgumentNullException.ThrowIfNull(lines);
+
+            if (startIndex < 0 || endIndex < startIndex)
+            {
+                throw new NotImplementedException();
+            }
+
             var result = new Dictionary<string, YamlParserOptions>();
             int objLevel = LineLevel(lines[startIndex]);
 
-            for (int i = startIndex; i < lines.Count; i++)
+            for (int i = startIndex; i <= endIndex; i++)
             {
                 // Check if we reached the end of the object
                 int currLevel = LineLevel(lines[i]);
@@ -295,17 +398,17 @@ namespace DotSerial.Core.YAML.Parser
                 else
                 {
                     string key = ExtractKeyFromLine(lines[i]);
-                    int endIndex = GetEndIndexOfYamlObject(lines, i);
-                    bool isList = false;
-                    if (i != endIndex)
-                    {
-                        // TODO Sonderfall empty
-                        isList = IsLineListItem(lines, i + 1);
-                    }
+                    int sIndex = i + 1;
+                    int eIndex = GetEndIndexOfYamlObject(lines, i);
+                    bool isList = IsLineListItem(lines, sIndex);
 
-                    var helpObj = new YamlParserOptions(key, currLevel, i, endIndex, isList);
+                    var helpObj = new YamlParserOptions(key, currLevel, sIndex, eIndex);
+                    helpObj.SetIsYamlObject();
+                    if (isList)
+                        helpObj.SetIsList();
+
                     result.Add(key, helpObj);
-                    i = endIndex;
+                    i = eIndex;
                 }
             }
 
@@ -315,25 +418,7 @@ namespace DotSerial.Core.YAML.Parser
         private static bool IsLineListItem(List<StringBuilder> lines, int index)
         {
             var sb = lines[index];
-            for (int i = 0; i < sb.Length; i++)
-            {
-                char c = sb[i];
-                if (Char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-
-                if (c.ToString() == YAMLConstants.ListItemIndicator)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return false;
+            return CheckFirstNoWhiteSpaceChar(sb, YAMLConstants.ListItemIndicator);
         }
 
         /// <summary>
@@ -504,7 +589,52 @@ namespace DotSerial.Core.YAML.Parser
             }
 
             return false;
-        }        
+        }   
+
+        private static bool IsPrimitiveList(StringBuilder line)
+        {
+            // TODO SCHAUEN WAS PASSIERT WENN ERSTE NULL IST ÜBERALL!!!!
+
+            ArgumentNullException.ThrowIfNull(line);
+
+            bool keyOrValueFound = false;
+
+            for (int i = 0; i < line.Length; i++ )
+            {
+                var c = line[i];
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == YAMLConstants.ListItemIndicator)
+                {
+                    if (keyOrValueFound)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    continue;
+                }
+                else if (c == GeneralConstants.Quote)
+                {                    
+                    StringBuilder dontNeed = new();
+                    i = ParseMethods.AppendStringValue(dontNeed, i, line.ToString());
+                    keyOrValueFound = true;
+                }
+                else if (c == YAMLConstants.KeyValueSeperator)
+                {
+                    if (keyOrValueFound)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
+                }
+            }
+
+            return true;
+        }      
 
         /// <summary>
         /// Create a list of stringbuilders representing each lines of the
