@@ -10,6 +10,9 @@ namespace DotSerial.Core.YAML.Parser
         internal bool IsList;
         internal bool IsObject;
 
+        internal bool IsEmptyList;
+        internal bool IsEmptyObject;
+
         internal YamlParserOptions(string key, int level, int startLineIndex, int endLineIndex)
         {
             Key = key;

@@ -1,3 +1,5 @@
+using System.Drawing;
+using System.Numerics;
 using System.Text;
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
@@ -97,8 +99,11 @@ namespace DotSerial.Core.YAML.Parser
                             // Create inner node
                             var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
 
-                            // Parse inner node
-                            ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
+                            if (false == value.IsEmptyObject)
+                            {
+                                // Parse inner node
+                                ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
+                            }
 
                             // Add inner node to parent
                             node.AddChild(innerNode);
@@ -108,8 +113,11 @@ namespace DotSerial.Core.YAML.Parser
                             // Create list node
                             var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
 
-                            // Parse inner node
-                            ParserAccept(listNode, new YamlParserVisitor(), lines, value);
+                            if (false == value.IsEmptyList)
+                            {
+                                // Parse inner node
+                                ParserAccept(listNode, new YamlParserVisitor(), lines, value);
+                            }
 
                             // Add inner node to parent
                             node.AddChild(listNode);
@@ -155,7 +163,7 @@ namespace DotSerial.Core.YAML.Parser
             else
             {
                 // Extract object list
-                var items2 = ExtractObjectList(lines,options.StartLineIndex);
+                var items2 = ExtractObjectList(lines,options.StartLineIndex, options.EndLineIndex);
                 // var items = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
                 int index = 0;
                 foreach (var keyValuePair in items2)
@@ -262,11 +270,11 @@ namespace DotSerial.Core.YAML.Parser
             return result;
         }
 
-        private static List<YamlParserOptions> ExtractObjectList(List<StringBuilder> lines, int startIndex)
+        private static List<YamlParserOptions> ExtractObjectList(List<StringBuilder> lines, int startIndex, int eIndex)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            if (startIndex < 0 || lines.Count - 1 < startIndex)
+            if (startIndex < 0 || eIndex < startIndex)
             {
                 throw new NotImplementedException();
             }
@@ -275,7 +283,7 @@ namespace DotSerial.Core.YAML.Parser
             int objLevel = LineLevel(lines[startIndex]);
             int index = 0;
 
-            for (int i = startIndex; i < lines.Count; i++)
+            for (int i = startIndex; i <= eIndex; i++)
             {
                 // Check if we reached the end of the object
                 int currLevel = LineLevel(lines[i]);
@@ -292,7 +300,7 @@ namespace DotSerial.Core.YAML.Parser
                     if (i != endIndex)
                     {
                         // TODO Sonderfall empty
-                        isList = IsLineListItem(lines, i + 1);
+                        isList = IsLineListItem(lines, i, 2);
                     }
 
                     var helpObj = new YamlParserOptions(key, currLevel, i, endIndex);
@@ -303,6 +311,7 @@ namespace DotSerial.Core.YAML.Parser
                     result.Add(helpObj);
                     RemoveListItemIndicator(lines, i, endIndex);
                     i = endIndex;
+                    index++;
                 }
                 
             }
@@ -323,7 +332,7 @@ namespace DotSerial.Core.YAML.Parser
 
             for (int i = startIndex; i <= endIndex; i++)
             {
-                for(int j = index; j < lines[i].Length; j++)
+                for(int j = index; j < index + YAMLConstants.IndentationSize; j++)
                 {
                     if (Char.IsWhiteSpace(lines[i][index]))
                     {
@@ -392,6 +401,19 @@ namespace DotSerial.Core.YAML.Parser
                 {
                     string key = ExtractKeyFromLine(lines[i]);
                     var helpObj = new YamlParserOptions(key, currLevel, i, i);
+
+                    if (IsEmptyObject(lines[i]))
+                    {
+                        helpObj.SetIsYamlObject();
+                        helpObj.IsEmptyObject = true;
+                    }
+
+                    if (IsEmptyList(lines[i]))
+                    {
+                        helpObj.SetIsYamlObject();
+                        helpObj.SetIsList();
+                        helpObj.IsEmptyList = true;
+                    }
                    
                     result.Add(key, helpObj);
                 }
@@ -400,7 +422,7 @@ namespace DotSerial.Core.YAML.Parser
                     string key = ExtractKeyFromLine(lines[i]);
                     int sIndex = i + 1;
                     int eIndex = GetEndIndexOfYamlObject(lines, i);
-                    bool isList = IsLineListItem(lines, sIndex);
+                    bool isList = IsLineListItem(lines, sIndex, 1);
 
                     var helpObj = new YamlParserOptions(key, currLevel, sIndex, eIndex);
                     helpObj.SetIsYamlObject();
@@ -415,10 +437,113 @@ namespace DotSerial.Core.YAML.Parser
             return result;
         }
 
-        private static bool IsLineListItem(List<StringBuilder> lines, int index)
+        private static bool IsEmptyObject(StringBuilder line)
+        {
+            bool closedBracletFound = false;
+
+            for (int i = line.Length -1 ; i >= 0; i--)
+            {
+                char c = line[i];
+
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == '}')
+                {
+                    if (true == closedBracletFound)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    closedBracletFound = true;
+                }
+                else if (c == '{')
+                {
+                    if (false == closedBracletFound)
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsEmptyList(StringBuilder line)
+        {
+            bool closedBracletFound = false;
+
+            for (int i = line.Length -1 ; i >= 0; i--)
+            {
+                char c = line[i];
+
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == ']')
+                {
+                    if (true == closedBracletFound)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    closedBracletFound = true;
+                }
+                else if (c == '[')
+                {
+                    if (false == closedBracletFound)
+                    {
+                        throw new NotImplementedException();
+                    }
+
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }        
+
+        private static bool IsLineListItem(List<StringBuilder> lines, int index, int minCount)
         {
             var sb = lines[index];
-            return CheckFirstNoWhiteSpaceChar(sb, YAMLConstants.ListItemIndicator);
+            int count = 0;
+            for (int i = 0; i < sb.Length; i++)
+            {
+                char c = sb[i];
+
+                if (Char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == YAMLConstants.ListItemIndicator)
+                {
+                    count++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (count >= minCount)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            // return CheckFirstNoWhiteSpaceChar(sb, YAMLConstants.ListItemIndicator);
         }
 
         /// <summary>
@@ -598,6 +723,7 @@ namespace DotSerial.Core.YAML.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             bool keyOrValueFound = false;
+            int numListIndicator = 0;
 
             for (int i = 0; i < line.Length; i++ )
             {
@@ -612,6 +738,11 @@ namespace DotSerial.Core.YAML.Parser
                     {
                         throw new NotImplementedException();
                     }
+                    if (numListIndicator > 0)
+                    {
+                        return false;
+                    }
+                    numListIndicator++;
                     continue;
                 }
                 else if (c == GeneralConstants.Quote)

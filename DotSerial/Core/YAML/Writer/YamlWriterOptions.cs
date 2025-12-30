@@ -29,19 +29,60 @@ namespace DotSerial.Core.YAML.Writer
     {
         internal int Level { get; private set; }
         internal bool AddKey { get; private set; }
-        internal string? Prefix { get; private set; }
+        private string? _prefix;
+        internal int NumberOfPrefix = 0;
 
-        public YamlWriterOptions(int level, bool addKey = true, string? prefix = null)
+        public YamlWriterOptions(int level, bool addKey = true, int numberOfPrefix = 0)
         {
             Level = level;
             AddKey = addKey;
-            Prefix = prefix;
-        }
 
-        internal static YamlWriterOptions CreateHigher(YamlWriterOptions opt)
+            _prefix = YAMLConstants.ListItemIndicator.ToString();
+            NumberOfPrefix = numberOfPrefix;
+    }
+
+        public string? GetPrefix()
         {
-            var result = new YamlWriterOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
+            if (string.IsNullOrWhiteSpace(_prefix))
+            {
+                return null;
+            }
+            if (NumberOfPrefix < 0)
+            {
+                return null;
+            }
+
+            string result = string.Empty;
+
+            for (int i = 0; i < NumberOfPrefix; i++)
+            {
+                result += string.Format("{0} ", _prefix);
+            }
+
             return result;
         }
+
+        public void IncreasePrefixCount()
+        {
+            NumberOfPrefix++;
+        }
+
+        public void DecreasePrefixCount()
+        {
+            NumberOfPrefix--;
+                
+            if (NumberOfPrefix < 0)
+            {
+                NumberOfPrefix = 0;
+                // throw new NotImplementedException();
+            }
+
+        }
+
+        // internal static YamlWriterOptions CreateHigher(YamlWriterOptions opt)
+        // {
+        //     var result = new YamlWriterOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
+        //     return result;
+        // }
     }
 }
