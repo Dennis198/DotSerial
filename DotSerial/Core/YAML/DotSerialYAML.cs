@@ -36,11 +36,6 @@ namespace DotSerial.Core.YAML
         /// </summary>
         private YAMLDocument? _document;
 
-        /// <summary>
-        /// Current Version
-        /// </summary>
-        private static readonly Version s_Version = new(1, 0, 0);
-
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
         {
@@ -125,20 +120,20 @@ namespace DotSerial.Core.YAML
             }
 
             // Create root element
-            var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
-            rootNode.AppendChild(versionNode);
+            // var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
+            // var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
+            // rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            var node = DSSerialize.Serialize(obj, GeneralConstants.MainObjectKey);
-            rootNode.AppendChild(node);
+            var rootNode = DSSerialize.Serialize2(obj, GeneralConstants.MainObjectKey);
+            // rootNode.AppendChild(node);
 
             var result = new DotSerialYAML
             {
                 _document = new YAMLDocument()
             };
 
-            result._document.Tree = rootNode;
+            result._document.RootNode = new DSYamlNode(rootNode);
 
             return result;
         }
@@ -148,23 +143,14 @@ namespace DotSerial.Core.YAML
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
-
-            if (false == result?.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
             if (null == serialObj._document)
             {
                 throw new NullReferenceException();
             }
 
-            // Get root element
-            var rootNode = serialObj._document.Tree;
-            var node = rootNode?.GetChild(GeneralConstants.MainObjectKey);
-
-            DSDeserialize.Deserialize(result, node);
+            // Get root element    
+            var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
+            var result = rootNode.ToObject<U>();
 
             return result;
         }
@@ -213,8 +199,8 @@ namespace DotSerial.Core.YAML
 
             try
             {
-                string result = YAMLWriter.ToYamlString(_document.Tree);
-                return result;
+                string result = _document.RootNode?.ToYamlString() ?? string.Empty;
+                return result;                
             }
             catch (Exception)
             {

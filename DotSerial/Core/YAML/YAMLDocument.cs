@@ -29,6 +29,11 @@ namespace DotSerial.Core.YAML
     /// </summary>
     internal class YAMLDocument : DSDocument
     {
+        /// <summary>
+        /// Root node
+        /// </summary>
+        internal DSYamlNode? RootNode;
+
         /// <inheritdoc/>
         public override void Load(string fileName)
         {
@@ -39,9 +44,8 @@ namespace DotSerial.Core.YAML
                     throw new NotSupportedException();
                 }
 
-                var root = YAMLParser.ToNode(content);
-
-                Tree = root;
+                var tmp = DSYamlNode.FromYamlString(content);
+                RootNode = tmp;
             }
             catch
             {
@@ -55,12 +59,12 @@ namespace DotSerial.Core.YAML
         {
             try
             {
-                if (null == Tree)
+                if (null == RootNode)
                 {
-                    throw new NullReferenceException(nameof(Tree));
+                    throw new NullReferenceException(nameof(RootNode));
                 }
 
-                var content = YAMLWriter.ToYamlString(Tree);
+                var content = RootNode.ToYamlString();
 
                 if (false == SaveContentToFile(fileName, content))
                 {
