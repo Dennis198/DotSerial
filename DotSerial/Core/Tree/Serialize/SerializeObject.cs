@@ -1,37 +1,13 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
+using System.Collections;
+using System.Reflection;
 using DotSerial.Core.Exceptions;
 using DotSerial.Core.Misc;
-using DotSerial.Core.Tree;
 using DotSerial.Core.Tree.Nodes;
 using DotSerial.Core.XML;
 
-using System.Collections;
-using System.Reflection;
-
-namespace DotSerial.Core.General
+namespace DotSerial.Core.Tree.Serialize
 {
-    internal class DSSerialize
+    public class SerializeObject
     {
         /// <summary>
         /// Node factory;
@@ -44,7 +20,7 @@ namespace DotSerial.Core.General
         /// <param name="classObj">Object</param>
         /// <param name="objectID">Object-ID</param>
         /// <returns>DSNode</returns>
-        internal static IDSNode Serialize2(object? classObj, string objectID)
+        internal static IDSNode Serialize(object? classObj, string objectID)
         {
             ///      (node) (Class)
             ///        |
@@ -111,7 +87,7 @@ namespace DotSerial.Core.General
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                     {
                         // Dictionary
-                        var childNode = SerializeDictionary2(value, idString);
+                        var childNode = SerializeDictionary(value, idString);
                         result.AddChild(childNode);
 
                     }
@@ -119,13 +95,13 @@ namespace DotSerial.Core.General
                              TypeCheckMethods.IsArray(prop.PropertyType))
                     {
                         // List || Array
-                        var childNode = SerializeList2(value, idString);
+                        var childNode = SerializeList(value, idString);
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
-                        var childNode = Serialize2(value, idString);
+                        var childNode = Serialize(value, idString);
                         result.AddChild(childNode);
                     }
                     else if (value == null)
@@ -148,7 +124,7 @@ namespace DotSerial.Core.General
         /// <param name="dic">Dictioanry</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeDictionary2(object? dic, string id)
+        private static IDSNode SerializeDictionary(object? dic, string id)
         {
             ///      (node) (Dictionary)
             ///        |
@@ -255,7 +231,7 @@ namespace DotSerial.Core.General
                                         {
                                             throw new ArgumentException(innerDicID);
                                         }
-                                        var childNode = SerializeDictionary2(str, innerDicID);
+                                        var childNode = SerializeDictionary(str, innerDicID);
                                         keyValue.AddChild(childNode);
                                     }
                                 }
@@ -282,7 +258,7 @@ namespace DotSerial.Core.General
                                 foreach (var str in castedValue)
                                 {
                                     string listIDString = listID.ToString();
-                                    var childNode = SerializeList2(str, listIDString);
+                                    var childNode = SerializeList(str, listIDString);
                                     keyValue.AddChild(childNode);
                                     listID++;
                                 }
@@ -300,7 +276,7 @@ namespace DotSerial.Core.General
                             // var classNode = Serialize2(value, keyString);
                             // keyValue.AddChild(classNode);
 
-                            keyValue = Serialize2(value, keyString);
+                            keyValue = Serialize(value, keyString);
                         }
                         else
                         {
@@ -332,7 +308,7 @@ namespace DotSerial.Core.General
         /// <param name="list">List</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeList2(object? list, string id)
+        private static IDSNode SerializeList(object? list, string id)
         {
             ///      (node) (List)
             ///        |
@@ -380,7 +356,7 @@ namespace DotSerial.Core.General
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = SerializeList2(str, listIDString);
+                        var childNode = SerializeList(str, listIDString);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -392,7 +368,7 @@ namespace DotSerial.Core.General
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = SerializeDictionary2(str, listIDString);
+                        var childNode = SerializeDictionary(str, listIDString);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -405,7 +381,7 @@ namespace DotSerial.Core.General
                     foreach (var entry in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = Serialize2(entry, listIDString);
+                        var childNode = Serialize(entry, listIDString);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -421,6 +397,6 @@ namespace DotSerial.Core.General
             {
                 throw new InvalidCastException();
             }
-        }        
+        } 
     }
 }

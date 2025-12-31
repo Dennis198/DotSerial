@@ -22,6 +22,7 @@
 
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
+using DotSerial.Core.Tree.Serialize;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.JSON
@@ -119,7 +120,7 @@ namespace DotSerial.Core.JSON
             }
 
             // Serialze Object
-            var rootNode = DSSerialize.Serialize2(obj, GeneralConstants.MainObjectKey);            
+            var rootNode = SerializeObject.Serialize(obj, GeneralConstants.MainObjectKey);            
 
             var result = new DotSerialJSON
             {

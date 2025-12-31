@@ -23,6 +23,7 @@
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
+using DotSerial.Core.Tree.Serialize;
 using DotSerial.Interfaces;
 
 namespace DotSerial.Core.YAML
@@ -125,7 +126,7 @@ namespace DotSerial.Core.YAML
             // rootNode.AppendChild(versionNode);
 
             // Serialze Object
-            var rootNode = DSSerialize.Serialize2(obj, GeneralConstants.MainObjectKey);
+            var rootNode = SerializeObject.Serialize(obj, GeneralConstants.MainObjectKey);
             // rootNode.AppendChild(node);
 
             var result = new DotSerialYAML

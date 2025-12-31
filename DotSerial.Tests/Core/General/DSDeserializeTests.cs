@@ -25,6 +25,7 @@ using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
 using DotSerial.Core.Tree.Deserialize;
+using DotSerial.Core.Tree.Serialize;
 
 namespace DotSerial.Tests.Core.General
 {
@@ -38,7 +39,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new EmptyClass();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(EmptyClass));
             if (result is EmptyClass castedResult)
             {
@@ -60,7 +61,7 @@ namespace DotSerial.Tests.Core.General
         //     var result = CreateInstanceMethods.CreateInstanceGeneric<AccessModifierClass>();
 
         //     // Act
-        //     var node = DSSerialize.Serialize2(tmp, "0");
+        //     var node = SerializeObject.Serialize(tmp, "0");
         //     DSDeserialize.Deserialize(result, node);
 
         //     // Assert
@@ -75,7 +76,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(DictionaryClass));
             if (result is DictionaryClass castedResult)
             {
@@ -96,7 +97,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(StructClass));
             if (result is StructClass castedResult)
             {
@@ -117,7 +118,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(RecordClass));
             if (result is RecordClass castedResult)
             {
@@ -138,7 +139,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ParsableClass));
             if (result is ParsableClass castedResult)
             {
@@ -159,7 +160,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PathClass));
             if (result is PathClass castedResult)
             {
@@ -180,7 +181,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassWithoutParameterlessConstructor));
             if (result is ClassWithoutParameterlessConstructor castedResult)
             {
@@ -201,7 +202,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClass));
             if (result is PrimitiveClass castedResult)
             {
@@ -222,7 +223,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NestedClass));
             if (result is NestedClass castedResult)
             {
@@ -243,7 +244,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NestedNestedClass));
             if (result is NestedNestedClass castedResult)
             {
@@ -264,7 +265,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(EnumClass));
             if (result is EnumClass castedResult)
             {
@@ -289,7 +290,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(DateTimeClass));
             if (result is DateTimeClass castedResult)
             {
@@ -310,7 +311,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NoAttributeClass));
             if (result is NoAttributeClass castedResult)
             {
@@ -331,7 +332,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(MultiDimClassIEnumarble));
             if (result is MultiDimClassIEnumarble castedResult)
             {
@@ -352,7 +353,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NullClass));
             if (result is NullClass castedResult)
             {
@@ -373,7 +374,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClassIEnumarable));
             if (result is PrimitiveClassIEnumarable castedResult)
             {
@@ -394,7 +395,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(IEnumerableClass));
             if (result is IEnumerableClass castedResult)
             {
@@ -415,7 +416,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = ClassRecordNoParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var node = DSSerialize.Serialize2(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0");
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassRecordNoParameterlessConstructor));
             if (result is ClassRecordNoParameterlessConstructor castedResult)
             {
@@ -437,7 +438,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSDuplicateIDException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -447,7 +448,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -457,7 +458,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -470,7 +471,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -483,7 +484,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -496,7 +497,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -509,7 +510,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -522,7 +523,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -535,7 +536,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -548,7 +549,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -558,7 +559,7 @@ namespace DotSerial.Tests.Core.General
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DSSerialize.Serialize2(tmp, "0"));
+            Assert.Throws<DSInvalidIDException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
     }

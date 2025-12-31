@@ -26,6 +26,7 @@ using DotSerial.Core.JSON.Writer;
 using DotSerial.Core.Tree;
 using DotSerial.Core.Tree.Deserialize;
 using DotSerial.Core.Tree.Nodes;
+using DotSerial.Core.Tree.Serialize;
 
 namespace DotSerial.Core.JSON
 {
@@ -107,7 +108,7 @@ namespace DotSerial.Core.JSON
             string currKey = key ?? GeneralConstants.MainObjectKey;
             
             // Serialize object
-            var rootNode = DSSerialize.Serialize2(obj, currKey);
+            var rootNode = SerializeObject.Serialize(obj, currKey);
 
             return new DSJsonNode(rootNode);
         }
