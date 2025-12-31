@@ -25,6 +25,7 @@ using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Core.General;
 using DotSerial.Core.Misc;
 using DotSerial.Core.Tree;
+using DotSerial.Core.Tree.Nodes;
 
 namespace DotSerial.Core.JSON.Parser
 {

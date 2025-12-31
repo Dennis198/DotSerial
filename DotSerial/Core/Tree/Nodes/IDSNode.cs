@@ -1,6 +1,6 @@
-using System.Text;
+using DotSerial.Core.Tree.Deserialize;
 
-namespace DotSerial.Core.Tree
+namespace DotSerial.Core.Tree.Nodes
 {
     /// <summary>
     /// Node interface

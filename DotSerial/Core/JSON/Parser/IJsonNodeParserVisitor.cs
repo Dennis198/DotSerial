@@ -22,6 +22,7 @@
 
 using System.Text;
 using DotSerial.Core.Tree;
+using DotSerial.Core.Tree.Nodes;
 
 namespace DotSerial.Core.JSON.Parser
 {

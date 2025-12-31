@@ -1,5 +1,7 @@
 using DotSerial.Core.General;
 using DotSerial.Core.Tree;
+using DotSerial.Core.Tree.Deserialize;
+using DotSerial.Core.Tree.Nodes;
 using DotSerial.Core.YAML.Parser;
 using DotSerial.Core.YAML.Writer;
 

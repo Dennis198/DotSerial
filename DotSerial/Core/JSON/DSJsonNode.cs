@@ -24,6 +24,8 @@ using DotSerial.Core.General;
 using DotSerial.Core.JSON.Parser;
 using DotSerial.Core.JSON.Writer;
 using DotSerial.Core.Tree;
+using DotSerial.Core.Tree.Deserialize;
+using DotSerial.Core.Tree.Nodes;
 
 namespace DotSerial.Core.JSON
 {

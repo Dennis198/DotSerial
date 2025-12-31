@@ -20,8 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.Tree;
-
 namespace DotSerial.Core.General
 {
     /// <summary>
@@ -29,11 +27,6 @@ namespace DotSerial.Core.General
     /// </summary>
     internal abstract class DSDocument
     {
-        /// <summary>
-        /// Tree which holds the object representation
-        /// </summary>
-        internal DSNode? Tree;
-
         /// <summary>
         /// Save file to disk
         /// </summary>

@@ -1,8 +1,9 @@
 using System.Reflection;
 using DotSerial.Core.Misc;
+using DotSerial.Core.Tree.Nodes;
 using DotSerial.Core.XML;
 
-namespace DotSerial.Core.Tree
+namespace DotSerial.Core.Tree.Deserialize
 {
     /// <summary>
     /// TODO
