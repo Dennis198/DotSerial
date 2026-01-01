@@ -21,7 +21,7 @@
 #endregion
 
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.JSON;
+using DotSerial.JSON;
 using System.Collections;
 using System.Collections.ObjectModel;
 

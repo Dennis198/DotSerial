@@ -20,37 +20,61 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.XML;
+using DotSerial.Core.General;
 
-namespace DotSerial.Attributes
+namespace DotSerial.JSON
 {
-    internal static class HelperMethods
+    /// <summary>
+    /// Class which represents an Json document
+    /// </summary>
+    internal class JSONDocument : DSDocument
     {
-        /// <summary> Get the parameter ID
+        /// <summary>
+        /// Root node
         /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
+        internal DSJsonNode? RootNode;
+
+        /// <inheritdoc/>
+        public override void Load(string fileName)
         {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
+            try
             {
-                if (att is DSPropertyIDAttribute saveAtt)
+                if (false == LoadFileContent(fileName, out string content))
                 {
-                    int result = (int)saveAtt.PropertyID;
-
-                    if (result == XmlConstants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
-
-                    return result;
+                    throw new NotSupportedException();
                 }
+
+                var tmp = DSJsonNode.FromJsonString(content);
+                RootNode = tmp;
             }
-            return XmlConstants.NoAttributeID;
+            catch
+            {
+                throw;
+            }
+
         }
 
+        /// <inheritdoc/>
+        public override void Save(string fileName)
+        {
+            try
+            {
+                if (null == RootNode)
+                {
+                    throw new NullReferenceException(nameof(RootNode));
+                }
+
+                var content = RootNode.ToJsonString();
+
+                if (false == SaveContentToFile(fileName, content))
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            catch
+            {
+                throw;
+            }          
+        }
     }
 }

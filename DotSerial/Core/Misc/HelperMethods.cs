@@ -22,7 +22,7 @@
 
 using System.Collections;
 using System.Reflection;
-using DotSerial.Core.XML;
+using DotSerial.XML;
 
 namespace DotSerial.Core.Misc
 {
@@ -83,7 +83,7 @@ namespace DotSerial.Core.Misc
                 // Get ID attribute
                 int id = Attributes.HelperMethods.GetPropertyID(prop);
 
-                if (Constants.NoAttributeID != id)
+                if (XmlConstants.NoAttributeID != id)
                 {
                     return prop;
                 }

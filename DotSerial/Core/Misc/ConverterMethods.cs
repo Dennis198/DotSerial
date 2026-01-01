@@ -21,7 +21,7 @@
 #endregion
 
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.XML;
+using DotSerial.XML;
 using System.Collections;
 using System.Globalization;
 using System.Net;
@@ -487,7 +487,7 @@ namespace DotSerial.Core.Misc
             // String
             else if (typeObj == typeof(string))
             {
-                if (str.Equals(Constants.NullString))
+                if (str.Equals(XmlConstants.NullString))
                 {
                     primObj = null;
                 }

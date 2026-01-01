@@ -1,4 +1,4 @@
-using DotSerial.Core.JSON;
+using DotSerial.JSON;
 using DotSerial.Core.Tree;
 
 namespace DotSerial.Tests.Core.JSON

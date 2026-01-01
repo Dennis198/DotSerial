@@ -1,7 +1,7 @@
-using DotSerial.Core.YAML;
+using DotSerial.YAML;
 using DotSerial.Core.Tree;
 
-namespace DotSerial.Tests.Core.YAML
+namespace DotSerial.Tests.YAML
 {
     public class DSYamlNodeTests
     {

@@ -23,9 +23,9 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.YAML;
+using DotSerial.YAML;
 
-namespace DotSerial.Tests.Core.YAML
+namespace DotSerial.Tests.YAML
 {
     public class DotSerialYAMLTests
     {

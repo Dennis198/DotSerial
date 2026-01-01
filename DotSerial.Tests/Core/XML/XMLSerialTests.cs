@@ -23,7 +23,7 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.XML;
+using DotSerial.XML;
 
 namespace DotSerial.Tests.Core.XML
 {

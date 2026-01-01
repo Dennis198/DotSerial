@@ -20,37 +20,29 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.XML;
-
-namespace DotSerial.Attributes
+namespace DotSerial.JSON
 {
-    internal static class HelperMethods
+    internal static class JsonConstants
     {
-        /// <summary> Get the parameter ID
+        /// <summary>
+        /// Indentation Size
         /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
-        {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
-            {
-                if (att is DSPropertyIDAttribute saveAtt)
-                {
-                    int result = (int)saveAtt.PropertyID;
-
-                    if (result == XmlConstants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
-
-                    return result;
-                }
-            }
-            return XmlConstants.NoAttributeID;
-        }
-
+        internal const int IndentationSize = 2;
+        /// <summary>
+        /// Json object start char
+        /// </summary>
+        internal const char ObjectStart = '{';
+        /// <summary>
+        /// Jsoobject end char
+        /// </summary>
+        internal const char ObjectEnd = '}';
+        /// <summary>
+        /// Json list start char
+        /// </summary>
+        internal const char ListStart = '[';
+        /// <summary>
+        /// Json list end char
+        /// </summary>
+        internal const char ListEnd = ']';
     }
 }

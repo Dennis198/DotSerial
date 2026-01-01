@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,37 +20,20 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-using DotSerial.Core.Exceptions;
-using DotSerial.XML;
-
-namespace DotSerial.Attributes
+namespace DotSerial.JSON.Writer
 {
-    internal static class HelperMethods
+    /// <summary>
+    /// Additional options for node visitors.
+    /// </summary>
+    public struct JsonWriterOptions
     {
-        /// <summary> Get the parameter ID
-        /// </summary>
-        /// <param name="prop">PropertyInfo</param>
-        /// <returns>ID</returns>
-        internal static int GetPropertyID(PropertyInfo prop)
+        internal int Level { get; private set; }
+        internal bool AddKey { get; private set; }
+
+        public JsonWriterOptions(int level, bool addKey = true)
         {
-            object[] attrs = prop.GetCustomAttributes(true);
-            foreach (object att in attrs)
-            {
-                if (att is DSPropertyIDAttribute saveAtt)
-                {
-                    int result = (int)saveAtt.PropertyID;
-
-                    if (result == XmlConstants.NoAttributeID)
-                    {
-                        throw new DSInvalidIDException(result);
-                    }
-
-                    return result;
-                }
-            }
-            return XmlConstants.NoAttributeID;
+            Level = level;
+            AddKey = addKey;
         }
-
     }
 }
