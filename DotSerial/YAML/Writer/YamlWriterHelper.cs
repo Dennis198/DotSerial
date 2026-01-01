@@ -1,6 +1,6 @@
 using System.Text;
 using DotSerial.Common;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Writer

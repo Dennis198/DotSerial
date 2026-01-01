@@ -21,7 +21,7 @@
 #endregion
 
 using System.Text;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tests.Core.Misc
 {

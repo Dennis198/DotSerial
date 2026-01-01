@@ -37,7 +37,7 @@ namespace DotSerial.Tests.Core.Misc
             StringBuilder sb = new();
 
             // Act
-            DotSerial.Misc.WriteMethods.AddIndentation(sb, count, 4);
+            DotSerial.Utilities.WriteMethods.AddIndentation(sb, count, 4);
             sb.Append(str);
 
             // Assert

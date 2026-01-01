@@ -21,7 +21,7 @@
 #endregion
 
 using DotSerial.Common;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Tree.Serialize;
 
 namespace DotSerial.YAML

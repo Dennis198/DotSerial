@@ -24,7 +24,7 @@ using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 
-namespace DotSerial.Misc
+namespace DotSerial.Utilities
 {
     internal static class ParseMethods
     {

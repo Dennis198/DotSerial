@@ -26,7 +26,7 @@ using System.Collections;
 using System.Globalization;
 using System.Net;
 
-namespace DotSerial.Misc
+namespace DotSerial.Utilities
 {
     internal static class ConverterMethods
     {

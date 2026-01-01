@@ -32,7 +32,7 @@ namespace DotSerial.Tests.Core.Misc
             var tmp = new List<int>();
 
             // Act
-            var result = DotSerial.Misc.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.True(result);
@@ -45,7 +45,7 @@ namespace DotSerial.Tests.Core.Misc
             int tmp = 5;
 
             // Act
-            var result = DotSerial.Misc.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.False(result);
@@ -58,7 +58,7 @@ namespace DotSerial.Tests.Core.Misc
             Type tmp = typeof(List<int>);
 
             // Act
-            var result = DotSerial.Misc.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.True(result);
@@ -71,7 +71,7 @@ namespace DotSerial.Tests.Core.Misc
             Type tmp = typeof(int);
 
             // Act
-            var result = DotSerial.Misc.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.False(result);
@@ -84,7 +84,7 @@ namespace DotSerial.Tests.Core.Misc
             bool tmp = true;
 
             // Act
-            int result = DotSerial.Misc.HelperMethods.BoolToInt(tmp);
+            int result = DotSerial.Utilities.HelperMethods.BoolToInt(tmp);
 
             // Assert
             Assert.Equal(1, result);
@@ -97,7 +97,7 @@ namespace DotSerial.Tests.Core.Misc
             bool tmp = false;
 
             // Act
-            int result = DotSerial.Misc.HelperMethods.BoolToInt(tmp);
+            int result = DotSerial.Utilities.HelperMethods.BoolToInt(tmp);
 
             // Assert
             Assert.Equal(0, result);
@@ -110,7 +110,7 @@ namespace DotSerial.Tests.Core.Misc
             int tmp = 0;
 
             // Act
-            bool result = DotSerial.Misc.HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Utilities.HelperMethods.IntToBool(tmp);
 
             // Assert
             Assert.False(result);
@@ -123,7 +123,7 @@ namespace DotSerial.Tests.Core.Misc
             int tmp = 1;
 
             // Act
-            bool result = DotSerial.Misc.HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Utilities.HelperMethods.IntToBool(tmp);
 
             // Assert
             Assert.True(result);

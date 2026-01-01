@@ -22,7 +22,7 @@
 
 using System.Xml;
 using System.Xml.Linq;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Common;
 
 namespace DotSerial.XML

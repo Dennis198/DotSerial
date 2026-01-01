@@ -24,7 +24,7 @@ using System.Reflection;
 using System.Xml;
 
 using DotSerial.Core.Exceptions;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 
 namespace DotSerial.XML
 {

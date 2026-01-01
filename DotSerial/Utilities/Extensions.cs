@@ -22,7 +22,7 @@
 
 using System.Text;
 
-namespace DotSerial.Misc
+namespace DotSerial.Utilities
 {
     internal static class Extensions
     {

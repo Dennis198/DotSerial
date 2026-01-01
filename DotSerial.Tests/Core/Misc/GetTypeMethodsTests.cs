@@ -33,7 +33,7 @@ namespace DotSerial.Tests.Core.Misc
             int[] tmp = [];
 
             // Act
-            Type? result = DotSerial.Misc.GetTypeMethods.GetItemTypeOfArray(tmp);
+            Type? result = DotSerial.Utilities.GetTypeMethods.GetItemTypeOfArray(tmp);
 
             // Assert
             Assert.NotNull(result);
@@ -47,7 +47,7 @@ namespace DotSerial.Tests.Core.Misc
             int[] tmp = [];
 
             // Act
-            Type? result = DotSerial.Misc.GetTypeMethods.GetItemTypeOfArray(tmp.GetType());
+            Type? result = DotSerial.Utilities.GetTypeMethods.GetItemTypeOfArray(tmp.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -65,7 +65,7 @@ namespace DotSerial.Tests.Core.Misc
             Type tmp = typeof(List<int>);
 
             // Act
-            var result = DotSerial.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Utilities.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
 
             // Assert
             Assert.Equal(typeof(int), result);
@@ -78,7 +78,7 @@ namespace DotSerial.Tests.Core.Misc
             var tmp = new List<int>();
 
             // Act
-            var result = DotSerial.Misc.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
+            var result = DotSerial.Utilities.GetTypeMethods.GetItemTypeOfIEnumerable(tmp);
 
             // Assert
             Assert.Equal(typeof(int), result);
@@ -95,7 +95,7 @@ namespace DotSerial.Tests.Core.Misc
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp, out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp, out Type typeKey, out Type typeValue);
 
             // Assert
             Assert.True(result);
@@ -112,7 +112,7 @@ namespace DotSerial.Tests.Core.Misc
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Misc.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp.GetType(), out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp.GetType(), out Type typeKey, out Type typeValue);
 
             // Assert
             Assert.True(result);
@@ -129,7 +129,7 @@ namespace DotSerial.Tests.Core.Misc
             Dictionary<int, string> tmp = [];
 
             // Act
-            var result = DotSerial.Misc.GetTypeMethods.GetDictionaryTypeFromKeyValue(typeof(int), typeof(string));
+            var result = DotSerial.Utilities.GetTypeMethods.GetDictionaryTypeFromKeyValue(typeof(int), typeof(string));
 
             // Assert
             Assert.Equal(tmp.GetType(), result);

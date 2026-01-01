@@ -35,7 +35,7 @@ namespace DotSerial.Tests.Core.Misc
             StringBuilder sb = new();
 
             // Act
-            var result = DotSerial.Misc.ParseMethods.AppendStringValue(sb, 4, str);
+            var result = DotSerial.Utilities.ParseMethods.AppendStringValue(sb, 4, str);
 
             // Assert
             Assert.Equal(10, result);
@@ -49,7 +49,7 @@ namespace DotSerial.Tests.Core.Misc
             string str = "    \"Hello\"            \"World. DotSerial\"   ";
 
             // Act
-            var result = DotSerial.Misc.ParseMethods.RemoveWhiteSpace(str);
+            var result = DotSerial.Utilities.ParseMethods.RemoveWhiteSpace(str);
 
             // Assert
             Assert.Equal("\"Hello\"\"World. DotSerial\"", result);

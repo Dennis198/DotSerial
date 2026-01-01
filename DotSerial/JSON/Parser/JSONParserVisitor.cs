@@ -23,7 +23,7 @@
 using System.Text;
 using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Common;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
 

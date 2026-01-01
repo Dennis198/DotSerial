@@ -23,7 +23,7 @@
 using System.Text;
 using DotSerial.Common;
 
-namespace DotSerial.Misc
+namespace DotSerial.Utilities
 {
     internal static class WriteMethods
     {

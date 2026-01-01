@@ -24,7 +24,7 @@ using System.Collections;
 using System.Reflection;
 using DotSerial.XML;
 
-namespace DotSerial.Misc
+namespace DotSerial.Utilities
 {
     internal static class HelperMethods
     {

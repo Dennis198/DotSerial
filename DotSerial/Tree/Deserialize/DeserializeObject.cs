@@ -1,5 +1,5 @@
 using System.Reflection;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
 using DotSerial.XML;
 

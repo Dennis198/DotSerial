@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using DotSerial.Core.Exceptions;
-using DotSerial.Misc;
+using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
 using DotSerial.XML;
 
