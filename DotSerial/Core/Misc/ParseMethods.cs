@@ -29,22 +29,6 @@ namespace DotSerial.Core.Misc
     internal static class ParseMethods
     {
         /// <summary>
-        /// Parse the node property type info
-        /// </summary>
-        /// <param name="value">string</param>
-        /// <returns>DSNodePropertyType</returns>
-        internal static DSNodePropertyType ParsePropertyTypeInfo(string? value)
-        {
-            // Check if value has value
-            if (string.IsNullOrWhiteSpace(value))
-            {
-                throw new ArgumentException(value);
-            }
-
-            return value.ConvertToDSNodePropertyType();
-        }
-
-        /// <summary>
         /// Apends the whole string from starting quote to end quote to
         /// the stringbuilder.
         /// </summary>

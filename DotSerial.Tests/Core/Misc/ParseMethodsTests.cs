@@ -27,24 +27,6 @@ namespace DotSerial.Tests.Core.Misc
 {
     public class ParserMethodsTests
     {
-        [Theory]
-        [InlineData("Undefined", DSNodePropertyType.Undefined)]
-        [InlineData("Primitive", DSNodePropertyType.Primitive)]
-        [InlineData("Class", DSNodePropertyType.Class)]
-        [InlineData("List", DSNodePropertyType.List)]
-        [InlineData("Dictionary", DSNodePropertyType.Dictionary)]
-        [InlineData("KeyValuePair", DSNodePropertyType.KeyValuePair)]
-        [InlineData("KeyValuePairValue", DSNodePropertyType.KeyValuePairValue)]
-        [InlineData("Null", DSNodePropertyType.Null)]
-        public void ParsePropertyTypeInfo(string str, DSNodePropertyType expected)
-        {
-            // Act
-            var result = DotSerial.Core.Misc.ParseMethods.ParsePropertyTypeInfo(str);
-
-            // Assert
-            Assert.Equal(expected, result);
-        }
-
         [Fact]
         public void AppendStringValue()
         {

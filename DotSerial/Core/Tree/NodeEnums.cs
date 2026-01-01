@@ -22,37 +22,12 @@
 
 namespace DotSerial.Core.Tree
 {
-    /// <summary>
-    /// Type of a node
-    /// </summary>
-    public enum DSNodeType
-    {
-        Root = 0,
-        InnerNode = 1,
-        Leaf = 2,
-    }
-
     public enum NodeType
     {
         Leaf = 0,
         InnerNode = 1,
         ListNode = 2,
         DictionaryNode = 3
-    }
-
-    /// <summary>
-    /// Type of the object the node represents.
-    /// </summary>
-    public enum DSNodePropertyType
-    {
-        Undefined = -1,
-        Primitive = 0,
-        Class = 1,
-        List = 2,
-        Dictionary = 3,
-        KeyValuePair = 4,
-        KeyValuePairValue = 5,
-        Null = 6
     }
 
 }

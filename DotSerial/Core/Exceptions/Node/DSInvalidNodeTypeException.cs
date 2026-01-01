@@ -31,9 +31,6 @@ namespace DotSerial.Core.Exceptions.Node
         public DSInvalidNodeTypeException() : base("Node type is not supported for this funtion.") { }
         public DSInvalidNodeTypeException(int children, int expected) : base(string.Format("'{0}' number of children, expected: '{1}'", children, expected)) { }
 
-        public DSInvalidNodeTypeException(DSNodeType nodeType) : base(string.Format("Node type {0} is not supported for this funtion.", nodeType.ConvertToString())) { }
-
         public DSInvalidNodeTypeException(string str) : base(string.Format("Node prop type {0} is not supported for this funtion.", str)) { }
-        public DSInvalidNodeTypeException(DSNodePropertyType nodePropType) : base(string.Format("Node prop type {0} is not supported for this funtion.", nodePropType.ConvertToString())) { }
     }
 }

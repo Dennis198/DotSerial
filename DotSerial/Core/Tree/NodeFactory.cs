@@ -39,11 +39,6 @@ namespace DotSerial.Core.Tree
                 throw new NotImplementedException();
             }
 
-            // if (null == value && (type == NodeType.Leaf))
-            // {
-            //     throw new NotImplementedException();
-            // }
-
             if (null != value && (type != NodeType.Leaf))
             {
                 throw new NotImplementedException();
