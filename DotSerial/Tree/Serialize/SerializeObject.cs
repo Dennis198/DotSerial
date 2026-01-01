@@ -1,11 +1,11 @@
 using System.Collections;
 using System.Reflection;
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Misc;
+using DotSerial.Tree.Nodes;
 using DotSerial.XML;
 
-namespace DotSerial.Core.Tree.Serialize
+namespace DotSerial.Tree.Serialize
 {
     public class SerializeObject
     {

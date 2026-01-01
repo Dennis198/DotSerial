@@ -21,10 +21,10 @@
 #endregion
 
 using System.Text;
-using DotSerial.Core.General;
-using DotSerial.Core.Tree;
+using DotSerial.Common;
+using DotSerial.Tree;
 
-namespace DotSerial.Core.Misc
+namespace DotSerial.Misc
 {
     internal static class ParseMethods
     {
@@ -50,12 +50,12 @@ namespace DotSerial.Core.Misc
                 throw new IndexOutOfRangeException();
             }
 
-            if (str[startIndex] != GeneralConstants.Quote)
+            if (str[startIndex] != CommonConstants.Quote)
             {
                 throw new ArgumentException(str);
             }
 
-            sb.Append(GeneralConstants.Quote);
+            sb.Append(CommonConstants.Quote);
 
             for (int j = startIndex + 1; j < str.Length; j++)
             {
@@ -66,7 +66,7 @@ namespace DotSerial.Core.Misc
                     sb.Append(str[j + 1]);
                     j++;
                 }
-                else if (c2 == GeneralConstants.Quote)
+                else if (c2 == CommonConstants.Quote)
                 {
                     sb.Append(c2);
                     return j;
@@ -103,7 +103,7 @@ namespace DotSerial.Core.Misc
 
                 // If char is a quoto extract everything
                 // till the closing quote is reached
-                if (c == GeneralConstants.Quote)
+                if (c == CommonConstants.Quote)
                 {
                     i = AppendStringValue(sb, i, str);
                     continue;

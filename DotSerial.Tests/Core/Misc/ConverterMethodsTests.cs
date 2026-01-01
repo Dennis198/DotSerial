@@ -33,7 +33,7 @@ namespace DotSerial.Tests.Core.Misc
             List<object?>? tmp2 = [1, 2, 3, 4];
 
             // Act
-            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
+            object? result = DotSerial.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -48,7 +48,7 @@ namespace DotSerial.Tests.Core.Misc
             List<object?>? tmp2 = [1, 2, 3, 4];
 
             // Act
-            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
+            object? result = DotSerial.Misc.ConverterMethods.ConvertDeserializedList(tmp2, tmp.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -66,7 +66,7 @@ namespace DotSerial.Tests.Core.Misc
             tmp2.Add(2, "C");
 
             // Act
-            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertDeserializedDictionary(tmp2, tmp.GetType());
+            object? result = DotSerial.Misc.ConverterMethods.ConvertDeserializedDictionary(tmp2, tmp.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -80,7 +80,7 @@ namespace DotSerial.Tests.Core.Misc
             var enu = TestEnum.First;
 
             // Act
-            object result = DotSerial.Core.Misc.ConverterMethods.ConvertEnumToObject(enu.GetType(), enu);
+            object result = DotSerial.Misc.ConverterMethods.ConvertEnumToObject(enu.GetType(), enu);
 
             // Assert
             Assert.Equal(enu.GetType(), result.GetType());
@@ -95,7 +95,7 @@ namespace DotSerial.Tests.Core.Misc
             int expected = 1893;
 
             // Act
-            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertStringToPrimitive(str, expected.GetType());
+            object? result = DotSerial.Misc.ConverterMethods.ConvertStringToPrimitive(str, expected.GetType());
 
             // Assert
             Assert.NotNull(result);
@@ -111,7 +111,7 @@ namespace DotSerial.Tests.Core.Misc
             DateTime expected = DateTime.Now;
 
             // Act
-            object? result = DotSerial.Core.Misc.ConverterMethods.ConvertStringToSpecialParsableObject(str, expected.GetType());
+            object? result = DotSerial.Misc.ConverterMethods.ConvertStringToSpecialParsableObject(str, expected.GetType());
 
             // Assert
             Assert.NotNull(result);

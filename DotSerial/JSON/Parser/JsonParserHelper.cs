@@ -22,8 +22,8 @@
 
 using System.Text;
 using DotSerial.Core.Exceptions.JSON;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
+using DotSerial.Common;
+using DotSerial.Misc;
 
 namespace DotSerial.JSON.Parser
 {
@@ -52,7 +52,7 @@ namespace DotSerial.JSON.Parser
                 char c = sb[i];
 
                 // Check if opening quote for the key is found
-                if (c == GeneralConstants.Quote && keyFound == false)
+                if (c == CommonConstants.Quote && keyFound == false)
                 {
                     // Quote is opening
                     keyFound = true;
@@ -73,7 +73,7 @@ namespace DotSerial.JSON.Parser
                     continue;
                 }
                 // Check if opening quote for the value is found (primitive)
-                else if (c == GeneralConstants.Quote && keyFound == true)
+                else if (c == CommonConstants.Quote && keyFound == true)
                 {
                     // value is found
                     keyFound = false;
@@ -98,7 +98,7 @@ namespace DotSerial.JSON.Parser
 
                     continue;
                 }
-                else if (c == GeneralConstants.N && keyFound == true)
+                else if (c == CommonConstants.N && keyFound == true)
                 {
                     // value is found => null
                     keyFound = false;
@@ -106,11 +106,11 @@ namespace DotSerial.JSON.Parser
                     if (i + 3 > sb.Length -1) throw new DSInvalidJSONException(sb.ToString());
 
                     i++;
-                    if (sb[i] != GeneralConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.U) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
 
                     // Add key
                     result[founedKey] = null;
@@ -214,7 +214,7 @@ namespace DotSerial.JSON.Parser
                 {
                     numberNewObjects++;
                 }
-                else if (c == GeneralConstants.Quote)
+                else if (c == CommonConstants.Quote)
                 {
                     StringBuilder sb = new();
                     i = ParseMethods.AppendStringValue(sb, i, jsonString);
@@ -265,7 +265,7 @@ namespace DotSerial.JSON.Parser
                 {
                     numberNewObjects++;
                 }
-                else if (c == GeneralConstants.Quote)
+                else if (c == CommonConstants.Quote)
                 {
                     StringBuilder sb = new ();
                     i = ParseMethods.AppendStringValue(sb, i, jsonString);
@@ -401,7 +401,7 @@ namespace DotSerial.JSON.Parser
                 char c = sb[i];
 
                 // Check if opening quote is found
-                if (c == GeneralConstants.Quote)
+                if (c == CommonConstants.Quote)
                 {
                     StringBuilder sb2 = new ();
 
@@ -415,16 +415,16 @@ namespace DotSerial.JSON.Parser
                     // Add value to result
                     result.Add(sb2.ToString());
                 }
-                else if (c == GeneralConstants.N)
+                else if (c == CommonConstants.N)
                 {
                     if (i + 3 > sb.Length - 1) throw new DSInvalidJSONException(sb.ToString());
 
                     i++;
-                    if (sb[i] != GeneralConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.U) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
                     i++;
-                    if (sb[i] != GeneralConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
 
                     // Add value to result
                     result.Add(null);

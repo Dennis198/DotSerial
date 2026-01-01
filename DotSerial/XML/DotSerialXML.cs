@@ -22,8 +22,8 @@
 
 using System.Xml;
 using System.Xml.Linq;
-using DotSerial.Core.Misc;
-using DotSerial.Interfaces;
+using DotSerial.Misc;
+using DotSerial.Common;
 
 namespace DotSerial.XML
 {

@@ -31,7 +31,7 @@ namespace DotSerial.Tests.Core.Misc
             var simpleClass = new SimpleClass();
 
             // Act
-            object result = DotSerial.Core.Misc.CreateInstanceMethods.CreateInstanceGeneric(simpleClass.GetType());
+            object result = DotSerial.Misc.CreateInstanceMethods.CreateInstanceGeneric(simpleClass.GetType());
 
             // Assert
             Assert.Equal(simpleClass.GetType(), result.GetType());
@@ -44,7 +44,7 @@ namespace DotSerial.Tests.Core.Misc
             var simpleClass = new SimpleClass();
 
             // Act
-            object result = DotSerial.Core.Misc.CreateInstanceMethods.CreateInstanceGeneric<SimpleClass>();
+            object result = DotSerial.Misc.CreateInstanceMethods.CreateInstanceGeneric<SimpleClass>();
 
             // Assert
             Assert.Equal(simpleClass.GetType(), result.GetType());
@@ -57,7 +57,7 @@ namespace DotSerial.Tests.Core.Misc
             var array = new int[5];
 
             // Act
-            Array result = DotSerial.Core.Misc.CreateInstanceMethods.CreateInstanceArray(array.GetType(), array.Length);
+            Array result = DotSerial.Misc.CreateInstanceMethods.CreateInstanceArray(array.GetType(), array.Length);
 
             // Assert
             Assert.Equal(array.GetType(), result.GetType());

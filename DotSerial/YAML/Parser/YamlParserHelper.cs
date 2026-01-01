@@ -1,6 +1,6 @@
 using System.Text;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
+using DotSerial.Common;
+using DotSerial.Misc;
 
 namespace DotSerial.YAML.Parser
 {
@@ -32,7 +32,7 @@ namespace DotSerial.YAML.Parser
                 for (int j = 0; j < lines[i].Length; j++)
                 {
                     var c = lines[i][j];
-                    if (c == GeneralConstants.Quote)
+                    if (c == CommonConstants.Quote)
                     {
                         StringBuilder dontNeed = new();
                         j = ParseMethods.AppendStringValue(dontNeed, j, lines[i].ToString());
@@ -43,16 +43,16 @@ namespace DotSerial.YAML.Parser
 
                         result.Add(dontNeed.ToString());
                     }
-                    else if (c == GeneralConstants.N)
+                    else if (c == CommonConstants.N)
                     {
                         if (j + 3 > lines[i].Length - 1) throw new NotImplementedException();
 
                         j++;
-                        if (lines[i][j] != GeneralConstants.U) throw new NotImplementedException();
+                        if (lines[i][j] != CommonConstants.U) throw new NotImplementedException();
                         j++;
-                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != CommonConstants.L) throw new NotImplementedException();
                         j++;
-                        if (lines[i][j] != GeneralConstants.L) throw new NotImplementedException();
+                        if (lines[i][j] != CommonConstants.L) throw new NotImplementedException();
 
                         result.Add(null);
                     }
@@ -389,7 +389,7 @@ namespace DotSerial.YAML.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == GeneralConstants.Quote)
+                if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, i, line.ToString());
                     // Remove ending quote
@@ -418,7 +418,7 @@ namespace DotSerial.YAML.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == GeneralConstants.Quote)
+                if (c == CommonConstants.Quote)
                 {
                     if (keyWasFound)
                     {
@@ -437,16 +437,16 @@ namespace DotSerial.YAML.Parser
                         keyWasFound = true;
                     }
                 }
-                else if (keyWasFound && c == GeneralConstants.N)
+                else if (keyWasFound && c == CommonConstants.N)
                 {
                     if (i + 3 > line.Length - 1) throw new NotImplementedException();
 
                     i++;
-                    if (line[i] != GeneralConstants.U) throw new NotImplementedException();
+                    if (line[i] != CommonConstants.U) throw new NotImplementedException();
                     i++;
-                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
+                    if (line[i] != CommonConstants.L) throw new NotImplementedException();
                     i++;
-                    if (line[i] != GeneralConstants.L) throw new NotImplementedException();
+                    if (line[i] != CommonConstants.L) throw new NotImplementedException();
                     return null;
                 }
             }
@@ -467,7 +467,7 @@ namespace DotSerial.YAML.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
-                if (c == GeneralConstants.WhiteSpace)
+                if (c == CommonConstants.WhiteSpace)
                 {
                     level++;
                 }
@@ -492,7 +492,7 @@ namespace DotSerial.YAML.Parser
             for (int i = line.Length - 1; i >= 0; i--)
             {
                 var c = line[i];
-                if (c == GeneralConstants.WhiteSpace)
+                if (c == CommonConstants.WhiteSpace)
                 {
                     continue;
                 }
@@ -538,7 +538,7 @@ namespace DotSerial.YAML.Parser
                     numListIndicator++;
                     continue;
                 }
-                else if (c == GeneralConstants.Quote)
+                else if (c == CommonConstants.Quote)
                 {                    
                     StringBuilder dontNeed = new();
                     i = ParseMethods.AppendStringValue(dontNeed, i, line.ToString());
@@ -586,7 +586,7 @@ namespace DotSerial.YAML.Parser
                 }
 
                 var c = sb[i];
-                if (c == GeneralConstants.Quote)
+                if (c == CommonConstants.Quote)
                 {
                     i = ParseMethods.AppendStringValue(currentLine, i, sb.ToString());
                 }

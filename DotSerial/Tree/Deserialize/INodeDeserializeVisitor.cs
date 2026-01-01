@@ -1,6 +1,6 @@
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Tree.Nodes;
 
-namespace DotSerial.Core.Tree.Deserialize
+namespace DotSerial.Tree.Deserialize
 {
     /// <summary>
     /// Visitor interface for tree nodes.

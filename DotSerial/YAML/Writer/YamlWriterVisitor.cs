@@ -1,5 +1,5 @@
 using System.Text;
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Writer
 {

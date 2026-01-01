@@ -1,6 +1,6 @@
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Tree.Nodes;
 
-namespace DotSerial.Core.Tree
+namespace DotSerial.Tree
 {
     public sealed class NodeFactory : INodeFactory
     {

@@ -21,7 +21,7 @@
 #endregion
 
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.Misc;
+using DotSerial.Misc;
 using System.Collections;
 using System.Reflection;
 using System.Xml;

@@ -20,7 +20,7 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Interfaces
+namespace DotSerial.Common
 {
     public interface ISerial<T>
     {

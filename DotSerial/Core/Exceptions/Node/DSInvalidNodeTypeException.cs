@@ -20,8 +20,8 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.General;
-using DotSerial.Core.Tree;
+using DotSerial.Common;
+using DotSerial.Tree;
 
 namespace DotSerial.Core.Exceptions.Node
 {

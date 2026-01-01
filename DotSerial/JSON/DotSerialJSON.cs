@@ -20,10 +20,9 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree.Serialize;
-using DotSerial.Interfaces;
+using DotSerial.Common;
+using DotSerial.Misc;
+using DotSerial.Tree.Serialize;
 
 namespace DotSerial.JSON
 {
@@ -120,7 +119,7 @@ namespace DotSerial.JSON
             }
 
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, GeneralConstants.MainObjectKey);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
 
             var result = new DotSerialJSON
             {

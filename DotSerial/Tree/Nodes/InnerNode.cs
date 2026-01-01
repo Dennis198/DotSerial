@@ -1,6 +1,6 @@
-using DotSerial.Core.Tree.Deserialize;
+using DotSerial.Tree.Deserialize;
 
-namespace DotSerial.Core.Tree.Nodes
+namespace DotSerial.Tree.Nodes
 {
     /// <summary>
     /// Inner node

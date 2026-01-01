@@ -1,5 +1,5 @@
 using DotSerial.JSON;
-using DotSerial.Core.Tree;
+using DotSerial.Tree;
 
 namespace DotSerial.Tests.Core.JSON
 {

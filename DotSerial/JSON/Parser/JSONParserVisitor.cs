@@ -22,10 +22,10 @@
 
 using System.Text;
 using DotSerial.Core.Exceptions.JSON;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree;
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Common;
+using DotSerial.Misc;
+using DotSerial.Tree;
+using DotSerial.Tree.Nodes;
 
 namespace DotSerial.JSON.Parser
 {
@@ -44,7 +44,7 @@ namespace DotSerial.JSON.Parser
             string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
             StringBuilder sb = new(tmp);
 
-            var rootNode = _nodeFactory.CreateNode(GeneralConstants.MainObjectKey, null, NodeType.InnerNode);
+            var rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
 
             ParserAccept(rootNode, new JSONParserVisitor(), sb);
 
@@ -166,7 +166,7 @@ namespace DotSerial.JSON.Parser
             if (JsonParserHelper.IsStringJsonList(sb.ToString()))
             {
                 // Check if list is list of primitive or objects
-                if (sb[1] == GeneralConstants.Quote || sb[1] == GeneralConstants.N)
+                if (sb[1] == CommonConstants.Quote || sb[1] == CommonConstants.N)
                 {
                     // Extract primitive list
                     var items = JsonParserHelper.ExtractPrimitiveList(sb);

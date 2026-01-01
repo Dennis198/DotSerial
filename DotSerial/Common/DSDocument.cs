@@ -20,7 +20,7 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.General
+namespace DotSerial.Common
 {
     /// <summary>
     /// Class which represents an Document

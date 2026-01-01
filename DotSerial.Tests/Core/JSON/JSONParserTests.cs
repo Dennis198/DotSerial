@@ -20,9 +20,9 @@
 // //SOFTWARE.
 // #endregion
 
-// using DotSerial.Core.General;
+// using DotSerial.Common;
 // using DotSerial.Core.JSON;
-// using DotSerial.Core.Tree;
+// using DotSerial.Tree;
 
 // namespace DotSerial.Tests.Core.JSON
 // {

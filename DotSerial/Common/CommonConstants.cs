@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,14 +20,38 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.Tree
+namespace DotSerial.Common
 {
-    public enum NodeType
+    internal static class CommonConstants
     {
-        Leaf = 0,
-        InnerNode = 1,
-        ListNode = 2,
-        DictionaryNode = 3
+        internal const string MainObjectKey = "0";
+        /// <summary>
+        /// Whitespace
+        /// </summary>
+        internal const char WhiteSpace = ' ';
+        /// <summary>
+        /// Quote
+        /// </summary>
+        internal const char Quote = '"';
+        /// <summary>
+        /// N
+        /// </summary>
+        internal const char N = 'n';
+        /// <summary>
+        /// N
+        /// </summary>
+        internal const char U = 'u';
+        /// <summary>
+        /// L
+        /// </summary>
+        internal const char L = 'l';
+        /// <summary>
+        /// Json null string
+        /// </summary>
+        internal const string Null = "null";
+        /// <summary>
+        /// Coma char
+        /// </summary>
+        internal const char Comma = ',';
     }
-
 }

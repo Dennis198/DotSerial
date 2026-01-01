@@ -24,7 +24,7 @@ using System.Collections;
 using System.Globalization;
 using System.Net;
 
-namespace DotSerial.Core.Misc
+namespace DotSerial.Misc
 {
     /// <summary>
     /// Class is used to check Types/objects if there are of a specific

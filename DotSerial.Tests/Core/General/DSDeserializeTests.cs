@@ -21,11 +21,11 @@
 #endregion
 
 using DotSerial.Core.Exceptions;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree;
-using DotSerial.Core.Tree.Deserialize;
-using DotSerial.Core.Tree.Serialize;
+using DotSerial.Common;
+using DotSerial.Misc;
+using DotSerial.Tree;
+using DotSerial.Tree.Deserialize;
+using DotSerial.Tree.Serialize;
 
 namespace DotSerial.Tests.Core.General
 {

@@ -1,6 +1,6 @@
 // using System.Xml;
 // using System.Xml.Linq;
-// using DotSerial.Core.General;
+// using DotSerial.Common;
 
 // namespace DotSerial.Core.XML
 // {

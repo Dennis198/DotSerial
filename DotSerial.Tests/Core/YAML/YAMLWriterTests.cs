@@ -1,4 +1,4 @@
-// using DotSerial.Core.General;
+// using DotSerial.Common;
 // using DotSerial.Core.YAML;
 
 // namespace DotSerial.Tests.Core.YAML

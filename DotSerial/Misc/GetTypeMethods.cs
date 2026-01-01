@@ -20,7 +20,7 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Core.Misc
+namespace DotSerial.Misc
 {
     /// <summary>
     /// Class is used to identify the type of verious objects.

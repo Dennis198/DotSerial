@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,29 +20,14 @@
 //SOFTWARE.
 #endregion
 
-using System.Text;
-using DotSerial.Core.General;
-
-namespace DotSerial.Core.Misc
+namespace DotSerial.Tree
 {
-    internal static class WriteMethods
+    public enum NodeType
     {
-        /// <summary>
-        /// Adds identation
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="count">Count of intdentaion</param>
-        /// <param name="size">Size of one intdentaion</param>
-        internal static void AddIndentation(StringBuilder sb, int count, int size)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (count < 0)
-            {
-                throw new ArgumentException(count.ToString());
-            }
-
-            sb.Append(GeneralConstants.WhiteSpace, count * size);
-        }
+        Leaf = 0,
+        InnerNode = 1,
+        ListNode = 2,
+        DictionaryNode = 3
     }
+
 }

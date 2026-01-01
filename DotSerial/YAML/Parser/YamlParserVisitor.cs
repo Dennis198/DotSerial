@@ -1,8 +1,8 @@
 using System.Text;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree;
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Common;
+using DotSerial.Misc;
+using DotSerial.Tree;
+using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Parser
 {
@@ -21,9 +21,9 @@ namespace DotSerial.YAML.Parser
             var lines = YamlParserHelper.CreateLines(sb);
             YamlParserHelper.TrimLines(lines);
 
-            var rootNode = _nodeFactory.CreateNode(GeneralConstants.MainObjectKey, null, NodeType.InnerNode);
+            var rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
 
-            var options = new YamlParserOptions(GeneralConstants.MainObjectKey, 0, 0, lines.Count - 1);
+            var options = new YamlParserOptions(CommonConstants.MainObjectKey, 0, 0, lines.Count - 1);
             options.SetIsYamlObject();
 
             if (lines.Count > 0)

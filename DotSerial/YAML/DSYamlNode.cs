@@ -1,7 +1,7 @@
-using DotSerial.Core.General;
-using DotSerial.Core.Tree.Deserialize;
-using DotSerial.Core.Tree.Nodes;
-using DotSerial.Core.Tree.Serialize;
+using DotSerial.Common;
+using DotSerial.Tree.Deserialize;
+using DotSerial.Tree.Nodes;
+using DotSerial.Tree.Serialize;
 using DotSerial.YAML.Parser;
 using DotSerial.YAML.Writer;
 
@@ -63,7 +63,7 @@ namespace DotSerial.YAML
         public static DSYamlNode ToNode(object? obj, string? key = null)
         {
             // Determine key
-            string currKey = key ?? GeneralConstants.MainObjectKey;
+            string currKey = key ?? CommonConstants.MainObjectKey;
             
             // Serialize object
             var rootNode = SerializeObject.Serialize(obj, currKey);

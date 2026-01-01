@@ -21,7 +21,7 @@
 #endregion
 
 using System.Text;
-using DotSerial.Core.Misc;
+using DotSerial.Misc;
 
 namespace DotSerial.JSON.Writer
 {

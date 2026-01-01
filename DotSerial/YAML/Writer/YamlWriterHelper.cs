@@ -1,7 +1,7 @@
 using System.Text;
-using DotSerial.Core.General;
-using DotSerial.Core.Misc;
-using DotSerial.Core.Tree.Nodes;
+using DotSerial.Common;
+using DotSerial.Misc;
+using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Writer
 {
@@ -126,7 +126,7 @@ namespace DotSerial.YAML.Writer
 
                     if (null == val)
                     {
-                        sb.AppendFormat("- {0}", GeneralConstants.Null);
+                        sb.AppendFormat("- {0}", CommonConstants.Null);
                     }
                     else
                     {

@@ -23,7 +23,7 @@
 using System.Runtime.Serialization;
 using DotSerial.Core.Exceptions;
 
-namespace DotSerial.Core.Misc
+namespace DotSerial.Misc
 {
     internal static class CreateInstanceMethods
     {
