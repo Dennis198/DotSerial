@@ -53,5 +53,9 @@ namespace DotSerial.Common
         /// Coma char
         /// </summary>
         internal const char Comma = ',';
+        /// <summary>
+        /// Coma and whitespace
+        /// </summary>
+        internal const string CommaAndWhiteSpace = ", ";
     }
 }

@@ -25,15 +25,15 @@ namespace DotSerial.JSON.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    public struct JsonWriterOptions
+    public struct JsonWriterOptions(int level, bool addKey = true)
     {
-        internal int Level { get; private set; }
-        internal bool AddKey { get; private set; }
-
-        public JsonWriterOptions(int level, bool addKey = true)
-        {
-            Level = level;
-            AddKey = addKey;
-        }
+        /// <summary>
+        /// Indentation level
+        /// </summary>
+        internal int Level { get; private set; } = level;
+        /// <summary>
+        /// Add Key to object
+        /// </summary>
+        internal bool AddKey { get; private set; } = addKey;
     }
 }

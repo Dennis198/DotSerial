@@ -48,5 +48,28 @@ namespace DotSerial.Utilities
 
             return sb;
         }
+
+        /// <summary>
+        /// Builds a Stringbuilder from another strting builder
+        /// </summary>
+        /// <param name="input">Stringbuilder</param>
+        /// <param name="index">Index</param>
+        /// <param name="length">Length</param>
+        /// <returns>Sub stringbuilder</returns>
+        public static StringBuilder SubString(this StringBuilder input, int index, int length)
+        {
+            StringBuilder subString = new();
+            if (index + length - 1 >= input.Length || index < 0) 
+            {
+                throw new ArgumentOutOfRangeException(nameof(input)); 
+            }
+            int endIndex = index + length;
+            for (int i = index; i < endIndex; i++)
+            {
+                subString.Append(input[i]);
+            }
+            return subString;
+        }
+
     }
 }

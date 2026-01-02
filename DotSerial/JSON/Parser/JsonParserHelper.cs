@@ -21,9 +21,9 @@
 #endregion
 
 using System.Text;
-using DotSerial.Core.Exceptions.JSON;
 using DotSerial.Common;
 using DotSerial.Utilities;
+using DotSerial.Json;
 
 namespace DotSerial.JSON.Parser
 {
@@ -37,15 +37,13 @@ namespace DotSerial.JSON.Parser
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Dictionary<string, string></returns>
-        internal static Dictionary<string, string?> ExtractKeyValuePairsFromJsonObject(StringBuilder sb)
+        internal static Dictionary<string, StringBuilder?> ExtractKeyValuePairsFromJsonObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            var result = new Dictionary<string, string?>();
-
-            // Helper vars
+            var result = new Dictionary<string, StringBuilder?>();
             bool keyFound = false;
-            string founedKey = string.Empty;
+            string foundKey = string.Empty;
 
             for (int i = 0; i < sb.Length; i++)
             {
@@ -65,12 +63,10 @@ namespace DotSerial.JSON.Parser
                     sb2.Remove(sb2.Length - 1, 1);
 
                     // Save key
-                    founedKey = sb2.ToString();
+                    foundKey = sb2.ToString();
 
                     // Add key
-                    result.Add(founedKey, string.Empty);
-
-                    continue;
+                    result.Add(foundKey, null);
                 }
                 // Check if opening quote for the value is found (primitive)
                 else if (c == CommonConstants.Quote && keyFound == true)
@@ -85,39 +81,37 @@ namespace DotSerial.JSON.Parser
                     sb2.Remove(0, 1);
                     sb2.Remove(sb2.Length - 1, 1);
                    
-                    if (false == result.ContainsKey(founedKey))
+                    if (false == result.ContainsKey(foundKey))
                     {
-                        throw new KeyNotFoundException();
+                        throw new DSJsonException("Key not found.");
                     }
 
                     // Add key
-                    result[founedKey] = sb2.ToString();
+                    result[foundKey] = sb2;
 
                     // Reset found key
-                    founedKey = string.Empty;
-
-                    continue;
+                    foundKey = string.Empty;
                 }
+                // Check if "null" value is found  
                 else if (c == CommonConstants.N && keyFound == true)
                 {
                     // value is found => null
                     keyFound = false;
 
-                    if (i + 3 > sb.Length -1) throw new DSInvalidJSONException(sb.ToString());
+                    if (i + 3 > sb.Length -1) throw new DSJsonException("Invalid json");
 
                     i++;
-                    if (sb[i] != CommonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.U) throw new DSJsonException("Invalid json");
                     i++;
-                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
                     i++;
-                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
 
                     // Add key
-                    result[founedKey] = null;
+                    result[foundKey] = null;
 
                     // Reset found key
-                    founedKey = string.Empty;
-
+                    foundKey = string.Empty;
                 }
                 // Check if opening symbol for the value is found (json object)
                 else if (c == JsonConstants.ObjectStart && keyFound == true)
@@ -126,24 +120,22 @@ namespace DotSerial.JSON.Parser
                     keyFound = false;
 
                     // Extract value
-                    int j = ExtractJsonObject(sb.ToString(), i);
+                    int j = ExtractJsonObject(sb, i);
 
-                    if (false == result.ContainsKey(founedKey))
+                    if (false == result.ContainsKey(foundKey))
                     {
-                        throw new KeyNotFoundException();
+                        throw new DSJsonException("Key not found.");
                     }
 
                     // Add key
                     int len = j - i + 1;
-                    result[founedKey] = sb.ToString(i, len);
+                    result[foundKey] = sb.SubString(i, len);
 
                     // Reset found key
-                    founedKey = string.Empty;
+                    foundKey = string.Empty;
 
                     // Update index
                     i = j;
-
-                    continue;
                 }
                 // Check if opening symbol for the value is found (json list)
                 else if (c == JsonConstants.ListStart && keyFound == true)
@@ -152,22 +144,21 @@ namespace DotSerial.JSON.Parser
                     keyFound = false;
 
                     // Extract value
-                    int j = ExtractJsonList(sb.ToString(), i);
+                    int j = ExtractJsonList(sb, i);
 
-                    if (false == result.ContainsKey(founedKey))
+                    if (false == result.ContainsKey(foundKey))
                     {
-                        throw new KeyNotFoundException();
+                        throw new DSJsonException("Key not found.");
                     }
                     // Add key
                     int len = j - i + 1;
-                    result[founedKey] = sb.ToString(i, len);
+                    result[foundKey] = sb.SubString(i, len);
 
                     // Reset found key
-                    founedKey = string.Empty;
+                    foundKey = string.Empty;
 
                     // Update index
                     i = j;
-                    continue;
                 }
             }
 
@@ -177,31 +168,28 @@ namespace DotSerial.JSON.Parser
         /// <summary>
         /// Extracts a json object
         /// </summary>
-        /// <param name="jsonString">string</param>
+        /// <param name="sb">Strginbuilder</param>
         /// <param name="startIndex">Index of the opeing symbol</param>
         /// <returns>Index of end symbol</returns>
-        private static int ExtractJsonObject(string jsonString, int startIndex)
+        private static int ExtractJsonObject(StringBuilder sb, int startIndex)
         {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new DSInvalidJSONException(jsonString);
-            }
+            ArgumentNullException.ThrowIfNull(sb);
 
-            if (jsonString.Length < startIndex)
+            if (sb.Length < startIndex)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (jsonString[startIndex] != JsonConstants.ObjectStart)
+            if (sb[startIndex] != JsonConstants.ObjectStart)
             {
-                throw new DSInvalidJSONException(jsonString);
+                throw new DSJsonException("Invalid json.");
             }
 
             int numberNewObjects = 0;
 
-            for (int i = startIndex + 1; i < jsonString.Length; i++)
+            for (int i = startIndex + 1; i < sb.Length; i++)
             {
-                char c = jsonString[i];
+                char c = sb[i];
                 if (c == JsonConstants.ObjectEnd && numberNewObjects == 0)
                 {
                     return i;
@@ -216,43 +204,38 @@ namespace DotSerial.JSON.Parser
                 }
                 else if (c == CommonConstants.Quote)
                 {
-                    StringBuilder sb = new();
-                    i = ParseMethods.AppendStringValue(sb, i, jsonString);
+                    StringBuilder _ = new();
+                    i = ParseMethods.AppendStringValue(_, i, sb.ToString());
                     continue;
                 }
             }
 
-            throw new DSInvalidJSONException(jsonString);
+            throw new DSJsonException("Invalid json.");
         }    
 
         /// <summary>
         /// Extracts a json list
         /// </summary>
-        /// <param name="jsonString">string</param>
+        /// <param name="sb">StingBuilder</param>
         /// <param name="startIndex">Index of the opeing symbol</param>
         /// <returns>Index of end symbol</returns>
-        private static int ExtractJsonList(string jsonString, int startIndex)
+        private static int ExtractJsonList(StringBuilder sb, int startIndex)
         {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new DSInvalidJSONException(jsonString);
-            }
-
-            if (jsonString.Length < startIndex)
+            if (sb.Length < startIndex)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (jsonString[startIndex] != JsonConstants.ListStart)
+            if (sb[startIndex] != JsonConstants.ListStart)
             {
-                throw new DSInvalidJSONException(jsonString);
+                throw new DSJsonException("Invalid json.");
             }
 
             int numberNewObjects = 0;
 
-            for (int i = startIndex + 1; i < jsonString.Length; i++)
+            for (int i = startIndex + 1; i < sb.Length; i++)
             {
-                char c = jsonString[i];
+                char c = sb[i];
                 if (c == JsonConstants.ListEnd && numberNewObjects == 0)
                 {
                     return i;
@@ -267,13 +250,13 @@ namespace DotSerial.JSON.Parser
                 }
                 else if (c == CommonConstants.Quote)
                 {
-                    StringBuilder sb = new ();
-                    i = ParseMethods.AppendStringValue(sb, i, jsonString);
+                    StringBuilder _ = new ();
+                    i = ParseMethods.AppendStringValue(_, i, sb.ToString());
                     continue;
                 }
             }
 
-            throw new DSInvalidJSONException(jsonString);
+            throw new DSJsonException("Invalid json.");
         }  
 
         /// <summary>
@@ -281,11 +264,11 @@ namespace DotSerial.JSON.Parser
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>List<string></returns>
-        internal static List<string> ExtractObjectList(StringBuilder sb)
+        internal static List<StringBuilder> ExtractObjectList(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            var list = new List<string>();
+            var list = new List<StringBuilder>();
 
             for (int i = 1; i < sb.Length-1; i++)
             {
@@ -294,11 +277,11 @@ namespace DotSerial.JSON.Parser
                 if (c == JsonConstants.ListStart)
                 {
                      // Extract value
-                    int j = ExtractJsonList(sb.ToString(), i);
+                    int j = ExtractJsonList(sb, i);
 
                     // Add key
                     int len = j - i + 1;
-                    string tmp = sb.ToString(i, len);
+                    var tmp = sb.SubString(i, len);
 
                     // Add object to result
                     list.Add(tmp);
@@ -309,10 +292,10 @@ namespace DotSerial.JSON.Parser
                 else if (c == JsonConstants.ObjectStart)
                 {
                     // Extract object
-                    int j = ExtractJsonObject(sb.ToString(), i);
+                    int j = ExtractJsonObject(sb, i);
 
                     int len = j - i + 1;
-                    string tmp = sb.ToString(i, len);
+                    var tmp = sb.SubString(i, len);
 
                     // Add object to result
                     list.Add(tmp);
@@ -330,59 +313,105 @@ namespace DotSerial.JSON.Parser
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>True, if is a object</returns>
-        internal static bool IsStringJsonObject(string? str)
+        internal static bool IsStringJsonObject(StringBuilder sb)
         {
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                return false;
-            }
+            ArgumentNullException.ThrowIfNull(sb);
 
-            // Remove all whitespaces
-            string tmp = ParseMethods.RemoveWhiteSpace(str);
+            bool startFound = false;
+            bool endFound = false;
 
             // Check if first element is '{'
-            if (tmp[0] != JsonConstants.ObjectStart)
+            for (int i = 0; i < sb.Length; i++)
             {
-                return false;
+                char c = sb[i]; 
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == JsonConstants.ObjectStart)
+                {
+                    startFound = true;
+                    break;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
-            // Check if first element is '}'
-            if (tmp[^1] != JsonConstants.ObjectEnd)
+            // Check if last element is '}'
+            for (int i = sb.Length - 1; i >= 0; i--)
             {
-                return false;
+                char c = sb[i]; 
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == JsonConstants.ObjectEnd)
+                {
+                    endFound = true;
+                    break;
+                }
+                else 
+                {
+                    return false;
+                }
             }
 
-            return true;
+            return startFound && endFound;
         }  
 
         /// <summary>
         /// Check if string is a json list.
         /// </summary>
-        /// <param name="str">String</param>
+        /// <param name="sb">StrginBuilder</param>
         /// <returns>True, if is a list</returns>
-        internal static bool IsStringJsonList(string str)
+        internal static bool IsStringJsonList(StringBuilder sb)
         {
-            if (string.IsNullOrWhiteSpace(str))
+            ArgumentNullException.ThrowIfNull(sb);
+
+            bool startFound = false;
+            bool endFound = false;
+
+            // Check if first element is '{'
+            for (int i = 0; i < sb.Length; i++)
             {
-                return false;
+                char c = sb[i]; 
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == JsonConstants.ListStart)
+                {
+                    startFound = true;
+                    break;
+                }
+                else
+                {
+                    return false;
+                }
             }
 
-            // Remove all whitespaces
-            string tmp = ParseMethods.RemoveWhiteSpace(str);
-
-            // Check if first element is '['
-            if (tmp[0] != JsonConstants.ListStart)
+            // Check if last element is '}'
+            for (int i = sb.Length - 1; i >= 0; i--)
             {
-                return false;
+                char c = sb[i]; 
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+                else if (c == JsonConstants.ListEnd)
+                {
+                    endFound = true;
+                    break;
+                }
+                else 
+                {
+                    return false;
+                }
             }
 
-            // Check if last element is ']'
-            if (tmp[^1] != JsonConstants.ListEnd)
-            {
-                return false;
-            }
-
-            return true;
+            return startFound && endFound;
         }      
 
         /// <summary>
@@ -417,14 +446,14 @@ namespace DotSerial.JSON.Parser
                 }
                 else if (c == CommonConstants.N)
                 {
-                    if (i + 3 > sb.Length - 1) throw new DSInvalidJSONException(sb.ToString());
+                    if (i + 3 > sb.Length - 1) throw new DSJsonException("Invalid json");
 
                     i++;
-                    if (sb[i] != CommonConstants.U) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.U) throw new DSJsonException("Invalid json");
                     i++;
-                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
                     i++;
-                    if (sb[i] != CommonConstants.L) throw new DSInvalidJSONException(sb.ToString());
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
 
                     // Add value to result
                     result.Add(null);

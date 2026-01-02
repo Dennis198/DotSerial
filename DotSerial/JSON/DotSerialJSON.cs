@@ -192,7 +192,7 @@ namespace DotSerial.JSON
 
             try
             {
-                string result = _document.RootNode?.ToJsonString() ?? string.Empty;
+                string result = _document.RootNode?.Stringify() ?? string.Empty;
                 return result;
             }
             catch (Exception)

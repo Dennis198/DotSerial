@@ -21,11 +21,12 @@
 #endregion
 
 using System.Text;
-using DotSerial.Core.Exceptions.JSON;
+
 using DotSerial.Common;
 using DotSerial.Utilities;
 using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
+using DotSerial.Json;
 
 namespace DotSerial.JSON.Parser
 {
@@ -42,8 +43,8 @@ namespace DotSerial.JSON.Parser
         {
             // Removes all whitespaces
             string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
-            StringBuilder sb = new(tmp);
 
+            StringBuilder sb = new(tmp);
             var rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
 
             ParserAccept(rootNode, new JSONParserVisitor(), sb);
@@ -85,6 +86,7 @@ namespace DotSerial.JSON.Parser
         public void VisitLeafNode(LeafNode node, StringBuilder sb)
         {
             // Currenlty not needed
+            // Will be procced in the VisitInnerNode
             throw new NotImplementedException();
         }
 
@@ -94,7 +96,7 @@ namespace DotSerial.JSON.Parser
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (JsonParserHelper.IsStringJsonObject(sb.ToString()))
+            if (JsonParserHelper.IsStringJsonObject(sb))
             {
                 // Extract key, value pairs
                 var dic = JsonParserHelper.ExtractKeyValuePairsFromJsonObject(sb);
@@ -103,7 +105,7 @@ namespace DotSerial.JSON.Parser
                 {
                      // Convert key to int key
                     string key = keyValuepair.Key;
-                    string? strValue = keyValuepair.Value;
+                    StringBuilder? strValue = keyValuepair.Value;
 
                     if (null == strValue)
                     {
@@ -113,10 +115,10 @@ namespace DotSerial.JSON.Parser
                     else if (JsonParserHelper.IsStringJsonObject(strValue))
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new DSInvalidJSONException(sb.ToString());
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Create stringbuilder for inner content
-                        StringBuilder innerSb = new (strValue);
+                        StringBuilder innerSb = strValue;
 
                         // Parse inner node
                         ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
@@ -127,13 +129,10 @@ namespace DotSerial.JSON.Parser
                     else if (JsonParserHelper.IsStringJsonList(strValue))
                     {
                         // Create list node
-                        if (_nodeFactory.CreateNode(key, null, NodeType.ListNode) is not ListNode listNode)
-                        {
-                            throw new DSInvalidJSONException(sb.ToString());
-                        }
+                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Create stringbuilder for list content
-                        StringBuilder listSb = new (strValue);
+                        StringBuilder listSb = strValue;
 
                         // Parse list node
                         ParserAccept(listNode, new JSONParserVisitor(), listSb);
@@ -142,14 +141,15 @@ namespace DotSerial.JSON.Parser
                     }
                     else
                     {
-                        var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
+                        string leafValue = strValue.ToString();
+                        var childNode = _nodeFactory.CreateNode(key, leafValue, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
                 }
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSJsonException("Parse: String is not a json object.");
             }
 
         }
@@ -160,10 +160,7 @@ namespace DotSerial.JSON.Parser
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
 
-            // Implementation for parsing list node from JSON can be added here
-            // This is a placeholder for demonstration purposes
-
-            if (JsonParserHelper.IsStringJsonList(sb.ToString()))
+            if (JsonParserHelper.IsStringJsonList(sb))
             {
                 // Check if list is list of primitive or objects
                 if (sb[1] == CommonConstants.Quote || sb[1] == CommonConstants.N)
@@ -186,10 +183,10 @@ namespace DotSerial.JSON.Parser
                         if (JsonParserHelper.IsStringJsonObject(items[i]))
                         {
                             // Create inner node
-                            var innerNode = _nodeFactory.CreateNode(i.ToString(), null, NodeType.InnerNode) as InnerNode ?? throw new DSInvalidJSONException(sb.ToString());
+                            var innerNode = _nodeFactory.CreateNode(i.ToString(), null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
 
                             // Create stringbuilder for inner content
-                            StringBuilder innerSb = new (items[i]);
+                            StringBuilder innerSb = items[i];
 
                             // Parse inner node
                             ParserAccept(innerNode, new JSONParserVisitor(), innerSb);
@@ -200,13 +197,10 @@ namespace DotSerial.JSON.Parser
                         else if (JsonParserHelper.IsStringJsonList(items[i]))
                         {
                             // Create list node
-                            if (_nodeFactory.CreateNode(i.ToString(), null, NodeType.ListNode) is not ListNode listNode)
-                            {
-                                throw new DSInvalidJSONException(sb.ToString());
-                            }
+                            var listNode = _nodeFactory.CreateNode(i.ToString(), null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
 
                             // Create stringbuilder for list content
-                            StringBuilder listSb = new (items[i]);
+                            StringBuilder listSb = items[i];
 
                             // Parse list node
                             ParserAccept(listNode, new JSONParserVisitor(), listSb);
@@ -215,14 +209,14 @@ namespace DotSerial.JSON.Parser
                         }
                         else
                         {
-                            throw new NotImplementedException();
+                            throw new DSJsonException("Parse: String is not a json object or list.");
                         }
                     }
                 }
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSJsonException("Parse: String is not a json list.");
             }
         }
 
@@ -230,6 +224,7 @@ namespace DotSerial.JSON.Parser
         public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb)
         {
             // Currenlty not needed
+            // Will be procced in the VisitInnerNode
             throw new NotImplementedException();
         }        
 

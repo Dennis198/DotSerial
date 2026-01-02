@@ -44,7 +44,7 @@ namespace DotSerial.JSON
                     throw new NotSupportedException();
                 }
 
-                var tmp = DSJsonNode.FromJsonString(content);
+                var tmp = DSJsonNode.FromString(content);
                 RootNode = tmp;
             }
             catch
@@ -64,7 +64,7 @@ namespace DotSerial.JSON
                     throw new NullReferenceException(nameof(RootNode));
                 }
 
-                var content = RootNode.ToJsonString();
+                var content = RootNode.Stringify();
 
                 if (false == SaveContentToFile(fileName, content))
                 {

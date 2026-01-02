@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Common;
+using DotSerial.Json;
 using DotSerial.JSON.Parser;
 using DotSerial.JSON.Writer;
 using DotSerial.Tree.Deserialize;
@@ -32,7 +33,7 @@ namespace DotSerial.JSON
     /// <summary>
     /// JSON Node
     /// </summary>
-    public class DSJsonNode
+    public class DSJsonNode : IDSSerialNode<DSJsonNode>
     {
         /// <summary>Internal node </summary>
         private readonly IDSNode _node;
@@ -46,14 +47,10 @@ namespace DotSerial.JSON
             _node = node;
         }
 
-        /// <summary>
-        /// Key of the node
-        /// </summary>
+        /// <inheritdoc/>
         public string Key => _node.Key;
 
-        /// <summary>
-        /// True, if node contains children
-        /// </summary>
+        /// <inheritdoc/>
         public bool HasChildren => _node.HasChildren();
 
         /// <summary>
@@ -65,21 +62,17 @@ namespace DotSerial.JSON
             return _node;
         }
 
-        /// <summary>
-        /// Returns the child with the given key, otherwise null.
-        /// </summary>
-        /// <param name="key">Key of child</param>
-        /// <returns>Child node</returns>
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
         public DSJsonNode? GetChild(string key)
         {
+            ArgumentNullException.ThrowIfNull(key);
+
             var child = _node.GetChild(key);
             return new DSJsonNode(child);
         }
 
-        /// <summary>
-        /// Returns all children of the node.
-        /// </summary>
-        /// <returns>All chidlren</returns>
+        /// <inheritdoc/>
         public List<DSJsonNode>? GetChildren()
         {
             if (false == HasChildren)
@@ -95,105 +88,149 @@ namespace DotSerial.JSON
             return children;
         }
 
-        /// <summary>
-        /// Creates the node structure for a given obj
-        /// </summary>
-        /// <param name="obj">Object</param>
-        /// <param name="key">Key of the object</param>
-        /// <returns>DSJsonNode</returns>
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
         public static DSJsonNode ToNode(object? obj, string? key = null)
         {
-            // Determine key
-            string currKey = key ?? CommonConstants.MainObjectKey;
-            
-            // Serialize object
-            var rootNode = SerializeObject.Serialize(obj, currKey);
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+                
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey);
 
-            return new DSJsonNode(rootNode);
+                return new DSJsonNode(rootNode);
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
-        /// <summary>
-        /// Converts the node to a JSON string.
-        /// </summary>
-        /// <returns>Json string</returns>
-        public string ToJsonString()
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public string Stringify()
         {
             if (null == _node)
             {
-                throw new NotImplementedException();
+                throw new DSJsonException($"{_node} can't be null.");
             }
 
-            // Convert
-            string jsonString = JSONWriterVisitor.Write(this);
-
-            return jsonString;
-        }
-
-        /// <summary>
-        /// Parses a json string to a DSJsonNode
-        /// </summary>
-        /// <param name="jsonString">Json string</param>
-        /// <returns>DSJsonNode</returns>
-        public static DSJsonNode FromJsonString(string jsonString)
-        {
-            if (string.IsNullOrWhiteSpace(jsonString))
+            try
             {
-                throw new NotImplementedException();
-            }   
+                // Convert
+                string jsonString = JSONWriterVisitor.Write(this);
 
-            var root = JSONParserVisitor.Parse(jsonString);        
-
-            return root;
-        }
-
-        /// <summary>
-        /// Deserializes a json string to an object of type U
-        /// </summary>
-        /// <param name="jsonString">Json string</param>
-        /// <typeparam name="U">Type fo the object</typeparam>
-        /// <returns>Deserilized object</returns>
-        public static U ToObject<U>(string jsonString)
-        {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new NotImplementedException();
+                return jsonString;
             }
-
-            // Parse json string to node
-            DSJsonNode dsNode = FromJsonString(jsonString);
-
-            return dsNode.ToObject<U>();
+            catch(DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }            
         }
 
-        /// <summary>
-        /// Deserializes the node to an object of type U
-        /// </summary>
-        /// <typeparam name="U">Type fo the object</typeparam>
-        /// <returns>Deserilized object</returns>
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static DSJsonNode FromString(string str)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSJsonException($"{str} can't be null or whitespace.");
+                }   
+
+                var root = JSONParserVisitor.Parse(str);        
+
+                return root;
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }             
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static U ToObject<U>(string str)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSJsonException($"{str} can't be null or whitespace.");
+                }
+
+                // Parse json string to node
+                DSJsonNode dsNode = FromString(str);
+
+                return dsNode.ToObject<U>();
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }              
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
         public U ToObject<U>()
         {
-            if (null == _node)
+            try
             {
-                throw new NotImplementedException();
-            }
+                if (null == _node)
+                {
+                    throw new DSJsonException($"{_node} can't be null.");
+                }
 
-            // Deserilize object
-            var resultObj = _node.DeserializeAccept(new DeserializeObject(), typeof(U));
+                // Deserilize object
+                var resultObj = _node.DeserializeAccept(new DeserializeObject(), typeof(U));
 
-            if (null == resultObj)
-            {
-                throw new NotImplementedException();
+                if (null == resultObj)
+                {
+                    throw new DSJsonException($"{resultObj} can't be null.");
+                }
+                
+                // cast object to U
+                if (resultObj is U result)
+                {
+                    return result;
+                }
+                else
+                {
+                    throw new DSJsonException($"{resultObj} is not of type {nameof(U)}.");
+                }  
             }
-            
-            // cast object to U
-            if (resultObj is U result)
+            catch(DotSerialException ex)
             {
-                return result;
+                throw new DSJsonException(ex.Message);
             }
-            else
+            catch
             {
-                throw new NotImplementedException();
-            }    
+                throw;
+            }               
         }        
     }
 }

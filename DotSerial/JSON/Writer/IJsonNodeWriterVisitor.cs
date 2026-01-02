@@ -26,7 +26,7 @@ using DotSerial.Tree.Nodes;
 namespace DotSerial.JSON.Writer
 {
     /// <summary>
-    /// Visitor interface for tree nodes (json).
+    /// Visitor interface for tree nodes (json writer).
     /// </summary>
     public interface IJsonNodeWriterVisitor
     {

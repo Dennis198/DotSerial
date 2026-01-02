@@ -21,6 +21,7 @@
 #endregion
 
 using System.Text;
+
 using DotSerial.Common;
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
@@ -85,26 +86,10 @@ namespace DotSerial.JSON.Writer
 
             int level = options.Level;
 
-            // Maku sure that key/value pair is in new line
-            sb.AppendLine();
-
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-
             string key = node.Key;
             string? value = node.GetValue();
 
-            if (null == value)
-            {
-                sb.AppendFormat("\"{0}\": null,", key);
-            }
-            else if (value == string.Empty)
-            {
-                sb.AppendFormat("\"{0}\": \"\",", key);
-            }
-            else
-            {
-                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
-            }
+            JsonWriterHelper.AddKeyValuePair(sb, key, value, level);
         }
 
         /// <inheritdoc/>
@@ -123,13 +108,11 @@ namespace DotSerial.JSON.Writer
                 }
                 else
                 {
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.AppendLine();
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
                 
-
                 var children = node.GetChildren();
                 foreach(var keyValue in children)
                 {
@@ -144,9 +127,7 @@ namespace DotSerial.JSON.Writer
             else
             {
                 // Empty node
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("{},");
+                JsonWriterHelper.AddEmptyObject(sb, level);
             }
         }
 
@@ -188,8 +169,8 @@ namespace DotSerial.JSON.Writer
                     sb2.Remove(sb2.Length - 1, 1);
                     sb2.AppendLine();
                     WriteMethods.AddIndentation(sb2, level, JsonConstants.IndentationSize);
-                    sb2.Append(JsonConstants.ListEnd + ",");
-
+                    sb2.Append(JsonConstants.ListEnd);
+                    sb2.Append(CommonConstants.Comma);
 
                     sb.Append(sb2);
 
@@ -225,22 +206,20 @@ namespace DotSerial.JSON.Writer
                             sb.Append(CommonConstants.Quote);
                         }
 
-                        sb.Append(", ");
+                        sb.Append(CommonConstants.CommaAndWhiteSpace);
                     }
 
                     // Remove last ", "
                     sb.Remove(sb.Length - 2, 2);
 
                     sb.Append(JsonConstants.ListEnd);
-                    sb.Append(',');
+                    sb.Append(CommonConstants.Comma);
                 }
             }
             else
             {
                 // Empty list
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("[],");
+                JsonWriterHelper.AddEmptyList(sb, level);
             }
         }
 
@@ -262,8 +241,6 @@ namespace DotSerial.JSON.Writer
                 else
                 {
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                    sb.AppendLine();
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
@@ -282,19 +259,15 @@ namespace DotSerial.JSON.Writer
                 if (options.AddKey)
                 {
                     // Empty node
-                    sb.AppendLine();
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                    sb.AppendFormat("\"{0}\": {{}},", node.Key);
+                    JsonWriterHelper.AddEmptyObject(sb, level, node.Key);
                 }
                 else
                 {
                     // Empty node
-                    sb.AppendLine();
-                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                    sb.Append("{},");
+                    JsonWriterHelper.AddEmptyObject(sb, level);
                 }
-
             }
         }
+
     }
 }

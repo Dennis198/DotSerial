@@ -26,7 +26,7 @@ using DotSerial.Tree.Nodes;
 namespace DotSerial.JSON.Parser
 {
     /// <summary>
-    /// Visitor interface for tree nodes (json).
+    /// Visitor interface for tree nodes (json parser).
     /// </summary>
     public interface IJsonNodeParserVisitor
     {

@@ -21,6 +21,7 @@
 #endregion
 
 using System.Text;
+using DotSerial.Common;
 using DotSerial.Utilities;
 
 namespace DotSerial.JSON.Writer
@@ -70,8 +71,84 @@ namespace DotSerial.JSON.Writer
             }
             else
             {
-                sb.Append(JsonConstants.ObjectEnd + ",");
+                sb.Append(JsonConstants.ObjectEnd);
+                sb.Append(CommonConstants.Comma);
             }
+        }
+
+        /// <summary>
+        /// Add a key value pair
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Level</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+            }
+
+            // Maku sure that key/value pair is in new line
+            sb.AppendLine();
+
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+
+            if (null == value)
+            {
+                sb.AppendFormat("\"{0}\": null,", key);
+            }
+            else if (value == string.Empty)
+            {
+                sb.AppendFormat("\"{0}\": \"\",", key);
+            }
+            else
+            {
+                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
+            }
+        }   
+
+        /// <summary>
+        /// Add empty Object
+        /// </summary>
+        /// <param name="sb"Stringbuilder></param>
+        /// <param name="level">Level</param>
+        /// <param name="Key">Key</param>
+        internal static void AddEmptyObject(StringBuilder sb, int level, string? key = null)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                sb.Append("{},");            
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                sb.AppendFormat("\"{0}\": {{}},", key);
+            }
+
+        }        
+
+        /// <summary>
+        /// Add empty list
+        /// </summary>
+        /// <param name="sb"Stringbuilder></param>
+        /// <param name="level">Level</param>
+        internal static void AddEmptyList(StringBuilder sb, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            sb.AppendLine();
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+            sb.Append("[],");
         }
     }
 }
