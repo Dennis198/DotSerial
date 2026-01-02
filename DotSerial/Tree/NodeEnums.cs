@@ -22,6 +22,9 @@
 
 namespace DotSerial.Tree
 {
+    /// <summary>
+    /// Type of the node
+    /// </summary>
     public enum NodeType
     {
         Leaf = 0,
