@@ -22,6 +22,7 @@
 
 using System.Collections;
 using System.Collections.ObjectModel;
+using DotSerial.Common;
 using DotSerial.Core.Exceptions;
 using DotSerial.YAML;
 
@@ -432,7 +433,7 @@ namespace DotSerial.Tests.YAML
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -442,7 +443,7 @@ namespace DotSerial.Tests.YAML
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -452,7 +453,7 @@ namespace DotSerial.Tests.YAML
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -465,7 +466,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -478,7 +479,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -491,7 +492,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -504,7 +505,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -517,7 +518,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -530,7 +531,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -543,7 +544,7 @@ namespace DotSerial.Tests.YAML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]

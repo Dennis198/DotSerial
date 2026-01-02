@@ -1,12 +1,38 @@
+#region License
+//Copyright (c) 2026 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using System.Collections;
 using System.Reflection;
-using DotSerial.Core.Exceptions;
+
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
 using DotSerial.XML;
+using DotSerial.Common;
 
 namespace DotSerial.Tree.Serialize
 {
+    /// <summary>
+    /// Class for serialization of an object
+    /// </summary>
     public class SerializeObject
     {
         /// <summary>
@@ -17,10 +43,70 @@ namespace DotSerial.Tree.Serialize
         /// <summary>
         /// Serialize object
         /// </summary>
-        /// <param name="classObj">Object</param>
+        /// <param name="obj">Object</param>
         /// <param name="objectID">Object-ID</param>
-        /// <returns>DSNode</returns>
-        internal static IDSNode Serialize(object? classObj, string objectID)
+        /// <returns>Node</returns>
+        internal static IDSNode Serialize(object? obj, string objectID)
+        {
+            ///      (node) (Class)
+            ///        |
+            ///  -------------
+            ///  |     |     |
+            /// (A)   (B)   (C) (Properties)        
+            
+            // If classObj is null, create Null node
+            if (obj == null)
+            {
+                return _nodeFactory.CreateNode(objectID, null, NodeType.Leaf);
+            }
+
+            Type typeObj = obj.GetType();
+
+            // Check if type is supported
+            if (false == DotSerialXML.IsTypeSupported(typeObj))
+            {
+                throw new DotSerialException($"Serialize: Type {typeObj} is not supported.");
+            }
+
+            IDSNode? result;
+            
+            if (TypeCheckMethods.IsPrimitive(typeObj) || TypeCheckMethods.IsSpecialParsableObject(typeObj))
+            {                
+                string? strValue = HelperMethods.PrimitiveToString(obj);
+                result = _nodeFactory.CreateNode(objectID, strValue, NodeType.Leaf);
+            }
+            else if (TypeCheckMethods.IsDictionary(typeObj))
+            {   
+                result = SerializeDictionary(obj, objectID);
+            }
+            else if (TypeCheckMethods.IsList(typeObj) || TypeCheckMethods.IsArray(typeObj))
+            {
+                result = SerializeList(obj, objectID);
+            }
+            else if (TypeCheckMethods.IsClass(typeObj) || TypeCheckMethods.IsStruct(typeObj))
+            {
+                result = SerializeClass(obj, objectID);
+            }
+            else
+            {
+                throw new DotSerialException($"Serialize: Type {typeObj} is unknown.");
+            }
+
+            if (null == result)
+            {
+                throw new DotSerialException($"Serialize: {result} can't be null.");
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Serialize class object
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <param name="objectID">Object-ID</param>
+        /// <returns>Node</returns>
+        private static IDSNode SerializeClass(object? classObj, string objectID)
         {
             ///      (node) (Class)
             ///        |
@@ -57,14 +143,14 @@ namespace DotSerial.Tree.Serialize
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new DSNotSupportedTypeException(prop.PropertyType);
+                        throw new DotSerialException($"Serialize: Type {prop.PropertyType} is not supported.");
                     }
 
                     // Check if id was already used.
                     // If yes throw exception.
                     if (dicIdName.ContainsKey(id))
                     {
-                        throw new DSDuplicateIDException(id);
+                        throw new DotSerialException($"Serialize: Duplicate id: {id}.");
                     }
 
                     // Get Value of property
@@ -101,16 +187,12 @@ namespace DotSerial.Tree.Serialize
                     else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
-                        var childNode = Serialize(value, idString);
+                        var childNode = SerializeClass(value, idString);
                         result.AddChild(childNode);
-                    }
-                    else if (value == null)
-                    {
-                        throw new NotImplementedException();
                     }
                     else
                     {
-                        throw new DSNotSupportedTypeException(prop.PropertyType);
+                        throw new DotSerialException($"Serialize: Type {prop.PropertyType} is unknown.");
                     }
                 }
             }
@@ -150,12 +232,12 @@ namespace DotSerial.Tree.Serialize
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(keyType))
                     {
-                        throw new DSNotSupportedTypeException(keyType);
+                        throw new DotSerialException($"Serialize: Type {keyType} is not supported.");
                     }
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(valueType))
                     {
-                        throw new DSNotSupportedTypeException(valueType);
+                        throw new DotSerialException($"Serialize: Type {valueType} is not supported.");
                     }
 
                     foreach (DictionaryEntry keyValuePair in castedDic)
@@ -177,24 +259,16 @@ namespace DotSerial.Tree.Serialize
                             TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
                             keyString = HelperMethods.PrimitiveToString(key);
-                            // string? tmpKey = HelperMethods.PrimitiveToString(key);
-                            // if (tmpKey == null)
-                            // {
-                            //     throw new ArgumentException(tmpKey);
-                            // }
-                            // keyValuepair = _nodeFactory.CreateNode(tmpKey, null, NodeType.InnerNode);
                         }
                         else
                         {
-                            throw new DSNotSupportedTypeException(valueType);
+                            throw new DotSerialException($"Serialize: Key type must be primitive for dictionary but was {keyType}.");
                         }
 
                         if (null == keyString)
                         {
-                            throw new ArgumentException(keyString);
+                            throw new DotSerialException($"Serialize: Key can't be null.");
                         }
-
-                        // string? keyString = keyValuepair.Key;
 
                         #endregion
 
@@ -217,20 +291,11 @@ namespace DotSerial.Tree.Serialize
                             {
                                 if (GetTypeMethods.GetKeyValueTypeOfDictionary(dic, out Type innerKeyType, out Type _))
                                 {
-                                    if (!TypeCheckMethods.IsPrimitive(keyType) &&
-                                        !TypeCheckMethods.IsSpecialParsableObject(keyType))
-                                    {
-                                        throw new DSNotSupportedTypeException(valueType);
-                                    }
 
                                     keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.DictionaryNode);
                                     foreach (DictionaryEntry str in castedValue)
                                     {
-                                        string? innerDicID = HelperMethods.PrimitiveToString(str.Key);
-                                        if (innerDicID == null)
-                                        {
-                                            throw new ArgumentException(innerDicID);
-                                        }
+                                        string? innerDicID = HelperMethods.PrimitiveToString(str.Key) ?? throw new DotSerialException($"Serialize: Can't convert {str.Key} to string.");
                                         var childNode = SerializeDictionary(str, innerDicID);
                                         keyValue.AddChild(childNode);
                                     }
@@ -271,21 +336,15 @@ namespace DotSerial.Tree.Serialize
                         else if (TypeCheckMethods.IsClass(valueType) ||
                                  TypeCheckMethods.IsStruct(valueType))
                         {
-                            // Class || Struct
-                            // keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.InnerNode);
-                            // var classNode = Serialize2(value, keyString);
-                            // keyValue.AddChild(classNode);
-
-                            keyValue = Serialize(value, keyString);
+                            keyValue = SerializeClass(value, keyString);
                         }
                         else
                         {
-                            throw new DSNotSupportedTypeException(valueType);
+                            throw new DotSerialException($"Serialize: Type {valueType} is unknown.");
                         }
 
                         #endregion
 
-                        // keyValuepair.AddChild(keyValue);
                         result.AddChild(keyValue);
                     }
 
@@ -332,7 +391,7 @@ namespace DotSerial.Tree.Serialize
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(type))
                 {
-                    throw new DSNotSupportedTypeException(type);
+                    throw new DotSerialException($"Serialize: Type {type} is not supported.");
                 }
 
                 if (TypeCheckMethods.IsPrimitive(type) || TypeCheckMethods.IsSpecialParsableObject(type))
@@ -381,14 +440,14 @@ namespace DotSerial.Tree.Serialize
                     foreach (var entry in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = Serialize(entry, listIDString);
+                        var childNode = SerializeClass(entry, listIDString);
                         result.AddChild(childNode);
                         listID++;
                     }
                 }
                 else
                 {
-                    throw new DSNotSupportedTypeException(type);
+                    throw new DotSerialException($"Serialize: Type {type} is unknown.");
                 }
 
                 return result;

@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Common;
 using DotSerial.Core.Exceptions;
 using DotSerial.JSON;
 using System.Collections;
@@ -378,7 +379,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -388,7 +389,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -398,7 +399,7 @@ namespace DotSerial.Tests.Core.JSON
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -411,7 +412,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -424,7 +425,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -437,7 +438,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -450,7 +451,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -463,7 +464,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -476,7 +477,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]
@@ -489,7 +490,7 @@ namespace DotSerial.Tests.Core.JSON
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Fact]

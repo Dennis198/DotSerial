@@ -438,7 +438,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -448,7 +448,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -458,7 +458,7 @@ namespace DotSerial.Tests.Core.General
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -471,7 +471,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -484,7 +484,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -497,7 +497,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -510,7 +510,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -523,7 +523,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -536,7 +536,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
@@ -549,7 +549,7 @@ namespace DotSerial.Tests.Core.General
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
         [Fact]
