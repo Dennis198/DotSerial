@@ -22,6 +22,7 @@
 
 using System.Collections;
 using System.Collections.ObjectModel;
+using DotSerial.Common;
 using DotSerial.Core.Exceptions;
 using DotSerial.XML;
 
@@ -434,7 +435,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DSDuplicateIDException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -444,7 +445,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -454,7 +455,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -467,7 +468,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -480,7 +481,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -493,7 +494,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -506,7 +507,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -519,7 +520,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -532,7 +533,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -545,7 +546,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DSNotSupportedTypeException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Fact]
@@ -565,7 +566,7 @@ namespace DotSerial.Tests.Core.XML
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
         }
 
         [Theory]

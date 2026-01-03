@@ -39,13 +39,13 @@ namespace DotSerial.Tests
     /// </summary>
     public class ExampleClass : ITestable<ExampleClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
 
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Number { get; set; }
 
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public string? Text { get; set; }
 
         public static ExampleClass CreateTestDefault()
@@ -86,9 +86,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class NoAttributeClass : ITestable<NoAttributeClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public bool Boolean { get; set; }
 
         public bool BooleanNoAttribute { get; set; }
@@ -137,15 +137,15 @@ namespace DotSerial.Tests
 
     public class AccessModifierClass : ITestable<AccessModifierClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int PublicBoolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         private int PrivateBoolean { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         internal int InternalBoolean { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         protected int ProtectedBoolean { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public static int StaticBoolean { get; set; }
 
         public static AccessModifierClass CreateTestDefault()
@@ -181,41 +181,41 @@ namespace DotSerial.Tests
     /// </summary>
     public class NullClass : ITestable<NullClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public SimpleClass? SimpleClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public SimpleClass[]? Array { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public List<SimpleClass>? List { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public SimpleClass?[]? ArrayWithNulls { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public List<SimpleClass>? ListWithNulls { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public string? String { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public bool[]? BooleanArray { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<bool>? BooleanList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public string[]? StringArray { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<string>? StringList { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public string?[]? StringArrayWithNulls { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<string>? StringListWithNulls { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public TestEnum[]? EnumArray { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<TestEnum>? EnumList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public Dictionary<int, SimpleClass>? Dictionary { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public string? StringAsText { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public string? StringEmpty { get; set; }
 
         public static NullClass CreateTestDefault()
@@ -335,7 +335,7 @@ namespace DotSerial.Tests
     /// </summary>
     public class SimpleClass : ITestable<SimpleClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
 
         public static SimpleClass CreateTestDefault()
@@ -366,11 +366,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class IEnumerableClass : ITestable<IEnumerableClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public SimpleClass[]? Array { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<SimpleClass>? List { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public Dictionary<int, SimpleClass>? Dic { get; set; }
 
         public static IEnumerableClass CreateTestDefault()
@@ -447,9 +447,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class NestedClass() : ITestable<NestedClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public bool Boolean { get; set; }
 
         public static NestedClass CreateTestDefault()
@@ -481,11 +481,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class NestedNestedClass() : ITestable<NestedNestedClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public NestedClass? NestedClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public bool Boolean { get; set; }
 
         public static NestedNestedClass CreateTestDefault()
@@ -520,39 +520,39 @@ namespace DotSerial.Tests
     /// </summary>
     public class PrimitiveClass : ITestable<PrimitiveClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public byte Byte { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public sbyte SByte { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public char Char { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public decimal Decimal { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public double Double { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public float Float { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public int Int { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public uint UInt { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public nint NInt { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public nuint NUInt { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public long Long { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public ulong ULong { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public short Short { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public ushort UShort { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public string? String { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public TestEnum Enum { get; set; }        
 
         public static PrimitiveClass CreateTestDefault()
@@ -631,73 +631,73 @@ namespace DotSerial.Tests
     /// </summary>
     public class PrimitiveClassIEnumarable : ITestable<PrimitiveClassIEnumarable>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool[]? Boolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<bool>? BooleanList { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public byte[]? Byte { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public List<byte>? ByteList { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public sbyte[]? SByte { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public List<sbyte>? SByteList { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public char[]? Char { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<char>? CharList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public decimal[]? Decimal { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<decimal>? DecimalList { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public double[]? Double { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<double>? DoubleList { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public float[]? Float { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<float>? FloatList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public int[]? Int { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public List<int>? IntList { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public uint[]? UInt { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public List<uint>? UIntList { get; set; }
-        [DSPropertyID(18)]
+        [DotSerialName("18")]
         public nint[]? NInt { get; set; }
-        [DSPropertyID(19)]
+        [DotSerialName("19")]
         public List<nint>? NIntList { get; set; }
-        [DSPropertyID(20)]
+        [DotSerialName("20")]
         public nuint[]? NUInt { get; set; }
-        [DSPropertyID(21)]
+        [DotSerialName("21")]
         public List<nuint>? NUIntList { get; set; }
-        [DSPropertyID(22)]
+        [DotSerialName("22")]
         public long[]? Long { get; set; }
-        [DSPropertyID(23)]
+        [DotSerialName("23")]
         public List<long>? LongList { get; set; }
-        [DSPropertyID(24)]
+        [DotSerialName("24")]
         public ulong[]? ULong { get; set; }
-        [DSPropertyID(25)]
+        [DotSerialName("25")]
         public List<ulong>? ULongList { get; set; }
-        [DSPropertyID(26)]
+        [DotSerialName("26")]
         public short[]? Short { get; set; }
-        [DSPropertyID(27)]
+        [DotSerialName("27")]
         public List<short>? ShortList { get; set; }
-        [DSPropertyID(28)]
+        [DotSerialName("28")]
         public ushort[]? UShort { get; set; }
-        [DSPropertyID(29)]
+        [DotSerialName("29")]
         public List<ushort>? UShortList { get; set; }
-        [DSPropertyID(30)]
+        [DotSerialName("30")]
         public string[]? String { get; set; }
-        [DSPropertyID(31)]
+        [DotSerialName("31")]
         public List<string>? StringList { get; set; }
-        [DSPropertyID(32)]
+        [DotSerialName("32")]
         public TestEnum[]? Enum { get; set; }
-        [DSPropertyID(33)]
+        [DotSerialName("33")]
         public List<TestEnum>? EnumList { get; set; }
 
         public static PrimitiveClassIEnumarable CreateTestDefault()
@@ -1097,56 +1097,56 @@ namespace DotSerial.Tests
     /// </summary>
     public class MultiDimClassIEnumarble : ITestable<MultiDimClassIEnumarble>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int[][]? Int { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<List<int>>? IntList{ get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public int[][][]? IntThree { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public List<List<List<int>>>? IntListThree { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public List<int>[]? IntMix { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public List<int[]>? IntListMix { get; set; }
 
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public string[][]? String { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<List<string>>? StringList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public string[][][]? StringThree { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<List<List<string>>>? StringListThree { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public List<string>[]? StringMix { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<string[]>? StringListMix { get; set; }
 
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public PrimitiveClass[][]? PrimitiveClassArray { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<List<PrimitiveClass>>? PrimitiveClassList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public PrimitiveClass[][][]? PrimitiveClassArrayThree { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public List<List<List<PrimitiveClass>>>? PrimitiveClassListThree { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public List<PrimitiveClass>[]? PrimitiveClassArrayMix { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public List<PrimitiveClass[]>? PrimitiveClassListMix { get; set; }
 
-        [DSPropertyID(18)]
+        [DotSerialName("18")]
         public TestEnum[][]? Enum { get; set; }
-        [DSPropertyID(19)]
+        [DotSerialName("19")]
         public List<List<TestEnum>>? EnumList { get; set; }
-        [DSPropertyID(20)]
+        [DotSerialName("20")]
         public TestEnum[][][]? EnumThree { get; set; }
-        [DSPropertyID(21)]
+        [DotSerialName("21")]
         public List<List<List<TestEnum>>>? EnumListThree { get; set; }
-        [DSPropertyID(22)]
+        [DotSerialName("22")]
         public List<TestEnum>[]? EnumMix { get; set; }
-        [DSPropertyID(23)]
+        [DotSerialName("23")]
         public List<TestEnum[]>? EnumListMix { get; set; }
         
         public static MultiDimClassIEnumarble CreateTestDefault()
@@ -1368,17 +1368,17 @@ namespace DotSerial.Tests
     /// </summary>
     public class DictionaryClass() : ITestable<DictionaryClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public Dictionary<int, int>? DicIntInt { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public Dictionary<int, string?>? DicIntString { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public Dictionary<string, int>? DicStringInt { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public Dictionary<string, string>? DicStringString { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public Dictionary<string, string>? DicEmpty { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public Dictionary<string, string>? DicNull { get; set; }
 
         public static DictionaryClass CreateTestDefault()
@@ -1496,13 +1496,13 @@ namespace DotSerial.Tests
     /// </summary>
     public class EnumClass() : ITestable<EnumClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestEnum TestEnum0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestEnum TestEnum1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestEnum TestEnum2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestEnum[]? TestEnumArray { get; set; }
 
         public static EnumClass CreateTestDefault()
@@ -1542,15 +1542,15 @@ namespace DotSerial.Tests
 
     public class DateTimeClass() : ITestable<DateTimeClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public DateTime Date1 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public DateTime Date2 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public DateTime Date3 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public DateTime[]? DateArray { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public Dictionary<int, DateTime>? DateDic { get; set; }
 
         public static DateTimeClass CreateTestDefault()
@@ -1612,13 +1612,13 @@ namespace DotSerial.Tests
     /// </summary>
     public class StructClass() : ITestable<StructClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestStruct TestStruct0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestStruct TestStruct1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestStruct TestStruct2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestStruct[]? TestStructArray { get; set; }
 
         public static StructClass CreateTestDefault()
@@ -1670,9 +1670,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class DuplicateIDClass
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public int Value0 { get; set; }
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public int Value1 { get; set; }
     }
 
@@ -1681,7 +1681,7 @@ namespace DotSerial.Tests
     /// </summary>
     public class InvalidIDClass()
     {
-        [DSPropertyID(-1)]
+        [DotSerialName("")]
         public int Value0 { get; set; }
     }
 
@@ -1690,13 +1690,13 @@ namespace DotSerial.Tests
     /// </summary>
     public class RecordClass() : ITestable<RecordClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestRecord? TestRecord0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestRecord? TestRecord1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestRecord? TestRecord2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestRecord[]? TestRecordArray { get; set; }
 
         public static RecordClass CreateTestDefault()
@@ -1747,19 +1747,19 @@ namespace DotSerial.Tests
     /// </summary>
     public class ParsableClass() : ITestable<ParsableClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public DateTime DateTime0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public Guid Guid0 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TimeSpan TimeSpan0 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public Uri? Uri0 { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public IPAddress? IPAddress0 { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public Version? Version0 { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
 
         public CultureInfo? CultureInfo0 { get; set; }
 
@@ -1807,11 +1807,11 @@ namespace DotSerial.Tests
     /// </summary>
     public class PathClass : ITestable<PathClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public string? Path1 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public string? Path2 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public string? Path3 { get; set; }
 
         public static PathClass CreateTestDefault()
@@ -1845,7 +1845,7 @@ namespace DotSerial.Tests
     /// </summary>
     public class ClassWithoutParameterlessConstructor(string name) : ITestable<ClassWithoutParameterlessConstructor>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public string Name { get; set; } = name;
 
         public static ClassWithoutParameterlessConstructor CreateTestDefault()
@@ -1870,7 +1870,7 @@ namespace DotSerial.Tests
     /// </summary>
     public class ClassRecordNoParameterlessConstructor : ITestable<ClassRecordNoParameterlessConstructor>
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public TestRecordNoParameterlessConstructor? Value0 { get; set; }
 
         public static ClassRecordNoParameterlessConstructor CreateTestDefault()
@@ -1915,9 +1915,9 @@ namespace DotSerial.Tests
     /// </summary>
     public struct TestStruct(int x, int y)
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; } = x;
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; } = y;
     }
 
@@ -1926,9 +1926,9 @@ namespace DotSerial.Tests
     /// </summary>
     public record TestRecord
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; }
 
         public TestRecord()
@@ -1946,9 +1946,9 @@ namespace DotSerial.Tests
     /// </summary>
     public record TestRecordNoParameterlessConstructor
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; }
 
         public TestRecordNoParameterlessConstructor(int x, int y)
@@ -1964,49 +1964,49 @@ namespace DotSerial.Tests
 
     public class HashSetClassNotSupported
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public HashSet<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassHashTable
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassStack
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Stack<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassQueue
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Queue<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassLinkedList
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public LinkedList<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassObservableCollection
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public ObservableCollection<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassSortedList
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public SortedList<int, int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassSortedSet
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public SortedSet<int>? Value0 { get; set; }
     }
 

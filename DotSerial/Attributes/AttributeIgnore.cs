@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,16 +20,12 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Attributes;
+namespace DotSerial.Attributes
+{ 
+    /// <summary> Parameter ignore (Property)
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple =false)]
+    public class DotSerialIgnoreAttribute() : Attribute
+    {}
 
-namespace DotSerial.Core.Exceptions
-{
-    [Serializable()]
-    public class DSInvalidIDException : Exception
-    {
-        public DSInvalidIDException() : base(string.Format("Invalid {0} id.", nameof(DSPropertyIDAttribute))) { }
-
-        public DSInvalidIDException(int id) : base(string.Format("Invalid {0} value. ({1})", nameof(DSPropertyIDAttribute), id))
-        { }
-    }
 }

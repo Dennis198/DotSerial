@@ -510,7 +510,7 @@ namespace DotSerial.Tests.Core.JSON
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DotSerialJSON.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialJSON.Serialize(tmp));
         }
 
         [Theory]

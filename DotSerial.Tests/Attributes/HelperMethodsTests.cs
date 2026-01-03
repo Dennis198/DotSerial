@@ -27,7 +27,7 @@ namespace DotSerial.Tests.Attributes
     public class HelperMethodsTests
     {
         [Fact]
-        public void GetPropertyID_True()
+        public void GetCustomPropertyName_True()
         {
             // Arrange
             NoAttributeClass tmp = new ();            
@@ -38,17 +38,17 @@ namespace DotSerial.Tests.Attributes
                 if (prop.Name == nameof(NoAttributeClass.Boolean))
                 {
                     // Act
-                    int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
+                    string? id = DotSerial.Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
                     // Assert
-                    Assert.Equal(1, id);
+                    Assert.Equal("1", id);
                     return;
                 }
             }
         }
 
         [Fact]
-        public void GetPropertyID_False()
+        public void GetCustomPropertyName_False()
         {
             // Arrange
             NoAttributeClass tmp = new ();
@@ -59,10 +59,10 @@ namespace DotSerial.Tests.Attributes
                 if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
                 {
                     //Act
-                    int id = DotSerial.Attributes.HelperMethods.GetPropertyID(prop);
+                    string? id = DotSerial.Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
                     // Assert
-                    Assert.Equal(-1, id);
+                    Assert.Null(id);
                     return;
                 }
             }

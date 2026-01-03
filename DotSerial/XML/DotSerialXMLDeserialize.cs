@@ -56,9 +56,9 @@ namespace DotSerial.XML
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                int id = Attributes.HelperMethods.GetPropertyID(prop);
+                string? dsPropName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
-                if (XmlConstants.NoAttributeID != id)
+                if (null != dsPropName)
                 {
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
@@ -74,14 +74,10 @@ namespace DotSerial.XML
                         }
 
                         // Read AttribteID from xmlnode and cast it to int.
-                        string? t = para.Attributes[XmlConstants.XmlAttributeID]?.Value;
-                        if (false == int.TryParse(t, out int idXML))
-                        {
-                            throw new InvalidCastException("ID could not be deserialized.");
-                        }
+                        string? xmlName = para.Attributes[XmlConstants.XmlAttributeID]?.Value;
 
                         // If AttributeID and ID from xml node match => deserialze.
-                        if (id == idXML)
+                        if (dsPropName == xmlName)
                         {
                             if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                             {

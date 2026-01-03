@@ -127,7 +127,7 @@ namespace DotSerial.Tree.Serialize
 
             // Create datastructur to check if every id in a class is only
             // used once.
-            Dictionary<int, string> dicIdName = [];
+            Dictionary<string, string> dicIdName = [];
 
             // Get all Properties and iterate threw
             PropertyInfo[] props = typeObj.GetProperties();
@@ -135,10 +135,10 @@ namespace DotSerial.Tree.Serialize
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                int id = Attributes.HelperMethods.GetPropertyID(prop);
+                string? dsPropName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
                 // Check if property got the attribute
-                if (-1 != id)
+                if (null != dsPropName)
                 {
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
@@ -148,9 +148,9 @@ namespace DotSerial.Tree.Serialize
 
                     // Check if id was already used.
                     // If yes throw exception.
-                    if (dicIdName.ContainsKey(id))
+                    if (dicIdName.ContainsKey(dsPropName))
                     {
-                        throw new DotSerialException($"Serialize: Duplicate id: {id}.");
+                        throw new DotSerialException($"Serialize: Duplicate id: {dsPropName}.");
                     }
 
                     // Get Value of property
@@ -159,21 +159,19 @@ namespace DotSerial.Tree.Serialize
                     string propName = prop.Name;
 
                     // Add ID and prop name to datastrcuture.
-                    dicIdName.Add(id, propName);
-
-                    string idString = id.ToString();
+                    dicIdName.Add(dsPropName, propName);                    
 
                     if (TypeCheckMethods.IsPrimitive(prop.PropertyType) || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         // Primitive types || String
                         string? strValue = HelperMethods.PrimitiveToString(value);
-                        var childNode = _nodeFactory.CreateNode(idString, strValue, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNode(dsPropName, strValue, NodeType.Leaf);
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                     {
                         // Dictionary
-                        var childNode = SerializeDictionary(value, idString);
+                        var childNode = SerializeDictionary(value, dsPropName);
                         result.AddChild(childNode);
 
                     }
@@ -181,13 +179,13 @@ namespace DotSerial.Tree.Serialize
                              TypeCheckMethods.IsArray(prop.PropertyType))
                     {
                         // List || Array
-                        var childNode = SerializeList(value, idString);
+                        var childNode = SerializeList(value, dsPropName);
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
-                        var childNode = SerializeClass(value, idString);
+                        var childNode = SerializeClass(value, dsPropName);
                         result.AddChild(childNode);
                     }
                     else

@@ -83,9 +83,9 @@ namespace DotSerial.Tree.Deserialize
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                int id = Attributes.HelperMethods.GetPropertyID(prop);
+                string? propDSName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
-                if (-1 != id)
+                if (null != propDSName)
                 {
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
@@ -93,7 +93,7 @@ namespace DotSerial.Tree.Deserialize
                         throw new NotImplementedException();
                     }
 
-                    var child = node.GetChild(id.ToString());
+                    var child = node.GetChild(propDSName);
 
                     // Special case: In must formats (json, yaml, ..) there is no
                     // difference in classes or dictionarys when parsing. So
@@ -111,7 +111,7 @@ namespace DotSerial.Tree.Deserialize
 
                     if (null == child)
                     {
-                        throw new DotSerialException($"Deserialize: Child with ID {id} not found in node {node.Key}");
+                        throw new DotSerialException($"Deserialize: Child with ID {propDSName} not found in node {node.Key}");
                     }                    
 
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);

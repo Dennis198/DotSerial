@@ -70,28 +70,29 @@ namespace DotSerial.Utilities
         {
             return i == 1;
         }
+        
+        // TODO
+        // internal static PropertyInfo? GetPropertyInfoByName(Type type, string propertyName)
+        // {
+        //     ArgumentNullException.ThrowIfNull(type);
+        //     ArgumentNullException.ThrowIfNull(propertyName);
 
-        internal static PropertyInfo? GetPropertyInfoByName(Type type, string propertyName)
-        {
-            ArgumentNullException.ThrowIfNull(type);
-            ArgumentNullException.ThrowIfNull(propertyName);
+        //     PropertyInfo[] props = type.GetProperties();
 
-            PropertyInfo[] props = type.GetProperties();
+        //     foreach (var prop in props)
+        //     {
+        //         // Get ID attribute
+        //         int id = Attributes.AttributesMethods.GetPropertyID(prop);
 
-            foreach (var prop in props)
-            {
-                // Get ID attribute
-                int id = Attributes.HelperMethods.GetPropertyID(prop);
+        //         if (XmlConstants.NoAttributeID != id)
+        //         {
+        //             return prop;
+        //         }
+        //     }
 
-                if (XmlConstants.NoAttributeID != id)
-                {
-                    return prop;
-                }
-            }
-
-            PropertyInfo? propInfo = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-            return propInfo;
-        }
+        //     PropertyInfo? propInfo = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        //     return propInfo;
+        // }
 
         /// <summary>
         /// Converts primitive to string

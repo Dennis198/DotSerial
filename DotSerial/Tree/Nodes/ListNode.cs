@@ -25,7 +25,7 @@ using DotSerial.Tree.Deserialize;
 namespace DotSerial.Tree.Nodes
 {
     /// <summary>
-    /// Liist node
+    /// List node
     /// </summary>
     /// <param name="wrappedNode">Wrapped node</param>
     public class ListNode(IDSNode wrappedNode) : InnerNodeDecorater(wrappedNode)

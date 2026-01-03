@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,16 +20,18 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Attributes;
-
-namespace DotSerial.Core.Exceptions
-{
-    [Serializable()]
-    public class DSDuplicateIDException : Exception
+namespace DotSerial.Attributes
+{ 
+    /// <summary> Parameter name (Property)
+    /// </summary>
+    /// <param name="name">Custom name for the property</param>
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    public class DotSerialNameAttribute(string name) : Attribute
     {
-        public DSDuplicateIDException() : base(string.Format("{0} must be unique within an object", nameof(DSPropertyIDAttribute))) { }
-
-        public DSDuplicateIDException(int id) : base(string.Format("{0} {1} must not exist more than once inside an object.", nameof(DSPropertyIDAttribute), id))
-        {}
+        /// <summary>
+        /// Custom name of the property.
+        /// </summary>
+        public string Name { get; private set; } = name;
     }
+
 }

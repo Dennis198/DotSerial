@@ -92,7 +92,7 @@ namespace DotSerial.XML
         /// <summary>
         /// MainObject ID
         /// </summary>
-        public const int MainObjectID = 0;
+        public const string MainObjectID = "0";
         /// <summary>
         /// ID for property without id
         /// </summary>
@@ -100,11 +100,11 @@ namespace DotSerial.XML
         /// <summary>
         /// ID for key in dictionary
         /// </summary>
-        public const int DicKeyID = 0;
+        public const string DicKeyID = "0";
         /// <summary>
         /// ID for key in value
         /// </summary>
-        public const int DicKeyValueID = 1;
+        public const string DicKeyValueID = "1";
 
         #endregion       
     }

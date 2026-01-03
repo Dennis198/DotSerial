@@ -559,7 +559,7 @@ namespace DotSerial.Tests.Core.General
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
         }
 
     }

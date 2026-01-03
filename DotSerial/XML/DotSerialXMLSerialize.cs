@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Common;
 using DotSerial.Core.Exceptions;
 using DotSerial.Utilities;
 using System.Collections;
@@ -37,7 +38,7 @@ namespace DotSerial.XML
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
         /// <param name="objectID">ObjectID</param>
-        internal static void Serialize(object? classObj, XmlDocument xmlDoc, XmlNode xnode, int objectID)
+        internal static void Serialize(object? classObj, XmlDocument xmlDoc, XmlNode xnode, string objectID)
         {
             // If classObj is null, create empty node
             if (classObj == null)
@@ -57,7 +58,7 @@ namespace DotSerial.XML
 
             // Create datastructur to check if every id in a class is only
             // used once.
-            Dictionary<int, string> dicIdName = [];
+            Dictionary<string, string> dicIdName = [];
 
             // Get all Properties and iterate threw
             PropertyInfo[] props = typeObj.GetProperties();
@@ -65,22 +66,22 @@ namespace DotSerial.XML
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                int id = Attributes.HelperMethods.GetPropertyID(prop);
+                string? dsPropName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
 
                 // Check if property got the attribute
-                if (XmlConstants.NoAttributeID != id)
+                if (null != dsPropName)
                 {
                     // Check if type is supported
                     if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new DSNotSupportedTypeException(prop.PropertyType);
+                        throw new DotSerialException($"Serialize: Type {prop.PropertyType} is not supported.");
                     }
 
                     // Check if id was already used.
                     // If yes throw exception.
-                    if (dicIdName.ContainsKey(id))
+                    if (dicIdName.ContainsKey(dsPropName))
                     {
-                        throw new DSDuplicateIDException(id);
+                        throw new DotSerialException($"Serialize: Duplicate id: {dsPropName}.");
                     }
 
                     // Get Value of property
@@ -89,19 +90,19 @@ namespace DotSerial.XML
                     string propName = prop.Name;
 
                     // Add ID and prop name to datastrcuture.
-                    dicIdName.Add(id, propName);
+                    dicIdName.Add(dsPropName, propName);
 
                     if (null == value)
                     {
                         // Null
-                        AddParaXmlNode(xmlDoc, xnodeEntry, id, value, propName);
+                        AddParaXmlNode(xmlDoc, xnodeEntry, dsPropName, value, propName);
                     }
                     else if (TypeCheckMethods.IsDictionary(value))
                     {
                         // Dictionary
                         var xnodeVersion = xmlDoc.CreateElement(XmlConstants.Dictionary);
 
-                        CreateAttributes(xmlDoc, xnodeVersion, id, propName);
+                        CreateAttributes(xmlDoc, xnodeVersion, dsPropName, propName);
                         SerializeDictionary(value, xmlDoc, xnodeVersion);
 
                         xnodeEntry.AppendChild(xnodeVersion);
@@ -112,7 +113,7 @@ namespace DotSerial.XML
                         // List || Array
                         var xnodeVersion = xmlDoc.CreateElement(XmlConstants.List);
 
-                        CreateAttributes(xmlDoc, xnodeVersion, id, propName);
+                        CreateAttributes(xmlDoc, xnodeVersion, dsPropName, propName);
                         SerializeList(value, xmlDoc, xnodeVersion);
 
                         xnodeEntry.AppendChild(xnodeVersion);
@@ -120,17 +121,17 @@ namespace DotSerial.XML
                     else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
-                        Serialize(value, xmlDoc, xnodeEntry, id);
+                        Serialize(value, xmlDoc, xnodeEntry, dsPropName);
                     }
                     else if (TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         // Special parsable
-                        SerializeSpecialParsableObject(value, xmlDoc, xnodeEntry, id, propName);
+                        SerializeSpecialParsableObject(value, xmlDoc, xnodeEntry, dsPropName, propName);
                     }
                     else if (TypeCheckMethods.IsPrimitive(prop.PropertyType))
                     {
                         // Primitive types || String
-                        SerializePrimitive(value, xmlDoc, xnodeEntry, id, propName);
+                        SerializePrimitive(value, xmlDoc, xnodeEntry, dsPropName, propName);
                     }
                     else
                     {
@@ -148,7 +149,7 @@ namespace DotSerial.XML
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
         /// <param name="primID">id</param>
-        private static void SerializePrimitive(object? primObj, XmlDocument xmlDoc, XmlNode xnode, int primID, string? displayName = null)
+        private static void SerializePrimitive(object? primObj, XmlDocument xmlDoc, XmlNode xnode, string primID, string? displayName = null)
         {
             if (null == primObj)
             {
@@ -185,7 +186,7 @@ namespace DotSerial.XML
         /// <param name="xmlDoc">XmlDocument</param>
         /// <param name="xnode">XmlNode</param>
         /// <param name="primID">id</param>
-        private static void SerializeSpecialParsableObject(object? primObj, XmlDocument xmlDoc, XmlNode xnode, int primID, string? displayName = null)
+        private static void SerializeSpecialParsableObject(object? primObj, XmlDocument xmlDoc, XmlNode xnode, string primID, string? displayName = null)
         {
             if (null == primObj)
             {
@@ -238,7 +239,7 @@ namespace DotSerial.XML
                         var value = keyValuePair.Value;
 
                         var xnodeKeyValuePair = xmlDoc.CreateElement(XmlConstants.KeyValuePair);
-                        CreateAttributes(xmlDoc, xnodeKeyValuePair, id);
+                        CreateAttributes(xmlDoc, xnodeKeyValuePair, id.ToString());
 
                         #region Key
 
@@ -253,11 +254,11 @@ namespace DotSerial.XML
 
                         if (TypeCheckMethods.IsPrimitive(keyType))
                         {
-                            SerializePrimitive(key, xmlDoc, xnodeKey, 0);
+                            SerializePrimitive(key, xmlDoc, xnodeKey, "0");
                         }
                         else if (TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
-                            SerializeSpecialParsableObject(key, xmlDoc, xnodeKey, 0);
+                            SerializeSpecialParsableObject(key, xmlDoc, xnodeKey, "0");
                         }
                         else
                         {
@@ -274,11 +275,11 @@ namespace DotSerial.XML
 
                         if (TypeCheckMethods.IsPrimitive(valueType))
                         {
-                            SerializePrimitive(value, xmlDoc, xnodeValue, 0);
+                            SerializePrimitive(value, xmlDoc, xnodeValue, "0");
                         }
                         else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            SerializeSpecialParsableObject(value, xmlDoc, xnodeValue, 0);
+                            SerializeSpecialParsableObject(value, xmlDoc, xnodeValue, "0");
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
                         {
@@ -290,7 +291,7 @@ namespace DotSerial.XML
                                 foreach (var str in castedKey)
                                 {
                                     var xnodeVersionInner = xmlDoc.CreateElement(XmlConstants.Dictionary);
-                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner.ToString());
                                     SerializeDictionary(str, xmlDoc, xnodeVersionInner);
 
                                     xnodeValue.AppendChild(xnodeVersionInner);
@@ -314,7 +315,7 @@ namespace DotSerial.XML
                                 foreach (var str in castedKey)
                                 {
                                     var xnodeVersionInner = xmlDoc.CreateElement(XmlConstants.List);
-                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner);
+                                    CreateAttributes(xmlDoc, xnodeVersionInner, idInner.ToString());
                                     SerializeList(str, xmlDoc, xnodeVersionInner);
 
                                     xnodeValue.AppendChild(xnodeVersionInner);
@@ -330,7 +331,7 @@ namespace DotSerial.XML
                                  TypeCheckMethods.IsStruct(valueType))
                         {
                             // Class || Struct
-                            Serialize(value, xmlDoc, xnodeValue, 0);
+                            Serialize(value, xmlDoc, xnodeValue, "0");
                         }
                         else
                         {
@@ -384,7 +385,7 @@ namespace DotSerial.XML
                     int id = 0;
                     foreach (var str in castedList)
                     {
-                        SerializePrimitive(str, xmlDoc, xnode, id);
+                        SerializePrimitive(str, xmlDoc, xnode, id.ToString());
                         id++;
                     }
                 }
@@ -395,7 +396,7 @@ namespace DotSerial.XML
                     int id = 0;
                     foreach (var str in castedList)
                     {
-                        SerializeSpecialParsableObject(str, xmlDoc, xnode, id);
+                        SerializeSpecialParsableObject(str, xmlDoc, xnode, id.ToString());
                         id++;
                     }
                 }
@@ -407,7 +408,7 @@ namespace DotSerial.XML
                     foreach (var str in castedList)
                     {
                         var xnodeVersion = xmlDoc.CreateElement(XmlConstants.Dictionary);
-                        CreateAttributes(xmlDoc, xnodeVersion, id);
+                        CreateAttributes(xmlDoc, xnodeVersion, id.ToString());
                         SerializeList(str, xmlDoc, xnodeVersion);
 
                         xnode.AppendChild(xnodeVersion);
@@ -423,7 +424,7 @@ namespace DotSerial.XML
                     foreach (var str in castedList)
                     {
                         var xnodeVersion = xmlDoc.CreateElement(XmlConstants.List);
-                        CreateAttributes(xmlDoc, xnodeVersion, id);
+                        CreateAttributes(xmlDoc, xnodeVersion, id.ToString());
                         SerializeList(str, xmlDoc, xnodeVersion);
 
                         xnode.AppendChild(xnodeVersion);
@@ -438,7 +439,7 @@ namespace DotSerial.XML
                     int id = 0;
                     foreach (var entry in castedList)
                     {
-                        Serialize(entry, xmlDoc, xnode, id);
+                        Serialize(entry, xmlDoc, xnode, id.ToString());
                         id++;
                     }
                 }
@@ -461,7 +462,7 @@ namespace DotSerial.XML
         /// <param name="id">Parameter id</param>
         /// <param name="value">value</param>
         /// <param name="displayName">display</param>
-        private static void AddParaXmlNode(XmlDocument xmlDoc, XmlNode xnode, int id, object? value, string? displayName = null)
+        private static void AddParaXmlNode(XmlDocument xmlDoc, XmlNode xnode, string id, object? value, string? displayName = null)
         {
             ArgumentNullException.ThrowIfNull(xmlDoc);
             ArgumentNullException.ThrowIfNull(xnode);
@@ -517,10 +518,10 @@ namespace DotSerial.XML
         /// <param name="xmlElement">XmlElement</param>
         /// <param name="id">id</param>
         /// <param name="displayName">display name</param>
-        private static void CreateAttributes(XmlDocument xmlDoc, XmlElement xmlElement, int id, string? displayName = null)
+        private static void CreateAttributes(XmlDocument xmlDoc, XmlElement xmlElement, string id, string? displayName = null)
         {
             // ID
-            DotSerialXML.CreateAttribute(xmlDoc, xmlElement, XmlConstants.XmlAttributeID, id.ToString());
+            DotSerialXML.CreateAttribute(xmlDoc, xmlElement, XmlConstants.XmlAttributeID, id);
 
             // Display
             if (false == string.IsNullOrWhiteSpace(displayName))

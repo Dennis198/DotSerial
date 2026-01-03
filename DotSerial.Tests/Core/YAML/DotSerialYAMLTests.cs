@@ -564,7 +564,7 @@ namespace DotSerial.Tests.YAML
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DSInvalidIDException>(() => DotSerialYAML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Theory]
