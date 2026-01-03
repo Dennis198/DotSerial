@@ -26,6 +26,7 @@ using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
 using DotSerial.XML;
 using DotSerial.Common;
+using DotSerial.Attributes;
 
 namespace DotSerial.Tree.Deserialize
 {
@@ -83,7 +84,7 @@ namespace DotSerial.Tree.Deserialize
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                string? propDSName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
+                string? propDSName = AttributesMethods.GetSerializeName(prop);
 
                 if (null != propDSName)
                 {

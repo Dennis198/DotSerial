@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Attributes;
 using DotSerial.Common;
 using DotSerial.Core.Exceptions;
 using DotSerial.Utilities;
@@ -66,7 +67,7 @@ namespace DotSerial.XML
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                string? dsPropName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
+                string? dsPropName = AttributesMethods.GetSerializeName(prop);
 
                 // Check if property got the attribute
                 if (null != dsPropName)

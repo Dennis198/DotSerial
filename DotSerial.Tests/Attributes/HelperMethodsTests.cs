@@ -27,7 +27,7 @@ namespace DotSerial.Tests.Attributes
     public class HelperMethodsTests
     {
         [Fact]
-        public void GetCustomPropertyName_True()
+        public void GetSerializeName_True()
         {
             // Arrange
             NoAttributeClass tmp = new ();            
@@ -38,7 +38,7 @@ namespace DotSerial.Tests.Attributes
                 if (prop.Name == nameof(NoAttributeClass.Boolean))
                 {
                     // Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetCustomPropertyName(prop);
+                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
 
                     // Assert
                     Assert.Equal("1", id);
@@ -48,7 +48,7 @@ namespace DotSerial.Tests.Attributes
         }
 
         [Fact]
-        public void GetCustomPropertyName_False()
+        public void GetSerializeName_False()
         {
             // Arrange
             NoAttributeClass tmp = new ();
@@ -59,7 +59,7 @@ namespace DotSerial.Tests.Attributes
                 if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
                 {
                     //Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetCustomPropertyName(prop);
+                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
 
                     // Assert
                     Assert.Null(id);

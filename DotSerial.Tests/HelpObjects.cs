@@ -91,6 +91,7 @@ namespace DotSerial.Tests
         [DotSerialName("1")]
         public bool Boolean { get; set; }
 
+        [DotSerialIgnore]
         public bool BooleanNoAttribute { get; set; }
         public int IntNoAttribute { get; set; }
         public string? StringNoAttribute { get; set; }

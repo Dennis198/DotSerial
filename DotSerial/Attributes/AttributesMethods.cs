@@ -27,11 +27,35 @@ namespace DotSerial.Attributes
 {
     internal static class AttributesMethods
     {
+        /// <summary>
+        /// Gets the name for serialization.
+        /// </summary>
+        /// <param name="prop">PropertyInfo</param>
+        /// <returns>Name for serialization</returns>
+        internal static string? GetSerializeName(PropertyInfo prop)
+        {
+            ArgumentNullException.ThrowIfNull(prop);
+
+            if (ShouldPropertyBeIgnored(prop))
+            {
+                return null;
+            }
+
+            string? name = GetCustomPropertyName(prop);
+
+            if (null == name)
+            {
+                name = prop.Name;
+            }
+
+            return name;
+        }
+
         /// <summary> Get the parameter ID
         /// </summary>
         /// <param name="prop">PropertyInfo</param>
         /// <returns>ID</returns>
-        internal static string? GetCustomPropertyName(PropertyInfo prop)
+        private static string? GetCustomPropertyName(PropertyInfo prop)
         {
             object[] attrs = prop.GetCustomAttributes(true);
             foreach (object att in attrs)
@@ -57,7 +81,7 @@ namespace DotSerial.Attributes
         /// </summary>
         /// <param name="prop">PropertyInfo</param>
         /// <returns>True, if ignored.</returns>
-        internal static bool ShouldPropertyBeIgnored(PropertyInfo prop)
+        private static bool ShouldPropertyBeIgnored(PropertyInfo prop)
         {
             object[] attrs = prop.GetCustomAttributes(true);
             foreach (object att in attrs)

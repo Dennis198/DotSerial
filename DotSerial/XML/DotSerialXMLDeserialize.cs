@@ -22,7 +22,7 @@
 
 using System.Reflection;
 using System.Xml;
-
+using DotSerial.Attributes;
 using DotSerial.Core.Exceptions;
 using DotSerial.Utilities;
 
@@ -56,7 +56,7 @@ namespace DotSerial.XML
             foreach (PropertyInfo prop in props)
             {
                 // Get ID attribute
-                string? dsPropName = Attributes.AttributesMethods.GetCustomPropertyName(prop);
+                string? dsPropName = AttributesMethods.GetSerializeName(prop);
 
                 if (null != dsPropName)
                 {

@@ -22,7 +22,6 @@
 
 using System.Collections;
 using System.Reflection;
-using DotSerial.XML;
 
 namespace DotSerial.Utilities
 {
@@ -69,30 +68,7 @@ namespace DotSerial.Utilities
         internal static bool IntToBool(int i)
         {
             return i == 1;
-        }
-        
-        // TODO
-        // internal static PropertyInfo? GetPropertyInfoByName(Type type, string propertyName)
-        // {
-        //     ArgumentNullException.ThrowIfNull(type);
-        //     ArgumentNullException.ThrowIfNull(propertyName);
-
-        //     PropertyInfo[] props = type.GetProperties();
-
-        //     foreach (var prop in props)
-        //     {
-        //         // Get ID attribute
-        //         int id = Attributes.AttributesMethods.GetPropertyID(prop);
-
-        //         if (XmlConstants.NoAttributeID != id)
-        //         {
-        //             return prop;
-        //         }
-        //     }
-
-        //     PropertyInfo? propInfo = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
-        //     return propInfo;
-        // }
+        }    
 
         /// <summary>
         /// Converts primitive to string
