@@ -23,6 +23,7 @@
 using DotSerial.Common;
 using DotSerial.Utilities;
 using DotSerial.Tree.Serialize;
+using DotSerial.Json;
 
 namespace DotSerial.JSON
 {
@@ -50,6 +51,8 @@ namespace DotSerial.JSON
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">Argument null.</exception>
         public static void SaveToFile(string path, DotSerialJSON serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
@@ -61,7 +64,7 @@ namespace DotSerial.JSON
 
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSJsonException($"{serialObj._document} can't be null");
             }
 
             try
@@ -75,9 +78,10 @@ namespace DotSerial.JSON
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">Argument null.</exception>
         public static U LoadFromFile<U>(string path)
         {
-
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException(nameof(path));
@@ -109,15 +113,10 @@ namespace DotSerial.JSON
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">Argument null.</exception>
         public static DotSerialJSON Serialize(object? obj)
-        {
-            ArgumentNullException.ThrowIfNull(obj);
-
-            if (false == obj.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
+        {        
             // Serialze Object
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
 
@@ -132,13 +131,15 @@ namespace DotSerial.JSON
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">Argument null.</exception>
         public static U Deserialize<U>(DotSerialJSON serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSJsonException($"{serialObj._document} can't be null");
             }
 
             // Get root element
