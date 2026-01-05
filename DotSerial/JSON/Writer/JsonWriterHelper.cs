@@ -110,7 +110,36 @@ namespace DotSerial.JSON.Writer
             {
                 sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
             }
-        }   
+        } 
+
+        /// <summary>
+        /// Appends only the value without the key
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Level</param>
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            // Maku sure that Value pair is in new line
+            sb.AppendLine();
+
+            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+
+            if (null == value)
+            {
+                sb.Append("null,");
+            }
+            else if (value == string.Empty)
+            {
+                sb.Append("\"\",");
+            }
+            else
+            {
+                sb.AppendFormat("\"{0}\",", value);
+            }
+        }  
 
         /// <summary>
         /// Add empty Object

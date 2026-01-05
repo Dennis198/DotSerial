@@ -21,6 +21,7 @@
 #endregion
 
 using System.Text;
+using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -68,7 +69,61 @@ namespace DotSerial.Utilities
             {
                 subString.Append(input[i]);
             }
+
             return subString;
+        }
+
+        /// <summary>
+        /// Indicates whether a specified string of an stringbuilder is null, empty,
+        /// or consists only of white-space characters.
+        /// </summary>
+        /// <param name="input">Stringbuilder</param>
+        /// <returns>True, if null or whitespace.</returns>
+        public static bool IsNullOrWhiteSpace(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                char c = input[i];
+                if (!char.IsWhiteSpace(c))
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if Stringbuilder content equals "null".
+        /// </summary>
+        /// <param name="input">Stringbuilder</param>
+        /// <returns>True, if content of Stringbuilder only contains "null".</returns>
+        public static bool EqualsNullString(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length != 4)
+            {
+                return false;
+            }
+
+            if (Char.ToLower(input[0]) != CommonConstants.N)
+                return false;
+            if (Char.ToLower(input[1]) != CommonConstants.U)
+                return false;
+            if (Char.ToLower(input[2]) != CommonConstants.L)
+                return false;
+            if (Char.ToLower(input[3]) != CommonConstants.L)
+                return false;
+            
+            return true;
         }
 
     }

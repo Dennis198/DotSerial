@@ -5,54 +5,7 @@ namespace DotSerial.Tests.Core.JSON
 {
     public class DSJsonNodeTests
     {
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-        
-        // [Fact]
-        // public void WritePrimitive()
-        // {
-        //     // Arrange
-        //     double tmp = 1234.45;
-        //     var node = DSJsonNode.ToNode(tmp);
-
-        //     // Act
-        //     string result = node.ToJsonString();
-
-        //     // Assert
-        //     Assert.NotNull(result);
-        //     Assert.Fail(); // TODO
-        // }
-
-        // [Fact]
-        // public void WriteList()
-        // {
-        //     // Arrange
-        //     double[] tmp = [1.1, 2.2, 3.3, 4.4];
-        //     var node = DSJsonNode.ToNode(tmp);
-
-        //     // Act
-        //     string result = node.ToJsonString();
-
-        //     // Assert
-        //     Assert.NotNull(result);
-        //     Assert.Fail(); // TODO
-        // }
-
-        // [Fact]
-        // public void WriteDictionary()
-        // {
-        //     // Arrange
-        //     Dictionary<string, double> tmp = [];
-        //     tmp.Add("test1", 1.1);
-        //     tmp.Add("test2", 2.2);
-        //     var node = DSJsonNode.ToNode(tmp);
-
-        //     // Act
-        //     string result = node.ToJsonString();
-
-        //     // Assert
-        //     Assert.NotNull(result);
-        //     Assert.Fail(); // TODO
-        // }        
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;               
 
         [Fact]
         public void Create()
@@ -128,6 +81,107 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotNull(result);
         }            
+
+        [Fact]
+        public void Primitive()
+        {
+            // Arrange
+            double tmp = 1234.45;
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<double>(jsonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }
+
+        [Fact]
+        public void Primitive_Null()
+        {
+            // Arrange
+            string? tmp = null;
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<string>(jsonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }        
+
+        [Fact]
+        public void List()
+        {
+            // Arrange
+            double[] tmp = [1.1, 2.2, 3.3, 4.4];
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<double[]>(jsonString);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Length, result.Length);
+            Assert.Equal(tmp[0], result[0]);
+            Assert.Equal(tmp[1], result[1]);
+            Assert.Equal(tmp[2], result[2]);
+            Assert.Equal(tmp[3], result[3]);            
+        }
+
+        [Fact]
+        public void List_Null()
+        {
+            // Arrange
+            double[]? tmp = null;
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<double[]>(jsonString);
+
+            // Assert
+            Assert.Null(result);           
+        }        
+
+        [Fact]
+        public void Dictionary()
+        {
+            // Arrange
+            Dictionary<string, double> tmp = [];
+            tmp.Add("test1", 1.1);
+            tmp.Add("test2", 2.2);
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<Dictionary<string, double>?>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Count, result.Count);
+            Assert.Equal(tmp["test1"], result["test1"]);
+            Assert.Equal(tmp["test2"], result["test2"]);            
+        }     
+
+        [Fact]
+        public void Dictionary_Null()
+        {
+            // Arrange
+            Dictionary<string, double>? tmp = null;
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<Dictionary<string, double>?>(jsonString);
+
+            // Assert
+            Assert.Null(result);              
+        }          
 
         [Fact]
         public void ToObject_ExampleClass()

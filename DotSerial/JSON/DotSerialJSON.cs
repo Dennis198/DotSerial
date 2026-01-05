@@ -143,7 +143,7 @@ namespace DotSerial.JSON
 
             // Get root element
             var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
-            var result = rootNode.ToObject<U>();
+            var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
             return result;
         }

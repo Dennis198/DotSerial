@@ -45,7 +45,23 @@ namespace DotSerial.JSON.Parser
             string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
 
             StringBuilder sb = new(tmp);
-            var rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+
+            IDSNode rootNode;
+
+            if (JsonParserHelper.IsStringJsonObject(sb))
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+            }
+            else if (JsonParserHelper.IsStringJsonList(sb))
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+            }
+            else
+            {
+                rootNode = JsonParserHelper.ParsePrimitiveNode(sb, 0);
+                return new DSJsonNode(rootNode);
+            }
+
 
             ParserAccept(rootNode, new JSONParserVisitor(), sb);
 

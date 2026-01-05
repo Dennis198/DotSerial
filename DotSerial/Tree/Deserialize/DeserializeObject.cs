@@ -155,6 +155,28 @@ namespace DotSerial.Tree.Deserialize
         }
 
         /// <inheritdoc/>
+        /// <remarks>
+        /// Only use this methode if the deserialized object itself is a dictionary.
+        /// </remarks>
+        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(type);
+
+            var tmpList = DeserializeDictionary(node, type);
+
+            // Convert deserialzed dictionary.
+            object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
+
+            return tmpValue;
+        }        
+
+        /// <summary>
+        /// Deserialize dictionary
+        /// </summary>
+        /// <param name="node">Node</param>
+        /// <param name="type">Type</param>
+        /// <returns>Dictionary</returns>
         private Dictionary<object, object?>? DeserializeDictionary(IDSNode node, Type type)
         {
             ArgumentNullException.ThrowIfNull(node);
@@ -213,12 +235,5 @@ namespace DotSerial.Tree.Deserialize
 
         }
 
-        /// <inheritdoc/>
-        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
-        {
-            // Currenlty not needed
-            // Will be procced in the VisitInnerNode
-            throw new NotImplementedException();
-        }
     }
 }

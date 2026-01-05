@@ -37,5 +37,13 @@ namespace DotSerial.Tree
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
         public abstract IDSNode CreateNode(string key, string? value, NodeType type);
+
+        /// <summary>
+        /// Wrapps a node in another node.
+        /// </summary>
+        /// <param name="node">Node to be wrapped.</param>
+        /// <param name="targetType">Wrapped type</param>
+        /// <returns>IDSNode</returns>
+        public abstract IDSNode WrappNode(IDSNode node, NodeType targetType);
     }
 }

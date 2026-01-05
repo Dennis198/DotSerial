@@ -85,11 +85,18 @@ namespace DotSerial.JSON.Writer
             ArgumentNullException.ThrowIfNull(sb);
 
             int level = options.Level;
-
-            string key = node.Key;
+            
             string? value = node.GetValue();
-
-            JsonWriterHelper.AddKeyValuePair(sb, key, value, level);
+            
+            if (options.AddKey)
+            {
+                string key = node.Key;
+                JsonWriterHelper.AddKeyValuePair(sb, key, value, level);    
+            }
+            else
+            {
+                JsonWriterHelper.AddOnlyValue(sb, value, level);
+            }
         }
 
         /// <inheritdoc/>

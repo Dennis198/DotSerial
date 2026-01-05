@@ -24,7 +24,6 @@ using DotSerial.Common;
 using DotSerial.Json;
 using DotSerial.JSON.Parser;
 using DotSerial.JSON.Writer;
-using DotSerial.Tree.Deserialize;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -181,7 +180,7 @@ namespace DotSerial.JSON
                 // Parse json string to node
                 DSJsonNode dsNode = FromString(str);
 
-                return dsNode.ToObject<U>();
+                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
             }
             catch(DotSerialException ex)
             {
@@ -191,46 +190,6 @@ namespace DotSerial.JSON
             {
                 throw;
             }              
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public U ToObject<U>()
-        {
-            try
-            {
-                if (null == _node)
-                {
-                    throw new DSJsonException($"{_node} can't be null.");
-                }
-
-                // Deserilize object
-                var resultObj = _node.DeserializeAccept(new DeserializeObject(), typeof(U));
-
-                if (null == resultObj)
-                {
-                    throw new DSJsonException($"{resultObj} can't be null.");
-                }
-                
-                // cast object to U
-                if (resultObj is U result)
-                {
-                    return result;
-                }
-                else
-                {
-                    throw new DSJsonException($"{resultObj} is not of type {nameof(U)}.");
-                }  
-            }
-            catch(DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }               
-        }        
+        }       
     }
 }

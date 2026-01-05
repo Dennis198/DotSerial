@@ -87,7 +87,39 @@ namespace DotSerial.Tree
                     return new DictionaryNode(wrapper);
                 }
                 default:
-                    throw new NotImplementedException();
+                    throw new DotSerialException($"NodeFactory: Unkown node type {type}.");
+            }
+        }
+
+        /// <inheritdoc/>
+        public IDSNode WrappNode(IDSNode node, NodeType targetType)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            if (targetType != NodeType.ListNode && targetType != NodeType.DictionaryNode)
+            {
+                throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+            }
+
+            if (node is InnerNode wrapper)
+            {
+                switch(targetType)
+                {
+                    case NodeType.ListNode:
+                    {
+                        return new ListNode(wrapper);
+                    }
+                    case NodeType.DictionaryNode:
+                    {
+                        return new DictionaryNode(wrapper);
+                    }
+                    default:
+                        throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+                }
+            }
+            else
+            {
+                throw new DotSerialException("NodeFactory: Wrapped node must be an inner node.");
             }
         }
     }
