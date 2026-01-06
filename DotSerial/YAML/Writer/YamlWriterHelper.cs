@@ -1,3 +1,26 @@
+#region License
+//Copyright (c) 2026 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
@@ -5,6 +28,9 @@ using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Writer
 {
+    /// <summary>
+    /// Helper class with methode for writting yaml.
+    /// </summary>
     public static class YamlWriterHelper
     {
         /// <summary>
@@ -45,8 +71,7 @@ namespace DotSerial.YAML.Writer
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
-
-        internal static void KeyValuePairToYaml(StringBuilder sb, string key, string? value, int level, string? prefix = null)
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -86,19 +111,14 @@ namespace DotSerial.YAML.Writer
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Indentation level</param>
-        internal static void PrimitiveListToYaml(StringBuilder sb, ListNode node, int level, YamlWriterOptions options)
+        internal static void AddPrimitiveList(StringBuilder sb, ListNode node, int level, YamlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             sb.AppendLine();
-            // WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
-
-            // // Add Key
-            // sb.AppendFormat("\"{0}\":", node.Key);
-            // sb.AppendLine();
-
             bool skipFirstIndentation = false;
+
             if (!string.IsNullOrWhiteSpace(options.GetPrefix()))
             {
                 WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
@@ -143,7 +163,39 @@ namespace DotSerial.YAML.Writer
 
             // Remove last New Line
             sb.Remove(sb.Length - 1, 1);
-        }              
+        }    
+
+        /// <summary>
+        /// Add empty Object
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="prefix">Key-Prefix</param>
+        internal static void AddEmptyObject(StringBuilder sb, string key, int level, string? prefix)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            AddObjectStart(sb, key, level, prefix);
+            sb.Append(" {}");
+        }       
+
+        /// <summary>
+        /// Add empty list
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="prefix">Key-Prefix</param>
+        internal static void AddEmptyList(StringBuilder sb, string key, int level, string? prefix)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            AddObjectStart(sb, key, level, prefix);
+            sb.Append(" []");
+        }   
 
     }
 }

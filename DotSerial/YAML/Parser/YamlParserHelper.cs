@@ -84,7 +84,7 @@ namespace DotSerial.YAML.Parser
                     break;
                 }
 
-                if (true == CheckFirstNoWhiteSpaceChar(lines[i], YAMLConstants.ListItemIndicator))
+                if (true == lines[i].EqualFirstNoWhiteSpaceChar(YAMLConstants.ListItemIndicator))
                 {
                     string key = index.ToString();
                     int endIndex = GetEndIndexOfYamlObject(lines, i);
@@ -136,31 +136,7 @@ namespace DotSerial.YAML.Parser
                     }
                 }   
             }
-        }     
-
-        private static bool CheckFirstNoWhiteSpaceChar(StringBuilder line, char c)
-        {
-            ArgumentNullException.ThrowIfNull(line);
-
-            for (int i = 0; i < line.Length; i++)
-            {
-                var currChar = line[i];
-                if (Char.IsWhiteSpace(currChar))
-                {
-                    continue;
-                }
-                else if (currChar == c)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            return false;
-        }    
+        }      
 
         /// <summary>
         /// Extracts key value pairs from yaml object
@@ -189,17 +165,20 @@ namespace DotSerial.YAML.Parser
                     break;
                 }
 
+                // "Key": "Value"
                 if (false == IsKeyLine(lines[i]))
                 {
                     string key = ExtractKeyFromLine(lines[i]);
                     var helpObj = new YamlParserOptions(key, currLevel, i, i);
 
+                    // "Key" : {}
                     if (IsEmptyObject(lines[i]))
                     {
                         helpObj.SetIsYamlObject();
                         helpObj.IsEmptyObject = true;
                     }
 
+                    // "Key" : []
                     if (IsEmptyList(lines[i]))
                     {
                         helpObj.SetIsYamlObject();
@@ -209,15 +188,19 @@ namespace DotSerial.YAML.Parser
                    
                     result.Add(key, helpObj);
                 }
+                // "Key": 
                 else
                 {
                     string key = ExtractKeyFromLine(lines[i]);
+
                     int sIndex = i + 1;
                     int eIndex = GetEndIndexOfYamlObject(lines, i);
+
                     bool isList = IsLineListItem(lines, sIndex, 1);
 
                     var helpObj = new YamlParserOptions(key, currLevel, sIndex, eIndex);
                     helpObj.SetIsYamlObject();
+
                     if (isList)
                         helpObj.SetIsList();
 
@@ -228,6 +211,65 @@ namespace DotSerial.YAML.Parser
 
             return result;
         } 
+
+        /// <summary>
+        /// Check if Line is start of yaml object.
+        /// </summary>
+        /// <param name="line">Line to check</param>
+        /// <returns>True, if line is beginning of a yaml object</returns>
+        internal static bool IsYamlObject(List<StringBuilder> lines, int startIndex, int endIndex)
+        {
+            ArgumentNullException.ThrowIfNull(lines);
+
+            var start = lines[startIndex];
+
+            // "Key": 
+            if (true == IsKeyLine(start))
+            {
+                return true;
+            }
+            // "Key": "Value"
+            else
+            {
+                // "Key" : {}
+                if (IsEmptyObject(start))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if line is start of yaml list
+        /// </summary>
+        /// <param name="lines">Lines</param>
+        /// <param name="startIndex">List start index</param>
+        /// <param name="listNestedCount">Nested number to check</param>
+        /// <returns>True, if line is beginning of yaml list.</returns>
+        internal static bool IsYamlList(List<StringBuilder> lines, int startIndex, int listNestedCount = 1)
+        {
+            ArgumentNullException.ThrowIfNull(lines);
+            
+            var start = lines[startIndex];
+
+            if (true == IsKeyLine(start))
+            {
+                int indexOfFirstItem = startIndex + 1;
+                bool isList = IsLineListItem(lines, indexOfFirstItem, listNestedCount);
+                return isList;
+            }
+            else
+            {
+                if (IsEmptyList(start))
+                {
+                    return true;   
+                }
+            }
+
+            return false;
+        }
 
 
         private static bool IsLineListItem(List<StringBuilder> lines, int index, int minCount)
@@ -265,6 +307,7 @@ namespace DotSerial.YAML.Parser
 
         private static bool IsEmptyObject(StringBuilder line)
         {
+            // TODO mit extensions lösen
             bool closedBracletFound = false;
 
             for (int i = line.Length -1 ; i >= 0; i--)
@@ -488,25 +531,27 @@ namespace DotSerial.YAML.Parser
         private static bool IsKeyLine(StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(line);
-             
-            for (int i = line.Length - 1; i >= 0; i--)
-            {
-                var c = line[i];
-                if (c == CommonConstants.WhiteSpace)
-                {
-                    continue;
-                }
-                else if (c == YAMLConstants.KeyValueSeperator)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
 
-            return false;
+            return line.EqualLastNoWhiteSpaceChar(YAMLConstants.KeyValueSeperator);
+             
+            // for (int i = line.Length - 1; i >= 0; i--)
+            // {
+            //     var c = line[i];
+            //     if (c == CommonConstants.WhiteSpace)
+            //     {
+            //         continue;
+            //     }
+            //     else if (c == YAMLConstants.KeyValueSeperator)
+            //     {
+            //         return true;
+            //     }
+            //     else
+            //     {
+            //         return false;
+            //     }
+            // }
+
+            // return false;
         }    
 
         internal static bool IsPrimitiveList(StringBuilder line)
@@ -613,8 +658,7 @@ namespace DotSerial.YAML.Parser
             // Remove Empty Lines
             for (int i = lines.Count - 1; i >= 0; i--)
             {
-                string lineStr = lines[i].ToString();
-                if (string.IsNullOrWhiteSpace(lineStr))
+                if (lines[i].IsNullOrWhiteSpace())
                 {
                     lines.RemoveAt(i);
                 }

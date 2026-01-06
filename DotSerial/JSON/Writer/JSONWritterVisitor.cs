@@ -121,9 +121,9 @@ namespace DotSerial.JSON.Writer
                 }
                 
                 var children = node.GetChildren();
-                foreach(var keyValue in children)
+                foreach(var child in children)
                 {
-                    WriterAccept(keyValue, this, sb, new JsonWriterOptions(level + 1));
+                    WriterAccept(child, this, sb, new JsonWriterOptions(level + 1));
                 }
 
                 // Remove last ','
@@ -166,10 +166,10 @@ namespace DotSerial.JSON.Writer
                     }
 
                     StringBuilder sb2 = new();
-                    foreach (var keyValue in children)
+                    foreach (var child in children)
                     {
                         StringBuilder sb3 = new();
-                        WriterAccept(keyValue, this, sb3, new JsonWriterOptions(level + 1, false));
+                        WriterAccept(child, this, sb3, new JsonWriterOptions(level + 1, false));
                         sb2.Append(sb3);
                     }
 
@@ -187,40 +187,7 @@ namespace DotSerial.JSON.Writer
                     sb.AppendLine();
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
-                    if (options.AddKey)
-                    {
-                        // Add Key
-                        sb.AppendFormat("\"{0}\": ", node.Key);
-                        sb.Append(JsonConstants.ListStart);
-                    }
-                    else
-                    {
-                        sb.Append(JsonConstants.ListStart);
-                    }
-
-                    foreach (var keyValue in children)
-                    {
-                        string? val = keyValue.GetValue();
-
-                        if (null == val)
-                        {
-                            sb.Append(CommonConstants.Null);
-                        }
-                        else
-                        {
-                            sb.Append(CommonConstants.Quote);
-                            sb.Append(val);
-                            sb.Append(CommonConstants.Quote);
-                        }
-
-                        sb.Append(CommonConstants.CommaAndWhiteSpace);
-                    }
-
-                    // Remove last ", "
-                    sb.Remove(sb.Length - 2, 2);
-
-                    sb.Append(JsonConstants.ListEnd);
-                    sb.Append(CommonConstants.Comma);
+                    JsonWriterHelper.AddPrimitiveList(sb, node, options);
                 }
             }
             else
@@ -251,9 +218,9 @@ namespace DotSerial.JSON.Writer
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
-                foreach(var keyValue in children)
+                foreach(var child in children)
                 {
-                    WriterAccept(keyValue, this, sb, new JsonWriterOptions(level + 1));
+                    WriterAccept(child, this, sb, new JsonWriterOptions(level + 1));
                 }
 
                 // Remove last ','

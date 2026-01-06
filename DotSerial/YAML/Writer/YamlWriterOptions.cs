@@ -25,29 +25,32 @@ namespace DotSerial.YAML.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    public struct YamlWriterOptions
+    /// <param name="level">Level of indication</param>
+    /// <param name="addKey">Add key</param>
+    /// <param name="numberOfListPrefix">Number of listitem indicators to add.</param>
+    public struct YamlWriterOptions(int level, bool addKey = true, int numberOfListPrefix = 0)
     {
-        internal int Level { get; private set; }
-        internal bool AddKey { get; private set; }
-        private string? _prefix;
-        internal int NumberOfPrefix = 0;
+        /// <summary>
+        /// Indentation level
+        /// </summary>
+        internal int Level { get; private set; } = level;
+        /// <summary>
+        /// Add Key to object
+        /// </summary>
+        internal bool AddKey { get; private set; } = addKey;
+        /// <summary>
+        /// Number of ListItem Indicator to add.
+        /// </summary>
+        internal int NumberOfPrefix = numberOfListPrefix;
+        private static readonly string? s_ListItemIndicator = YAMLConstants.ListItemIndicator.ToString();
 
-        public YamlWriterOptions(int level, bool addKey = true, int numberOfPrefix = 0)
+        /// <summary>
+        /// Returns the ListItemIndicator(s) Prefix.
+        /// </summary>
+        /// <returns>ListItemIndicator(s)</returns>
+        public readonly string? GetPrefix()
         {
-            Level = level;
-            AddKey = addKey;
-
-            _prefix = YAMLConstants.ListItemIndicator.ToString();
-            NumberOfPrefix = numberOfPrefix;
-    }
-
-        public string? GetPrefix()
-        {
-            if (string.IsNullOrWhiteSpace(_prefix))
-            {
-                return null;
-            }
-            if (NumberOfPrefix < 0)
+            if (NumberOfPrefix < 1)
             {
                 return null;
             }
@@ -56,7 +59,7 @@ namespace DotSerial.YAML.Writer
 
             for (int i = 0; i < NumberOfPrefix; i++)
             {
-                result += string.Format("{0} ", _prefix);
+                result += string.Format("{0} ", s_ListItemIndicator);
             }
 
             return result;
@@ -67,6 +70,9 @@ namespace DotSerial.YAML.Writer
             NumberOfPrefix++;
         }
 
+        /// <summary>
+        /// Decreases the number of ListItemIndicator(s)
+        /// </summary>
         public void DecreasePrefixCount()
         {
             NumberOfPrefix--;
@@ -74,15 +80,8 @@ namespace DotSerial.YAML.Writer
             if (NumberOfPrefix < 0)
             {
                 NumberOfPrefix = 0;
-                // throw new NotImplementedException();
             }
 
         }
-
-        // internal static YamlWriterOptions CreateHigher(YamlWriterOptions opt)
-        // {
-        //     var result = new YamlWriterOptions(opt.Level + 1, opt.AddKey, opt.Prefix);
-        //     return result;
-        // }
     }
 }

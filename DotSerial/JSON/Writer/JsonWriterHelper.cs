@@ -22,6 +22,7 @@
 
 using System.Text;
 using DotSerial.Common;
+using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
 namespace DotSerial.JSON.Writer
@@ -178,6 +179,53 @@ namespace DotSerial.JSON.Writer
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
             sb.Append("[],");
+        }
+
+        /// <summary>
+        /// Adds primitive list
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="node">ListNode</param>
+        /// <param name="options">Options</param>
+        internal static void AddPrimitiveList(StringBuilder sb, ListNode node, JsonWriterOptions options)
+        {
+            if (options.AddKey)
+            {
+                // Add Key
+                sb.AppendFormat("\"{0}\": ", node.Key);
+                sb.Append(JsonConstants.ListStart);
+            }
+            else
+            {
+                sb.Append(JsonConstants.ListStart);
+            }
+
+            // Get all children of node
+            var children = node.GetChildren();
+
+            foreach (var child in children)
+            {
+                string? val = child.GetValue();
+
+                if (null == val)
+                {
+                    sb.Append(CommonConstants.Null);
+                }
+                else
+                {
+                    sb.Append(CommonConstants.Quote);
+                    sb.Append(val);
+                    sb.Append(CommonConstants.Quote);
+                }
+
+                sb.Append(CommonConstants.CommaAndWhiteSpace);
+            }
+
+            // Remove last ", "
+            sb.Remove(sb.Length - 2, 2);
+
+            sb.Append(JsonConstants.ListEnd);
+            sb.Append(CommonConstants.Comma);
         }
     }
 }

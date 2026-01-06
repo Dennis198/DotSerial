@@ -1,8 +1,33 @@
+#region License
+//Copyright (c) 2026 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
 using System.Text;
 using DotSerial.Tree.Nodes;
 
 namespace DotSerial.YAML.Writer
 {
+    /// <summary>
+    /// Implementation of the visitor for yaml writer.
+    /// </summary>
     public class YamlWriterVisitor : IYamlNodeWriterVisitor
     {
         /// <inheritdoc/>
@@ -63,8 +88,20 @@ namespace DotSerial.YAML.Writer
             ArgumentNullException.ThrowIfNull(node);
 
             int level = options.Level;
+            string? value = node.GetValue();
 
-            YamlWriterHelper.KeyValuePairToYaml(sb, node.Key.ToString(), node.GetValue(), level, options.GetPrefix());
+            if (options.AddKey)
+            {
+                string key = node.Key;
+                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, options.GetPrefix());
+            }
+            else
+            {
+                // TODO
+                throw new NotImplementedException();
+            }
+
+
         }           
 
         /// <inheritdoc/>
@@ -79,43 +116,40 @@ namespace DotSerial.YAML.Writer
             {
                 if (options.AddKey)
                 {
-                    YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
+                    YamlWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
                     level++;
                 }
 
                 var children = node.GetChildren();
-                // string tmpPrefix = options.Prefix;
-                foreach(var keyValue in children)
+                
+                foreach(var child in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level, true, options.NumberOfPrefix));
-                    if (keyValue is LeafNode)
+                    WriterAccept(child, this, sb, new YamlWriterOptions(level, true, options.NumberOfPrefix));
+
+                    if (child is LeafNode)
                     {
+                        // TODO
                         level += options.NumberOfPrefix;
                         options.NumberOfPrefix = 0;
                     }
+
                     if(0 != options.NumberOfPrefix)
                     {
+                        // Is the currenlty writen node the first item of a list,
+                        // then the following items dont need the list indicator
+                        // in the same level.
                         options.DecreasePrefixCount();
                         level++;
-                    }
-                    
-                    // if (false == string.IsNullOrWhiteSpace(options.Prefix))
-                    // {
-                    //     tmpPrefix = " ";
-                    // }                    
+                    }                                 
                 }
             }
             else
             {
+                // Empty node
                 if (options.AddKey)
                 {
-                    YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
-                    sb.Append(" {}");
+                    YamlWriterHelper.AddEmptyObject(sb, node.Key.ToString(), level, options.GetPrefix());
                 }
-                // else
-                // {
-                //     throw new NotImplementedException();    
-                // }
             }
         } 
 
@@ -133,50 +167,46 @@ namespace DotSerial.YAML.Writer
                 if (false == node.IsPrimitiveList())
                 {    
                     var children = node.GetChildren();  
-                    string prefix = YAMLConstants.ListItemIndicator.ToString();
+
                     if (options.AddKey)
                     {
-                        YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
+                        YamlWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
                         level++;
                     }
-                    else if (!string.IsNullOrWhiteSpace(options.GetPrefix()))
-                    {
-                        // options.IncreasePrefixCount();
-                        // prefix += " -";
-                        // level++;
-                    }
 
-                    StringBuilder sb2 = new();
-                    foreach (var keyValue in children)
+                    foreach (var child in children)
                     {
-                        StringBuilder sb3 = new();
-                        WriterAccept(keyValue, this, sb3, new YamlWriterOptions(level, false, options.NumberOfPrefix + 1));
+                        StringBuilder sbChild = new();
+                        WriterAccept(child, this, sbChild, new YamlWriterOptions(level, false, options.NumberOfPrefix + 1));
+
                         if(0 != options.NumberOfPrefix)
                         {
+                            // Is the currenlty writen node the first item of a list,
+                            // then the following items dont need the list indicator
+                            // in the same level.
                             options.DecreasePrefixCount();
                             level++;
                         }
-                        sb2.Append(sb3);
+                        sb.Append(sbChild);
                     }
 
-                    sb.Append(sb2);
                 }
                 else
                 {
                     if (options.AddKey)
                     {
-                        YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
+                        YamlWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
                         level++;
                     }
 
                     // List to yaml
-                    YamlWriterHelper.PrimitiveListToYaml(sb, node, level, options);
+                    YamlWriterHelper.AddPrimitiveList(sb, node, level, options);
                 }
             }
             else
             {
-                YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
-                sb.Append(" []");
+                // Empty node
+                YamlWriterHelper.AddEmptyList(sb, node.Key, level, options.GetPrefix());
             }
         }
 
@@ -194,22 +224,19 @@ namespace DotSerial.YAML.Writer
 
                 if (options.AddKey)
                 {
-                    YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
+                    YamlWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
                     level++;
                 }
 
-                foreach(var keyValue in children)
+                foreach(var child in children)
                 {
-                    WriterAccept(keyValue, this, sb, new YamlWriterOptions(level, true));
+                    WriterAccept(child, this, sb, new YamlWriterOptions(level, true));
                 }
             }
             else
             {
-                YamlWriterHelper.AddObjectStart(sb, node.Key.ToString(), level, options.GetPrefix());
-                sb.Append(" {}");
+                YamlWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
             }
         }   
-
-        // ==================================================================================================       
     }
 }

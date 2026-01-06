@@ -321,47 +321,11 @@ namespace DotSerial.JSON.Parser
         internal static bool IsStringJsonObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
-
-            bool startFound = false;
-            bool endFound = false;
-
-            // Check if first element is '{'
-            for (int i = 0; i < sb.Length; i++)
-            {
-                char c = sb[i]; 
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (c == JsonConstants.ObjectStart)
-                {
-                    startFound = true;
-                    break;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            // Check if last element is '}'
-            for (int i = sb.Length - 1; i >= 0; i--)
-            {
-                char c = sb[i]; 
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (c == JsonConstants.ObjectEnd)
-                {
-                    endFound = true;
-                    break;
-                }
-                else 
-                {
-                    return false;
-                }
-            }
+            
+            // // Check if first element is '{'
+            bool startFound = sb.EqualFirstNoWhiteSpaceChar(JsonConstants.ObjectStart);
+            // // Check if last element is '}'
+            bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ObjectEnd);
 
             return startFound && endFound;
         }  
@@ -375,46 +339,10 @@ namespace DotSerial.JSON.Parser
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            bool startFound = false;
-            bool endFound = false;
-
-            // Check if first element is '{'
-            for (int i = 0; i < sb.Length; i++)
-            {
-                char c = sb[i]; 
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (c == JsonConstants.ListStart)
-                {
-                    startFound = true;
-                    break;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            // Check if last element is '}'
-            for (int i = sb.Length - 1; i >= 0; i--)
-            {
-                char c = sb[i]; 
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-                else if (c == JsonConstants.ListEnd)
-                {
-                    endFound = true;
-                    break;
-                }
-                else 
-                {
-                    return false;
-                }
-            }
+            // // Check if first element is '['
+            bool startFound = sb.EqualFirstNoWhiteSpaceChar(JsonConstants.ListStart);
+            // // Check if last element is ']'
+            bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ListEnd);
 
             return startFound && endFound;
         }      

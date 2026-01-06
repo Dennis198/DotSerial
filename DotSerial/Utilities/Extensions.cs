@@ -126,5 +126,65 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        /// <summary>
+        /// Check if the first non white space char equals the given char.
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <param name="c">Char to check</param>
+        /// <returns>True, if char is equal.</returns>
+        public static bool EqualFirstNoWhiteSpaceChar(this StringBuilder input, char c)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var currChar = input[i];
+                if (Char.IsWhiteSpace(currChar))
+                {
+                    continue;
+                }
+                else if (currChar == c)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if the last non white space char equals the given char.
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <param name="c">Char to check</param>
+        /// <returns>True, if char is equal.</returns>
+        public static bool EqualLastNoWhiteSpaceChar(this StringBuilder input, char c)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            for (int i = input.Length - 1; i >= 0; i--)
+            {
+                var currChar = input[i];
+                if (Char.IsWhiteSpace(currChar))
+                {
+                    continue;
+                }
+                else if (currChar == c)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return false;
+        }
+
     }
 }

@@ -26,7 +26,7 @@ using DotSerial.Tree.Nodes;
 namespace DotSerial.YAML.Writer
 {
     /// <summary>
-    /// Visitor interface for tree nodes (yaml).
+    /// Visitor interface for tree nodes (yaml writer).
     /// </summary>
     public interface IYamlNodeWriterVisitor
     {

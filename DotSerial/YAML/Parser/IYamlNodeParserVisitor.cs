@@ -26,7 +26,7 @@ using DotSerial.Tree.Nodes;
 namespace DotSerial.YAML.Parser
 {
     /// <summary>
-    /// Visitor interface for tree nodes (yaml).
+    /// Visitor interface for tree nodes (yaml parser).
     /// </summary>
     public interface IYamlNodeParserVisitor
     {
