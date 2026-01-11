@@ -20,8 +20,8 @@
 //SOFTWARE.
 #endregion
 
-using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.YAML.Parser
 {

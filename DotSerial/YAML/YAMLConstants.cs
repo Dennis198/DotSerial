@@ -44,9 +44,5 @@ namespace DotSerial.YAML
         /// End string of yaml document
         /// </summary>
         internal const char KeyValueSeperator = ':';
-        /// <summary>
-        /// Json null string
-        /// </summary>
-        internal const string NullListItem = "- null";
     }
 }

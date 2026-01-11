@@ -23,7 +23,6 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using DotSerial.Common;
-using DotSerial.Core.Exceptions;
 using DotSerial.YAML;
 
 namespace DotSerial.Tests.YAML
@@ -78,6 +77,101 @@ namespace DotSerial.Tests.YAML
             Assert.NotNull(tmp);
             EqualCheck.AssertClassEqual(tmp, expected);
         }
+
+        [Fact]
+        public void CreateSerializedObject_Primitive()
+        {
+            // Arrange
+            double tmp = 1234.45;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double>(xmlDocument);
+
+            // Assert
+            Assert.Equal(tmp, result); 
+        }    
+
+        [Fact]
+        public void CreateSerializedObject_Primitive_Null()
+        {
+            // Arrange
+            string? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<string?>(xmlDocument);
+
+            // Assert
+            Assert.Null(result); 
+        }     
+
+        [Fact]
+        public void List()
+        {
+            // Arrange
+            double[] tmp = [1.1, 2.2, 3.3, 4.4];
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double[]>(xmlDocument);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Length, result.Length);
+            Assert.Equal(tmp[0], result[0]);
+            Assert.Equal(tmp[1], result[1]);
+            Assert.Equal(tmp[2], result[2]);
+            Assert.Equal(tmp[3], result[3]);            
+        }
+
+        [Fact]
+        public void List_Null()
+        {
+            // Arrange
+            double[]? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double[]>(xmlDocument);
+
+            // Assert
+            Assert.Null(result);           
+        }    
+
+        [Fact]
+        public void Dictionary()
+        {
+            // Arrange
+            Dictionary<string, double> tmp = [];
+            tmp.Add("test1", 1.1);
+            tmp.Add("test2", 2.2);
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<Dictionary<string, double>>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Count, result.Count);
+            Assert.Equal(tmp["test1"], result["test1"]);
+            Assert.Equal(tmp["test2"], result["test2"]);            
+        }     
+
+        [Fact]
+        public void Dictionary_Null()
+        {
+            // Arrange
+            Dictionary<string, double>? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<Dictionary<string, double>?>(xmlDocument);
+
+            // Assert
+            Assert.Null(result);              
+        }           
 
         [Fact]
         public void CreateSerializedObject_EmptyClass()
