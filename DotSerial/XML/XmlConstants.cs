@@ -90,10 +90,6 @@ namespace DotSerial.XML
         /// </summary>
         public const string NullString = "{null}";
         /// <summary>
-        /// MainObject ID
-        /// </summary>
-        public const string MainObjectID = "0";
-        /// <summary>
         /// ID for property without id
         /// </summary>
         public const int NoAttributeID = -1;

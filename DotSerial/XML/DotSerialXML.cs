@@ -140,7 +140,7 @@ namespace DotSerial.XML
             CreateAttribute(xmlDoc, xnodeRoot, XmlConstants.XmlAttributeProducer, "DotSerial");
 
             // Serialze Object
-            DotSerialXMLSerialize.Serialize(obj, xmlDoc, xnodeRoot, XmlConstants.MainObjectID);
+            DotSerialXMLSerialize.Serialize(obj, xmlDoc, xnodeRoot, CommonConstants.MainObjectKey);
 
             var result = new DotSerialXML
             {
@@ -169,7 +169,7 @@ namespace DotSerial.XML
 
             // Get root element
             XmlDocument doc = serialObj._document;
-            XmlNodeList s = doc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
+            XmlNodeList s = doc.GetElementsByTagName(CommonConstants.MainObjectKey) ?? throw new NullReferenceException();
             XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
             XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
 

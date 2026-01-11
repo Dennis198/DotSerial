@@ -22,14 +22,14 @@
 
 using DotSerial.Common;
 
-namespace DotSerial.YAML
+namespace DotSerial.XML
 {
     /// <summary>
-    /// Exception for yaml.
+    /// Exception for xml.
     /// </summary>
     [Serializable()]
-    public class DSYamlException : DotSerialException
+    public class DSXmlException : DotSerialException
     {
-        public DSYamlException(string message) : base (message){}
+        public DSXmlException(string message) : base (message){}
     }
 }
