@@ -548,13 +548,17 @@ namespace DotSerial.Tests.YAML
         }
 
         [Fact]
-        public void CreateSerializedObject_NullRefernceException()
+        public void CreateSerializedObject_Null()
         {
             // Arrange
             object? tmp = null;
+           
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<object?>(xmlDocument);
 
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => DotSerialYAML.Serialize(tmp));
+            // Assert
+            Assert.Null(result); 
         }
 
         [Fact]

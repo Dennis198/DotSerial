@@ -24,9 +24,13 @@ using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.YAML.Parser
 {
+    /// <summary>
+    /// Implementation of the visitor for yaml parser.
+    /// </summary>
     public class YamlParserVisitor : IYamlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
@@ -37,94 +41,103 @@ namespace DotSerial.YAML.Parser
         {
             StringBuilder sb = new(yamlString);
 
-            // TODO Schauen ob start/end da ist überhaupt
-            sb.Remove(sb.Length - 4, 4);
-            sb.Remove(0, 3);
-
             // Create help object, which contains every line of the yaml file
-            // as a separated stringbuilder.
-            var lines = YamlParserHelper.CreateLines(sb);
+            var lines = new MultiLineStringBuilder(sb);
 
-            // Remove all empty lines and trailing whitespace
-            YamlParserHelper.TrimLines(lines);
+            // Remove start stop symbols
+            lines = YamlParserHelper.RemoveStartStopSymbols(lines);
 
             IDSNode rootNode;
 
-            // if (YamlParserHelper.IsYamlObject(lines[0]))
-            // {
-            //     rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
-            // }
-            // else if (YamlParserHelper.IsYamlList(lines, 0))
-            // {
-            //     throw new NotImplementedException();
-            // }
-            // else
-            // {
-            //     throw new NotImplementedException();
-            // }
+            // Check if its an empty yaml file
+            if (0 == lines.Count)
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                return new DSYamlNode(rootNode);   
+            }
 
-            rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
-
-            var options = new YamlParserOptions(CommonConstants.MainObjectKey, 0, 0, lines.Count - 1);
-            options.SetIsYamlObject();
+            if (YamlParserHelper.IsYamlSingleValue(lines))
+            {
+                rootNode = ParseMethods.ParsePrimitiveNode(lines.GetLine(0), 0);
+                return new DSYamlNode(rootNode);
+            }
+            else if (YamlParserHelper.IsYamlObject(lines))
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                if (YamlParserHelper.IsEmptyObject(lines.GetLine(0)))
+                {
+                    return new DSYamlNode(rootNode);    
+                }
+            }
+            else if (YamlParserHelper.IsYamlList(lines))
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                if (YamlParserHelper.IsEmptyList(lines.GetLine(0)))
+                {
+                    return new DSYamlNode(rootNode);    
+                }
+            }
+            else
+            {
+                throw new DSYamlException("Parse: String is not yaml.");
+            }
 
             if (lines.Count > 0)
             {
-                ParserAccept(rootNode, new YamlParserVisitor(), lines, options);
+                ParserAccept(rootNode, new YamlParserVisitor(), lines);
             }
 
             return new DSYamlNode(rootNode);
         }
 
         /// <summary>
-        /// Parser for json
+        /// Parser for yaml
         /// </summary>
         /// <param name="node">IDSNode</param>
         /// <param name="visitor">Visitor</param>
-        /// <param name="sb">Stringbuilder</param>
-        private static void ParserAccept(IDSNode node, YamlParserVisitor visitor, List<StringBuilder> lines, YamlParserOptions options)
+        /// <param name="lines">MultiLineStringBuilder</param>    
+        private static void ParserAccept(IDSNode node, YamlParserVisitor visitor, MultiLineStringBuilder lines)
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, lines, options);    
+                visitor.VisitLeafNode(leafNode, lines);    
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, lines, options);    
+                visitor.VisitInnerNode(innerNode, lines);    
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, lines, options);    
+                visitor.VisitListNode(listNode, lines);    
             }
             else if (node is DictionaryNode dicNode)
             {
-                visitor.VisitDictionaryNode(dicNode, lines, options);
+                visitor.VisitDictionaryNode(dicNode, lines);
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSYamlException("Parse: Unknown node type.");
             }   
-        }          
+        }             
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, List<StringBuilder> lines, YamlParserOptions options)
+        public void VisitLeafNode(LeafNode node, MultiLineStringBuilder lines)
         {
             // Currenlty not needed
             throw new NotImplementedException();
-        }
+        }        
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, List<StringBuilder> lines, YamlParserOptions options)
+        public void VisitInnerNode(InnerNode node, MultiLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
-            ArgumentNullException.ThrowIfNull(options);
 
             // Check if helpObj is yaml-Object
-            if (options.IsYamlObject())
+            if (YamlParserHelper.IsYamlObject(lines))
             {
                 // Extract key, value pairs
-                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex, options.EndLineIndex);
+                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines);
 
                 foreach (var keyValuePair in dic)
                 {
@@ -132,125 +145,131 @@ namespace DotSerial.YAML.Parser
                     string key = keyValuePair.Key;
                     var value = keyValuePair.Value;
 
-                    // Check if value is yaml object or key value pair
-                    if (value.IsYamlObject())
+                    if (YamlParserHelper.IsYamlPrimitiveLine(value))
                     {
-                        if (false == value.IsList)
+                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0));
+                        var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
+                        node.AddChild(childNode);
+                    }
+                    else if (YamlParserHelper.IsYamlObject(value))
+                    {
+                        // Create inner node
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {
+                            // Parse inner node
+                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                        }
+
+                        // Add inner node to parent
+                        node.AddChild(innerNode);
+                    }
+                    else if (YamlParserHelper.IsYamlList(value))
+                    {
+                        // Create list node
+                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                        {
+                            // Parse list node
+                            ParserAccept(listNode, new YamlParserVisitor(), value);
+                        }
+
+                        // Add inner node to parent
+                        node.AddChild(listNode);                        
+                    }
+                    else
+                    {
+                        throw new DSYamlException("Parse: String is not a yaml object.");
+                    }
+                }
+            }
+            else
+            {
+                throw new DSYamlException("Parse: String is not a yaml object.");
+            }
+        }        
+
+        /// <inheritdoc/>
+        public void VisitListNode(ListNode node, MultiLineStringBuilder lines)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(lines);
+
+            if (YamlParserHelper.IsYamlList(lines))
+            {
+                if (YamlParserHelper.IsPrimitiveList(lines))
+                {
+                     // Extract primitive list
+                    var items = YamlParserHelper.ExtractPrimitiveList(lines);
+                    for (int i = 0; i < items.Count; i++)
+                    {
+                        string? value = items[i];
+                        var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
+                        node.AddChild(child);
+                    }
+                }
+                else
+                {
+                    // Extract object list
+                    var items2 = YamlParserHelper.ExtractObjectList(lines);
+                    int index = 0;
+                    foreach (var keyValuePair in items2)
+                    {
+                        // Convert key to int key
+                        string key = index.ToString();
+                        var value = keyValuePair;
+
+                        if (YamlParserHelper.IsYamlObject(value))
+                        {       
                             // Create inner node
                             var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
 
-                            if (false == value.IsEmptyObject)
+                            if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                             {
                                 // Parse inner node
-                                ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
+                                ParserAccept(innerNode, new YamlParserVisitor(), value);
                             }
 
                             // Add inner node to parent
                             node.AddChild(innerNode);
                         }
-                        else if (value.IsList)
+                        else if (YamlParserHelper.IsYamlList(value))
                         {
                             // Create list node
                             var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
 
-                            if (false == value.IsEmptyList)
+                            if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                             {
-                                // Parse inner node
-                                ParserAccept(listNode, new YamlParserVisitor(), lines, value);
+                                // Parse list node
+                                ParserAccept(listNode, new YamlParserVisitor(), value);
                             }
 
                             // Add inner node to parent
-                            node.AddChild(listNode);
+                            node.AddChild(listNode); 
                         }
                         else
                         {
-                            throw new NotImplementedException();
-                        }
-                    }
-                    else
-                    {
-                        string? strValue = YamlParserHelper.ExtractValueFromLine(lines[value.StartLineIndex]);
-                        var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
-                        node.AddChild(childNode);
+                            throw new DSYamlException("Parse: String is not a yaml object.");
+                        }       
+
+                        index++;  
                     }
                 }
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSYamlException("Parse: String is not a yaml list.");
             }
-        }
+        }        
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, List<StringBuilder> lines, YamlParserOptions options)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(lines);
-            ArgumentNullException.ThrowIfNull(options);
-
-            // Check if list is list of primitive or objects
-            if (true == YamlParserHelper.IsPrimitiveList(lines[options.StartLineIndex]))
-            {
-                // Extract primitive list
-                var items = YamlParserHelper.ExtractPrimitiveList(lines, options.StartLineIndex, options.EndLineIndex);
-                for (int i = 0; i < items.Count; i++)
-                {
-                    string? value = items[i];
-                    var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
-                    node.AddChild(child);
-                }
-            }
-            else
-            {
-                // Extract object list
-                var items2 = YamlParserHelper.ExtractObjectList(lines,options.StartLineIndex, options.EndLineIndex);
-                // var items = ExtractKeyValuePairsFromYamlObject(lines, options.StartLineIndex + 1);
-                int index = 0;
-                foreach (var keyValuePair in items2)
-                {
-                     // Convert key to int key
-                    string key = index.ToString();
-                    var value = keyValuePair;
-
-                    if (false == value.IsList)
-                    {
-                        // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
-
-                        // Parse inner node
-                        ParserAccept(innerNode, new YamlParserVisitor(), lines, value);
-
-                        // Add inner node to parent
-                        node.AddChild(innerNode);
-                    }
-                    else if (value.IsList)
-                    {
-                        // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
-
-                        // Parse inner node
-                        ParserAccept(listNode, new YamlParserVisitor(), lines, value);
-
-                        // Add inner node to parent
-                        node.AddChild(listNode);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }       
-
-                    index++;             
-                }
-            }
-        }
-
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, List<StringBuilder> lines, YamlParserOptions options)
+        public void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder lines)
         {
             // Currenlty not needed
             throw new NotImplementedException();
-        }
+        }        
                                 
     }
 }

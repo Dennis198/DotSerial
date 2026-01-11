@@ -58,10 +58,9 @@ namespace DotSerial.JSON.Parser
             }
             else
             {
-                rootNode = JsonParserHelper.ParsePrimitiveNode(sb, 0);
+                rootNode = ParseMethods.ParsePrimitiveNode(sb, 0);
                 return new DSJsonNode(rootNode);
             }
-
 
             ParserAccept(rootNode, new JSONParserVisitor(), sb);
 
@@ -94,7 +93,7 @@ namespace DotSerial.JSON.Parser
             }
             else
             {
-                throw new NotImplementedException();
+                throw new DSJsonException("Parse: Unknown node type.");
             }   
         }            
 

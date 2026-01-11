@@ -23,11 +23,15 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Nodes;
 
 namespace DotSerial.Utilities
 {
     internal static class ParseMethods
     {
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
         /// the stringbuilder.
@@ -117,6 +121,38 @@ namespace DotSerial.Utilities
             }
 
             return sb.ToString();
+        }         
+        
+        /// <summary>
+        /// Parses primitive node without a key, e.g "3.14"
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="startIndex">StartIndex</param>
+        /// <returns>Leafnode</returns>
+
+        internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
+            {
+                return _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.Leaf);
+            }
+
+            StringBuilder sbPrim = new();
+
+            int i = ParseMethods.AppendStringValue(sbPrim, startIndex, sb.ToString());
+            if (i != sb.Length -1)
+            {
+                throw new DotSerialException("Parse: Can't parse single value.");
+            }
+
+            // Remove opening and closing quote
+            sbPrim.Remove(0, 1);
+            sbPrim.Remove(sbPrim.Length - 1, 1);
+            string nodeValue = sbPrim.ToString();
+            
+            return _nodeFactory.CreateNode(CommonConstants.MainObjectKey, nodeValue, NodeType.Leaf);
         }              
     }
 }

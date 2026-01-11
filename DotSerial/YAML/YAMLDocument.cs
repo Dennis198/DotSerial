@@ -44,7 +44,7 @@ namespace DotSerial.YAML
                     throw new NotSupportedException();
                 }
 
-                var tmp = DSYamlNode.FromYamlString(content);
+                var tmp = DSYamlNode.FromString(content);
                 RootNode = tmp;
             }
             catch
@@ -64,7 +64,7 @@ namespace DotSerial.YAML
                     throw new NullReferenceException(nameof(RootNode));
                 }
 
-                var content = RootNode.ToYamlString();
+                var content = RootNode.Stringify();
 
                 if (false == SaveContentToFile(fileName, content))
                 {

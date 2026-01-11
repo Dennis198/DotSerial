@@ -22,6 +22,7 @@
 
 using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.YAML.Writer
 {
@@ -97,8 +98,7 @@ namespace DotSerial.YAML.Writer
             }
             else
             {
-                // TODO
-                throw new NotImplementedException();
+                YamlWriterHelper.AddOnlyValue(sb, value, level);
             }
 
 

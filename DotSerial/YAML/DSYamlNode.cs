@@ -10,7 +10,7 @@ namespace DotSerial.YAML
     /// <summary>
     /// YAML Node
     /// </summary>
-    public class DSYamlNode
+    public class DSYamlNode : IDSSerialNode<DSYamlNode>
     {
         /// <summary>Internal node </summary>
         private readonly IDSNode _node;
@@ -24,14 +24,10 @@ namespace DotSerial.YAML
             _node = node;
         }
 
-        /// <summary>
-        /// Key of the node
-        /// </summary>
+        /// <inheritdoc/>
         public string Key => _node.Key;
 
-        /// <summary>
-        /// True, if node contains children
-        /// </summary>
+        /// <inheritdoc/>
         public bool HasChildren => _node.HasChildren();
 
         /// <summary>
@@ -43,118 +39,135 @@ namespace DotSerial.YAML
             return _node;
         }        
 
-        /// <summary>
-        /// Returns the child with the given key, otherwise null.
-        /// </summary>
-        /// <param name="key">Key of child</param>
-        /// <returns>Child node</returns>
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
         public DSYamlNode? GetChild(string key)
         {
+            ArgumentNullException.ThrowIfNull(key);
+
             var child = _node.GetChild(key);
             return new DSYamlNode(child);
         }
 
-        /// <summary>
-        /// Creates the node structure for a given obj
-        /// </summary>
-        /// <param name="obj">Object</param>
-        /// <param name="key">Key of the object</param>
-        /// <returns>DSJsonNode</returns>
-        public static DSYamlNode ToNode(object? obj, string? key = null)
+        /// <inheritdoc/>
+        public List<DSYamlNode>? GetChildren()
         {
-            // Determine key
-            string currKey = key ?? CommonConstants.MainObjectKey;
-            
-            // Serialize object
-            var rootNode = SerializeObject.Serialize(obj, currKey);
+            if (false == HasChildren)
+                return null;
 
-            return new DSYamlNode(rootNode);
-        }       
-
-        /// <summary>
-        /// Converts the node to a JSON string.
-        /// </summary>
-        /// <returns>Yaml string</returns>
-        public string ToYamlString()
-        {            
-            if (null == _node)
+            var children = new List<DSYamlNode>();
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
             {
-                throw new NotImplementedException();
+                children.Add(new DSYamlNode(c));
             }
 
-            // Convert
-            string yamlString = YamlWriterVisitor.Write(this);
-
-            return yamlString;
-        }         
-
-        /// <summary>
-        /// Parses a json string to a DSJsonNode
-        /// </summary>
-        /// <param name="jsonString">Json string</param>
-        /// <returns>DSJsonNode</returns>
-        public static DSYamlNode FromYamlString(string jsonString)
-        {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new NotImplementedException();
-            }   
-
-            var root = YamlParserVisitor.Parse(jsonString);        
-
-            return root;
-        }        
-
-        /// <summary>
-        /// Deserializes a json string to an object of type U
-        /// </summary>
-        /// <param name="jsonString">Json string</param>
-        /// <typeparam name="U">Type fo the object</typeparam>
-        /// <returns>Deserilized object</returns>
-        public static U ToObject<U>(string jsonString)
-        {
-            if (string.IsNullOrWhiteSpace(jsonString))
-            {
-                throw new NotImplementedException();
-            }
-
-            // Parse json string to node
-            DSYamlNode dsNode = FromYamlString(jsonString);
-
-            return dsNode.ToObject<U>();
+            return children;
         }
 
-        /// <summary>
-        /// Deserializes the node to an object of type U
-        /// </summary>
-        /// <typeparam name="U">Type fo the object</typeparam>
-        /// <returns>Deserilized object</returns>
-        public U ToObject<U>()
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public static DSYamlNode ToNode(object? obj, string? key = null)
         {
-            if (null == _node)
+            try
             {
-                throw new NotImplementedException();
-            }
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+                
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey);
 
-            // Deserilize object
-            var resultObj = _node.DeserializeAccept(new DeserializeObject(), typeof(U));
-
-            if (null == resultObj)
-            {
-                throw new NotImplementedException();
+                return new DSYamlNode(rootNode);
             }
-            
-            // cast object to U
-            if (resultObj is U result)
+            catch (DotSerialException ex)
             {
-                return result;
+                throw new DSYamlException(ex.Message);
             }
-            else
+            catch
             {
-                throw new NotImplementedException();
-            }    
-        }           
+                throw;
+            }
+        }       
 
-        
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public string Stringify()
+        {            
+            try
+            {
+                if (null == _node)
+                {
+                    throw new DSYamlException($"{_node} can't be null.");
+                }
+
+                // Convert
+                string yamlString = YamlWriterVisitor.Write(this);
+
+                return yamlString;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSYamlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }            
+        }         
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public static DSYamlNode FromString(string str)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSYamlException($"{str} can't be null or whitespace.");
+                }   
+
+                var root = YamlParserVisitor.Parse(str);        
+
+                return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSYamlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }               
+        }        
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public static U ToObject<U>(string str)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSYamlException($"{str} can't be null or whitespace.");
+                }
+
+                // Parse yaml string to node
+                DSYamlNode dsNode = FromString(str);
+
+                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSYamlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }              
+        }                
     }
 }

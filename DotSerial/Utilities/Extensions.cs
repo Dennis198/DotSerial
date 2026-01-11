@@ -169,7 +169,7 @@ namespace DotSerial.Utilities
             for (int i = input.Length - 1; i >= 0; i--)
             {
                 var currChar = input[i];
-                if (Char.IsWhiteSpace(currChar))
+                if (char.IsWhiteSpace(currChar))
                 {
                     continue;
                 }
@@ -184,6 +184,51 @@ namespace DotSerial.Utilities
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Counts the values between " in a string.
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <param name="considerNull">True, if null should also be counted as a quoted value.</param>
+        /// <returns></returns>
+        public static int CountQuotedValues(this StringBuilder input, bool considerNull = true)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            int count = 0;
+            string str = input.ToString();
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                var currChar = input[i];
+                if (CommonConstants.Quote == currChar)
+                {
+                    StringBuilder dontNeed = new();
+                    i = ParseMethods.AppendStringValue(dontNeed, i, str);
+
+                    count++;
+                }
+                else if (CommonConstants.N == currChar)
+                {
+                    if (i + 3 > input.Length - 1) throw new NotImplementedException();
+
+                    i++;
+                    if (input[i] != CommonConstants.U) throw new NotImplementedException();
+                    i++;
+                    if (input[i] != CommonConstants.L) throw new NotImplementedException();
+                    i++;
+                    if (input[i] != CommonConstants.L) throw new NotImplementedException();
+                    
+                    if (considerNull)
+                    {
+                        count++;
+                    }
+                    
+                }
+            }
+
+            return count;
         }
 
     }

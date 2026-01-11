@@ -41,28 +41,24 @@ namespace DotSerial.YAML.Parser
         /// </summary>
         /// <param name="node">Leaf node</param>
         /// <param name="lines">Lines</param>
-        /// <param name="options">Additional options</param>
-        public abstract void VisitLeafNode(LeafNode node, List<StringBuilder> lines, YamlParserOptions options);
+        public abstract void VisitLeafNode(LeafNode node, MultiLineStringBuilder lines);
         /// <summary>
         /// Visitor for inner node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="lines">Lines</param>
-        /// <param name="options">Additional options</param>
-        public abstract void VisitInnerNode(InnerNode node, List<StringBuilder> lines, YamlParserOptions options);
+        public abstract void VisitInnerNode(InnerNode node, MultiLineStringBuilder lines);
         /// <summary>
         /// Visitor for list node
         /// </summary>
         /// <param name="node">List node</param>
         /// <param name="lines">Lines</param>
-        /// <param name="options">Additional options</param>
-        public abstract void VisitListNode(ListNode node, List<StringBuilder> lines, YamlParserOptions options);
+        public abstract void VisitListNode(ListNode node, MultiLineStringBuilder lines);
         /// <summary>
         /// Visitor for directory node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="lines">Lines</param>
-        /// <param name="options">Additional options</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, List<StringBuilder> lines, YamlParserOptions options);
+        public abstract void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder lines);
     }
 }

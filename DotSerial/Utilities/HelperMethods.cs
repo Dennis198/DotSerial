@@ -21,13 +21,12 @@
 #endregion
 
 using System.Collections;
-using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace DotSerial.Utilities
 {
     internal static class HelperMethods
     {
-
         /// <summary>
         /// Check if Object implements IEnumerable
         /// </summary>

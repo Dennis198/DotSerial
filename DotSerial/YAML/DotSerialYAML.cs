@@ -50,6 +50,8 @@ namespace DotSerial.YAML
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">Argument null.</exception>
         public static void SaveToFile(string path, DotSerialYAML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
@@ -61,7 +63,7 @@ namespace DotSerial.YAML
 
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSYamlException($"{serialObj._document} can't be null");
             }
 
             try
@@ -75,6 +77,8 @@ namespace DotSerial.YAML
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">Argument null.</exception>
         public static U LoadFromFile<U>(string path)
         {
 
@@ -109,23 +113,12 @@ namespace DotSerial.YAML
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">Argument null.</exception>
         public static DotSerialYAML Serialize(object? obj)
         {
-            ArgumentNullException.ThrowIfNull(obj);
-
-            if (false == obj.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
-            // Create root element
-            // var rootNode = new DSNode(GeneralConstants.DotSerial, DSNodeType.InnerNode, DSNodePropertyType.Class);
-            // var versionNode = new DSNode(GeneralConstants.Version, s_Version.ToString(), DSNodeType.Leaf, DSNodePropertyType.Primitive);
-            // rootNode.AppendChild(versionNode);
-
             // Serialze Object
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);
-            // rootNode.AppendChild(node);
 
             var result = new DotSerialYAML
             {
@@ -138,18 +131,20 @@ namespace DotSerial.YAML
         }
 
         /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">Argument null.</exception>
         public static U Deserialize<U>(DotSerialYAML serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSYamlException($"{serialObj._document} can't be null");
             }
 
             // Get root element    
             var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
-            var result = rootNode.ToObject<U>();
+            var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
             return result;
         }
@@ -198,8 +193,8 @@ namespace DotSerial.YAML
 
             try
             {
-                string result = _document.RootNode?.ToYamlString() ?? string.Empty;
-                return result;                
+                string result = _document.RootNode?.Stringify() ?? string.Empty;
+                return result;          
             }
             catch (Exception)
             {

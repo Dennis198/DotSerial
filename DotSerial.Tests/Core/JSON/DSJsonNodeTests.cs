@@ -110,7 +110,22 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.Equal(tmp, result);         
-        }        
+        }      
+
+        [Fact]
+        public void Primitive_Empty()
+        {
+            // Arrange
+            string? tmp = string.Empty;
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<string>(jsonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }               
 
         [Fact]
         public void List()
@@ -148,6 +163,21 @@ namespace DotSerial.Tests.Core.JSON
         }        
 
         [Fact]
+        public void List_Empty()
+        {
+            // Arrange
+            double[]? tmp = [];
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<double[]>(jsonString);
+
+            // Assert
+            Assert.Empty(result);           
+        }            
+
+        [Fact]
         public void Dictionary()
         {
             // Arrange
@@ -181,7 +211,22 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.Null(result);              
-        }          
+        } 
+
+        [Fact]
+        public void Dictionary_Empty()
+        {
+            // Arrange
+            Dictionary<string, double> tmp = [];
+            var node = DSJsonNode.ToNode(tmp);
+            string jsonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<Dictionary<string, double>>(jsonString);
+
+            // Assert
+            Assert.Empty(result);              
+        }                   
 
         [Fact]
         public void ToObject_ExampleClass()
