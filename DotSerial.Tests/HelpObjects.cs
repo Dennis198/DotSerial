@@ -331,6 +331,52 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ListFirstElementNull : ITestable<ListFirstElementNull>
+    {
+        [DotSerialName("1")]
+        public List<SimpleClass?>? List { get; set; }
+
+        public static ListFirstElementNull CreateTestDefault()
+        {
+            int num = 5;
+            var tmp = new ListFirstElementNull
+            {
+                List = []
+            };
+            tmp.List.Add(null);
+            for (int i = 1; i < num; i++)
+            {
+                var d = new SimpleClass
+                {
+                    Boolean = true
+                };
+
+                tmp.List.Add(d);
+            }
+
+            return tmp;
+        }
+
+        public bool AssertTest(ListFirstElementNull actual)
+        {
+            var expected = this;
+
+            if (expected.List.Count != actual.List.Count)
+                return false;
+            if (actual.List[0] != null)
+                return false;
+            for (int i = 1; i < expected.List.Count; i++)
+            {
+                if (false == expected.List[i].AssertTest(actual.List[i]))
+                {
+                    return false;
+                }
+            }   
+            return true;
+
+        }
+    }
+
     /// <summary>
     /// Simple Class
     /// </summary>

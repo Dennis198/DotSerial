@@ -24,7 +24,11 @@ namespace DotSerial.XML
 {
     public static class XmlConstants
     {
-
+        /// <summary>
+        /// Indentation Size
+        /// </summary>
+        internal const int IndentationSize = 2;
+        
         #region Attribute
 
         /// <summary>

@@ -260,6 +260,22 @@ namespace DotSerial.Tests.YAML
         }   
 
         [Fact]
+        public void ToObject_ListFirstElementNull()
+        {   
+            // Arrange
+            var example = ListFirstElementNull.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var jsonString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ListFirstElementNull>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }           
+
+        [Fact]
         public void ToObject_NoAttributeClass()
         {   
             // Arrange

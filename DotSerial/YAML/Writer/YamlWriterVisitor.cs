@@ -89,15 +89,16 @@ namespace DotSerial.YAML.Writer
 
             int level = options.Level;
             string? value = node.GetValue();
-
+            string? prefix = options.GetPrefix();
+            
             if (options.AddKey)
             {
                 string key = node.Key;
-                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, options.GetPrefix());
+                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, prefix);
             }
             else
             {
-                YamlWriterHelper.AddOnlyValue(sb, value, level);
+                YamlWriterHelper.AddOnlyValue(sb, value, level, prefix);
             }
 
 
@@ -204,8 +205,16 @@ namespace DotSerial.YAML.Writer
             }
             else
             {
-                // Empty node
-                YamlWriterHelper.AddEmptyList(sb, node.Key, level, options.GetPrefix());
+                if (options.AddKey)
+                {
+                    // Empty node
+                    YamlWriterHelper.AddEmptyList(sb, node.Key, level, options.GetPrefix());
+                }
+                else
+                {
+                    // Empty node
+                    YamlWriterHelper.AddEmptyList(sb, null, level, options.GetPrefix());
+                }
             }
         }
 
@@ -234,7 +243,16 @@ namespace DotSerial.YAML.Writer
             }
             else
             {
-                YamlWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
+                if (options.AddKey)
+                {
+                    // Empty node
+                    YamlWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
+                }
+                else
+                {
+                    // Empty node
+                    YamlWriterHelper.AddEmptyObject(sb, null, level, options.GetPrefix());
+                }
             }
         }   
     }

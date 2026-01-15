@@ -1,6 +1,7 @@
 using System.Xml;
 using System.Xml.Linq;
 using DotSerial.Common;
+using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
 namespace DotSerial.XML
@@ -10,39 +11,30 @@ namespace DotSerial.XML
     /// </summary>
     public class DSXmlNode : IDSSerialNode<DSXmlNode>
     {
+
         /// <summary>Internal node </summary>
-        private readonly XmlNode _node;
+        private readonly IDSNode _node;
 
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="node">Node</param>
-        internal DSXmlNode(XmlNode node)
+        internal DSXmlNode(IDSNode node)
         {
             _node = node;
         }
 
         /// <inheritdoc/>
-        public string Key => GetKey();
+        public string Key => _node.Key;
 
-        /// <inheritdoc/>   
-        public bool HasChildren => (_node.ChildNodes.Count > 0);
-
-        private string GetKey()
-        {
-            if (null == _node || null == _node.Attributes || null == _node.Attributes[XmlConstants.XmlAttributeID])
-            {
-                throw new NotImplementedException();
-            }
-
-            return _node.Attributes[XmlConstants.XmlAttributeID]!.Value;
-        }
+        /// <inheritdoc/>
+        public bool HasChildren => _node.HasChildren();
 
         /// <summary>
         /// Returns the internal node
         /// </summary>
         /// <returns>IDSNode</returns>
-        internal XmlNode GetInternalData()
+        internal IDSNode GetInternalData()
         {
             return _node;
         }
@@ -66,8 +58,8 @@ namespace DotSerial.XML
                 return null;
 
             var children = new List<DSXmlNode>();
-            var tmp = _node.ChildNodes;
-            foreach (XmlNode c in tmp)
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
             {
                 children.Add(new DSXmlNode(c));
             }
@@ -80,27 +72,28 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public static DSXmlNode ToNode(object? obj, string? key = null)
         {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
+            throw new NotImplementedException();
+            // try
+            // {
+            //     // Determine key
+            //     string currKey = key ?? CommonConstants.MainObjectKey;
                 
-                XmlDocument xmlDoc = new();
-                XmlNode rootNode = xmlDoc.CreateElement(currKey);
+            //     XmlDocument xmlDoc = new();
+            //     XmlNode rootNode = xmlDoc.CreateElement(currKey);
 
-                // Serialze Object
-                DotSerialXMLSerialize.Serialize(obj, xmlDoc, rootNode, currKey);
+            //     // Serialze Object
+            //     DotSerialXMLSerialize.Serialize(obj, xmlDoc, rootNode, currKey);
 
-                return new DSXmlNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }            
+            //     return new DSXmlNode(rootNode);
+            // }
+            // catch (DotSerialException ex)
+            // {
+            //     throw new DSXmlException(ex.Message);
+            // }
+            // catch
+            // {
+            //     throw;
+            // }            
         }
 
         /// <inheritdoc/>
@@ -108,40 +101,41 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public string Stringify()
         {
-            try
-            {
-                if (null == _node)
-                {
-                    throw new DSXmlException($"{_node} can't be null.");
-                }
+            throw new NotImplementedException();
+            // try
+            // {
+            //     if (null == _node)
+            //     {
+            //         throw new DSXmlException($"{_node} can't be null.");
+            //     }
 
-                XmlDocument xmlDoc = new ();
-                xmlDoc.AppendChild(_node);
+            //     XmlDocument xmlDoc = new ();
+            //     xmlDoc.AppendChild(_node);
 
-                XDocument doc = XDocument.Parse(xmlDoc.OuterXml);
+            //     XDocument doc = XDocument.Parse(xmlDoc.OuterXml);
 
-                // Add decleration
-                string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
+            //     // Add decleration
+            //     string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
 
-                // Xml content
-                string xmlString = doc.ToString();
+            //     // Xml content
+            //     string xmlString = doc.ToString();
 
-                // Add new line so declaration is seperated in one line
-                result += Environment.NewLine;
+            //     // Add new line so declaration is seperated in one line
+            //     result += Environment.NewLine;
 
-                // Add xml content to result
-                result += xmlString;
+            //     // Add xml content to result
+            //     result += xmlString;
 
-                return result;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }              
+            //     return result;
+            // }
+            // catch (DotSerialException ex)
+            // {
+            //     throw new DSXmlException(ex.Message);
+            // }
+            // catch
+            // {
+            //     throw;
+            // }              
         }
 
         /// <inheritdoc/>
@@ -149,32 +143,33 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public static DSXmlNode FromString(string str)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    throw new DSXmlException($"{str} can't be null or whitespace.");
-                }   
+            throw new NotImplementedException();
+            // try
+            // {
+            //     if (string.IsNullOrWhiteSpace(str))
+            //     {
+            //         throw new DSXmlException($"{str} can't be null or whitespace.");
+            //     }   
 
-                XmlDocument xmlDoc = new();
+            //     XmlDocument xmlDoc = new();
 
-                xmlDoc.LoadXml(str);
-                XmlNodeList s = xmlDoc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
-                XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
-                XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
+            //     xmlDoc.LoadXml(str);
+            //     XmlNodeList s = xmlDoc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
+            //     XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
+            //     XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
 
-                var root = new DSXmlNode(rootNode);       
+            //     var root = new DSXmlNode(rootNode);       
 
-                return root;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }             
+            //     return root;
+            // }
+            // catch (DotSerialException ex)
+            // {
+            //     throw new DSXmlException(ex.Message);
+            // }
+            // catch
+            // {
+            //     throw;
+            // }             
         }
 
         /// <inheritdoc/>
@@ -182,29 +177,30 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public static U ToObject<U>(string xmlString)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(xmlString))
-                {
-                    throw new NotImplementedException();
-                }
+            throw new NotImplementedException();
+            // try
+            // {
+            //     if (string.IsNullOrWhiteSpace(xmlString))
+            //     {
+            //         throw new NotImplementedException();
+            //     }
 
-                // Parse json string to node
-                DSXmlNode dsNode = FromString(xmlString);
-                var tmp = dsNode.GetInternalData();
-                var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
-                DotSerialXMLDeserialize.Deserialize(result, tmp);
+            //     // Parse json string to node
+            //     DSXmlNode dsNode = FromString(xmlString);
+            //     var tmp = dsNode.GetInternalData();
+            //     var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
+            //     DotSerialXMLDeserialize.Deserialize(result, tmp);
 
-                return result;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }                
+            //     return result;
+            // }
+            // catch (DotSerialException ex)
+            // {
+            //     throw new DSXmlException(ex.Message);
+            // }
+            // catch
+            // {
+            //     throw;
+            // }                
         }        
     }
 }

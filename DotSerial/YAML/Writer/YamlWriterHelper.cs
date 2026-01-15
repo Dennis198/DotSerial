@@ -172,13 +172,21 @@ namespace DotSerial.YAML.Writer
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddEmptyObject(StringBuilder sb, string key, int level, string? prefix)
+        internal static void AddEmptyObject(StringBuilder sb, string? key, int level, string? prefix)
         {
             ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
 
-            AddObjectStart(sb, key, level, prefix);
-            sb.Append(" {}");
+            if (false == string.IsNullOrWhiteSpace(key))
+            {
+                AddObjectStart(sb, key, level, prefix);
+                sb.Append(" {}");
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
+                sb.Append("{}");
+            }
         }       
 
         /// <summary>
@@ -188,13 +196,21 @@ namespace DotSerial.YAML.Writer
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddEmptyList(StringBuilder sb, string key, int level, string? prefix)
+        internal static void AddEmptyList(StringBuilder sb, string? key, int level, string? prefix)
         {
             ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
 
-            AddObjectStart(sb, key, level, prefix);
-            sb.Append(" []");
+            if (false == string.IsNullOrWhiteSpace(key))
+            {
+                AddObjectStart(sb, key, level, prefix);
+                sb.Append(" []");
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
+                sb.Append("[]");
+            }            
         }   
 
         /// <summary>
@@ -203,7 +219,7 @@ namespace DotSerial.YAML.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level)
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -211,6 +227,11 @@ namespace DotSerial.YAML.Writer
             sb.AppendLine();
 
             WriteMethods.AddIndentation(sb, level, YAMLConstants.IndentationSize);
+
+            if (null != prefix)
+            {
+                sb.AppendFormat("{0}", prefix);
+            }
 
             if (null == value)
             {

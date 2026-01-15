@@ -58,7 +58,7 @@ namespace DotSerial.YAML.Parser
 
             if (YamlParserHelper.IsYamlSingleValue(lines))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(lines.GetLine(0), 0);
+                rootNode = ParseMethods.ParsePrimitiveNode(lines.GetLine(0), 0, CommonConstants.MainObjectKey);
                 return new DSYamlNode(rootNode);
             }
             else if (YamlParserHelper.IsYamlObject(lines))
@@ -199,64 +199,116 @@ namespace DotSerial.YAML.Parser
 
             if (YamlParserHelper.IsYamlList(lines))
             {
-                if (YamlParserHelper.IsPrimitiveList(lines))
+                // Extract object list
+                var items2 = YamlParserHelper.ExtractObjectList(lines);
+                int index = 0;
+                foreach (var keyValuePair in items2)
                 {
-                     // Extract primitive list
-                    var items = YamlParserHelper.ExtractPrimitiveList(lines);
-                    for (int i = 0; i < items.Count; i++)
+                    // Convert key to int key
+                    string key = index.ToString();
+                    var value = keyValuePair;
+
+                    if (YamlParserHelper.IsYamlSingleValue(value))
                     {
-                        string? value = items[i];
-                        var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
-                        node.AddChild(child);
+                        var val = value.GetLine(0);
+                        val = val.Trim();
+                        var innerNode = ParseMethods.ParsePrimitiveNode(val, 0, key);
+                        node.AddChild(innerNode);
+
                     }
-                }
-                else
-                {
-                    // Extract object list
-                    var items2 = YamlParserHelper.ExtractObjectList(lines);
-                    int index = 0;
-                    foreach (var keyValuePair in items2)
+                    else if (YamlParserHelper.IsYamlObject(value))
+                    {       
+                        // Create inner node
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                        {
+                            // Parse inner node
+                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                        }
+
+                        // Add inner node to parent
+                        node.AddChild(innerNode);
+                    }
+                    else if (YamlParserHelper.IsYamlList(value))
                     {
-                        // Convert key to int key
-                        string key = index.ToString();
-                        var value = keyValuePair;
+                        // Create list node
+                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
 
-                        if (YamlParserHelper.IsYamlObject(value))
-                        {       
-                            // Create inner node
-                            var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
-
-                            if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
-                            {
-                                // Parse inner node
-                                ParserAccept(innerNode, new YamlParserVisitor(), value);
-                            }
-
-                            // Add inner node to parent
-                            node.AddChild(innerNode);
-                        }
-                        else if (YamlParserHelper.IsYamlList(value))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                         {
-                            // Create list node
-                            var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
-
-                            if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
-                            {
-                                // Parse list node
-                                ParserAccept(listNode, new YamlParserVisitor(), value);
-                            }
-
-                            // Add inner node to parent
-                            node.AddChild(listNode); 
+                            // Parse list node
+                            ParserAccept(listNode, new YamlParserVisitor(), value);
                         }
-                        else
-                        {
-                            throw new DSYamlException("Parse: String is not a yaml object.");
-                        }       
 
-                        index++;  
+                        // Add inner node to parent
+                        node.AddChild(listNode); 
                     }
-                }
+                    else
+                    {
+                        throw new DSYamlException("Parse: String is not a yaml object.");
+                    }       
+
+                    index++;  
+                }                
+                // if (YamlParserHelper.IsPrimitiveList(lines))
+                // {
+                //      // Extract primitive list
+                //     var items = YamlParserHelper.ExtractPrimitiveList(lines);
+                //     for (int i = 0; i < items.Count; i++)
+                //     {
+                //         string? value = items[i];
+                //         var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
+                //         node.AddChild(child);
+                //     }
+                // }
+                // else
+                // {
+                //     // Extract object list
+                //     var items2 = YamlParserHelper.ExtractObjectList(lines);
+                //     int index = 0;
+                //     foreach (var keyValuePair in items2)
+                //     {
+                //         // Convert key to int key
+                //         string key = index.ToString();
+                //         var value = keyValuePair;
+
+                //         if (YamlParserHelper.IsYamlObject(value))
+                //         {       
+                //             // Create inner node
+                //             var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+
+                //             if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                //             {
+                //                 // Parse inner node
+                //                 ParserAccept(innerNode, new YamlParserVisitor(), value);
+                //             }
+
+                //             // Add inner node to parent
+                //             node.AddChild(innerNode);
+                //         }
+                //         else if (YamlParserHelper.IsYamlList(value))
+                //         {
+                //             // Create list node
+                //             var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+
+                //             if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                //             {
+                //                 // Parse list node
+                //                 ParserAccept(listNode, new YamlParserVisitor(), value);
+                //             }
+
+                //             // Add inner node to parent
+                //             node.AddChild(listNode); 
+                //         }
+                //         else
+                //         {
+                //             throw new DSYamlException("Parse: String is not a yaml object.");
+                //         }       
+
+                //         index++;  
+                //     }
+                // }
             }
             else
             {

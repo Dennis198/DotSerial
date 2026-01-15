@@ -357,17 +357,17 @@ namespace DotSerial.YAML.Parser
                 return false;
             }
 
-            if (1 != firstLine.CountQuotedValues())
+            if (1 == firstLine.CountQuotedValues())
             {
-                return false;
+                return true;
             }
 
             // "item"
-            if (firstLine.EqualFirstNoWhiteSpaceChar(CommonConstants.Quote) &&
-                firstLine.EqualLastNoWhiteSpaceChar(CommonConstants.Quote))
-            {
-                return true;   
-            }
+            // if (firstLine.EqualFirstNoWhiteSpaceChar(CommonConstants.Quote) &&
+            //     firstLine.EqualLastNoWhiteSpaceChar(CommonConstants.Quote))
+            // {
+            //     return true;   
+            // }
 
             return false;
         }   

@@ -265,17 +265,31 @@ namespace DotSerial.JSON.Parser
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>List<string></returns>
-        internal static List<StringBuilder> ExtractObjectList(StringBuilder sb)
+        internal static List<StringBuilder?> ExtractObjectList(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            var list = new List<StringBuilder>();
+            var list = new List<StringBuilder?>();
 
-            for (int i = 1; i < sb.Length-1; i++)
+            for (int i = 1; i < sb.Length - 1; i++)
             {
                 char c = sb[i];
 
-                if (c == JsonConstants.ListStart)
+                if (c == CommonConstants.Quote)
+                {
+                    StringBuilder sbValue = new ();
+                    int j = ParseMethods.AppendStringValue(sbValue, i, sb.ToString());
+
+                    // Add key
+                    int len = j - i + 1;
+                    var tmp = sb.SubString(i, len);
+
+                    // Add object to result
+                    list.Add(tmp);
+
+                    i = j;
+                }
+                else if (c == JsonConstants.ListStart)
                 {
                      // Extract value
                     int j = ExtractJsonList(sb, i);
@@ -304,6 +318,20 @@ namespace DotSerial.JSON.Parser
                     // Update index
                     i = j;
                 }
+                else if (c == CommonConstants.N)
+                {
+                    if (i + 3 > sb.Length - 1) throw new DSJsonException("Invalid json");
+
+                    i++;
+                    if (sb[i] != CommonConstants.U) throw new DSJsonException("Invalid json");
+                    i++;
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
+                    i++;
+                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
+
+                    // Add value to result
+                    list.Add(null);
+                }                
             }
 
             return list;
@@ -342,54 +370,5 @@ namespace DotSerial.JSON.Parser
 
             return startFound && endFound;
         }      
-
-        /// <summary>
-        /// Extracts list of primitives from json string
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <returns>List<string></returns>
-        internal static List<string?> ExtractPrimitiveList(StringBuilder sb)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            var result = new List<string?>();
-
-            for (int i = 0; i < sb.Length; i++)
-            {
-                char c = sb[i];
-
-                // Check if opening quote is found
-                if (c == CommonConstants.Quote)
-                {
-                    StringBuilder sb2 = new ();
-
-                    // Extract value
-                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
-
-                    // Remove opening and closing value
-                    sb2.Remove(0, 1);
-                    sb2.Remove(sb2.Length - 1, 1);
-
-                    // Add value to result
-                    result.Add(sb2.ToString());
-                }
-                else if (c == CommonConstants.N)
-                {
-                    if (i + 3 > sb.Length - 1) throw new DSJsonException("Invalid json");
-
-                    i++;
-                    if (sb[i] != CommonConstants.U) throw new DSJsonException("Invalid json");
-                    i++;
-                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
-                    i++;
-                    if (sb[i] != CommonConstants.L) throw new DSJsonException("Invalid json");
-
-                    // Add value to result
-                    result.Add(null);
-                }
-            }
-
-            return result;
-        }
     }
 }

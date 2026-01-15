@@ -169,7 +169,7 @@ namespace DotSerial.XML
 
             // Get root element
             XmlDocument doc = serialObj._document;
-            XmlNodeList s = doc.GetElementsByTagName(CommonConstants.MainObjectKey) ?? throw new NullReferenceException();
+            XmlNodeList s = doc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
             XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
             XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
 

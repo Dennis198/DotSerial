@@ -111,7 +111,7 @@ namespace DotSerial.JSON.Writer
             {
                 if (options.AddKey)
                 {
-                    JsonWriterHelper.AddObjectStart(sb, node.Key.ToString(), level);    
+                    JsonWriterHelper.AddObjectStart(sb, node.Key, level);    
                 }
                 else
                 {

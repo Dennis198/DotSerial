@@ -175,7 +175,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.Empty(result);           
-        }            
+        }                    
 
         [Fact]
         public void Dictionary()
@@ -258,6 +258,22 @@ namespace DotSerial.Tests.Core.JSON
             // Assert
             Assert.NotNull(result);
         }   
+
+        [Fact]
+        public void ToObject_ListFirstElementNull()
+        {   
+            // Arrange
+            var example = ListFirstElementNull.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var jsonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ListFirstElementNull>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }          
 
         [Fact]
         public void ToObject_NoAttributeClass()

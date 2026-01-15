@@ -27,6 +27,22 @@ namespace DotSerial.Utilities
 {
     internal static class Extensions
     {
+        public static StringBuilder Trim(this StringBuilder sb)
+        {
+            //  TODO BEI TRIM END AUCH NEUE SB
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length == 0) return sb;
+            int i = 0;
+            for (; i < sb.Length; i++)
+                if (!char.IsWhiteSpace(sb[i]))
+                    break;
+            int len = sb.Length - i;
+            var result = sb.SubString(i, len);
+
+            return result;
+        }
+
         /// <summary>
         /// Trim end whitespace from StringBuilder
         /// </summary>

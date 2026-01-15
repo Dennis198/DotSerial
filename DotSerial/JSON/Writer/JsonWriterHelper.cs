@@ -164,7 +164,6 @@ namespace DotSerial.JSON.Writer
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\": {{}},", key);
             }
-
         }        
 
         /// <summary>

@@ -128,15 +128,16 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="startIndex">StartIndex</param>
+        /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
 
-        internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex)
+        internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex, string key)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
             if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
             {
-                return _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.Leaf);
+                return _nodeFactory.CreateNode(key, null, NodeType.Leaf);
             }
 
             StringBuilder sbPrim = new();
@@ -152,7 +153,7 @@ namespace DotSerial.Utilities
             sbPrim.Remove(sbPrim.Length - 1, 1);
             string nodeValue = sbPrim.ToString();
             
-            return _nodeFactory.CreateNode(CommonConstants.MainObjectKey, nodeValue, NodeType.Leaf);
+            return _nodeFactory.CreateNode(key, nodeValue, NodeType.Leaf);
         }              
     }
 }
