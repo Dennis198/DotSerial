@@ -2,7 +2,9 @@ using System.Xml;
 using System.Xml.Linq;
 using DotSerial.Common;
 using DotSerial.Tree.Nodes;
+using DotSerial.Tree.Serialize;
 using DotSerial.Utilities;
+using DotSerial.XML.Writer;
 
 namespace DotSerial.XML
 {
@@ -46,9 +48,10 @@ namespace DotSerial.XML
         /// <returns>Child node</returns>
         public DSXmlNode? GetChild(string key)
         {
-            throw new NotImplementedException();
-            // var child = _node.GetChild(key);
-            // return new DSJsonNode(child);
+            ArgumentNullException.ThrowIfNull(key);
+
+            var child = _node.GetChild(key);
+            return new DSXmlNode(child);
         }
 
         /// <inheritdoc/>
@@ -72,28 +75,24 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public static DSXmlNode ToNode(object? obj, string? key = null)
         {
-            throw new NotImplementedException();
-            // try
-            // {
-            //     // Determine key
-            //     string currKey = key ?? CommonConstants.MainObjectKey;
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
                 
-            //     XmlDocument xmlDoc = new();
-            //     XmlNode rootNode = xmlDoc.CreateElement(currKey);
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey);
 
-            //     // Serialze Object
-            //     DotSerialXMLSerialize.Serialize(obj, xmlDoc, rootNode, currKey);
-
-            //     return new DSXmlNode(rootNode);
-            // }
-            // catch (DotSerialException ex)
-            // {
-            //     throw new DSXmlException(ex.Message);
-            // }
-            // catch
-            // {
-            //     throw;
-            // }            
+                return new DSXmlNode(rootNode);
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }        
         }
 
         /// <inheritdoc/>
@@ -101,41 +100,26 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public string Stringify()
         {
-            throw new NotImplementedException();
-            // try
-            // {
-            //     if (null == _node)
-            //     {
-            //         throw new DSXmlException($"{_node} can't be null.");
-            //     }
+            if (null == _node)
+            {
+                throw new DSXmlException($"{_node} can't be null.");
+            }
 
-            //     XmlDocument xmlDoc = new ();
-            //     xmlDoc.AppendChild(_node);
+            try
+            {
+                // Convert
+                string jsonString = XmlWriterVisitor.Write(this);
 
-            //     XDocument doc = XDocument.Parse(xmlDoc.OuterXml);
-
-            //     // Add decleration
-            //     string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
-            //     // Xml content
-            //     string xmlString = doc.ToString();
-
-            //     // Add new line so declaration is seperated in one line
-            //     result += Environment.NewLine;
-
-            //     // Add xml content to result
-            //     result += xmlString;
-
-            //     return result;
-            // }
-            // catch (DotSerialException ex)
-            // {
-            //     throw new DSXmlException(ex.Message);
-            // }
-            // catch
-            // {
-            //     throw;
-            // }              
+                return jsonString;
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }                  
         }
 
         /// <inheritdoc/>

@@ -54,7 +54,7 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
-        public void ToJsonString()
+        public void Stringify()
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
@@ -68,7 +68,7 @@ namespace DotSerial.Tests.Core.JSON
         }
 
         [Fact]
-        public void FromJsonString()
+        public void FromString()
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();

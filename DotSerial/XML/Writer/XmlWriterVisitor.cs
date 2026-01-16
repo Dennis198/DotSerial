@@ -14,8 +14,6 @@ namespace DotSerial.XML.Writer
             var internalNode = node.GetInternalData();
             WriterAccept(internalNode, new XmlWriterVisitor(), sb, new XmlWriterOptions(0));
 
-            sb.Remove(sb.Length - 1, 1);
-
             return sb.ToString();
         }
 
@@ -92,11 +90,33 @@ namespace DotSerial.XML.Writer
 
         }
         
+        /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, XmlWriterOptions options)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(sb);
+
+            int level = options.Level;
+
+            if (node.HasChildren())
+            {
+                XmlWriterHelper.AddListStart(sb, node.Key, level);
+
+                var children = node.GetChildren();
+                foreach(var child in children)
+                {
+                    WriterAccept(child, this, sb, new XmlWriterOptions(level + 1));
+                }
+
+                XmlWriterHelper.AddListEnd(sb, level);
+            }
+            else
+            {
+                XmlWriterHelper.AddEmptyList(sb, level, node.Key);
+            }
         }
 
+        /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, XmlWriterOptions options)
         {
             ArgumentNullException.ThrowIfNull(node);
@@ -121,8 +141,6 @@ namespace DotSerial.XML.Writer
                 // Empty node
                 XmlWriterHelper.AddEmptyObject(sb, level, node.Key);
             }
-
-            throw new NotImplementedException();
         }
     }
 }

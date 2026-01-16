@@ -165,21 +165,16 @@ namespace DotSerial.JSON.Writer
                         sb.Append(JsonConstants.ListStart);
                     }
 
-                    StringBuilder sb2 = new();
                     foreach (var child in children)
                     {
-                        StringBuilder sb3 = new();
-                        WriterAccept(child, this, sb3, new JsonWriterOptions(level + 1, false));
-                        sb2.Append(sb3);
+                        WriterAccept(child, this, sb, new JsonWriterOptions(level + 1, false));
                     }
 
-                    sb2.Remove(sb2.Length - 1, 1);
-                    sb2.AppendLine();
-                    WriteMethods.AddIndentation(sb2, level, JsonConstants.IndentationSize);
-                    sb2.Append(JsonConstants.ListEnd);
-                    sb2.Append(CommonConstants.Comma);
-
-                    sb.Append(sb2);
+                    sb.Remove(sb.Length - 1, 1);
+                    sb.AppendLine();
+                    WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                    sb.Append(JsonConstants.ListEnd);
+                    sb.Append(CommonConstants.Comma);
 
                 }
                 else

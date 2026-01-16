@@ -80,12 +80,52 @@ namespace DotSerial.XML.Writer
             }
         }
 
+        internal static void AddListStart(StringBuilder sb, string key, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+            }
+
+            sb.AppendLine();
+            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
+            AddStartTag(sb, XmlConstants.List, key);
+        }
+
+        internal static void AddListEnd(StringBuilder sb, int level)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            sb.AppendLine();
+            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
+            AddEndTag(sb, XmlConstants.List);
+        }           
+
+        internal static void AddEmptyList(StringBuilder sb, int level, string? key = null)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(sb, XmlConstants.List);
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(sb, XmlConstants.List, key);
+            }
+        }        
+
         private static void AddStartTag(StringBuilder sb, string tag, string? name)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(tag);
-
-            sb.AppendFormat("<{0} name=\"{1}\">", tag, name);
 
             if (string.IsNullOrWhiteSpace(name))
             {
