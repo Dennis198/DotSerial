@@ -57,7 +57,7 @@ namespace DotSerial.Tests.Core.XML
         public void Stringify()
         {
             // Arrange
-            var example = NullClass.CreateTestDefault();
+            var example = ExampleClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
 
             // Act
@@ -65,6 +65,22 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void ToObject_ExampleClass()
+        {   
+            // Arrange
+            var example = ExampleClass.CreateTestDefault();
+            var tmp = DSXmlNode.ToNode(example);
+            var jsonString = tmp.Stringify();
+
+            // Act
+            var result = DSXmlNode.ToObject<ExampleClass>(jsonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
         }
     }
 }

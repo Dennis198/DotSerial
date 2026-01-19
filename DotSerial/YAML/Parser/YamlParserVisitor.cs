@@ -154,7 +154,7 @@ namespace DotSerial.YAML.Parser
                     else if (YamlParserHelper.IsYamlObject(value))
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {

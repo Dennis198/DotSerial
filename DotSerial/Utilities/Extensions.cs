@@ -27,6 +27,29 @@ namespace DotSerial.Utilities
 {
     internal static class Extensions
     {
+        public static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
+        {
+            // TODO Null Check damit machen????
+            
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(sbToCheck);
+
+            if (sb.Length - startIndex < sbToCheck.Length)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < sbToCheck.Length; i++)
+            {
+                if (sb[i + startIndex] != sbToCheck[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         public static StringBuilder Trim(this StringBuilder sb)
         {
             //  TODO BEI TRIM END AUCH NEUE SB
@@ -64,6 +87,142 @@ namespace DotSerial.Utilities
                 sb.Length = i + 1;
 
             return sb;
+        }            
+
+        /// <summary>
+        /// asdasd
+        /// </summary>
+        /// <param name="sb"></param>
+        /// <param name="str"></param>
+        /// <param name="startIndex"></param>
+        /// <returns></returns>
+        public static int IndexOf(this StringBuilder sb, string str, int startIndex = 0)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (str.Length == 0)
+            {
+                throw new ArgumentException($"{nameof(str)} is empty.");
+            }
+
+            if (startIndex < 0 || startIndex >= sb.Length)
+            {
+                return -1;
+            }
+
+            int strLength = str.Length;
+
+            if (strLength > sb.Length)
+            {
+                return -1;
+            }
+
+            // Get first char to match
+            char firstChar = str[0];
+
+            for (int i = startIndex; i <= sb.Length - strLength; i++)
+            {
+                char c = sb[i];
+
+                // Check if first character matches
+                if (c == firstChar)
+                {   
+                    // If only one char to match, return index
+                    if (strLength == 1)
+                    {
+                        return i;
+                    }
+
+                    // Check if string fits in remaining length
+                    if (strLength - 1 >= sb.Length - i)
+                    {
+                        return -1;
+                    }
+
+                    for (int j = 1; j < strLength; j++)
+                    {
+                        if (sb[i + j] != str[j])
+                        {
+                            break;
+                        }
+
+                        if (j == strLength - 1)
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
+
+            return -1;
+        }
+
+        public static int LastIndexOf(this StringBuilder sb, string str, int startIndex = 0)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (str.Length == 0)
+            {
+                throw new ArgumentException($"{nameof(str)} is empty.");
+            }
+
+            if (startIndex < 0 || startIndex >= sb.Length)
+            {
+                return -1;
+            }
+
+            int strLength = str.Length;
+
+            if (strLength > sb.Length)
+            {
+                return -1;
+            }
+
+            // Reverse string to match
+            char[] charArray = str.ToCharArray();
+            Array.Reverse(charArray);
+
+            // Get first char to match
+            char firstChar = charArray[0];
+            int effectiveStartIndex = startIndex == 0 ? sb.Length - 1 : startIndex;
+
+            for (int i = effectiveStartIndex; i >= 0; i--)
+            {
+                char c = sb[i];
+
+                // Check if first character matches
+                if (c == firstChar)
+                {
+                    // If only one char to match, return index
+                    if (strLength == 1)
+                    {
+                        return i;
+                    }
+
+                    // Check if string fits in remaining length
+                    if (i - strLength + 1 < 0)
+                    {
+                        return -1;
+                    }
+
+                    for (int j = 1; j < strLength; j++)
+                    {
+                        if (sb[i - j] != charArray[j])
+                        {
+                            break;
+                        }
+
+                        if (j == strLength - 1)
+                        {
+                            return i;
+                        }
+                    }
+                }
+            }
+
+            return -1;
         }
 
         /// <summary>
@@ -130,13 +289,13 @@ namespace DotSerial.Utilities
                 return false;
             }
 
-            if (Char.ToLower(input[0]) != CommonConstants.N)
+            if (char.ToLower(input[0]) != CommonConstants.N)
                 return false;
-            if (Char.ToLower(input[1]) != CommonConstants.U)
+            if (char.ToLower(input[1]) != CommonConstants.U)
                 return false;
-            if (Char.ToLower(input[2]) != CommonConstants.L)
+            if (char.ToLower(input[2]) != CommonConstants.L)
                 return false;
-            if (Char.ToLower(input[3]) != CommonConstants.L)
+            if (char.ToLower(input[3]) != CommonConstants.L)
                 return false;
             
             return true;
@@ -155,7 +314,7 @@ namespace DotSerial.Utilities
             for (int i = 0; i < input.Length; i++)
             {
                 var currChar = input[i];
-                if (Char.IsWhiteSpace(currChar))
+                if (char.IsWhiteSpace(currChar))
                 {
                     continue;
                 }

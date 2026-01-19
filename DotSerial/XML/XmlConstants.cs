@@ -28,6 +28,11 @@ namespace DotSerial.XML
         /// Indentation Size
         /// </summary>
         internal const int IndentationSize = 2;
+
+        internal const char XmlTagOpening = '<';
+        internal const char XmlTagClosing = '>';
+        internal const char XmlTagEnd = '/';
+        internal const char XmlAttributeAssignment = '=';
         
         #region Attribute
 

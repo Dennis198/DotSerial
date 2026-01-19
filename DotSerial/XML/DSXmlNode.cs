@@ -4,6 +4,7 @@ using DotSerial.Common;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 using DotSerial.Utilities;
+using DotSerial.XML.Parser;
 using DotSerial.XML.Writer;
 
 namespace DotSerial.XML
@@ -127,64 +128,52 @@ namespace DotSerial.XML
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
         public static DSXmlNode FromString(string str)
         {
-            throw new NotImplementedException();
-            // try
-            // {
-            //     if (string.IsNullOrWhiteSpace(str))
-            //     {
-            //         throw new DSXmlException($"{str} can't be null or whitespace.");
-            //     }   
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSXmlException($"{str} can't be null or whitespace.");
+                }   
 
-            //     XmlDocument xmlDoc = new();
+                var root = XmlParserVisitor.Parse(str);        
 
-            //     xmlDoc.LoadXml(str);
-            //     XmlNodeList s = xmlDoc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
-            //     XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
-            //     XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
-
-            //     var root = new DSXmlNode(rootNode);       
-
-            //     return root;
-            // }
-            // catch (DotSerialException ex)
-            // {
-            //     throw new DSXmlException(ex.Message);
-            // }
-            // catch
-            // {
-            //     throw;
-            // }             
+                return root;
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }          
         }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string xmlString)
+        public static U ToObject<U>(string str)
         {
-            throw new NotImplementedException();
-            // try
-            // {
-            //     if (string.IsNullOrWhiteSpace(xmlString))
-            //     {
-            //         throw new NotImplementedException();
-            //     }
+            try
+            {
+                if (string.IsNullOrWhiteSpace(str))
+                {
+                    throw new DSXmlException($"{str} can't be null or whitespace.");
+                }
 
-            //     // Parse json string to node
-            //     DSXmlNode dsNode = FromString(xmlString);
-            //     var tmp = dsNode.GetInternalData();
-            //     var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
-            //     DotSerialXMLDeserialize.Deserialize(result, tmp);
+                // Parse json string to node
+                DSXmlNode dsNode = FromString(str);
 
-            //     return result;
-            // }
-            // catch (DotSerialException ex)
-            // {
-            //     throw new DSXmlException(ex.Message);
-            // }
-            // catch
-            // {
-            //     throw;
-            // }                
+                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
+            }
+            catch(DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }                   
         }        
     }
 }

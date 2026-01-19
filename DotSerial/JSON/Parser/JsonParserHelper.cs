@@ -30,7 +30,7 @@ namespace DotSerial.JSON.Parser
     /// <summary>
     /// Helper class with methode for parsing json.
     /// </summary>
-    public static class JsonParserHelper
+    internal static class JsonParserHelper
     {
 
         /// <summary>
