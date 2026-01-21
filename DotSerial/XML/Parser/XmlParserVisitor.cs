@@ -2,10 +2,11 @@ using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.XML.Parser
 {
-       /// <summary>
+    /// <summary>
     /// Implementation of the visitor for xml parser.
     /// </summary>
     public class XmlParserVisitor : IXmlNodeParserVisitor
@@ -17,6 +18,9 @@ namespace DotSerial.XML.Parser
         public static DSXmlNode Parse(string str)
         {
             // TODO remove whitespace
+
+            // Remove xml declaration
+            str = str.Replace(XmlConstants.XmlDeclaration, string.Empty);
 
             StringBuilder sb = new(str);
 
@@ -32,10 +36,33 @@ namespace DotSerial.XML.Parser
 
             IDSNode rootNode;
 
-            rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+            if (rootTagKeyPair.IsXmlObject())
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
+            }
+            else if (rootTagKeyPair.IsXmlList())
+            {
+                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+            }
+            else if (rootTagKeyPair.IsXmlPrimitive())
+            {
+                if(null == rootValue)
+                {
+                    throw new DSXmlException("Parse: String is not a xml object.");
+                }
 
+                rootNode = ParseMethods.ParsePrimitiveNode(rootValue, 0, CommonConstants.MainObjectKey);
+                return new DSXmlNode(rootNode);
+            }
+            else
+            {
+                throw new DSXmlException("Parse: String is not a xml object.");
+            }
             
-            ParserAccept(rootNode, new XmlParserVisitor(), rootValue, rootTagKeyPair);
+            if(null != rootValue)
+            {
+                ParserAccept(rootNode, new XmlParserVisitor(), rootValue, rootTagKeyPair);
+            }
 
             return new DSXmlNode(rootNode);
         }
@@ -125,8 +152,11 @@ namespace DotSerial.XML.Parser
                     }
                     else if (keyValuepair.Key.IsXmlPrimitive())
                     {
-                        string? leafValue = XmlParserHelper.ExtractNodeValue(strValue);
-                        var childNode = _nodeFactory.CreateNode(key, leafValue, NodeType.Leaf);
+                        if(null == strValue)
+                        {
+                            throw new DSXmlException("Parse: String is not a xml object.");
+                        }
+                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
                         node.AddChild(childNode);
                     }
                     else
@@ -144,12 +174,77 @@ namespace DotSerial.XML.Parser
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (tagKeyPair.IsXmlList())
+            {
+                var dic = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
+                int i = 0;
+                foreach(var keyValuepair in dic)                
+                {
+                    // TODO process key value pair
+                    string key = i.ToString();
+                    string tag = keyValuepair.Key.Tag;
+                    StringBuilder? strValue = keyValuepair.Value;
+
+                    if (keyValuepair.Key.IsXmlObject())
+                    {
+                        // Create inner node
+                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+
+                        if (null != strValue)
+                        {
+                            // Parse inner node
+                            ParserAccept(innerNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                        }
+
+                        // Add inner node to parent
+                        node.AddChild(innerNode);
+                    }
+                    else if (keyValuepair.Key.IsXmlList())
+                    {
+                        // Create list node
+                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+
+                        if (null != strValue)
+                        {
+                            // Parse list node
+                            ParserAccept(listNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                        }
+
+                        // Add inner node to parent
+                        node.AddChild(listNode); 
+                    }
+                    else if (keyValuepair.Key.IsXmlPrimitive())
+                    {
+                        if(null == strValue)
+                        {
+                            throw new DSXmlException("Parse: String is not a xml object.");
+                        }
+                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
+                        node.AddChild(childNode);
+                    }
+                    else
+                    {
+                        throw new DSXmlException("Parse: String is not a xml object.");
+                    }
+
+                    i++;
+                }
+            }
+            else
+            {
+                throw new DSXmlException("Parse: String is not a xml list.");
+            }
+
         }
 
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
         {
+            // Currenlty not needed
+            // Will be procced in the VisitInnerNode
             throw new NotImplementedException();
         }
     }

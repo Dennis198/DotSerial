@@ -28,89 +28,41 @@ namespace DotSerial.XML
         /// Indentation Size
         /// </summary>
         internal const int IndentationSize = 2;
-
+        /// <summary>
+        /// XML Declaration
+        /// </summary>
+        internal const string XmlDeclaration = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+        /// <summary>
+        /// XMl Tag opening char
+        /// </summary>
         internal const char XmlTagOpening = '<';
+        /// <summary>
+        /// XML Tag closing char
+        /// </summary>
         internal const char XmlTagClosing = '>';
+        /// <summary>
+        /// XML Tag end char
+        /// </summary>
         internal const char XmlTagEnd = '/';
-        internal const char XmlAttributeAssignment = '=';
-        
-        #region Attribute
-
         /// <summary>
-        /// XML id attribute display
+        /// XML Attribute assignment char
         /// </summary>
-        public const string XmlAttributeID = "id";
+        internal const char XmlAttributeAssignment = '=';    
         /// <summary>
-        /// XML display attribute display
+        /// XML display attribute key
         /// </summary>
-        public const string XmlAttributeName = "name";
+        public const string XmlAttributeKey = "key";
         /// <summary>
-        /// XML id attribute version
+        /// XML InnerNode display
         /// </summary>
-        public const string XmlAttributeVersion = "version";
+        public const string XmlInnerNodeProp = "InnerNode";
         /// <summary>
-        /// XML id attribute version
+        /// XML Leaf display
         /// </summary>
-        public const string XmlAttributeProducer = "producer";
-
-        #endregion
-
-        /// <summary>
-        /// XML Object display
-        /// </summary>
-        public const string DotSerial = "DotSerial";
-        /// <summary>
-        /// XML Object display
-        /// </summary>
-        public const string Object = "Object";
-        /// <summary>
-        /// XML Parameter display
-        /// </summary>
-        public const string Property = "Parameter";
+        public const string XmlLeafProp = "Leaf";
         /// <summary>
         /// XML List Value display
         /// </summary>
-        public const string List = "List";
-        /// <summary>
-        /// XML List Value display
-        /// </summary>
-        public const string Null = "Null";
-        /// <summary>
-        /// XML Dictionary display
-        /// </summary>
-        public const string Dictionary = "Dictionary";
-        /// <summary>
-        /// XML Dictionary KeyValuepair display
-        /// </summary>
-        public const string KeyValuePair = "KeyValuePair";
-        /// <summary>
-        /// XML Dictionary Key display
-        /// </summary>
-        public const string Key = "Key";
-        /// <summary>
-        /// XML Dictionary Value display
-        /// </summary>
-        public const string Value = "Value";
-
-        #region Default Values
-
-        /// <summary>
-        /// String for null objects
-        /// </summary>
-        public const string NullString = "{null}";
-        /// <summary>
-        /// ID for property without id
-        /// </summary>
-        public const int NoAttributeID = -1;
-        /// <summary>
-        /// ID for key in dictionary
-        /// </summary>
-        public const string DicKeyID = "0";
-        /// <summary>
-        /// ID for key in value
-        /// </summary>
-        public const string DicKeyValueID = "1";
-
-        #endregion       
+        public const string XmlListProp = "List";    
     }
 }

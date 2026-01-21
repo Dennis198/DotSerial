@@ -20,7 +20,7 @@ namespace DotSerial.XML.Writer
 
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
 
-            AddStartTag(sb, XmlConstants.Property, key);
+            AddStartTag(sb, XmlConstants.XmlLeafProp, key);
 
             if (null == value)
             {
@@ -28,14 +28,14 @@ namespace DotSerial.XML.Writer
             }
             else if (value == string.Empty)
             {
-                sb.Append("");
+                sb.Append("\"\"");
             }
             else
             {
-                sb.Append(value);
+                sb.AppendFormat("\"{0}\"", value);
             }
 
-            AddEndTag(sb, XmlConstants.Property);
+            AddEndTag(sb, XmlConstants.XmlLeafProp);
         }
 
         internal static void AddObjectStart(StringBuilder sb, string key, int level)
@@ -50,7 +50,7 @@ namespace DotSerial.XML.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddStartTag(sb, XmlConstants.Object, key);
+            AddStartTag(sb, XmlConstants.XmlInnerNodeProp, key);
         }
 
         internal static void AddObjectEnd(StringBuilder sb, int level)
@@ -59,7 +59,7 @@ namespace DotSerial.XML.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddEndTag(sb, XmlConstants.Object);
+            AddEndTag(sb, XmlConstants.XmlInnerNodeProp);
         }        
 
         internal static void AddEmptyObject(StringBuilder sb, int level, string? key = null)
@@ -70,13 +70,13 @@ namespace DotSerial.XML.Writer
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.Object);
+                AddEmptyTag(sb, XmlConstants.XmlInnerNodeProp);
             }
             else
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.Object, key);
+                AddEmptyTag(sb, XmlConstants.XmlInnerNodeProp, key);
             }
         }
 
@@ -92,7 +92,7 @@ namespace DotSerial.XML.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddStartTag(sb, XmlConstants.List, key);
+            AddStartTag(sb, XmlConstants.XmlListProp, key);
         }
 
         internal static void AddListEnd(StringBuilder sb, int level)
@@ -101,7 +101,7 @@ namespace DotSerial.XML.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddEndTag(sb, XmlConstants.List);
+            AddEndTag(sb, XmlConstants.XmlListProp);
         }           
 
         internal static void AddEmptyList(StringBuilder sb, int level, string? key = null)
@@ -112,13 +112,13 @@ namespace DotSerial.XML.Writer
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.List);
+                AddEmptyTag(sb, XmlConstants.XmlListProp);
             }
             else
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.List, key);
+                AddEmptyTag(sb, XmlConstants.XmlListProp, key);
             }
         }        
 
@@ -133,7 +133,7 @@ namespace DotSerial.XML.Writer
             }
             else
             {
-                sb.AppendFormat("<{0} name=\"{1}\">", tag, name);
+                sb.AppendFormat("<{0} {1}=\"{2}\">", tag, XmlConstants.XmlAttributeKey, name);
             }            
         }
 
@@ -157,7 +157,7 @@ namespace DotSerial.XML.Writer
             }
             else
             {
-                sb.AppendFormat("<{0} name=\"{1}\"/>", tag, name);
+                sb.AppendFormat("<{0} {1}=\"{2}\"/>", tag,XmlConstants.XmlAttributeKey, name);
             }
         }        
     }

@@ -24,6 +24,7 @@ using System.Xml;
 using System.Xml.Linq;
 using DotSerial.Utilities;
 using DotSerial.Common;
+using DotSerial.Tree.Serialize;
 
 namespace DotSerial.XML
 {
@@ -35,11 +36,6 @@ namespace DotSerial.XML
         /// XML Document
         /// </summary>
         private XmlDocument? _document;
-
-        /// <summary>
-        /// Current Version
-        /// </summary>
-        private static readonly Version s_Version = new(1, 0, 0);
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
@@ -67,24 +63,22 @@ namespace DotSerial.XML
 
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSXmlException($"{serialObj._document} can't be null");
             }
 
             try
             {
-                using var fileStream = File.Open(path, FileMode.Create);
-                serialObj._document.Save(fileStream);
+                serialObj._document.Save(path);
             }
             catch
             {
                 throw;
-            }
+            }            
         }
 
         /// <inheritdoc/>
         public static U LoadFromFile<U>(string path)
         {
-
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException(nameof(path));
@@ -99,10 +93,7 @@ namespace DotSerial.XML
 
                 XmlDocument xmlDoc = new();
 
-                using (var fileStream = File.OpenRead(path))
-                {
-                    xmlDoc.Load(fileStream);
-                }
+                xmlDoc.Load(path);
 
                 var desObj = new DotSerialXML
                 {
@@ -115,39 +106,23 @@ namespace DotSerial.XML
             catch
             {
                 throw;
-            }
+            }            
         }
 
         /// <inheritdoc/>
         public static DotSerialXML Serialize(object? obj)
         {
-            ArgumentNullException.ThrowIfNull(obj);
-
-            if (false == obj.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
-            XmlDocument xmlDoc = new();
-            XmlDeclaration xmlDecl = xmlDoc.CreateXmlDeclaration(new Version(1, 0).ToString(), "utf-8", null);
-            xmlDoc.AppendChild(xmlDecl);
-
-            // Create root element
-            XmlElement xnodeRoot = xmlDoc.CreateElement(XmlConstants.DotSerial);
-            xmlDoc.AppendChild(xnodeRoot);
-
-            CreateAttribute(xmlDoc, xnodeRoot, XmlConstants.XmlAttributeVersion, s_Version.ToString());
-            CreateAttribute(xmlDoc, xnodeRoot, XmlConstants.XmlAttributeProducer, "DotSerial");
-
             // Serialze Object
-            DotSerialXMLSerialize.Serialize(obj, xmlDoc, xnodeRoot, CommonConstants.MainObjectKey);
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
 
             var result = new DotSerialXML
             {
-                _document = xmlDoc
+                _document = new XmlDocument()
             };
 
-            return result;
+            result._document.RootNode = new DSXmlNode(rootNode);
+
+            return result;            
         }
 
         /// <inheritdoc/>
@@ -155,27 +130,16 @@ namespace DotSerial.XML
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
-            var result = CreateInstanceMethods.CreateInstanceGeneric<U>();
-
-            if (false == result?.GetType().IsClass)
-            {
-                throw new NotSupportedException();
-            }
-
             if (null == serialObj._document)
             {
-                throw new NullReferenceException();
+                throw new DSXmlException($"{serialObj._document} can't be null");
             }
 
             // Get root element
-            XmlDocument doc = serialObj._document;
-            XmlNodeList s = doc.GetElementsByTagName(XmlConstants.DotSerial) ?? throw new NullReferenceException();
-            XmlNode xnodeParameters = s.Item(0) ?? throw new NullReferenceException();
-            XmlNode rootNode = xnodeParameters.ChildNodes[0] ?? throw new NullReferenceException();
+            var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
+            var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
-            DotSerialXMLDeserialize.Deserialize(result, rootNode);
-
-            return result;
+            return result;            
         }
 
         /// <inheritdoc/>
@@ -210,29 +174,6 @@ namespace DotSerial.XML
         }
 
         /// <summary>
-        /// Create XML Attribute
-        /// </summary>
-        /// <param name="xmlDoc">XmlDoc</param>
-        /// <param name="xmlElement">XmlElement</param>
-        /// <param name="name">Name of attribute</param>
-        /// <param name="value">Value of attribute</param>
-        internal static void CreateAttribute(XmlDocument xmlDoc, XmlElement xmlElement, string name, string value)
-        {
-            ArgumentNullException.ThrowIfNull(xmlDoc);
-            ArgumentNullException.ThrowIfNull(xmlElement);
-            ArgumentNullException.ThrowIfNull(value);
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException(name);
-            }
-
-            // Create Attribute
-            var xnodeParaID = xmlDoc.CreateAttribute(name);
-            xnodeParaID.InnerText = value;
-            xmlElement.Attributes?.Append(xnodeParaID);
-        }
-
-        /// <summary>
         /// Converts the serialized object to an string.
         /// </summary>
         /// <returns>String</returns>
@@ -245,20 +186,7 @@ namespace DotSerial.XML
 
             try
             {
-                XDocument doc = XDocument.Parse(_document.OuterXml);
-
-                // Add decleration
-                string result = "<?xml version=\"1.0\" encoding=\"utf-8\"?>";
-
-                // Xml content
-                string xmlString = doc.ToString();
-
-                // Add new line so declaration is seperated in one line
-                result += Environment.NewLine;
-
-                // Add xml content to result
-                result += xmlString;
-
+                string result = _document.RootNode?.Stringify() ?? string.Empty;
                 return result;
             }
             catch (Exception)

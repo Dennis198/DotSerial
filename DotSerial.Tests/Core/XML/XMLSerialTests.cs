@@ -550,13 +550,17 @@ namespace DotSerial.Tests.Core.XML
         }
 
         [Fact]
-        public void CreateSerializedObject_NullRefernceException()
+        public void CreateSerializedObject_Null()
         {
-            // Arrange
+             // Arrange
             object? tmp = null;
 
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => DotSerialXML.Serialize(tmp));
+            // Act
+            var xmlDocument = DotSerialXML.Serialize(tmp);
+            var result = DotSerialXML.Deserialize<object?>(xmlDocument);
+
+            // Assert
+            Assert.Null(result);  
         }
 
         [Fact]

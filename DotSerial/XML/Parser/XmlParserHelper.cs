@@ -22,6 +22,8 @@
 
 using System.Text;
 using DotSerial.Common;
+using DotSerial.Tree;
+using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
 namespace DotSerial.XML.Parser
@@ -40,17 +42,17 @@ namespace DotSerial.XML.Parser
 
         internal bool IsXmlObject()
         {
-            return Tag == XmlConstants.Object;
+            return Tag == XmlConstants.XmlInnerNodeProp;
         }
 
         internal bool IsXmlList()
         {
-            return Tag == XmlConstants.List;
+            return Tag == XmlConstants.XmlListProp;
         }
 
         internal bool IsXmlPrimitive()
         {
-            return Tag == XmlConstants.Property;
+            return Tag == XmlConstants.XmlLeafProp;
         }
     }
 
@@ -59,7 +61,9 @@ namespace DotSerial.XML.Parser
     /// </summary>
     internal static class XmlParserHelper
     {
-
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        
         internal static Dictionary<XmlTagKeyPair, StringBuilder?> ExtractKeyValuePairsFromXmlObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -170,7 +174,7 @@ namespace DotSerial.XML.Parser
                     {
                         int start = ExtractObjectStart(sb, i, out StringBuilder tmp);
 
-                        if (false == IsClosingXmlTag(tmp))
+                        if (false == IsClosingXmlTag(tmp) && false == IsEmptyXmlTag(tmp))
                         {
                             var tagKeyPair = ExtractTagAndKey(tmp);
 
@@ -185,42 +189,6 @@ namespace DotSerial.XML.Parser
                 }
             }
 
-            // // Find index if end tag.
-            // int i = sb.LastIndexOf(tag);
-
-            // if (-1 == i)
-            // {
-            //     throw new DSXmlException("Parse: Could not find end of xml tag.");
-            // }
-
-            // for (int j = i; j >= 0; j--)
-            // {
-            //     if (sb[j] == XmlConstants.XmlTagOpening)
-            //     {
-            //         startIndex = j;
-            //         break;
-            //     }
-            // }
-
-            // bool endTagFound = false;
-
-            // for (; i < sb.Length; i++)
-            // {
-            //     char c = sb[i];
-            //     if (c == XmlConstants.XmlTagClosing)
-            //     {
-            //         endTagFound = true;
-            //         endIndex = i;
-            //         break;
-            //     }
-            // }
-
-            // // Validate end tag found
-            // if (false == endTagFound)
-            // {
-            //     throw new DSXmlException("Parse: Could not find end of xml tag.");
-            // }
-
             if (-1 == startIndex || -1 == endIndex)
             {
                 throw new DSXmlException("Parse: Could not find end of xml tag.");
@@ -229,17 +197,62 @@ namespace DotSerial.XML.Parser
             return (startIndex, endIndex);
         }
 
-        internal static string? ExtractNodeValue(StringBuilder? sb)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
+        // internal static StringBuilder RemoveXmlDeclaration(StringBuilder? sb)
+        // {
+        //     ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.EqualsNullString())
-            {
-                return null;
-            }
+        //     if (sb.EqualsNullString())
+        //     {
+        //         return null;
+        //     }
 
-            return sb.ToString();
-        }
+        //     return sb;
+        // }
+
+        // internal static string? ExtractNodeValue(StringBuilder? sb)
+        // {
+        //     ArgumentNullException.ThrowIfNull(sb);
+
+        //     if (sb.EqualsNullString())
+        //     {
+        //         return null;
+        //     }
+
+        //     return sb.ToString();
+        // }
+
+        /// <summary>
+        /// Parses primitive node without a key, e.g "3.14"
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="startIndex">StartIndex</param>
+        /// <param name="key">Key of the node</param>
+        /// <returns>Leafnode</returns>
+
+        // internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex, string key)
+        // {
+        //     ArgumentNullException.ThrowIfNull(sb);
+
+        //     if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
+        //     {
+        //         return _nodeFactory.CreateNode(key, null, NodeType.Leaf);
+        //     }
+
+        //     StringBuilder sbPrim = new();
+
+        //     int i = ParseMethods.AppendStringValue(sbPrim, startIndex, sb.ToString());
+        //     if (i != sb.Length -1)
+        //     {
+        //         throw new DotSerialException("Parse: Can't parse single value.");
+        //     }
+
+        //     // Remove opening and closing quote
+        //     sbPrim.Remove(0, 1);
+        //     sbPrim.Remove(sbPrim.Length - 1, 1);
+        //     string nodeValue = sbPrim.ToString();
+            
+        //     return _nodeFactory.CreateNode(key, nodeValue, NodeType.Leaf);
+        // }           
 
         private static bool IsClosingXmlTag(StringBuilder sb)
         {
@@ -347,14 +360,14 @@ namespace DotSerial.XML.Parser
             }
 
             // Key
-            int indexKey = sb.IndexOf(XmlConstants.XmlAttributeName);
+            int indexKey = sb.IndexOf(XmlConstants.XmlAttributeKey);
 
             if (-1 == indexKey)
             {
                 throw new NotImplementedException();
             }
 
-            indexKey += XmlConstants.XmlAttributeName.Length;
+            indexKey += XmlConstants.XmlAttributeKey.Length;
 
             for (; indexKey < sb.Length - 1; indexKey++)
             {

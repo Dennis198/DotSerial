@@ -487,14 +487,7 @@ namespace DotSerial.Utilities
             // String
             else if (typeObj == typeof(string))
             {
-                if (str.Equals(XmlConstants.NullString))
-                {
-                    primObj = null;
-                }
-                else
-                {
-                    primObj = str;
-                }
+                primObj = str;
             }
             else
             {
