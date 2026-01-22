@@ -22,13 +22,13 @@
 
 using System.Text;
 using DotSerial.Common;
-using DotSerial.Tree;
-using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
 namespace DotSerial.XML.Parser
 {
-    // TODO interface internal machen.
+    /// <summary>
+    /// Class representing a tag key pair in xml.
+    /// </summary>
     public class XmlTagKeyPair
     {
         internal string Tag;
@@ -40,16 +40,28 @@ namespace DotSerial.XML.Parser
             Key = key;
         }
 
+        /// <summary>
+        /// Checks if the tag key pair represents an xml object.
+        /// </summary>
+        /// <returns>True, if object</returns>
         internal bool IsXmlObject()
         {
             return Tag == XmlConstants.XmlInnerNodeProp;
         }
 
+        /// <summary>
+        /// Checks if the tag key pair represents an xml list.
+        /// </summary>
+        /// <returns>True, if list</returns>
         internal bool IsXmlList()
         {
             return Tag == XmlConstants.XmlListProp;
         }
 
+        /// <summary>
+        /// Checks if the tag key pair represents an xml primitive.
+        /// </summary>
+        /// <returns>True, if primitive</returns>
         internal bool IsXmlPrimitive()
         {
             return Tag == XmlConstants.XmlLeafProp;
@@ -61,9 +73,12 @@ namespace DotSerial.XML.Parser
     /// </summary>
     internal static class XmlParserHelper
     {
-        /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-        
+
+        /// <summary>
+        /// Extracts all key value pairs from an xml object string builder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>Dictionary<XmlTagKeyPair, StringBuilder?> </returns>        
         internal static Dictionary<XmlTagKeyPair, StringBuilder?> ExtractKeyValuePairsFromXmlObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -76,9 +91,6 @@ namespace DotSerial.XML.Parser
 
                 if (c == XmlConstants.XmlTagOpening)
                 {
-                    // TODO extract key value pair
-                    // i = ExtractKeyValuePair(sb, i, out XmlTagKeyPair tagKeyPair);
-                    // result.Add(tagKeyPair, null);
                     i = ExtractKeyValuePair(sb, i, out XmlTagKeyPair tagKeyPair, out StringBuilder? value);
                     result.Add(tagKeyPair, value);
                 }
@@ -87,29 +99,48 @@ namespace DotSerial.XML.Parser
             return result;
         }
 
+        /// <summary>
+        /// Extracts a key value pair from an xml object string builder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">StartIndex</param>
+        /// <param name="tagKeyPair">XmlTagKeyPair</param>
+        /// <param name="value">Extracted Value</param>
+        /// <returns>End Index of the object</returns>
         private static int ExtractKeyValuePair(StringBuilder sb, int startIndex, out XmlTagKeyPair tagKeyPair, out StringBuilder? value)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
+            // Extract opening tag
             int start = ExtractObjectStart(sb, startIndex, out StringBuilder tmp);
+            // Extract tag and key
             tagKeyPair = ExtractTagAndKey(tmp);
 
+            // Check for empty tag
             if (IsEmptyXmlTag(tmp))
             {
                 value = null;
                 return start;
             }
 
+            // Extract end index of object
             var startAndEnd = FindIndexEndOfXmlTag(sb, start, tagKeyPair.Tag);
 
+            // Extract value
             int len = (startAndEnd.start - 1) - (start + 1) + 1;
-
             value = sb.SubString(start + 1, len);
 
             return startAndEnd.end;
         }
 
-        private static (int start, int end) FindIndexEndOfXmlTag(StringBuilder sb, int tmpIndex, string tag)
+        /// <summary>
+        /// Finds the end index of an xml tag.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="indexStartSearch">Index to start searching/param>
+        /// <param name="tag"></param>
+        /// <returns>(Start index of end tag and end index of end tag)</returns>
+        private static (int start, int end) FindIndexEndOfXmlTag(StringBuilder sb, int indexStartSearch, string tag)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -118,21 +149,24 @@ namespace DotSerial.XML.Parser
                 throw new ArgumentNullException(nameof(tag));
             }
 
+            // Build end tag
             StringBuilder endTagBuilder = new();
             endTagBuilder.Append(XmlConstants.XmlTagOpening);
             endTagBuilder.Append(XmlConstants.XmlTagEnd);
             endTagBuilder.Append(tag);
             endTagBuilder.Append(XmlConstants.XmlTagClosing);
 
-
+            // Count new objects
             int numberNewObjects = 0;
 
             int startIndex = -1;
             int endIndex = -1;
 
-            for (int i = tmpIndex; i < sb.Length; i++)
+            for (int i = indexStartSearch; i < sb.Length; i++)
             {
                 char c = sb[i];
+
+                // Skip quoted values
                 if (c == CommonConstants.Quote)
                 {
                     StringBuilder _ = new ();
@@ -141,11 +175,13 @@ namespace DotSerial.XML.Parser
                 }
                 else if (c == XmlConstants.XmlTagOpening)
                 {
+                    // Check for the end tag
                     if (sb.EqualsContent(endTagBuilder, i))
                     {
                         if (numberNewObjects == 0)
                         {
                             startIndex = i;
+
                             // Find end index
                             for (int j = i; j < sb.Length; j++)
                             {
@@ -172,18 +208,22 @@ namespace DotSerial.XML.Parser
                     }
                     else
                     {
+                        // Extract full object to check its tag
                         int start = ExtractObjectStart(sb, i, out StringBuilder tmp);
 
+                        // Check if it is a closing or empty tag
                         if (false == IsClosingXmlTag(tmp) && false == IsEmptyXmlTag(tmp))
                         {
                             var tagKeyPair = ExtractTagAndKey(tmp);
 
+                            // Check if it is the same tag
                             if (tagKeyPair.Tag.Equals(tag))
                             {
                                 numberNewObjects++;
                             }
                         }
 
+                        // Move index to end of extracted object
                         i = start;
                     }
                 }
@@ -195,65 +235,13 @@ namespace DotSerial.XML.Parser
             }
 
             return (startIndex, endIndex);
-        }
-
-        // internal static StringBuilder RemoveXmlDeclaration(StringBuilder? sb)
-        // {
-        //     ArgumentNullException.ThrowIfNull(sb);
-
-        //     if (sb.EqualsNullString())
-        //     {
-        //         return null;
-        //     }
-
-        //     return sb;
-        // }
-
-        // internal static string? ExtractNodeValue(StringBuilder? sb)
-        // {
-        //     ArgumentNullException.ThrowIfNull(sb);
-
-        //     if (sb.EqualsNullString())
-        //     {
-        //         return null;
-        //     }
-
-        //     return sb.ToString();
-        // }
+        }       
 
         /// <summary>
-        /// Parses primitive node without a key, e.g "3.14"
+        /// Checks if the string builder is a closing xml tag.
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="startIndex">StartIndex</param>
-        /// <param name="key">Key of the node</param>
-        /// <returns>Leafnode</returns>
-
-        // internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex, string key)
-        // {
-        //     ArgumentNullException.ThrowIfNull(sb);
-
-        //     if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
-        //     {
-        //         return _nodeFactory.CreateNode(key, null, NodeType.Leaf);
-        //     }
-
-        //     StringBuilder sbPrim = new();
-
-        //     int i = ParseMethods.AppendStringValue(sbPrim, startIndex, sb.ToString());
-        //     if (i != sb.Length -1)
-        //     {
-        //         throw new DotSerialException("Parse: Can't parse single value.");
-        //     }
-
-        //     // Remove opening and closing quote
-        //     sbPrim.Remove(0, 1);
-        //     sbPrim.Remove(sbPrim.Length - 1, 1);
-        //     string nodeValue = sbPrim.ToString();
-            
-        //     return _nodeFactory.CreateNode(key, nodeValue, NodeType.Leaf);
-        // }           
-
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if closing tag</returns>
         private static bool IsClosingXmlTag(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -288,6 +276,11 @@ namespace DotSerial.XML.Parser
             throw new DSXmlException("Parse: Unkown error.");
         }
 
+        /// <summary>
+        /// Checks if the string builder is an empty xml tag.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if emtpy tag</returns>
         private static bool IsEmptyXmlTag(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -322,6 +315,11 @@ namespace DotSerial.XML.Parser
             throw new DSXmlException("Parse: Unkown error.");
         }
 
+        /// <summary>
+        /// Extracts the tag and key from an xml object string builder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>XmlTagKeyPair</returns>
         private static XmlTagKeyPair ExtractTagAndKey(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -394,6 +392,13 @@ namespace DotSerial.XML.Parser
             return result;
         }
 
+        /// <summary>
+        /// Extracts the start of an xml object from a string builder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex</param>
+        /// <param name="result">Extracted startiing tag</param>
+        /// <returns>End index of the starting tag in the stringbuilder</returns>
         private static int ExtractObjectStart(StringBuilder sb, int startIndex, out StringBuilder result)
         {
             ArgumentNullException.ThrowIfNull(sb);

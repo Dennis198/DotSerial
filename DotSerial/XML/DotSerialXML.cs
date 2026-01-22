@@ -20,8 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using System.Xml;
-using System.Xml.Linq;
 using DotSerial.Utilities;
 using DotSerial.Common;
 using DotSerial.Tree.Serialize;

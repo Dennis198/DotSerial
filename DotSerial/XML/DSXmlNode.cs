@@ -127,9 +127,9 @@ namespace DotSerial.XML
             try
             {
                 // Convert
-                string jsonString = XmlWriterVisitor.Write(this);
+                string xmlString = XmlWriterVisitor.Write(this);
 
-                return jsonString;
+                return xmlString;
             }
             catch(DotSerialException ex)
             {
@@ -179,7 +179,7 @@ namespace DotSerial.XML
                     throw new DSXmlException($"{str} can't be null or whitespace.");
                 }
 
-                // Parse json string to node
+                // Parse xml string to node
                 DSXmlNode dsNode = FromString(str);
 
                 return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
