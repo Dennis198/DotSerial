@@ -20,52 +20,48 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
-
-namespace DotSerial.Tests.Attributes
+namespace DotSerial.Tests.Utilities
 {
-    public class HelperMethodsTests
+    public class CreateInstanceMethodsTests
     {
         [Fact]
-        public void GetSerializeName_True()
+        public void CreateInstanceGeneric_Class()
         {
             // Arrange
-            NoAttributeClass tmp = new ();            
-            PropertyInfo[] props = tmp.GetType().GetProperties();
+            var simpleClass = new SimpleClass();
 
-            foreach (PropertyInfo prop in props)
-            {
-                if (prop.Name == nameof(NoAttributeClass.Boolean))
-                {
-                    // Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
+            // Act
+            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric(simpleClass.GetType());
 
-                    // Assert
-                    Assert.Equal("1", id);
-                    return;
-                }
-            }
+            // Assert
+            Assert.Equal(simpleClass.GetType(), result.GetType());
         }
 
         [Fact]
-        public void GetSerializeName_False()
+        public void CreateInstanceGenericT_Class()
         {
             // Arrange
-            NoAttributeClass tmp = new ();
-            PropertyInfo[] props = tmp.GetType().GetProperties();
+            var simpleClass = new SimpleClass();
 
-            foreach (PropertyInfo prop in props)
-            {
-                if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
-                {
-                    //Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
+            // Act
+            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric<SimpleClass>();
 
-                    // Assert
-                    Assert.Null(id);
-                    return;
-                }
-            }
+            // Assert
+            Assert.Equal(simpleClass.GetType(), result.GetType());
+        }
+
+        [Fact]
+        public void CreateInstanceArray_int()
+        {
+            // Arrange
+            var array = new int[5];
+
+            // Act
+            Array result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceArray(array.GetType(), array.Length);
+
+            // Assert
+            Assert.Equal(array.GetType(), result.GetType());
+            Assert.Equal(array.Length, result.Length);
         }
     }
 }

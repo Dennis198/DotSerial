@@ -28,19 +28,27 @@ using System.Net;
 
 namespace DotSerial.Tests
 {
+    public interface ITestable<T>
+    {
+        public static abstract T CreateTestDefault();
+        public abstract bool AssertTest(T actual);
+    }
+
+#pragma warning disable CS8602
+#pragma warning disable CS8604
 
     /// <summary>
     /// Example class (ReadMe.md)
     /// </summary>
-    public class ExampleClass
+    public class ExampleClass : ITestable<ExampleClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
 
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Number { get; set; }
 
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public string? Text { get; set; }
 
         public static ExampleClass CreateTestDefault()
@@ -54,6 +62,20 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(ExampleClass actual)
+        {
+            var expected = this;
+            
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            if (expected.Number != actual.Number)
+                return false;
+            if (false == expected?.Text?.Equals(actual.Text))
+                return false;
+            
+            return true;
+        }
     }
 
     /// <summary>
@@ -65,13 +87,14 @@ namespace DotSerial.Tests
     /// <summary>
     /// No Attribute Class
     /// </summary>
-    public class NoAttributeClass
+    public class NoAttributeClass : ITestable<NoAttributeClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public bool Boolean { get; set; }
 
+        [DotSerialIgnore]
         public bool BooleanNoAttribute { get; set; }
         public int IntNoAttribute { get; set; }
         public string? StringNoAttribute { get; set; }
@@ -99,19 +122,34 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(NoAttributeClass actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            
+            if (false == expected.PrimitiveClass.AssertTest(actual.PrimitiveClass))
+            {
+                return false;
+            }
+            
+            return true;
+        }
     }
 
-    public class AccessModifierClass
+    public class AccessModifierClass : ITestable<AccessModifierClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int PublicBoolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         private int PrivateBoolean { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         internal int InternalBoolean { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         protected int ProtectedBoolean { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public static int StaticBoolean { get; set; }
 
         public static AccessModifierClass CreateTestDefault()
@@ -128,48 +166,60 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(AccessModifierClass actual)
+        {
+            var expected = this;
+
+            if (expected.PublicBoolean != actual.PublicBoolean)
+                return false;
+            if (AccessModifierClass.StaticBoolean != 15)
+                return false;
+            
+            return true;
+        }
     }
 
     /// <summary>
     /// Null Class
     /// </summary>
-    public class NullClass
+    public class NullClass : ITestable<NullClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public SimpleClass? SimpleClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public SimpleClass[]? Array { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public List<SimpleClass>? List { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public SimpleClass?[]? ArrayWithNulls { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public List<SimpleClass>? ListWithNulls { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public string? String { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public bool[]? BooleanArray { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<bool>? BooleanList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public string[]? StringArray { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<string>? StringList { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public string?[]? StringArrayWithNulls { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<string>? StringListWithNulls { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public TestEnum[]? EnumArray { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<TestEnum>? EnumList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public Dictionary<int, SimpleClass>? Dictionary { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public string? StringAsText { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public string? StringEmpty { get; set; }
 
         public static NullClass CreateTestDefault()
@@ -200,92 +250,359 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(NullClass actual)
+        {
+            var expected = this;
+
+            if (expected.SimpleClass != null || actual.SimpleClass != null)
+                return false;
+            if (expected.Array != null || actual.Array != null)
+                return false;
+            if (expected.List != null || actual.List != null)
+                return false;
+            if (expected.String != null || actual.String != null)
+                return false;    
+            if (expected.BooleanArray != null || actual.BooleanArray != null)
+                return false;         
+            if (expected.BooleanList != null || actual.BooleanList != null)
+                return false;    
+            if (expected.StringArray != null || actual.StringArray != null)
+                return false;   
+            if (expected.StringList != null || actual.StringList != null)
+                return false;        
+            if (expected.EnumArray != null || actual.EnumArray != null)
+                return false;   
+            if (expected.EnumList != null || actual.EnumList != null)
+                return false;       
+            if (expected.Dictionary != null || actual.Dictionary != null)
+                return false;     
+            if (!expected.StringAsText.Equals(actual.StringAsText))
+                return false;            
+            if (!expected.StringEmpty.Equals(actual.StringEmpty))
+                return false;    
+
+            if (expected.ArrayWithNulls.Length != actual.ArrayWithNulls.Length)
+                return false;
+            for (int i = 0; i < expected.ArrayWithNulls.Length; i++)
+            {
+                if (expected.ArrayWithNulls[0] != null || actual.ArrayWithNulls[0] != null)
+                    return false;
+            } 
+
+            if (expected.ListWithNulls.Count != actual.ListWithNulls.Count)
+                return false;
+            for (int i = 0; i < expected.ListWithNulls.Count; i++)
+            {
+                if (expected.ListWithNulls[0] != null || actual.ListWithNulls[0] != null)
+                    return false;
+            }      
+
+            if (expected.StringArrayWithNulls.Length != actual.StringArrayWithNulls.Length)
+                return false;
+            for (int i = 0; i < expected.StringArrayWithNulls.Length; i++)
+            {
+                if (expected.StringArrayWithNulls[0] != null || actual.StringArrayWithNulls[0] != null)
+                    return false;
+            } 
+
+            if (expected.StringListWithNulls.Count != actual.StringListWithNulls.Count)
+                return false;
+            for (int i = 0; i < expected.StringListWithNulls.Count; i++)
+            {
+                if (expected.StringListWithNulls[0] != null || actual.StringListWithNulls[0] != null)
+                    return false;
+            }               
+
+            if (expected.DictionaryWithNulls.Count != actual.DictionaryWithNulls.Count)
+                return false;
+
+            foreach(var keyValue in expected.DictionaryWithNulls)
+            {
+                if (actual.DictionaryWithNulls.TryGetValue(keyValue.Key, out var simple))
+                {
+                    if (keyValue.Value != null || simple != null)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }    
+
+            return true;
+        }
+    }
+
+    public class ListFirstElementNull : ITestable<ListFirstElementNull>
+    {
+        [DotSerialName("1")]
+        public List<SimpleClass?>? List { get; set; }
+
+        public static ListFirstElementNull CreateTestDefault()
+        {
+            int num = 5;
+            var tmp = new ListFirstElementNull
+            {
+                List = []
+            };
+            tmp.List.Add(null);
+            for (int i = 1; i < num; i++)
+            {
+                var d = new SimpleClass
+                {
+                    Boolean = true
+                };
+
+                tmp.List.Add(d);
+            }
+
+            return tmp;
+        }
+
+        public bool AssertTest(ListFirstElementNull actual)
+        {
+            var expected = this;
+
+            if (expected.List.Count != actual.List.Count)
+                return false;
+            if (actual.List[0] != null)
+                return false;
+            for (int i = 1; i < expected.List.Count; i++)
+            {
+                if (false == expected.List[i].AssertTest(actual.List[i]))
+                {
+                    return false;
+                }
+            }   
+            return true;
+
+        }
     }
 
     /// <summary>
     /// Simple Class
     /// </summary>
-    public class SimpleClass
+    public class SimpleClass : ITestable<SimpleClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
+
+        public static SimpleClass CreateTestDefault()
+        {
+            var tmp = new SimpleClass{
+                Boolean = true,
+            };
+
+            return tmp;
+        }
+
+        public bool AssertTest(SimpleClass actual)
+        {
+            var expected = this;
+
+            if (null == expected && null == actual)
+                return true;
+
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            
+            return true;
+        }
     }
 
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
-    public class IEnumerableClass
+    public class IEnumerableClass : ITestable<IEnumerableClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public SimpleClass[]? Array { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<SimpleClass>? List { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public Dictionary<int, SimpleClass>? Dic { get; set; }
+
+        public static IEnumerableClass CreateTestDefault()
+        {
+            int num = 2;
+            var tmp = new IEnumerableClass
+            {
+                Array = new SimpleClass[num],
+                List = [],
+                Dic = []
+            };
+            for (int i = 0; i < num; i++)
+            {
+                var d = new SimpleClass
+                {
+                    Boolean = true
+                };
+
+                tmp.Array[i] = d;
+                tmp.List.Add(d);
+                tmp.Dic.Add(i, d);
+            }
+
+            return tmp;
+        }
+
+        public bool AssertTest(IEnumerableClass actual)
+        {
+            var expected = this;
+
+            if (expected.Array.Length != actual.Array.Length)
+                return false;
+            for (int i = 0; i < expected.Array.Length; i++)
+            {
+                if (false == expected.Array[i].AssertTest(actual.Array[i]))
+                {
+                    return false;
+                }
+            }
+
+            if (expected.List.Count != actual.List.Count)
+                return false;
+            for (int i = 0; i < expected.List.Count; i++)
+            {
+                if (false == expected.List[i].AssertTest(actual.List[i]))
+                {
+                    return false;
+                }
+            }       
+
+            if (expected.Dic.Count != actual.Dic.Count)
+                return false;
+            foreach(var keyValue in expected.Dic)
+            {
+                if (actual.Dic.TryGetValue(keyValue.Key, out var simple))
+                {
+                    if (false == keyValue.Value.AssertTest(simple))
+                    {
+                        return false;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }   
+
+            return true;                
+        }
     }
 
     /// <summary>
     /// Nested Class
     /// </summary>
-    public class NestedClass()
+    public class NestedClass() : ITestable<NestedClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public bool Boolean { get; set; }
+
+        public static NestedClass CreateTestDefault()
+        {
+            var tmp = new NestedClass
+            {
+                PrimitiveClass = PrimitiveClass.CreateTestDefault(),
+                Boolean = true
+            };
+
+            return tmp;
+        }
+
+        public bool AssertTest(NestedClass actual)
+        {
+            var expected = this;
+
+            if (false == expected.PrimitiveClass.AssertTest(actual.PrimitiveClass))
+                return false;
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            
+            return true;
+        }
     }
 
     /// <summary>
     /// Nested Nested Class
     /// </summary>
-    public class NestedNestedClass()
+    public class NestedNestedClass() : ITestable<NestedNestedClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public NestedClass? NestedClass { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public PrimitiveClass? PrimitiveClass { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public bool Boolean { get; set; }
+
+        public static NestedNestedClass CreateTestDefault()
+        {
+            var tmp = new NestedNestedClass
+            {
+                NestedClass = NestedClass.CreateTestDefault(),
+                PrimitiveClass = PrimitiveClass.CreateTestDefault(),
+                Boolean = true
+            };
+
+            return tmp;
+        }
+
+        public bool AssertTest(NestedNestedClass actual)
+        {
+            var expected = this;
+
+            if (false == expected.NestedClass.AssertTest(actual.NestedClass))
+                return false;
+            if (false == expected.PrimitiveClass.AssertTest(actual.PrimitiveClass))
+                return false;
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            
+            return true;
+        }
     }
 
     /// <summary>
     /// Class with all primitives
     /// </summary>
-    public class PrimitiveClass
+    public class PrimitiveClass : ITestable<PrimitiveClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool Boolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public byte Byte { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public sbyte SByte { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public char Char { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public decimal Decimal { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public double Double { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public float Float { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public int Int { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public uint UInt { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public nint NInt { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public nuint NUInt { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public long Long { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public ulong ULong { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public short Short { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public ushort UShort { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public string? String { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public TestEnum Enum { get; set; }        
 
         public static PrimitiveClass CreateTestDefault()
@@ -313,80 +630,124 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(PrimitiveClass actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean != actual.Boolean)
+                return false;
+            if (expected.Byte != actual.Byte)
+                return false;
+            if (expected.SByte != actual.SByte)
+                return false;                
+            if (expected.Char != actual.Char)
+                return false;
+            if (expected.Decimal != actual.Decimal)
+                return false;
+            if (expected.Double != actual.Double)
+                return false;
+            if (expected.Float != actual.Float)
+                return false;
+            if (expected.Int != actual.Int)
+                return false;
+            if (expected.UInt != actual.UInt)
+                return false;
+            if (expected.NInt != actual.NInt)
+                return false;
+            if (expected.NUInt != actual.NUInt)
+                return false;
+            if (expected.Long != actual.Long)
+                return false;
+            if (expected.Short != actual.Short)
+                return false;
+            if (expected.UShort != actual.UShort)
+                return false;
+            if (null == expected.String && null != actual.String)
+            {
+                return false;
+            }
+            if (false == expected.String.Equals(actual.String))
+                return false;                
+            if (expected.Enum != actual.Enum)
+                return false;   
+                                                                                                            
+            return true;                                                                                                            
+        }
     }
 
     /// <summary>
     /// Class with all primitives in arrays/list
     /// </summary>
-    public class PrimitiveClassIEnumarable
+    public class PrimitiveClassIEnumarable : ITestable<PrimitiveClassIEnumarable>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public bool[]? Boolean { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<bool>? BooleanList { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public byte[]? Byte { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public List<byte>? ByteList { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public sbyte[]? SByte { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public List<sbyte>? SByteList { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public char[]? Char { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<char>? CharList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public decimal[]? Decimal { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<decimal>? DecimalList { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public double[]? Double { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<double>? DoubleList { get; set; }
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public float[]? Float { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<float>? FloatList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public int[]? Int { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public List<int>? IntList { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public uint[]? UInt { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public List<uint>? UIntList { get; set; }
-        [DSPropertyID(18)]
+        [DotSerialName("18")]
         public nint[]? NInt { get; set; }
-        [DSPropertyID(19)]
+        [DotSerialName("19")]
         public List<nint>? NIntList { get; set; }
-        [DSPropertyID(20)]
+        [DotSerialName("20")]
         public nuint[]? NUInt { get; set; }
-        [DSPropertyID(21)]
+        [DotSerialName("21")]
         public List<nuint>? NUIntList { get; set; }
-        [DSPropertyID(22)]
+        [DotSerialName("22")]
         public long[]? Long { get; set; }
-        [DSPropertyID(23)]
+        [DotSerialName("23")]
         public List<long>? LongList { get; set; }
-        [DSPropertyID(24)]
+        [DotSerialName("24")]
         public ulong[]? ULong { get; set; }
-        [DSPropertyID(25)]
+        [DotSerialName("25")]
         public List<ulong>? ULongList { get; set; }
-        [DSPropertyID(26)]
+        [DotSerialName("26")]
         public short[]? Short { get; set; }
-        [DSPropertyID(27)]
+        [DotSerialName("27")]
         public List<short>? ShortList { get; set; }
-        [DSPropertyID(28)]
+        [DotSerialName("28")]
         public ushort[]? UShort { get; set; }
-        [DSPropertyID(29)]
+        [DotSerialName("29")]
         public List<ushort>? UShortList { get; set; }
-        [DSPropertyID(30)]
+        [DotSerialName("30")]
         public string[]? String { get; set; }
-        [DSPropertyID(31)]
+        [DotSerialName("31")]
         public List<string>? StringList { get; set; }
-        [DSPropertyID(32)]
+        [DotSerialName("32")]
         public TestEnum[]? Enum { get; set; }
-        [DSPropertyID(33)]
+        [DotSerialName("33")]
         public List<TestEnum>? EnumList { get; set; }
 
         public static PrimitiveClassIEnumarable CreateTestDefault()
@@ -431,63 +792,411 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(PrimitiveClassIEnumarable actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean.Length != actual.Boolean.Length)
+                return false;
+            for (int i = 0; i < expected.Boolean.Length; i++)
+            {
+                if (expected.Boolean[i] != actual.Boolean[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.BooleanList.Count != actual.BooleanList.Count)
+                return false;
+            for (int i = 0; i < expected.BooleanList.Count; i++)
+            {
+                if (expected.BooleanList[i] != actual.BooleanList[i])
+                {
+                    return false;
+                }
+            }        
+
+            if (expected.Byte.Length != actual.Byte.Length)
+                return false;
+            for (int i = 0; i < expected.Byte.Length; i++)
+            {
+                if (expected.Byte[i] != actual.Byte[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.ByteList.Count != actual.ByteList.Count)
+                return false;
+            for (int i = 0; i < expected.ByteList.Count; i++)
+            {
+                if (expected.ByteList[i] != actual.ByteList[i])
+                {
+                    return false;
+                }
+            }             
+
+            if (expected.SByte.Length != actual.SByte.Length)
+                return false;
+            for (int i = 0; i < expected.SByte.Length; i++)
+            {
+                if (expected.SByte[i] != actual.SByte[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.SByteList.Count != actual.SByteList.Count)
+                return false;
+            for (int i = 0; i < expected.SByteList.Count; i++)
+            {
+                if (expected.SByteList[i] != actual.SByteList[i])
+                {
+                    return false;
+                }
+            }          
+
+            if (expected.Char.Length != actual.Char.Length)
+                return false;
+            for (int i = 0; i < expected.Char.Length; i++)
+            {
+                if (expected.Char[i] != actual.Char[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.CharList.Count != actual.CharList.Count)
+                return false;
+            for (int i = 0; i < expected.CharList.Count; i++)
+            {
+                if (expected.CharList[i] != actual.CharList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Decimal.Length != actual.Decimal.Length)
+                return false;
+            for (int i = 0; i < expected.Decimal.Length; i++)
+            {
+                if (expected.Decimal[i] != actual.Decimal[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.DecimalList.Count != actual.DecimalList.Count)
+                return false;
+            for (int i = 0; i < expected.DecimalList.Count; i++)
+            {
+                if (expected.DecimalList[i] != actual.DecimalList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Double.Length != actual.Double.Length)
+                return false;
+            for (int i = 0; i < expected.Double.Length; i++)
+            {
+                if (expected.Double[i] != actual.Double[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.DoubleList.Count != actual.DoubleList.Count)
+                return false;
+            for (int i = 0; i < expected.DoubleList.Count; i++)
+            {
+                if (expected.DoubleList[i] != actual.DoubleList[i])
+                {
+                    return false;
+                }
+            }        
+
+            if (expected.Float.Length != actual.Float.Length)
+                return false;
+            for (int i = 0; i < expected.Float.Length; i++)
+            {
+                if (expected.Float[i] != actual.Float[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.FloatList.Count != actual.FloatList.Count)
+                return false;
+            for (int i = 0; i < expected.FloatList.Count; i++)
+            {
+                if (expected.FloatList[i] != actual.FloatList[i])
+                {
+                    return false;
+                }
+            }           
+
+            if (expected.Int.Length != actual.Int.Length)
+                return false;
+            for (int i = 0; i < expected.Int.Length; i++)
+            {
+                if (expected.Int[i] != actual.Int[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.IntList.Count != actual.IntList.Count)
+                return false;
+            for (int i = 0; i < expected.IntList.Count; i++)
+            {
+                if (expected.IntList[i] != actual.IntList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.UInt.Length != actual.UInt.Length)
+                return false;
+            for (int i = 0; i < expected.UInt.Length; i++)
+            {
+                if (expected.UInt[i] != actual.UInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.UIntList.Count != actual.UIntList.Count)
+                return false;
+            for (int i = 0; i < expected.UIntList.Count; i++)
+            {
+                if (expected.UIntList[i] != actual.UIntList[i])
+                {
+                    return false;
+                }
+            }    
+
+            if (expected.NInt.Length != actual.NInt.Length)
+                return false;
+            for (int i = 0; i < expected.NInt.Length; i++)
+            {
+                if (expected.NInt[i] != actual.NInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.NIntList.Count != actual.NIntList.Count)
+                return false;
+            for (int i = 0; i < expected.NIntList.Count; i++)
+            {
+                if (expected.NIntList[i] != actual.NIntList[i])
+                {
+                    return false;
+                }
+            }      
+
+            if (expected.NUInt.Length != actual.NUInt.Length)
+                return false;
+            for (int i = 0; i < expected.NUInt.Length; i++)
+            {
+                if (expected.NUInt[i] != actual.NUInt[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.NUIntList.Count != actual.NUIntList.Count)
+                return false;
+            for (int i = 0; i < expected.NUIntList.Count; i++)
+            {
+                if (expected.NUIntList[i] != actual.NUIntList[i])
+                {
+                    return false;
+                }
+            }       
+
+            if (expected.Long.Length != actual.Long.Length)
+                return false;
+            for (int i = 0; i < expected.Long.Length; i++)
+            {
+                if (expected.Long[i] != actual.Long[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.LongList.Count != actual.LongList.Count)
+                return false;
+            for (int i = 0; i < expected.LongList.Count; i++)
+            {
+                if (expected.LongList[i] != actual.LongList[i])
+                {
+                    return false;
+                }
+            }           
+
+            if (expected.ULong.Length != actual.ULong.Length)
+                return false;
+            for (int i = 0; i < expected.ULong.Length; i++)
+            {
+                if (expected.ULong[i] != actual.ULong[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.ULongList.Count != actual.ULongList.Count)
+                return false;
+            for (int i = 0; i < expected.ULongList.Count; i++)
+            {
+                if (expected.ULongList[i] != actual.ULongList[i])
+                {
+                    return false;
+                }
+            }     
+
+            if (expected.Short.Length != actual.Short.Length)
+                return false;
+            for (int i = 0; i < expected.Short.Length; i++)
+            {
+                if (expected.Short[i] != actual.Short[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.ShortList.Count != actual.ShortList.Count)
+                return false;
+            for (int i = 0; i < expected.ShortList.Count; i++)
+            {
+                if (expected.ShortList[i] != actual.ShortList[i])
+                {
+                    return false;
+                }
+            }    
+
+            if (expected.UShort.Length != actual.UShort.Length)
+                return false;
+            for (int i = 0; i < expected.UShort.Length; i++)
+            {
+                if (expected.UShort[i] != actual.UShort[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.UShortList.Count != actual.UShortList.Count)
+                return false;
+            for (int i = 0; i < expected.UShortList.Count; i++)
+            {
+                if (expected.UShortList[i] != actual.UShortList[i])
+                {
+                    return false;
+                }
+            }  
+
+            if (expected.String.Length != actual.String.Length)
+                return false;
+            for (int i = 0; i < expected.String.Length; i++)
+            {
+                if (!expected.String[i].Equals(actual.String[i]))
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.StringList.Count != actual.StringList.Count)
+                return false;
+            for (int i = 0; i < expected.StringList.Count; i++)
+            {
+                if (!expected.StringList[i].Equals(actual.StringList[i]))
+                {
+                    return false;
+                }
+            }                 
+
+            if (expected.Enum.Length != actual.Enum.Length)
+                return false;
+            for (int i = 0; i < expected.Enum.Length; i++)
+            {
+                if (expected.Enum[i] != actual.Enum[i])
+                {
+                    return false;
+                }
+            }  
+ 
+            if (expected.EnumList.Count != actual.EnumList.Count)
+                return false;
+            for (int i = 0; i < expected.EnumList.Count; i++)
+            {
+                if (expected.EnumList[i] != actual.EnumList[i])
+                {
+                    return false;
+                }
+            }                                                                                                                  
+
+
+            return true;
+        }
     }
 
     /// <summary>
     /// Multidim IEnumarable Class
     /// </summary>
-    public class MultiDimClassIEnumarble
+    public class MultiDimClassIEnumarble : ITestable<MultiDimClassIEnumarble>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int[][]? Int { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public List<List<int>>? IntList{ get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public int[][][]? IntThree { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public List<List<List<int>>>? IntListThree { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public List<int>[]? IntMix { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public List<int[]>? IntListMix { get; set; }
 
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
         public string[][]? String { get; set; }
-        [DSPropertyID(7)]
+        [DotSerialName("7")]
         public List<List<string>>? StringList { get; set; }
-        [DSPropertyID(8)]
+        [DotSerialName("8")]
         public string[][][]? StringThree { get; set; }
-        [DSPropertyID(9)]
+        [DotSerialName("9")]
         public List<List<List<string>>>? StringListThree { get; set; }
-        [DSPropertyID(10)]
+        [DotSerialName("10")]
         public List<string>[]? StringMix { get; set; }
-        [DSPropertyID(11)]
+        [DotSerialName("11")]
         public List<string[]>? StringListMix { get; set; }
 
-        [DSPropertyID(12)]
+        [DotSerialName("12")]
         public PrimitiveClass[][]? PrimitiveClassArray { get; set; }
-        [DSPropertyID(13)]
+        [DotSerialName("13")]
         public List<List<PrimitiveClass>>? PrimitiveClassList { get; set; }
-        [DSPropertyID(14)]
+        [DotSerialName("14")]
         public PrimitiveClass[][][]? PrimitiveClassArrayThree { get; set; }
-        [DSPropertyID(15)]
+        [DotSerialName("15")]
         public List<List<List<PrimitiveClass>>>? PrimitiveClassListThree { get; set; }
-        [DSPropertyID(16)]
+        [DotSerialName("16")]
         public List<PrimitiveClass>[]? PrimitiveClassArrayMix { get; set; }
-        [DSPropertyID(17)]
+        [DotSerialName("17")]
         public List<PrimitiveClass[]>? PrimitiveClassListMix { get; set; }
 
-        [DSPropertyID(18)]
+        [DotSerialName("18")]
         public TestEnum[][]? Enum { get; set; }
-        [DSPropertyID(19)]
+        [DotSerialName("19")]
         public List<List<TestEnum>>? EnumList { get; set; }
-        [DSPropertyID(20)]
+        [DotSerialName("20")]
         public TestEnum[][][]? EnumThree { get; set; }
-        [DSPropertyID(21)]
+        [DotSerialName("21")]
         public List<List<List<TestEnum>>>? EnumListThree { get; set; }
-        [DSPropertyID(22)]
+        [DotSerialName("22")]
         public List<TestEnum>[]? EnumMix { get; set; }
-        [DSPropertyID(23)]
+        [DotSerialName("23")]
         public List<TestEnum[]>? EnumListMix { get; set; }
         
         public static MultiDimClassIEnumarble CreateTestDefault()
@@ -696,24 +1405,30 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(MultiDimClassIEnumarble actual)
+        {
+            // TODO...
+            return true;
+        }
     }
 
     /// <summary>
     /// Dictionary Class
     /// </summary>
-    public class DictionaryClass()
+    public class DictionaryClass() : ITestable<DictionaryClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public Dictionary<int, int>? DicIntInt { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public Dictionary<int, string?>? DicIntString { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public Dictionary<string, int>? DicStringInt { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public Dictionary<string, string>? DicStringString { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public Dictionary<string, string>? DicEmpty { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public Dictionary<string, string>? DicNull { get; set; }
 
         public static DictionaryClass CreateTestDefault()
@@ -744,20 +1459,100 @@ namespace DotSerial.Tests
 
             return result;
         }
+
+        public bool AssertTest(DictionaryClass actual)
+        {
+            var expected = this;
+
+            if (expected.DicIntInt.Count != actual.DicIntInt.Count)
+                return false;
+            foreach(var keyValue in expected.DicIntInt)
+            {
+                if (actual.DicIntInt.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            } 
+
+            if (expected.DicIntString.Count != actual.DicIntString.Count)
+                return false;
+            foreach(var keyValue in expected.DicIntString)
+            {
+                if (actual.DicIntString.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value == null)
+                    {
+                        if (value != null)
+                            return false;
+                        
+                        continue;
+                    }
+                    if (false == keyValue.Value.Equals(value))
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }    
+
+            if (expected.DicStringInt.Count != actual.DicStringInt.Count)
+                return false;
+            foreach(var keyValue in expected.DicStringInt)
+            {
+                if (actual.DicStringInt.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }   
+
+            if (expected.DicStringString.Count != actual.DicStringString.Count)
+                return false;
+            foreach(var keyValue in expected.DicStringString)
+            {
+                if (actual.DicStringString.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (false == keyValue.Value.Equals(value))
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }      
+
+            if (expected.DicEmpty.Count != actual.DicEmpty.Count)
+                return false;  
+
+            if (expected.DicNull != null || actual.DicNull != null)
+                return false;    
+
+            return true;
+        }
     }
 
     /// <summary>
     /// Class with an enum
     /// </summary>
-    public class EnumClass()
+    public class EnumClass() : ITestable<EnumClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestEnum TestEnum0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestEnum TestEnum1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestEnum TestEnum2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestEnum[]? TestEnumArray { get; set; }
 
         public static EnumClass CreateTestDefault()
@@ -772,19 +1567,40 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(EnumClass actual)
+        {
+            var expected = this;
+
+            if (expected.TestEnum0 != actual.TestEnum0)
+                return false;
+            if (expected.TestEnum1 != actual.TestEnum1)
+                return false;
+            if (expected.TestEnum2 != actual.TestEnum2)
+                return false;
+            if (expected.TestEnumArray.Length != actual.TestEnumArray.Length)
+                return false;                                                
+            for (int i = 0; i < expected.TestEnumArray.Length; i++)
+            {
+                if (expected.TestEnumArray[i] != actual.TestEnumArray[i])
+                    return false;
+            }
+
+            return true;
+        }
     }
 
-    public class DateTimeClass()
+    public class DateTimeClass() : ITestable<DateTimeClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public DateTime Date1 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public DateTime Date2 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public DateTime Date3 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public DateTime[]? DateArray { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public Dictionary<int, DateTime>? DateDic { get; set; }
 
         public static DateTimeClass CreateTestDefault()
@@ -802,20 +1618,57 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(DateTimeClass actual)
+        {
+            var expected = this;
+
+            if (!expected.Date1.ToString().Equals(actual.Date1.ToString()))
+                return false;  
+            if (!expected.Date2.ToString().Equals(actual.Date2.ToString()))
+                return false; 
+            if (!expected.Date3.ToString().Equals(actual.Date3.ToString()))
+                return false; 
+            if (expected.DateArray.Length != actual.DateArray.Length)
+                return false;                                                
+            for (int i = 0; i < expected.DateArray.Length; i++)
+            {
+                if (!expected.DateArray[i].ToString().Equals(actual.DateArray[i].ToString()))
+                    return false; 
+            }   
+
+            if (expected.DateDic.Count != actual.DateDic.Count)
+                return false;
+            foreach(var keyValue in expected.DateDic)
+            {
+                if (actual.DateDic.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (!keyValue.Value.ToString().Equals(value.ToString()))
+                        return false; 
+                }
+                else
+                {
+                    return false;
+                }
+            }     
+
+            return true;                      
+
+        }
     }
 
     /// <summary>
     /// Struct Class
     /// </summary>
-    public class StructClass()
+    public class StructClass() : ITestable<StructClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestStruct TestStruct0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestStruct TestStruct1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestStruct TestStruct2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestStruct[]? TestStructArray { get; set; }
 
         public static StructClass CreateTestDefault()
@@ -830,6 +1683,36 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(StructClass actual)
+        {
+            var expected = this;
+
+            if (expected.TestStruct0.Value0 != actual.TestStruct0.Value0)
+                return false;
+            if (expected.TestStruct0.Value1 != actual.TestStruct0.Value1)
+                return false;
+            if (expected.TestStruct1.Value0 != actual.TestStruct1.Value0)
+                return false;
+            if (expected.TestStruct1.Value1 != actual.TestStruct1.Value1)
+                return false;
+            if (expected.TestStruct2.Value0 != actual.TestStruct2.Value0)
+                return false;
+            if (expected.TestStruct2.Value1 != actual.TestStruct2.Value1)
+                return false;  
+            if (expected.TestStructArray.Length != actual.TestStructArray.Length)
+                return false;                                                
+            for (int i = 0; i < expected.TestStructArray.Length; i++)
+            {
+                if (expected.TestStructArray[i].Value0 != actual.TestStructArray[i].Value0)
+                    return false;
+                if (expected.TestStructArray[i].Value1 != actual.TestStructArray[i].Value1)
+                    return false; 
+            }  
+
+            return true; 
+
+        }
     }
 
     /// <summary>
@@ -837,9 +1720,9 @@ namespace DotSerial.Tests
     /// </summary>
     public class DuplicateIDClass
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public int Value0 { get; set; }
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public int Value1 { get; set; }
     }
 
@@ -848,22 +1731,22 @@ namespace DotSerial.Tests
     /// </summary>
     public class InvalidIDClass()
     {
-        [DSPropertyID(-1)]
+        [DotSerialName("")]
         public int Value0 { get; set; }
     }
 
     /// <summary>
     /// Record Class
     /// </summary>
-    public class RecordClass()
+    public class RecordClass() : ITestable<RecordClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public TestRecord? TestRecord0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public TestRecord? TestRecord1 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TestRecord? TestRecord2 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public TestRecord[]? TestRecordArray { get; set; }
 
         public static RecordClass CreateTestDefault()
@@ -878,26 +1761,55 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(RecordClass actual)
+        {
+            var expected = this;
+
+            if (expected.TestRecord0.Value0 != actual.TestRecord0.Value0)
+                return false;
+            if (expected.TestRecord0.Value1 != actual.TestRecord0.Value1)
+                return false;
+            if (expected.TestRecord1.Value0 != actual.TestRecord1.Value0)
+                return false;
+            if (expected.TestRecord1.Value1 != actual.TestRecord1.Value1)
+                return false;
+            if (expected.TestRecord2.Value0 != actual.TestRecord2.Value0)
+                return false;
+            if (expected.TestRecord2.Value1 != actual.TestRecord2.Value1)
+                return false;  
+            if (expected.TestRecordArray.Length != actual.TestRecordArray.Length)
+                return false;                                                
+            for (int i = 0; i < expected.TestRecordArray.Length; i++)
+            {
+                if (expected.TestRecordArray[i].Value0 != actual.TestRecordArray[i].Value0)
+                    return false;
+                if (expected.TestRecordArray[i].Value1 != actual.TestRecordArray[i].Value1)
+                    return false; 
+            }  
+
+            return true; 
+        }
     }
 
     /// <summary>
     /// Class with parsable objects
     /// </summary>
-    public class ParsableClass()
+    public class ParsableClass() : ITestable<ParsableClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public DateTime DateTime0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public Guid Guid0 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public TimeSpan TimeSpan0 { get; set; }
-        [DSPropertyID(3)]
+        [DotSerialName("3")]
         public Uri? Uri0 { get; set; }
-        [DSPropertyID(4)]
+        [DotSerialName("4")]
         public IPAddress? IPAddress0 { get; set; }
-        [DSPropertyID(5)]
+        [DotSerialName("5")]
         public Version? Version0 { get; set; }
-        [DSPropertyID(6)]
+        [DotSerialName("6")]
 
         public CultureInfo? CultureInfo0 { get; set; }
 
@@ -916,18 +1828,40 @@ namespace DotSerial.Tests
 
             return tmp;
         }
+
+        public bool AssertTest(ParsableClass actual)
+        {
+            var expected = this;
+
+            if (!expected.DateTime0.ToString().Equals(actual.DateTime0.ToString()))
+                return false; 
+            if (!expected.Guid0.ToString().Equals(actual.Guid0.ToString()))
+                return false; 
+            if (!expected.TimeSpan0.ToString().Equals(actual.TimeSpan0.ToString()))
+                return false; 
+            if (!expected.Uri0.ToString().Equals(actual.Uri0.ToString()))
+                return false; 
+            if (!expected.IPAddress0.ToString().Equals(actual.IPAddress0.ToString()))
+                return false;      
+            if (!expected.Version0.ToString().Equals(actual.Version0.ToString()))
+                return false;    
+            if (!expected.CultureInfo0.ToString().Equals(actual.CultureInfo0.ToString()))
+                return false;                                                                                               
+
+            return true;
+        }
     }
 
     /// <summary>
     /// Path class
     /// </summary>
-    public class PathClass
+    public class PathClass : ITestable<PathClass>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public string? Path1 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public string? Path2 { get; set; }
-        [DSPropertyID(2)]
+        [DotSerialName("2")]
         public string? Path3 { get; set; }
 
         public static PathClass CreateTestDefault()
@@ -940,14 +1874,28 @@ namespace DotSerial.Tests
             };
             return tmp;
         }
+
+        public bool AssertTest(PathClass actual)
+        {
+            var expected = this;
+
+            if (!expected.Path1.ToString().Equals(actual.Path1.ToString()))
+                return false; 
+            if (!expected.Path2.ToString().Equals(actual.Path2.ToString()))
+                return false; 
+            if (!expected.Path3.ToString().Equals(actual.Path3.ToString()))
+                return false;     
+
+            return true;
+        }
     }
 
     /// <summary>
     /// Class without a parameterless constructor.
     /// </summary>
-    public class ClassWithoutParameterlessConstructor(string name)
+    public class ClassWithoutParameterlessConstructor(string name) : ITestable<ClassWithoutParameterlessConstructor>
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public string Name { get; set; } = name;
 
         public static ClassWithoutParameterlessConstructor CreateTestDefault()
@@ -955,15 +1903,47 @@ namespace DotSerial.Tests
             var tmp = new ClassWithoutParameterlessConstructor("test");
             return tmp;
         }
+
+        public bool AssertTest(ClassWithoutParameterlessConstructor actual)
+        {
+            var expected = this;
+
+            if (!expected.Name.ToString().Equals(actual.Name.ToString()))
+                return false;     
+
+            return true;             
+        }
     }
 
     /// <summary>
     /// Class with struct without parameterless constructor.
     /// </summary>
-    public class ClassRecordNoParameterlessConstructor
+    public class ClassRecordNoParameterlessConstructor : ITestable<ClassRecordNoParameterlessConstructor>
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public TestRecordNoParameterlessConstructor? Value0 { get; set; }
+
+        public static ClassRecordNoParameterlessConstructor CreateTestDefault()
+        {
+            var tmp = new ClassRecordNoParameterlessConstructor
+            {
+                Value0 = new TestRecordNoParameterlessConstructor(5, 33),
+            };
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassRecordNoParameterlessConstructor actual)
+        {
+            var expected = this;
+
+            if (expected.Value0.Value0 !=  actual.Value0.Value0)
+                return false;
+            if (expected.Value0.Value1 !=  actual.Value0.Value1)
+                return false;
+
+            return true; 
+        }
     }
 
     #region Helper Class, Enum, Struct, ...
@@ -985,9 +1965,9 @@ namespace DotSerial.Tests
     /// </summary>
     public struct TestStruct(int x, int y)
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; } = x;
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; } = y;
     }
 
@@ -996,9 +1976,9 @@ namespace DotSerial.Tests
     /// </summary>
     public record TestRecord
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; }
 
         public TestRecord()
@@ -1016,9 +1996,9 @@ namespace DotSerial.Tests
     /// </summary>
     public record TestRecordNoParameterlessConstructor
     {
-        [DSPropertyID(0)]
+        [DotSerialName("0")]
         public int Value0 { get; set; }
-        [DSPropertyID(1)]
+        [DotSerialName("1")]
         public int Value1 { get; set; }
 
         public TestRecordNoParameterlessConstructor(int x, int y)
@@ -1034,52 +2014,55 @@ namespace DotSerial.Tests
 
     public class HashSetClassNotSupported
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public HashSet<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassHashTable
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassStack
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Stack<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassQueue
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public Queue<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassLinkedList
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public LinkedList<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassObservableCollection
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public ObservableCollection<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassSortedList
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public SortedList<int, int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassSortedSet
     {
-        [DSPropertyID(1893)]
+        [DotSerialName("1893")]
         public SortedSet<int>? Value0 { get; set; }
     }
 
     #endregion
+
+#pragma warning restore CS8602        
+#pragma warning restore CS8604        
 
 }

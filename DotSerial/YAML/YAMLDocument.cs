@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,52 +20,61 @@
 //SOFTWARE.
 #endregion
 
-using System.Reflection;
+using DotSerial.Common;
 
-namespace DotSerial.Tests.Attributes
+namespace DotSerial.YAML
 {
-    public class HelperMethodsTests
+    /// <summary>
+    /// Class which represents a Yaml document
+    /// </summary>
+    internal class YAMLDocument : DSDocument
     {
-        [Fact]
-        public void GetSerializeName_True()
+        /// <summary>
+        /// Root node
+        /// </summary>
+        internal DSYamlNode? RootNode;
+
+        /// <inheritdoc/>
+        public override void Load(string fileName)
         {
-            // Arrange
-            NoAttributeClass tmp = new ();            
-            PropertyInfo[] props = tmp.GetType().GetProperties();
-
-            foreach (PropertyInfo prop in props)
+            try
             {
-                if (prop.Name == nameof(NoAttributeClass.Boolean))
+                if (false == LoadFileContent(fileName, out string content))
                 {
-                    // Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
-
-                    // Assert
-                    Assert.Equal("1", id);
-                    return;
+                    throw new NotSupportedException();
                 }
+
+                var tmp = DSYamlNode.FromString(content);
+                RootNode = tmp;
             }
+            catch
+            {
+                throw;
+            }
+
         }
 
-        [Fact]
-        public void GetSerializeName_False()
+        /// <inheritdoc/>
+        public override void Save(string fileName)
         {
-            // Arrange
-            NoAttributeClass tmp = new ();
-            PropertyInfo[] props = tmp.GetType().GetProperties();
-
-            foreach (PropertyInfo prop in props)
+            try
             {
-                if (prop.Name == nameof(NoAttributeClass.BooleanNoAttribute))
+                if (null == RootNode)
                 {
-                    //Act
-                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
+                    throw new NullReferenceException(nameof(RootNode));
+                }
 
-                    // Assert
-                    Assert.Null(id);
-                    return;
+                var content = RootNode.Stringify();
+
+                if (false == SaveContentToFile(fileName, content))
+                {
+                    throw new NotSupportedException();
                 }
             }
+            catch
+            {
+                throw;
+            }          
         }
     }
 }
