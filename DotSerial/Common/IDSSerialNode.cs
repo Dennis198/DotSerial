@@ -116,7 +116,9 @@ namespace DotSerial.Common
 
                 if (null == resultObj)
                 {
+#pragma warning disable CS8603
                     return default;
+#pragma warning restore CS8603                    
                 }
                 
                 // cast object to U

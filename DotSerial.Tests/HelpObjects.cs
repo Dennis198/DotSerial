@@ -34,6 +34,9 @@ namespace DotSerial.Tests
         public abstract bool AssertTest(T actual);
     }
 
+#pragma warning disable CS8602
+#pragma warning disable CS8604
+
     /// <summary>
     /// Example class (ReadMe.md)
     /// </summary>
@@ -2058,5 +2061,8 @@ namespace DotSerial.Tests
     }
 
     #endregion
+
+#pragma warning restore CS8602        
+#pragma warning restore CS8604        
 
 }
