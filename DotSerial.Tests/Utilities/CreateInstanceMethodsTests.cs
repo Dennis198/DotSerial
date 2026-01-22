@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,24 +20,48 @@
 //SOFTWARE.
 #endregion
 
-using System.Text;
-using DotSerial.Utilities;
-
-namespace DotSerial.Tests.Core.Misc
+namespace DotSerial.Tests.Utilities
 {
-    public class ExtensionsTests
+    public class CreateInstanceMethodsTests
     {
         [Fact]
-        public void TrimEnd()
+        public void CreateInstanceGeneric_Class()
         {
             // Arrange
-            StringBuilder sb = new("Hello World!     ");
+            var simpleClass = new SimpleClass();
 
             // Act
-            var result = sb.TrimEnd();
+            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric(simpleClass.GetType());
 
             // Assert
-            Assert.Equal("Hello World!", result.ToString());
+            Assert.Equal(simpleClass.GetType(), result.GetType());
+        }
+
+        [Fact]
+        public void CreateInstanceGenericT_Class()
+        {
+            // Arrange
+            var simpleClass = new SimpleClass();
+
+            // Act
+            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric<SimpleClass>();
+
+            // Assert
+            Assert.Equal(simpleClass.GetType(), result.GetType());
+        }
+
+        [Fact]
+        public void CreateInstanceArray_int()
+        {
+            // Arrange
+            var array = new int[5];
+
+            // Act
+            Array result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceArray(array.GetType(), array.Length);
+
+            // Assert
+            Assert.Equal(array.GetType(), result.GetType());
+            Assert.Equal(array.Length, result.Length);
         }
     }
 }

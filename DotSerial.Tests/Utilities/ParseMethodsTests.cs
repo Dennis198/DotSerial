@@ -22,27 +22,36 @@
 
 using System.Text;
 
-namespace DotSerial.Tests.Core.Misc
+namespace DotSerial.Tests.Utilities
 {
-    public class WriterMethodsTests
+    public class ParserMethodsTests
     {
-        [Theory]
-        [InlineData("HelloWorld", 0)]
-        [InlineData("HelloWorld", 2)]
-        [InlineData("HelloWorld", 4)]
-        [InlineData("HelloWorld", 10)]
-        public void AddIndentation(string str, int count)
+        [Fact]
+        public void AppendStringValue()
         {
             // Arrange
+            string str = "    \"Hello\"            \"World. DotSerial\"   ";
             StringBuilder sb = new();
 
             // Act
-            DotSerial.Utilities.WriteMethods.AddIndentation(sb, count, 4);
-            sb.Append(str);
+            var result = DotSerial.Utilities.ParseMethods.AppendStringValue(sb, 4, str);
 
             // Assert
-            Assert.Equal(new string(' ', count * 4) + str, sb.ToString());
+            Assert.Equal(10, result);
+            Assert.Equal("\"Hello\"", sb.ToString());
         }
 
+        [Fact]
+        public void RemoveWhiteSpace()
+        {
+            // Arrange
+            string str = "    \"Hello\"            \"World. DotSerial\"   ";
+
+            // Act
+            var result = DotSerial.Utilities.ParseMethods.RemoveWhiteSpace(str);
+
+            // Assert
+            Assert.Equal("\"Hello\"\"World. DotSerial\"", result);
+        }
     }
 }

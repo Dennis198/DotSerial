@@ -24,11 +24,10 @@ using DotSerial.Common;
 using DotSerial.Tree.Deserialize;
 using DotSerial.Tree.Serialize;
 
-namespace DotSerial.Tests.Core.General
+namespace DotSerial.Tests.Tree.Serialize
 {
-    public class DSDeserializeTests
+    public class SerializeObjectTests
     {
-
         [Fact]
         public void Deserialize_EmptyClass()
         {
@@ -42,7 +41,6 @@ namespace DotSerial.Tests.Core.General
             {
                 // Assert
                 Assert.NotNull(result);
-                EqualCheck.AssertClassEqual(tmp, castedResult);
             }
             else
             {

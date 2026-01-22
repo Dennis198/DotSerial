@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,11 +23,11 @@
 using System.Collections;
 using System.Collections.ObjectModel;
 using DotSerial.Common;
-using DotSerial.XML;
+using DotSerial.YAML;
 
-namespace DotSerial.Tests.Core.XML
+namespace DotSerial.Tests.YAML
 {
-    public class XMLSerialTests
+    public class DotSerialYAMLTests
     {
 
         [Fact]
@@ -35,11 +35,11 @@ namespace DotSerial.Tests.Core.XML
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var xmlDocument = DotSerialXML.Serialize(testDefault);
+            var xmlDocument = DotSerialYAML.Serialize(testDefault);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialXML.SaveToFile(file.FileInfo.FullName, xmlDocument);
+            DotSerialYAML.SaveToFile(file.FileInfo.FullName, xmlDocument);
         }
 
         [Fact]
@@ -50,7 +50,7 @@ namespace DotSerial.Tests.Core.XML
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialXML.SaveToFile(file.FileInfo.FullName, testDefault);
+            DotSerialYAML.SaveToFile(file.FileInfo.FullName, testDefault);
         }
 
         [Fact]
@@ -61,12 +61,12 @@ namespace DotSerial.Tests.Core.XML
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
             path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
-            path = Path.Combine(path,string.Format("Resources{0}XmlTest.xml", Path.DirectorySeparatorChar));
+            path = Path.Combine(path,string.Format("Resources{0}YamlTest.yml", Path.DirectorySeparatorChar));
 
             try
             {
                 // Act
-                tmp = DotSerialXML.LoadFromFile<PrimitiveClass>(path);
+                tmp = DotSerialYAML.LoadFromFile<PrimitiveClass>(path);
             }
             catch (Exception ex)
             {
@@ -75,9 +75,103 @@ namespace DotSerial.Tests.Core.XML
 
             // Assert
             Assert.NotNull(tmp);
-            EqualCheck.AssertClassEqual(tmp, expected);
-
+            Assert.True(tmp.AssertTest(expected));
         }
+
+        [Fact]
+        public void CreateSerializedObject_Primitive()
+        {
+            // Arrange
+            double tmp = 1234.45;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double>(xmlDocument);
+
+            // Assert
+            Assert.Equal(tmp, result); 
+        }    
+
+        [Fact]
+        public void CreateSerializedObject_Primitive_Null()
+        {
+            // Arrange
+            string? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<string?>(xmlDocument);
+
+            // Assert
+            Assert.Null(result); 
+        }     
+
+        [Fact]
+        public void List()
+        {
+            // Arrange
+            double[] tmp = [1.1, 2.2, 3.3, 4.4];
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double[]>(xmlDocument);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Length, result.Length);
+            Assert.Equal(tmp[0], result[0]);
+            Assert.Equal(tmp[1], result[1]);
+            Assert.Equal(tmp[2], result[2]);
+            Assert.Equal(tmp[3], result[3]);            
+        }
+
+        [Fact]
+        public void List_Null()
+        {
+            // Arrange
+            double[]? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<double[]>(xmlDocument);
+
+            // Assert
+            Assert.Null(result);           
+        }    
+
+        [Fact]
+        public void Dictionary()
+        {
+            // Arrange
+            Dictionary<string, double> tmp = [];
+            tmp.Add("test1", 1.1);
+            tmp.Add("test2", 2.2);
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<Dictionary<string, double>>(xmlDocument);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Count, result.Count);
+            Assert.Equal(tmp["test1"], result["test1"]);
+            Assert.Equal(tmp["test2"], result["test2"]);            
+        }     
+
+        [Fact]
+        public void Dictionary_Null()
+        {
+            // Arrange
+            Dictionary<string, double>? tmp = null;
+
+            // Act
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<Dictionary<string, double>?>(xmlDocument);
+
+            // Assert
+            Assert.Null(result);              
+        }           
 
         [Fact]
         public void CreateSerializedObject_EmptyClass()
@@ -86,12 +180,11 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new EmptyClass();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<EmptyClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<EmptyClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
         }
 
         [Fact]
@@ -101,12 +194,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<AccessModifierClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<AccessModifierClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -114,15 +207,15 @@ namespace DotSerial.Tests.Core.XML
         {
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
-            
+
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);           
-            var result = DotSerialXML.Deserialize<DictionaryClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<DictionaryClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -132,12 +225,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<StructClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<StructClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -147,12 +240,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<RecordClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<RecordClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -162,12 +255,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<ParsableClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ParsableClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -177,12 +270,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<PathClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PathClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -192,12 +285,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -207,12 +300,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<PrimitiveClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PrimitiveClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -227,12 +320,12 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<NestedClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NestedClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -273,12 +366,12 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<NestedNestedClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NestedNestedClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -288,13 +381,13 @@ namespace DotSerial.Tests.Core.XML
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<EnumClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<EnumClass>(xmlDocument);
 
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -304,8 +397,8 @@ namespace DotSerial.Tests.Core.XML
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<NoAttributeClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NoAttributeClass>(xmlDocument);
 
             // Arrange
             Assert.NotNull(result);
@@ -319,12 +412,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -334,12 +427,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<NullClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<NullClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
 
         }
 
@@ -350,12 +443,12 @@ namespace DotSerial.Tests.Core.XML
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -369,43 +462,27 @@ namespace DotSerial.Tests.Core.XML
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<DateTimeClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<DateTimeClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
         public void CreateSerializedObject_IEnumerableClass()
         {
             // Arrange
-            var tmp = new IEnumerableClass
-            {
-                Array = new SimpleClass[10],
-                List = [],
-                Dic = []
-            };
-            for (int i = 0; i < 10; i++)
-            {
-                var d = new SimpleClass
-                {
-                    Boolean = true
-                };
-
-                tmp.Array[i] = d;
-                tmp.List.Add(d);
-                tmp.Dic.Add(i, d);
-            }
+            var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<IEnumerableClass>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<IEnumerableClass>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -418,13 +495,12 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
-
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]
@@ -434,7 +510,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -444,7 +520,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -454,7 +530,7 @@ namespace DotSerial.Tests.Core.XML
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -467,7 +543,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -480,7 +556,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -493,7 +569,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -506,7 +582,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -519,7 +595,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -532,7 +608,7 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
@@ -545,21 +621,21 @@ namespace DotSerial.Tests.Core.XML
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Fact]
         public void CreateSerializedObject_Null()
         {
-             // Arrange
+            // Arrange
             object? tmp = null;
-
+           
             // Act
-            var xmlDocument = DotSerialXML.Serialize(tmp);
-            var result = DotSerialXML.Deserialize<object?>(xmlDocument);
+            var xmlDocument = DotSerialYAML.Serialize(tmp);
+            var result = DotSerialYAML.Deserialize<object?>(xmlDocument);
 
             // Assert
-            Assert.Null(result);  
+            Assert.Null(result); 
         }
 
         [Fact]
@@ -569,7 +645,7 @@ namespace DotSerial.Tests.Core.XML
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXML.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
         [Theory]
@@ -599,11 +675,11 @@ namespace DotSerial.Tests.Core.XML
         [InlineData(typeof(RecordClass))]
         public void IsTypeSupported_True(Type t)
         {
-            bool result = DotSerialXML.IsTypeSupported(t);
+            bool result = DotSerialYAML.IsTypeSupported(t);
             Assert.True(result);
         }
 
-        [Theory]        
+        [Theory]
         [InlineData(typeof(Collection<int>))]
         [InlineData(typeof(ISet<int>))]
         [InlineData(typeof(Hashtable))]
@@ -616,17 +692,21 @@ namespace DotSerial.Tests.Core.XML
         [InlineData(typeof(HashSet<int>))]
         public void IsTypeSupported_False(Type t)
         {
-            bool result = DotSerialXML.IsTypeSupported(t);
+            bool result = DotSerialYAML.IsTypeSupported(t);
             Assert.False(result);
         }
 
         [Fact]
         public void ToString_Content()
         {
+            // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var xml = DotSerialXML.Serialize(tmp);
+            var xml = DotSerialYAML.Serialize(tmp);
+
+            // Act
             string result = xml.ToString();
 
+            // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
@@ -634,9 +714,13 @@ namespace DotSerial.Tests.Core.XML
         [Fact]
         public void ToString_NoContent()
         {
-            var xml = new DotSerialXML();
+            // Arrange
+            var xml = new DotSerialYAML();
+
+            // Act
             string result = xml.ToString();
 
+            // Assert
             Assert.NotNull(result);
             Assert.True(string.IsNullOrWhiteSpace(result));
         }

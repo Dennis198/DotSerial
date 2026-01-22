@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 //Copyright (c) 2025 Dennis Sölch
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -20,48 +20,29 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Tests.Core.Misc
+using System.Text;
+
+namespace DotSerial.Tests.Utilities
 {
-    public class CreateInstanceMethodsTests
+    public class WriterMethodsTests
     {
-        [Fact]
-        public void CreateInstanceGeneric_Class()
+        [Theory]
+        [InlineData("HelloWorld", 0)]
+        [InlineData("HelloWorld", 2)]
+        [InlineData("HelloWorld", 4)]
+        [InlineData("HelloWorld", 10)]
+        public void AddIndentation(string str, int count)
         {
             // Arrange
-            var simpleClass = new SimpleClass();
+            StringBuilder sb = new();
 
             // Act
-            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric(simpleClass.GetType());
+            DotSerial.Utilities.WriteMethods.AddIndentation(sb, count, 4);
+            sb.Append(str);
 
             // Assert
-            Assert.Equal(simpleClass.GetType(), result.GetType());
+            Assert.Equal(new string(' ', count * 4) + str, sb.ToString());
         }
 
-        [Fact]
-        public void CreateInstanceGenericT_Class()
-        {
-            // Arrange
-            var simpleClass = new SimpleClass();
-
-            // Act
-            object result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceGeneric<SimpleClass>();
-
-            // Assert
-            Assert.Equal(simpleClass.GetType(), result.GetType());
-        }
-
-        [Fact]
-        public void CreateInstanceArray_int()
-        {
-            // Arrange
-            var array = new int[5];
-
-            // Act
-            Array result = DotSerial.Utilities.CreateInstanceMethods.CreateInstanceArray(array.GetType(), array.Length);
-
-            // Assert
-            Assert.Equal(array.GetType(), result.GetType());
-            Assert.Equal(array.Length, result.Length);
-        }
     }
 }

@@ -21,38 +21,23 @@
 #endregion
 
 using System.Text;
-using DotSerial.Tree;
+using DotSerial.Utilities;
 
-namespace DotSerial.Tests.Core.Misc
+namespace DotSerial.Tests.Utilities
 {
-    public class ParserMethodsTests
+    public class ExtensionsTests
     {
         [Fact]
-        public void AppendStringValue()
+        public void TrimEnd()
         {
             // Arrange
-            string str = "    \"Hello\"            \"World. DotSerial\"   ";
-            StringBuilder sb = new();
+            StringBuilder sb = new("Hello World!     ");
 
             // Act
-            var result = DotSerial.Utilities.ParseMethods.AppendStringValue(sb, 4, str);
+            var result = sb.TrimEnd();
 
             // Assert
-            Assert.Equal(10, result);
-            Assert.Equal("\"Hello\"", sb.ToString());
-        }
-
-        [Fact]
-        public void RemoveWhiteSpace()
-        {
-            // Arrange
-            string str = "    \"Hello\"            \"World. DotSerial\"   ";
-
-            // Act
-            var result = DotSerial.Utilities.ParseMethods.RemoveWhiteSpace(str);
-
-            // Assert
-            Assert.Equal("\"Hello\"\"World. DotSerial\"", result);
+            Assert.Equal("Hello World!", result.ToString());
         }
     }
 }

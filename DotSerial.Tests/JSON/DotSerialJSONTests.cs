@@ -25,7 +25,7 @@ using DotSerial.JSON;
 using System.Collections;
 using System.Collections.ObjectModel;
 
-namespace DotSerial.Tests.Core.JSON
+namespace DotSerial.Tests.JSON
 {
     public class DotSerialJSONTests
     {
@@ -75,7 +75,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(tmp);
-            EqualCheck.AssertClassEqual(tmp, expected);
+            Assert.True(tmp.AssertTest(expected));
         }
 
         [Fact]
@@ -199,7 +199,7 @@ namespace DotSerial.Tests.Core.JSON
 
             // Assert
             Assert.NotNull(result);
-            EqualCheck.AssertClassEqual(tmp, result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Fact]

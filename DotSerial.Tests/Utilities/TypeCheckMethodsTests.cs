@@ -20,7 +20,7 @@
 //SOFTWARE.
 #endregion
 
-namespace DotSerial.Tests.Core.Misc
+namespace DotSerial.Tests.Utilities
 {
     public class TypeCheckMethodsTests
     {
