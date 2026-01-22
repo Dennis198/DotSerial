@@ -21,7 +21,7 @@
 #endregion
 
 using System.Runtime.Serialization;
-using DotSerial.Core.Exceptions;
+using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -139,7 +139,7 @@ namespace DotSerial.Utilities
             }
             catch
             {
-                throw new DSNoParameterlessConstructorDefinedException();
+                throw new DotSerialException("Type need a parameterless constructor for deserialization");
             }
         }
 
@@ -159,7 +159,7 @@ namespace DotSerial.Utilities
             }
             catch
             {
-                throw new DSNoParameterlessConstructorDefinedException();
+                throw new DotSerialException("Type need a parameterless constructor for deserialization");
             }
         }
     }

@@ -20,7 +20,7 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Core.Exceptions;
+using DotSerial.Common;
 using DotSerial.XML;
 using System.Collections;
 using System.Globalization;
@@ -52,7 +52,7 @@ namespace DotSerial.Utilities
             // https://stackoverflow.com/questions/196661/calling-a-static-method-on-a-generic-type-parameter
             if (false == DotSerialXML.IsTypeSupported(itemType))
             {
-                throw new DSNotSupportedTypeException(itemType);
+                throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
             }
 
             // Check if type is array
@@ -147,7 +147,7 @@ namespace DotSerial.Utilities
                     }
                     else
                     {
-                        throw new DSNotSupportedTypeException(itemType);
+                        throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
                     }
                 }
 
@@ -180,12 +180,12 @@ namespace DotSerial.Utilities
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(keyType))
                 {
-                    throw new DSNotSupportedTypeException(keyType);
+                    throw new DotSerialException(string.Format("Type {0} is not supported.", keyType.Name));
                 }
                 // Check if type is supported
                 if (false == DotSerialXML.IsTypeSupported(valueType))
                 {
-                    throw new DSNotSupportedTypeException(valueType);
+                    throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
                 }
 
                 // result object
@@ -254,7 +254,7 @@ namespace DotSerial.Utilities
                         }
                         else
                         {
-                            throw new DSNotSupportedTypeException(valueType);
+                            throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
                         }
                     }
 
@@ -311,7 +311,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {
-                throw new DSNotSupportedTypeException(typeObj);
+                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
             }
 
             object? primObj;
@@ -354,7 +354,7 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DSNotSupportedTypeException(typeObj);
+                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
             }
 
             return primObj;
@@ -379,7 +379,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsPrimitive(typeObj))
             {
-                throw new DSNotSupportedTypeException(typeObj);
+                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
             }
 
             object? primObj;
@@ -491,7 +491,7 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DSNotSupportedTypeException(typeObj);
+                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
             }
 
             return primObj;
