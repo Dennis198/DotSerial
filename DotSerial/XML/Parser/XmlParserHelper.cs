@@ -169,8 +169,7 @@ namespace DotSerial.XML.Parser
                 // Skip quoted values
                 if (c == CommonConstants.Quote)
                 {
-                    StringBuilder _ = new ();
-                    i = ParseMethods.AppendStringValue(_, i, sb.ToString());
+                    i = sb.SkipStringValue(i);
                     continue;
                 }
                 else if (c == XmlConstants.XmlTagOpening)
@@ -188,8 +187,7 @@ namespace DotSerial.XML.Parser
                                 char d = sb[j];
                                 if (d == CommonConstants.Quote)
                                 {
-                                    StringBuilder __ = new ();
-                                    j = ParseMethods.AppendStringValue(__, j, sb.ToString());
+                                    j = sb.SkipStringValue(j);
                                     continue;
                                 }
                                 else if (d == XmlConstants.XmlTagClosing)
@@ -376,7 +374,7 @@ namespace DotSerial.XML.Parser
                 }
                 else if (c == CommonConstants.Quote)
                 {
-                    _ = ParseMethods.AppendStringValue(keyBuilder, indexKey, sb.ToString());
+                    _ = ParseMethods.AppendStringValue(keyBuilder, indexKey, sb);
                     // Remove opening and closing quote
                     keyBuilder.Remove(0, 1);
                     keyBuilder.Remove(keyBuilder.Length - 1, 1);
@@ -417,7 +415,7 @@ namespace DotSerial.XML.Parser
                 if (c == CommonConstants.Quote)
                 {
                     StringBuilder attValue = new();
-                    i = ParseMethods.AppendStringValue(attValue, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(attValue, i, sb);
                     result.Append(attValue);
                 }
                 else

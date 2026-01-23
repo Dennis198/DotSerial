@@ -152,7 +152,7 @@ namespace DotSerial.Utilities
                 var c = sb[i];
                 if (c == CommonConstants.Quote)
                 {
-                    i = ParseMethods.AppendStringValue(currentLine, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(currentLine, i, sb);
                 }
                 // Both is needed for crossplatform
                 else if (c == '\n' || c == '\r')

@@ -50,12 +50,20 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        /// <summary>
+        /// Trim starting whitespace from StringBuilder
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <returns>Stringbuilder</returns>
         public static StringBuilder Trim(this StringBuilder sb)
         {
-            //  TODO BEI TRIM END AUCH NEUE SB
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.Length == 0) return sb;
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
+
             int i = 0;
             for (; i < sb.Length; i++)
                 if (!char.IsWhiteSpace(sb[i]))
@@ -75,7 +83,10 @@ namespace DotSerial.Utilities
         {            
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.Length == 0) return sb;
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
 
             int i = sb.Length - 1;
 
@@ -84,9 +95,12 @@ namespace DotSerial.Utilities
                     break;
 
             if (i < sb.Length - 1)
-                sb.Length = i + 1;
+            {
+                StringBuilder result = sb.SubString(0, i + 1);
+                return result;
+            }
 
-            return sb;
+            return new StringBuilder(sb.ToString());
         }            
 
         /// <summary>
@@ -372,15 +386,13 @@ namespace DotSerial.Utilities
             ArgumentNullException.ThrowIfNull(input);
 
             int count = 0;
-            string str = input.ToString();
 
             for (int i = 0; i < input.Length; i++)
             {
                 var currChar = input[i];
                 if (CommonConstants.Quote == currChar)
                 {
-                    StringBuilder dontNeed = new();
-                    i = ParseMethods.AppendStringValue(dontNeed, i, str);
+                    i = input.SkipStringValue(i);
 
                     count++;
                 }
@@ -405,6 +417,41 @@ namespace DotSerial.Utilities
 
             return count;
         }
+
+        internal static int SkipStringValue(this StringBuilder sb, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb[startIndex] != CommonConstants.Quote)
+            {
+                throw new ArgumentException(sb.ToString());
+            }        
+
+            for (int j = startIndex + 1; j < sb.Length; j++)
+            {
+                var c2 = sb[j];
+                if (c2 == '\\')
+                {
+                    j++;
+                }
+                else if (c2 == CommonConstants.Quote)
+                {
+                    return j;
+                }
+            }
+
+            return sb.Length - 1;
+        }         
 
     }
 }

@@ -85,6 +85,58 @@ namespace DotSerial.Utilities
         }     
 
         /// <summary>
+        /// Apends the whole string from starting quote to end quote to
+        /// the stringbuilder.
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="startIndex">Index of the opeing quote</param>
+        /// <param name="str">string</param>
+        /// <returns>Index of the closing quote</returns>
+        internal static int AppendStringValue(StringBuilder sb, int startIndex, StringBuilder str)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (str[startIndex] != CommonConstants.Quote)
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            sb.Append(CommonConstants.Quote);
+
+            for (int j = startIndex + 1; j < str.Length; j++)
+            {
+                var c2 = str[j];
+                if (c2 == '\\')
+                {
+                    sb.Append(c2);
+                    sb.Append(str[j + 1]);
+                    j++;
+                }
+                else if (c2 == CommonConstants.Quote)
+                {
+                    sb.Append(c2);
+                    return j;
+                }
+                else
+                {
+                    sb.Append(c2);
+                }
+            }
+
+            return str.Length - 1;
+        }        
+
+        /// <summary>
         /// Removes all whitespaces inside a string
         /// except whitespace is between quotes.
         /// </summary>
@@ -142,7 +194,7 @@ namespace DotSerial.Utilities
 
             StringBuilder sbPrim = new();
 
-            int i = ParseMethods.AppendStringValue(sbPrim, startIndex, sb.ToString());
+            int i = AppendStringValue(sbPrim, startIndex, sb);
             if (i != sb.Length -1)
             {
                 throw new DotSerialException("Parse: Can't parse single value.");

@@ -57,7 +57,7 @@ namespace DotSerial.JSON.Parser
                     keyFound = true;
 
                     StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(sb2, i, sb);
 
                     // Remove opening and closing quote
                     sb2.Remove(0, 1);
@@ -76,7 +76,7 @@ namespace DotSerial.JSON.Parser
                     keyFound = false;
 
                     StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb.ToString());
+                    i = ParseMethods.AppendStringValue(sb2, i, sb);
 
                     // Remove opening and closing quote
                     sb2.Remove(0, 1);
@@ -206,7 +206,7 @@ namespace DotSerial.JSON.Parser
                 else if (c == CommonConstants.Quote)
                 {
                     StringBuilder _ = new();
-                    i = ParseMethods.AppendStringValue(_, i, sb.ToString());
+                    i = sb.SkipStringValue(i);
                     continue;
                 }
             }
@@ -252,7 +252,7 @@ namespace DotSerial.JSON.Parser
                 else if (c == CommonConstants.Quote)
                 {
                     StringBuilder _ = new ();
-                    i = ParseMethods.AppendStringValue(_, i, sb.ToString());
+                    i = sb.SkipStringValue(i);
                     continue;
                 }
             }
@@ -278,7 +278,7 @@ namespace DotSerial.JSON.Parser
                 if (c == CommonConstants.Quote)
                 {
                     StringBuilder sbValue = new ();
-                    int j = ParseMethods.AppendStringValue(sbValue, i, sb.ToString());
+                    int j = ParseMethods.AppendStringValue(sbValue, i, sb);
 
                     // Add key
                     int len = j - i + 1;

@@ -108,14 +108,14 @@ namespace DotSerial.YAML.Parser
                     var c = line[j];
                     if (c == CommonConstants.Quote)
                     {
-                        StringBuilder dontNeed = new();
-                        j = ParseMethods.AppendStringValue(dontNeed, j, line.ToString());
+                        StringBuilder sbVal = new();
+                        j = line.SkipStringValue(j);
                         // Remove ending quote
-                        dontNeed.Remove(dontNeed.Length - 1, 1);
+                        sbVal.Remove(sbVal.Length - 1, 1);
                         // Remove starting quote
-                        dontNeed.Remove(0, 1);
+                        sbVal.Remove(0, 1);
 
-                        result.Add(dontNeed.ToString());
+                        result.Add(sbVal.ToString());
                     }
                     else if (c == CommonConstants.N)
                     {
@@ -194,7 +194,7 @@ namespace DotSerial.YAML.Parser
                 {
                     if (keyWasFound)
                     {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line.ToString());
+                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
                         // Remove ending quote
                         keyBuilder.Remove(keyBuilder.Length - 1, 1);
                         // Remove starting quote
@@ -204,8 +204,7 @@ namespace DotSerial.YAML.Parser
                     }
                     else
                     {
-                        StringBuilder dontNeed = new();
-                        i = ParseMethods.AppendStringValue(dontNeed, i, line.ToString());
+                        i = line.SkipStringValue(i);
                         keyWasFound = true;
                     }
                 }
@@ -421,14 +420,12 @@ namespace DotSerial.YAML.Parser
                 {
                     if (keyWasFound)
                     {
-                        StringBuilder dontNeed = new();
-                        i = ParseMethods.AppendStringValue(dontNeed, i, firstLine.ToString());                        
+                        i = firstLine.SkipStringValue(i);                        
                         valueWasFound = true;
                     }
                     else
                     {
-                        StringBuilder dontNeed = new();
-                        i = ParseMethods.AppendStringValue(dontNeed, i, firstLine.ToString());
+                        i = firstLine.SkipStringValue(i);   
                         keyWasFound = true;
                     }
                 }
@@ -579,8 +576,7 @@ namespace DotSerial.YAML.Parser
                     }
                     else if (c == CommonConstants.Quote)
                     {                    
-                        StringBuilder dontNeed = new();
-                        i = ParseMethods.AppendStringValue(dontNeed, i, line.ToString());
+                        i = line.SkipStringValue(i);
                         keyOrValueFound = true;
                     }
                     else if (c == YAMLConstants.KeyValueSeperator)
@@ -689,7 +685,7 @@ namespace DotSerial.YAML.Parser
                 var c = line[i];
                 if (c == CommonConstants.Quote)
                 {
-                    _ = ParseMethods.AppendStringValue(keyBuilder, i, line.ToString());
+                    _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
                     // Remove ending quote
                     keyBuilder.Remove(keyBuilder.Length - 1, 1);
                      // Remove starting quote
