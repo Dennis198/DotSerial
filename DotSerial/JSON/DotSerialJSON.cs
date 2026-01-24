@@ -21,7 +21,6 @@
 #endregion
 
 using DotSerial.Common;
-using DotSerial.Utilities;
 using DotSerial.Tree.Serialize;
 using DotSerial.Json;
 
@@ -147,37 +146,6 @@ namespace DotSerial.JSON
             var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
             return result;
-        }
-
-        /// <inheritdoc/>
-        public static bool IsTypeSupported(Type t)
-        {
-            // Primitive + string.
-            if (TypeCheckMethods.IsPrimitive(t))
-            {
-                return true;
-            }
-
-            if (HelperMethods.ImplementsIEnumerable(t))
-            {
-                if (TypeCheckMethods.IsDictionary(t) ||
-                    TypeCheckMethods.IsList(t) ||
-                    TypeCheckMethods.IsArray(t))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-
-            if (TypeCheckMethods.IsClass(t) || TypeCheckMethods.IsStruct(t) || TypeCheckMethods.IsSpecialParsableObject(t))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>

@@ -132,7 +132,8 @@ namespace DotSerial.YAML.Writer
 
                     if (child is LeafNode)
                     {
-                        // TODO
+                        // If the child is a leaf node, the list indicator(s) have been used
+                        // in this level, so we need to reset the count for the next nodes.
                         level += options.NumberOfPrefix;
                         options.NumberOfPrefix = 0;
                     }

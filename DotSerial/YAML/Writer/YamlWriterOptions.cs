@@ -65,11 +65,6 @@ namespace DotSerial.YAML.Writer
             return result;
         }
 
-        public void IncreasePrefixCount()
-        {
-            NumberOfPrefix++;
-        }
-
         /// <summary>
         /// Decreases the number of ListItemIndicator(s)
         /// </summary>

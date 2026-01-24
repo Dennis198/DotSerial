@@ -24,7 +24,7 @@ using System.Reflection;
 
 namespace DotSerial.Tests.Attributes
 {
-    public class HelperMethodsTests
+    public class AttributesMethodsTests
     {
         [Fact]
         public void GetSerializeName_True()
@@ -67,5 +67,26 @@ namespace DotSerial.Tests.Attributes
                 }
             }
         }
+
+        [Fact]
+        public void GetCustomPropertyName()
+        {
+            // Arrange
+            NoAttributeClass tmp = new ();            
+            PropertyInfo[] props = tmp.GetType().GetProperties();
+
+            foreach (PropertyInfo prop in props)
+            {
+                if (prop.Name == nameof(NoAttributeClass.IntNoAttribute))
+                {
+                    // Act
+                    string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
+
+                    // Assert
+                    Assert.Equal("IntNoAttribute", id);
+                    return;
+                }
+            }
+        }        
     }
 }

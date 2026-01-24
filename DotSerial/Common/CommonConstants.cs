@@ -24,6 +24,9 @@ namespace DotSerial.Common
 {
     internal static class CommonConstants
     {
+        /// <summary>
+        /// Main Object Key
+        /// </summary>
         internal const string MainObjectKey = "0";
         /// <summary>
         /// Whitespace

@@ -238,6 +238,11 @@ namespace DotSerial.XML.Parser
             return (startIndex, endIndex);
         }       
 
+        /// <summary>
+        /// Removes all whitespace from an xml string, except for whitespace within quoted strings.
+        /// </summary>
+        /// <param name="str">String</param>
+        /// <returns>Xml String without whitespaces.</returns>
         internal static StringBuilder RemoveWhiteSpaceXmlString(string str)
         {
             // Check if value has value

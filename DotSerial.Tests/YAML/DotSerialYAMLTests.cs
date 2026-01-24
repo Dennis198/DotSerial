@@ -648,54 +648,6 @@ namespace DotSerial.Tests.YAML
             Assert.Throws<DotSerialException>(() => DotSerialYAML.Serialize(tmp));
         }
 
-        [Theory]
-        [InlineData(typeof(bool))]
-        [InlineData(typeof(byte))]
-        [InlineData(typeof(sbyte))]
-        [InlineData(typeof(char))]
-        [InlineData(typeof(decimal))]
-        [InlineData(typeof(double))]
-        [InlineData(typeof(float))]
-        [InlineData(typeof(int))]
-        [InlineData(typeof(uint))]
-        [InlineData(typeof(nint))]
-        [InlineData(typeof(nuint))]
-        [InlineData(typeof(long))]
-        [InlineData(typeof(ulong))]
-        [InlineData(typeof(short))]
-        [InlineData(typeof(ushort))]
-        [InlineData(typeof(string))]
-        [InlineData(typeof(TestEnum))]
-        [InlineData(typeof(SimpleClass))]
-        [InlineData(typeof(TestStruct))]
-        [InlineData(typeof(DateTime))]
-        [InlineData(typeof(Dictionary<int, int>))]
-        [InlineData(typeof(List<int>))]
-        [InlineData(typeof(int[]))]
-        [InlineData(typeof(RecordClass))]
-        public void IsTypeSupported_True(Type t)
-        {
-            bool result = DotSerialYAML.IsTypeSupported(t);
-            Assert.True(result);
-        }
-
-        [Theory]
-        [InlineData(typeof(Collection<int>))]
-        [InlineData(typeof(ISet<int>))]
-        [InlineData(typeof(Hashtable))]
-        [InlineData(typeof(Stack<int>))]
-        [InlineData(typeof(Queue<int>))]
-        [InlineData(typeof(LinkedList<int>))]
-        [InlineData(typeof(ObservableCollection<int>))]
-        [InlineData(typeof(SortedList<int, int>))]
-        [InlineData(typeof(SortedSet<int>))]
-        [InlineData(typeof(HashSet<int>))]
-        public void IsTypeSupported_False(Type t)
-        {
-            bool result = DotSerialYAML.IsTypeSupported(t);
-            Assert.False(result);
-        }
-
         [Fact]
         public void ToString_Content()
         {

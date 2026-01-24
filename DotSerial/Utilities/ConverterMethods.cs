@@ -21,7 +21,6 @@
 #endregion
 
 using DotSerial.Common;
-using DotSerial.XML;
 using System.Collections;
 using System.Globalization;
 using System.Net;
@@ -48,9 +47,7 @@ namespace DotSerial.Utilities
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
-            // TODO make dependent on the interface_
-            // https://stackoverflow.com/questions/196661/calling-a-static-method-on-a-generic-type-parameter
-            if (false == DotSerialXML.IsTypeSupported(itemType))
+            if (false == TypeCheckMethods.IsTypeSupported(itemType))
             {
                 throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
             }
@@ -105,11 +102,10 @@ namespace DotSerial.Utilities
                                 else
                                     castedListResult.Add(castedList[i]);
                             }
-                            // throw new InvalidCastException();
+                            
                             continue;
                         }
-
-                        // TODO
+                        
                         itemResult = ConvertDeserializedList(castedListItemObj, itemType);
 
                         if (itemResult != null)
@@ -178,12 +174,12 @@ namespace DotSerial.Utilities
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(keyType))
+                if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
                     throw new DotSerialException(string.Format("Type {0} is not supported.", keyType.Name));
                 }
                 // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(valueType))
+                if (false == TypeCheckMethods.IsTypeSupported(valueType))
                 {
                     throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
                 }
