@@ -22,6 +22,7 @@
 
 using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.XML.Writer
 {
@@ -38,10 +39,20 @@ namespace DotSerial.XML.Writer
             StringBuilder sb = new();
 
             // Add XML Declaration
-            sb.AppendLine(XmlConstants.XmlDeclaration);
+            StringBuilder sbXmlDeclaration = new();
+            sbXmlDeclaration.AppendLine(XmlConstants.XmlDeclaration);
 
             var internalNode = node.GetInternalData();
             WriterAccept(internalNode, new XmlWriterVisitor(), sb, new XmlWriterOptions(0));
+            
+            // Trim start and ending
+            sb = sb.TrimStartAndEnd();
+            
+            // Append to xml declaration
+            sbXmlDeclaration.Append(sb);
+
+            // Set final stringbuilder
+            sb = sbXmlDeclaration;
 
             return sb.ToString();
         }

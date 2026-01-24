@@ -22,6 +22,7 @@
 
 using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.YAML.Writer
 {
@@ -46,6 +47,9 @@ namespace DotSerial.YAML.Writer
             // Add document end
             sb.AppendLine();
             sb.Append(YAMLConstants.YAMLDocumentEnd);
+
+            // Trim start and ending
+            sb = sb.TrimStartAndEnd();
 
             return sb.ToString();
         }

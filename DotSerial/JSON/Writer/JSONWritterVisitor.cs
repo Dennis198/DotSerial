@@ -44,6 +44,9 @@ namespace DotSerial.JSON.Writer
 
             sb.Remove(sb.Length - 1, 1);
 
+            // Trim start and ending
+            sb = sb.TrimStartAndEnd();
+
             return sb.ToString();
         } 
 

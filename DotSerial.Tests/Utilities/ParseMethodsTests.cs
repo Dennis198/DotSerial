@@ -51,7 +51,7 @@ namespace DotSerial.Tests.Utilities
             var result = DotSerial.Utilities.ParseMethods.RemoveWhiteSpace(str);
 
             // Assert
-            Assert.Equal("\"Hello\"\"World. DotSerial\"", result);
+            Assert.Equal("\"Hello\"\"World. DotSerial\"", result.ToString());
         }
     }
 }

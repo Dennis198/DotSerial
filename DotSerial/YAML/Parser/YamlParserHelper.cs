@@ -88,52 +88,6 @@ namespace DotSerial.YAML.Parser
             }
 
             return result;
-        }    
-
-        /// <summary>
-        /// Extracts list of primitives from yaml string
-        /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        /// <returns>List<string></returns>
-        internal static List<string?> ExtractPrimitiveList(MultiLineStringBuilder lines)
-        {
-            ArgumentNullException.ThrowIfNull(lines);
-
-            var result = new List<string?>();
-            for (int i = 0; i < lines.Count; i++)
-            {
-                var line = lines.GetLine(i);
-                for (int j = 0; j < line.Length; j++)
-                {
-                    var c = line[j];
-                    if (c == CommonConstants.Quote)
-                    {
-                        StringBuilder sbVal = new();
-                        j = line.SkipStringValue(j);
-                        // Remove ending quote
-                        sbVal.Remove(sbVal.Length - 1, 1);
-                        // Remove starting quote
-                        sbVal.Remove(0, 1);
-
-                        result.Add(sbVal.ToString());
-                    }
-                    else if (c == CommonConstants.N)
-                    {
-                        if (j + 3 > line.Length - 1) throw new NotImplementedException();
-
-                        j++;
-                        if (line[j] != CommonConstants.U) throw new NotImplementedException();
-                        j++;
-                        if (line[j] != CommonConstants.L) throw new NotImplementedException();
-                        j++;
-                        if (line[j] != CommonConstants.L) throw new NotImplementedException();
-
-                        result.Add(null);
-                    }
-                }
-            }
-
-            return result;
         }        
 
         /// <summary>
@@ -210,14 +164,11 @@ namespace DotSerial.YAML.Parser
                 }
                 else if (keyWasFound && c == CommonConstants.N)
                 {
-                    if (i + 3 > line.Length - 1) throw new NotImplementedException();
+                    if (false == line.EqualsNullString(i))
+                    {
+                        throw new DSYamlException("Invalid yaml");
+                    }
 
-                    i++;
-                    if (line[i] != CommonConstants.U) throw new NotImplementedException();
-                    i++;
-                    if (line[i] != CommonConstants.L) throw new NotImplementedException();
-                    i++;
-                    if (line[i] != CommonConstants.L) throw new NotImplementedException();
                     return null;
                 }
             }
@@ -361,13 +312,6 @@ namespace DotSerial.YAML.Parser
                 return true;
             }
 
-            // "item"
-            // if (firstLine.EqualFirstNoWhiteSpaceChar(CommonConstants.Quote) &&
-            //     firstLine.EqualLastNoWhiteSpaceChar(CommonConstants.Quote))
-            // {
-            //     return true;   
-            // }
-
             return false;
         }   
 
@@ -431,14 +375,12 @@ namespace DotSerial.YAML.Parser
                 }
                 else if (keyWasFound && c == CommonConstants.N)
                 {
-                    if (i + 3 > firstLine.Length - 1) throw new NotImplementedException();
+                    if (false == firstLine.EqualsNullString(i))
+                    {
+                        throw new DSYamlException("Invalid yaml");
+                    }
 
-                    i++;
-                    if (firstLine[i] != CommonConstants.U) throw new NotImplementedException();
-                    i++;
-                    if (firstLine[i] != CommonConstants.L) throw new NotImplementedException();
-                    i++;
-                    if (firstLine[i] != CommonConstants.L) throw new NotImplementedException();
+                    i += 3;
                     valueWasFound = true;
                 }
             }
@@ -535,66 +477,6 @@ namespace DotSerial.YAML.Parser
 
             return false;
         }  
-
-        /// <summary>
-        /// Check if string is yaml primitive list.
-        /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        /// <returns>True, if primitive list.</returns>
-        internal static bool IsPrimitiveList(MultiLineStringBuilder lines)
-        {            
-            ArgumentNullException.ThrowIfNull(lines);
-
-            bool keyOrValueFound;
-            int numListIndicator;
-
-            for (int j = 0; j < lines.Count; j++)
-            {
-                var line = lines.GetLine(j);
-                keyOrValueFound = false;
-                numListIndicator = 0;
-
-                for (int i = 0; i < line.Length; i++ )
-                {
-                    var c = line[i];
-                    if (char.IsWhiteSpace(c))
-                    {
-                        continue;
-                    }
-                    else if (c == YAMLConstants.ListItemIndicator)
-                    {
-                        if (keyOrValueFound)
-                        {
-                            throw new NotImplementedException();
-                        }
-                        if (numListIndicator > 0)
-                        {
-                            return false;
-                        }
-                        numListIndicator++;
-                        continue;
-                    }
-                    else if (c == CommonConstants.Quote)
-                    {                    
-                        i = line.SkipStringValue(i);
-                        keyOrValueFound = true;
-                    }
-                    else if (c == YAMLConstants.KeyValueSeperator)
-                    {
-                        if (keyOrValueFound)
-                        {
-                            return false;
-                        }
-                        else
-                        {
-                            throw new NotImplementedException();
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }    
 
         /// <summary>
         /// Removes the yaml start and end symbols if there.

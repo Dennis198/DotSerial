@@ -251,64 +251,6 @@ namespace DotSerial.YAML.Parser
 
                     index++;  
                 }                
-                // if (YamlParserHelper.IsPrimitiveList(lines))
-                // {
-                //      // Extract primitive list
-                //     var items = YamlParserHelper.ExtractPrimitiveList(lines);
-                //     for (int i = 0; i < items.Count; i++)
-                //     {
-                //         string? value = items[i];
-                //         var child = _nodeFactory.CreateNode(i.ToString(), value, NodeType.Leaf);
-                //         node.AddChild(child);
-                //     }
-                // }
-                // else
-                // {
-                //     // Extract object list
-                //     var items2 = YamlParserHelper.ExtractObjectList(lines);
-                //     int index = 0;
-                //     foreach (var keyValuePair in items2)
-                //     {
-                //         // Convert key to int key
-                //         string key = index.ToString();
-                //         var value = keyValuePair;
-
-                //         if (YamlParserHelper.IsYamlObject(value))
-                //         {       
-                //             // Create inner node
-                //             var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
-
-                //             if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
-                //             {
-                //                 // Parse inner node
-                //                 ParserAccept(innerNode, new YamlParserVisitor(), value);
-                //             }
-
-                //             // Add inner node to parent
-                //             node.AddChild(innerNode);
-                //         }
-                //         else if (YamlParserHelper.IsYamlList(value))
-                //         {
-                //             // Create list node
-                //             var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
-
-                //             if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
-                //             {
-                //                 // Parse list node
-                //                 ParserAccept(listNode, new YamlParserVisitor(), value);
-                //             }
-
-                //             // Add inner node to parent
-                //             node.AddChild(listNode); 
-                //         }
-                //         else
-                //         {
-                //             throw new DSYamlException("Parse: String is not a yaml object.");
-                //         }       
-
-                //         index++;  
-                //     }
-                // }
             }
             else
             {

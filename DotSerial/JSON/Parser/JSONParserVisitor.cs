@@ -42,9 +42,7 @@ namespace DotSerial.JSON.Parser
         public static DSJsonNode Parse(string jsonString)
         {
             // Removes all whitespaces
-            string tmp = ParseMethods.RemoveWhiteSpace(jsonString);
-
-            StringBuilder sb = new(tmp);
+            StringBuilder sb = ParseMethods.RemoveWhiteSpace(jsonString);
 
             IDSNode rootNode;
 

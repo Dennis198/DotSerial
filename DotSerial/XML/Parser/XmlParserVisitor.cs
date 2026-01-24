@@ -39,12 +39,11 @@ namespace DotSerial.XML.Parser
         /// <inheritdoc/>
         public static DSXmlNode Parse(string str)
         {
-            // TODO remove whitespace
-
             // Remove xml declaration
             str = str.Replace(XmlConstants.XmlDeclaration, string.Empty);
 
-            StringBuilder sb = new(str);
+            // Remove not needed whitespaces
+            StringBuilder sb = XmlParserHelper.RemoveWhiteSpaceXmlString(str);
 
             var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
 

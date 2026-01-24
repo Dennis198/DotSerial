@@ -50,6 +50,21 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        public static StringBuilder TrimStartAndEnd(this StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
+
+            sb = sb.Trim();
+            sb = sb.TrimEnd();
+
+            return sb;
+        }
+
         /// <summary>
         /// Trim starting whitespace from StringBuilder
         /// </summary>
@@ -315,6 +330,27 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        public static bool EqualsNullString(this StringBuilder input, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length - startIndex < 4)
+            {
+                return false;
+            }
+
+            if (char.ToLower(input[startIndex]) != CommonConstants.N)
+                return false;
+            if (char.ToLower(input[startIndex + 1]) != CommonConstants.U)
+                return false;
+            if (char.ToLower(input[startIndex + 2]) != CommonConstants.L)
+                return false;
+            if (char.ToLower(input[startIndex + 3]) != CommonConstants.L)
+                return false;
+            
+            return true;
+        }        
+
         /// <summary>
         /// Check if the first non white space char equals the given char.
         /// </summary>
@@ -450,8 +486,52 @@ namespace DotSerial.Utilities
                 }
             }
 
-            return sb.Length - 1;
-        }         
+            throw new ArgumentException("No closing quote found.");
+        }   
+
+        internal static int SkipEnclosedValue(this StringBuilder sb, int startIndex, char openChar, char closeChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb[startIndex] != openChar)
+            {
+                throw new ArgumentException(sb.ToString());
+            }   
+
+            int numOpen = 0;
+
+            for (int i = startIndex + 1; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                if (c == closeChar)
+                {
+                    if (numOpen == 0)
+                    {
+                        return i;
+                    }
+                    else
+                    {
+                        numOpen--;
+                    }
+                }
+                else if (c == openChar)
+                {
+                    numOpen++;
+                }
+            }
+
+            throw new ArgumentException("No closing character found.");
+        }      
 
     }
 }

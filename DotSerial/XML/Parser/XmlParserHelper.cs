@@ -112,7 +112,9 @@ namespace DotSerial.XML.Parser
             ArgumentNullException.ThrowIfNull(sb);
 
             // Extract opening tag
-            int start = ExtractObjectStart(sb, startIndex, out StringBuilder tmp);
+            StringBuilder tmp = new();
+            int start = ParseMethods.AppendEnclosingValue(tmp, startIndex, sb, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+
             // Extract tag and key
             tagKeyPair = ExtractTagAndKey(tmp);
 
@@ -207,7 +209,8 @@ namespace DotSerial.XML.Parser
                     else
                     {
                         // Extract full object to check its tag
-                        int start = ExtractObjectStart(sb, i, out StringBuilder tmp);
+                        StringBuilder tmp = new();
+                        int start = ParseMethods.AppendEnclosingValue(tmp, i, sb, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
 
                         // Check if it is a closing or empty tag
                         if (false == IsClosingXmlTag(tmp) && false == IsEmptyXmlTag(tmp))
@@ -234,6 +237,35 @@ namespace DotSerial.XML.Parser
 
             return (startIndex, endIndex);
         }       
+
+        internal static StringBuilder RemoveWhiteSpaceXmlString(string str)
+        {
+            // Check if value has value
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                return new StringBuilder();
+            }
+
+            StringBuilder sb = new();
+            int stringLength = str.Length;
+            StringBuilder strAsStringBuilder = new(str);
+
+            for (int i = 0; i < stringLength; i++)
+            {
+                var c = str[i];
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = ParseMethods.AppendStringValue(sb, i, strAsStringBuilder);
+                }
+                else if (c == XmlConstants.XmlTagOpening)
+                {
+                    i = ParseMethods.AppendEnclosingValue(sb, i, strAsStringBuilder, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+                }
+            }
+
+            return sb;
+        }
 
         /// <summary>
         /// Checks if the string builder is a closing xml tag.
@@ -388,48 +420,6 @@ namespace DotSerial.XML.Parser
 
             var result = new XmlTagKeyPair(tagBuilder.ToString(), keyBuilder.ToString());
             return result;
-        }
-
-        /// <summary>
-        /// Extracts the start of an xml object from a string builder.
-        /// </summary>
-        /// <param name="sb">StringBuilder</param>
-        /// <param name="startIndex">Startindex</param>
-        /// <param name="result">Extracted startiing tag</param>
-        /// <returns>End index of the starting tag in the stringbuilder</returns>
-        private static int ExtractObjectStart(StringBuilder sb, int startIndex, out StringBuilder result)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (sb[startIndex] != XmlConstants.XmlTagOpening)
-            {
-                throw new DSXmlException("Parse: Start char is not '<'.");
-            }
-
-            result = new();
-            result.Append(XmlConstants.XmlTagOpening);
-            int i = startIndex + 1;
-            for (; i < sb.Length; i++)
-            {   
-                char c = sb[i];
-                if (c == CommonConstants.Quote)
-                {
-                    StringBuilder attValue = new();
-                    i = ParseMethods.AppendStringValue(attValue, i, sb);
-                    result.Append(attValue);
-                }
-                else
-                {
-                    result.Append(c);
-
-                    if (c == XmlConstants.XmlTagClosing)
-                    {
-                        return i;
-                    }
-                }
-            }
-
-            return -1;
         }
     }
 }

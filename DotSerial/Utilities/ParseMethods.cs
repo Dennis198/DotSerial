@@ -134,7 +134,61 @@ namespace DotSerial.Utilities
             }
 
             return str.Length - 1;
-        }        
+        }      
+
+        internal static int AppendEnclosingValue(StringBuilder sb, int startIndex, StringBuilder str, char openChar, char closeChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (str[startIndex] != openChar)
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            sb.Append(openChar);
+
+            int numOpen = 0;
+
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+
+                if (c == closeChar)
+                {
+                    if (numOpen == 0)
+                    {
+                        sb.Append(c);
+                        return i;
+                    }
+                    else
+                    {
+                        numOpen--;
+                        sb.Append(c);
+                    }
+                }
+                else if (c == openChar)
+                {
+                    numOpen++;
+                    sb.Append(c);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return str.Length - 1;
+        }  
 
         /// <summary>
         /// Removes all whitespaces inside a string
@@ -142,12 +196,12 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>String without whitespaces.</returns>
-        internal static string RemoveWhiteSpace(string str)
+        internal static StringBuilder RemoveWhiteSpace(string str)
         {
             // Check if value has value
             if (string.IsNullOrWhiteSpace(str))
             {
-                return str;
+                return new StringBuilder();
             }
 
             StringBuilder sb = new();
@@ -172,7 +226,7 @@ namespace DotSerial.Utilities
                 sb.Append(c);
             }
 
-            return sb.ToString();
+            return sb;
         }         
         
         /// <summary>
