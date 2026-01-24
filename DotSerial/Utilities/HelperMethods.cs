@@ -21,7 +21,6 @@
 #endregion
 
 using System.Collections;
-using System.Text.RegularExpressions;
 
 namespace DotSerial.Utilities
 {

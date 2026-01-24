@@ -30,59 +30,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-
-        /// <summary>
-        /// Apends the whole string from starting quote to end quote to
-        /// the stringbuilder.
-        /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="startIndex">Index of the opeing quote</param>
-        /// <param name="str">string</param>
-        /// <returns>Index of the closing quote</returns>
-        internal static int AppendStringValue(StringBuilder sb, int startIndex, string str)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (string.IsNullOrWhiteSpace(str))
-            {
-                throw new ArgumentException(str);
-            }
-
-            if (str.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            if (str[startIndex] != CommonConstants.Quote)
-            {
-                throw new ArgumentException(str);
-            }
-
-            sb.Append(CommonConstants.Quote);
-
-            for (int j = startIndex + 1; j < str.Length; j++)
-            {
-                var c2 = str[j];
-                if (c2 == '\\')
-                {
-                    sb.Append(c2);
-                    sb.Append(str[j + 1]);
-                    j++;
-                }
-                else if (c2 == CommonConstants.Quote)
-                {
-                    sb.Append(c2);
-                    return j;
-                }
-                else
-                {
-                    sb.Append(c2);
-                }
-            }
-
-            return str.Length - 1;
-        }     
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
@@ -136,6 +84,16 @@ namespace DotSerial.Utilities
             return str.Length - 1;
         }      
 
+        /// <summary>
+        /// Appends an enclosed value from starting openChar to closing closeChar to
+        /// the stringbuilder.
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="startIndex">Index of the opeing quote</param>
+        /// <param name="str">Stringbuilder</param>
+        /// <param name="openChar">Open char</param>
+        /// <param name="closeChar">Closing char</param>
+        /// <returns>Index of the closing char</returns>
         internal static int AppendEnclosingValue(StringBuilder sb, int startIndex, StringBuilder str, char openChar, char closeChar)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -206,6 +164,7 @@ namespace DotSerial.Utilities
 
             StringBuilder sb = new();
             int stringLength = str.Length;
+            StringBuilder strBuilder = new(str);
 
             for (int i = 0; i < stringLength; i++)
             {
@@ -215,7 +174,7 @@ namespace DotSerial.Utilities
                 // till the closing quote is reached
                 if (c == CommonConstants.Quote)
                 {
-                    i = AppendStringValue(sb, i, str);
+                    i = AppendStringValue(sb, i, strBuilder);
                     continue;
                 }
                 if (char.IsWhiteSpace(c))
