@@ -77,13 +77,13 @@ namespace DotSerial.Tests.Attributes
 
             foreach (PropertyInfo prop in props)
             {
-                if (prop.Name == nameof(NoAttributeClass.IntNoAttribute))
+                if (prop.Name == nameof(NoAttributeClass.Boolean))
                 {
                     // Act
                     string? id = DotSerial.Attributes.AttributesMethods.GetSerializeName(prop);
 
                     // Assert
-                    Assert.Equal("IntNoAttribute", id);
+                    Assert.Equal("1", id);
                     return;
                 }
             }
