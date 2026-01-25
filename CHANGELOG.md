@@ -36,6 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [1.0.0] - 2025-09-25
 
 ### Added
-- Initial release with support for XML serialization and deserialization.
+- Initial release with support for Xml serialization and deserialization.
 
 ---
