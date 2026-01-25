@@ -21,6 +21,7 @@
 #endregion
 
 using System.Collections;
+using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -53,19 +54,30 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="b">Bool</param>
         /// <returns>Integer</returns>
-        internal static int BoolToInt(bool b)
+        internal static string BoolToString(bool b)
         {
-            return b ? 1 : 0;
+            return b ? CommonConstants.TrueString : CommonConstants.FalseString;
         }
 
         /// <summary>
         /// Converts Integer to Bool
         /// </summary>
-        /// <param name="i">Integer</param>
+        /// <param name="str">Integer</param>
         /// <returns>Bool</returns>
-        internal static bool IntToBool(int i)
+        internal static bool StringToBool(string str)
         {
-            return i == 1;
+            if (str.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            else if (str.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else
+            {
+                throw new InvalidOperationException("String is not a valid boolean representation.");
+            }
         }    
 
         /// <summary>
@@ -84,8 +96,7 @@ namespace DotSerial.Utilities
             Type type = value.GetType();
             if (type == typeof(bool))
             {
-                int tmp = HelperMethods.BoolToInt((bool)value);
-                strValue = tmp.ToString();
+                strValue = BoolToString((bool)value);
             }
             else if (type.IsEnum)
             {

@@ -467,12 +467,8 @@ namespace DotSerial.Utilities
             // Boolean
             else if (typeObj == typeof(bool))
             {
-                int tmp = int.Parse(str);
-
                 // Special case bool
-                // Was casted to int in serialze.
-                bool tmpBool = HelperMethods.IntToBool(tmp);
-                primObj = tmpBool;
+                primObj = HelperMethods.StringToBool(str);
             }
             // Enum
             else if (true == typeObj.IsEnum)

@@ -60,5 +60,13 @@ namespace DotSerial.Common
         /// Coma and whitespace
         /// </summary>
         internal const string CommaAndWhiteSpace = ", ";
+        /// <summary>
+        /// True string
+        /// </summary>
+        internal const string TrueString = "true";
+        /// <summary>
+        /// False string
+        /// </summary>
+        internal const string FalseString = "false";
     }
 }
