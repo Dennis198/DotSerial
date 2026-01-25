@@ -35,7 +35,7 @@ namespace DotSerial.Yaml
         internal DSYamlNode? RootNode;
 
         /// <inheritdoc/>
-        public override void Load(string fileName)
+        internal override void Load(string fileName)
         {
             try
             {
@@ -55,7 +55,7 @@ namespace DotSerial.Yaml
         }
 
         /// <inheritdoc/>
-        public override void Save(string fileName)
+        internal override void Save(string fileName)
         {
             try
             {

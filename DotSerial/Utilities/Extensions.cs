@@ -34,7 +34,7 @@ namespace DotSerial.Utilities
         /// <param name="sbToCheck">StringBuilder</param>
         /// <param name="startIndex">Startindex for comparissen</param>
         /// <returns>True, if equal</returns>
-        public static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
+        internal static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
         {            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(sbToCheck);
@@ -60,7 +60,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="sb">StringBuilder</param>
         /// <returns>Trimed Stringbuilder</returns>
-        public static StringBuilder TrimStartAndEnd(this StringBuilder sb)
+        internal static StringBuilder TrimStartAndEnd(this StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -80,7 +80,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Stringbuilder</returns>
-        public static StringBuilder Trim(this StringBuilder sb)
+        internal static StringBuilder Trim(this StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -104,7 +104,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Stringbuilder</returns>
-        public static StringBuilder TrimEnd(this StringBuilder sb)
+        internal static StringBuilder TrimEnd(this StringBuilder sb)
         {            
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -135,7 +135,7 @@ namespace DotSerial.Utilities
         /// <param name="str"></param>
         /// <param name="startIndex"></param>
         /// <returns></returns>
-        public static int IndexOf(this StringBuilder sb, string str, int startIndex = 0)
+        internal static int IndexOf(this StringBuilder sb, string str, int startIndex = 0)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(str);
@@ -204,7 +204,7 @@ namespace DotSerial.Utilities
         /// <param name="index">Index</param>
         /// <param name="length">Length</param>
         /// <returns>Sub stringbuilder</returns>
-        public static StringBuilder SubString(this StringBuilder input, int index, int length)
+        internal static StringBuilder SubString(this StringBuilder input, int index, int length)
         {
             StringBuilder subString = new();
             if (index + length - 1 >= input.Length || index < 0) 
@@ -226,7 +226,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="input">Stringbuilder</param>
         /// <returns>True, if null or whitespace.</returns>
-        public static bool IsNullOrWhiteSpace(this StringBuilder input)
+        internal static bool IsNullOrWhiteSpace(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -252,7 +252,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="input">Stringbuilder</param>
         /// <returns>True, if content of Stringbuilder only contains "null".</returns>
-        public static bool EqualsNullString(this StringBuilder input)
+        internal static bool EqualsNullString(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -279,7 +279,7 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="startIndex">Starting index to check.</param>
         /// <returns>True, if null is at index.</returns>
-        public static bool EqualsNullString(this StringBuilder input, int startIndex)
+        internal static bool EqualsNullString(this StringBuilder input, int startIndex)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -306,7 +306,7 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if char is equal.</returns>
-        public static bool EqualFirstNoWhiteSpaceChar(this StringBuilder input, char c)
+        internal static bool EqualFirstNoWhiteSpaceChar(this StringBuilder input, char c)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -336,7 +336,7 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if char is equal.</returns>
-        public static bool EqualLastNoWhiteSpaceChar(this StringBuilder input, char c)
+        internal static bool EqualLastNoWhiteSpaceChar(this StringBuilder input, char c)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -366,7 +366,7 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="considerNull">True, if null should also be counted as a quoted value.</param>
         /// <returns></returns>
-        public static int CountQuotedValues(this StringBuilder input, bool considerNull = true)
+        internal static int CountQuotedValues(this StringBuilder input, bool considerNull = true)
         {
             ArgumentNullException.ThrowIfNull(input);
 

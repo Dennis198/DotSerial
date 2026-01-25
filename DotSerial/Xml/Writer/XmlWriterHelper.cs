@@ -28,7 +28,7 @@ namespace DotSerial.Xml.Writer
     /// <summary>
     /// Helper class with methode for writting xml.
     /// </summary>
-    public static class XmlWriterHelper
+    internal static class XmlWriterHelper
     {
         /// <summary>
         /// Helper methode to add key value pair to xml

@@ -23,7 +23,6 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
-using DotSerial.Json;
 
 namespace DotSerial.Json.Parser
 {

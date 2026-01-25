@@ -29,7 +29,7 @@ namespace DotSerial.Yaml.Parser
     /// <summary>
     /// Helper class with methode for parsing yaml.
     /// </summary>
-    public static class YamlParserHelper
+    internal static class YamlParserHelper
     {
 
         /// <summary>

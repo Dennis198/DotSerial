@@ -32,7 +32,7 @@ namespace DotSerial.Tree.Deserialize
     /// <summary>
     /// Class for deserialiation of object
     /// </summary>
-    public class DeserializeObject : INodeDeserializeVisitor
+    internal class DeserializeObject : INodeDeserializeVisitor
     {
         /// <inheritdoc/>
         public object? VisitLeafNode(LeafNode node, Type? type)

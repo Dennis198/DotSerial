@@ -28,7 +28,7 @@ namespace DotSerial.Xml.Parser
     /// <summary>
     /// Visitor interface for tree nodes (xml parser).
     /// </summary>
-    public interface IXmlNodeParserVisitor
+    internal interface IXmlNodeParserVisitor
     {
         /// <summary>
         /// Parse the xml string to create tree structure

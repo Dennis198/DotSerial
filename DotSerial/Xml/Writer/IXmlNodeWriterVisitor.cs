@@ -28,7 +28,7 @@ namespace DotSerial.Xml.Writer
     /// <summary>
     /// Visitor interface for tree nodes (xml writer).
     /// </summary>
-    public interface IXmlNodeWriterVisitor
+    internal interface IXmlNodeWriterVisitor
     {
         /// <summary>
         /// Writes the tree to a xml string.

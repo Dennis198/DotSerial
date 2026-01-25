@@ -28,7 +28,7 @@ namespace DotSerial.Json.Parser
     /// <summary>
     /// Visitor interface for tree nodes (json parser).
     /// </summary>
-    public interface IJsonNodeParserVisitor
+    internal interface IJsonNodeParserVisitor
     {
         /// <summary>
         /// Parse the json string to create tree structure

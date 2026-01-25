@@ -28,7 +28,7 @@ namespace DotSerial.Yaml.Parser
     /// <summary>
     /// Visitor interface for tree nodes (yaml parser).
     /// </summary>
-    public interface IYamlNodeParserVisitor
+    internal interface IYamlNodeParserVisitor
     {
         /// <summary>
         /// Parse the yaml string to create tree structure

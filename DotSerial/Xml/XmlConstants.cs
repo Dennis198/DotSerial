@@ -22,7 +22,7 @@
 
 namespace DotSerial.Xml
 {
-    public static class XmlConstants
+    internal static class XmlConstants
     {
         /// <summary>
         /// Indentation Size
@@ -51,18 +51,18 @@ namespace DotSerial.Xml
         /// <summary>
         /// Xml display attribute key
         /// </summary>
-        public const string XmlAttributeKey = "key";
+        internal const string XmlAttributeKey = "key";
         /// <summary>
         /// Xml InnerNode display
         /// </summary>
-        public const string XmlInnerNodeProp = "InnerNode";
+        internal const string XmlInnerNodeProp = "InnerNode";
         /// <summary>
         /// Xml Leaf display
         /// </summary>
-        public const string XmlLeafProp = "Leaf";
+        internal const string XmlLeafProp = "Leaf";
         /// <summary>
         /// Xml List Value display
         /// </summary>
-        public const string XmlListProp = "List";    
+        internal const string XmlListProp = "List";    
     }
 }

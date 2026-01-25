@@ -26,14 +26,13 @@ using DotSerial.Common;
 using DotSerial.Utilities;
 using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
-using DotSerial.Json;
 
 namespace DotSerial.Json.Parser
 {
     /// <summary>
     /// Implementation of the visitor for json parser.
     /// </summary>
-    public class JsonParserVisitor : IJsonNodeParserVisitor
+    internal class JsonParserVisitor : IJsonNodeParserVisitor
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;

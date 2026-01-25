@@ -31,7 +31,7 @@ namespace DotSerial.Yaml.Parser
     /// <summary>
     /// Implementation of the visitor for yaml parser.
     /// </summary>
-    public class YamlParserVisitor : IYamlNodeParserVisitor
+    internal class YamlParserVisitor : IYamlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;

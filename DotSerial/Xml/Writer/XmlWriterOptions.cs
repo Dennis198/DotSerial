@@ -25,7 +25,7 @@ namespace DotSerial.Xml.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    public struct XmlWriterOptions(int level, bool addKey = true)
+    internal struct XmlWriterOptions(int level, bool addKey = true)
     {
         /// <summary>
         /// Indentation level

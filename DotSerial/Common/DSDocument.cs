@@ -31,13 +31,13 @@ namespace DotSerial.Common
         /// Save file to disk
         /// </summary>
         /// <param name="fileName">Path</param>
-        public abstract void Save(string fileName);
+        internal abstract void Save(string fileName);
 
         /// <summary>
         /// Load file from disk
         /// </summary>
         /// <param name="fileName">Path</param>
-        public abstract void Load(string fileName);
+        internal abstract void Load(string fileName);
 
         /// <summary>
         /// Loads the file content into a string.

@@ -31,7 +31,7 @@ namespace DotSerial.Yaml.Writer
     /// <summary>
     /// Helper class with methode for writting yaml.
     /// </summary>
-    public static class YamlWriterHelper
+    internal static class YamlWriterHelper
     {
         /// <summary>
         /// Helper methode to add object start to yaml

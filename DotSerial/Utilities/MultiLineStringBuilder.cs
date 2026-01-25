@@ -29,17 +29,17 @@ namespace DotSerial.Utilities
     /// MulitLineStringBuilder contains multiple StringBuilder
     /// where each line is a StringBuilder.
     /// </summary>
-    public class MultiLineStringBuilder
+    internal class MultiLineStringBuilder
     {
         /// <summary> Internal data </summary>
         private readonly List<StringBuilder>? _lines = null;
         /// <summary>
         /// Number of lines
         /// </summary>
-        public int Count => null != _lines ? _lines.Count : throw new NotImplementedException();
+        internal int Count => null != _lines ? _lines.Count : throw new NotImplementedException();
 
         // Special case. (Currenly only needed in yaml)
-        public bool IsOneLineObject = false;
+        internal bool IsOneLineObject = false;
         
         /// <summary>
         /// Private constructor

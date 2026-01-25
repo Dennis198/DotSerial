@@ -31,7 +31,7 @@ namespace DotSerial.Json.Writer
     /// <summary>
     /// Implementation of the visitor for json writer.
     /// </summary>
-    public class JsonWriterVisitor : IJsonNodeWriterVisitor
+    internal class JsonWriterVisitor : IJsonNodeWriterVisitor
     {
         /// <inheritdoc/>
         public static string Write(DSJsonNode? node)

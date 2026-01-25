@@ -29,7 +29,7 @@ namespace DotSerial.Xml.Parser
     /// <summary>
     /// Class representing a tag key pair in xml.
     /// </summary>
-    public class XmlTagKeyPair
+    internal class XmlTagKeyPair
     {
         internal string Tag;
         internal string Key;

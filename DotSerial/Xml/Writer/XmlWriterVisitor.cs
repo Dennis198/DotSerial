@@ -29,7 +29,7 @@ namespace DotSerial.Xml.Writer
      /// <summary>
     /// Implementation of the visitor for xml writer.
     /// </summary>
-    public class XmlWriterVisitor : IXmlNodeWriterVisitor
+    internal class XmlWriterVisitor : IXmlNodeWriterVisitor
     {
         /// <inheritdoc/>
         public static string Write(DSXmlNode? node)

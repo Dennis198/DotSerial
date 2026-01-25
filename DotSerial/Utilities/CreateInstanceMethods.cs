@@ -32,7 +32,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="type">Type of instance</param>
         /// <returns>Object</returns>
-        public static object CreateInstanceGeneric(Type type)
+        internal static object CreateInstanceGeneric(Type type)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <typeparam name="T">Object to create</typeparam>
         /// <returns>Object</returns>
-        public static T CreateInstanceGeneric<T>()
+        internal static T CreateInstanceGeneric<T>()
         {
             try
             {
@@ -82,7 +82,7 @@ namespace DotSerial.Utilities
         /// <param name="type">Type</param>
         /// <param name="count">Number of elements</param>
         /// <returns>Array</returns>
-        public static Array CreateInstanceArray(Type type, int count)
+        internal static Array CreateInstanceArray(Type type, int count)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="type">Type</param>
         /// <returns>HashSet</returns>
-        public static object CreateInstanceHashSet(Type type)
+        internal static object CreateInstanceHashSet(Type type)
         {
             try
             {

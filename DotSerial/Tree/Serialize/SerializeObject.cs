@@ -33,7 +33,7 @@ namespace DotSerial.Tree.Serialize
     /// <summary>
     /// Class for serialization of an object
     /// </summary>
-    public class SerializeObject
+    internal class SerializeObject
     {
         /// <summary>
         /// Node factory;

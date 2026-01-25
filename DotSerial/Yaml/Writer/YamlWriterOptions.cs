@@ -28,7 +28,7 @@ namespace DotSerial.Yaml.Writer
     /// <param name="level">Level of indication</param>
     /// <param name="addKey">Add key</param>
     /// <param name="numberOfListPrefix">Number of listitem indicators to add.</param>
-    public struct YamlWriterOptions(int level, bool addKey = true, int numberOfListPrefix = 0)
+    internal struct YamlWriterOptions(int level, bool addKey = true, int numberOfListPrefix = 0)
     {
         /// <summary>
         /// Indentation level
@@ -48,7 +48,7 @@ namespace DotSerial.Yaml.Writer
         /// Returns the ListItemIndicator(s) Prefix.
         /// </summary>
         /// <returns>ListItemIndicator(s)</returns>
-        public readonly string? GetPrefix()
+        internal readonly string? GetPrefix()
         {
             if (NumberOfPrefix < 1)
             {
@@ -68,7 +68,7 @@ namespace DotSerial.Yaml.Writer
         /// <summary>
         /// Decreases the number of ListItemIndicator(s)
         /// </summary>
-        public void DecreasePrefixCount()
+        internal void DecreasePrefixCount()
         {
             NumberOfPrefix--;
                 

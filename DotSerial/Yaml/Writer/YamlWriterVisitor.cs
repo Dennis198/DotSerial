@@ -29,7 +29,7 @@ namespace DotSerial.Yaml.Writer
     /// <summary>
     /// Implementation of the visitor for yaml writer.
     /// </summary>
-    public class YamlWriterVisitor : IYamlNodeWriterVisitor
+    internal class YamlWriterVisitor : IYamlNodeWriterVisitor
     {
         /// <inheritdoc/>
         public static string Write(DSYamlNode node)

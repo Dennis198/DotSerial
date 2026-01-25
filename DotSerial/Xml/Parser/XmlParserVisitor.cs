@@ -31,7 +31,7 @@ namespace DotSerial.Xml.Parser
     /// <summary>
     /// Implementation of the visitor for xml parser.
     /// </summary>
-    public class XmlParserVisitor : IXmlNodeParserVisitor
+    internal class XmlParserVisitor : IXmlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;

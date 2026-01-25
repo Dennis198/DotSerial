@@ -30,7 +30,7 @@ namespace DotSerial.Json.Writer
     /// <summary>
     /// Helper class with methode for writting json.
     /// </summary>
-    public static class JsonWriterHelper
+    internal static class JsonWriterHelper
     {
         /// <summary>
         /// Helper methode to add object start symbol and to json

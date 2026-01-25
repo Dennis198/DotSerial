@@ -25,7 +25,7 @@ namespace DotSerial.Json.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    public struct JsonWriterOptions(int level, bool addKey = true)
+    internal struct JsonWriterOptions(int level, bool addKey = true)
     {
         /// <summary>
         /// Indentation level

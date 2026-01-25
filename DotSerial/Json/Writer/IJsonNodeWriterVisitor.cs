@@ -28,7 +28,7 @@ namespace DotSerial.Json.Writer
     /// <summary>
     /// Visitor interface for tree nodes (json writer).
     /// </summary>
-    public interface IJsonNodeWriterVisitor
+    internal interface IJsonNodeWriterVisitor
     {
         /// <summary>
         /// Writes the tree to a json string.
