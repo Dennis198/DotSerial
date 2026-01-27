@@ -6,35 +6,36 @@ objects from files in different data serialization formats.
 
 If you encounter any errors, you can create an issues at [GitHub](https://github.com/Dennis198/DotSerial/issues),
 
-## ✨ Features  
-- 🚀 Simple attribute-based serialization with **`[DSPropertyID]`**  
-- 📂 Save objects to a file and load them back in different data serialization formats
-- 🔄 Serialize/Deserialize .NET objects  
-- 🎯 Developer-friendly and lightweight  
+## Features  
+- Simple attribute-based serialization with **`[DotSerialName]`** for custom naming
+- Ignore properties with **`[DotSerialIgnore]`**
+- Save objects to a file and load them back in different data serialization formats
+- Serialize/Deserialize .NET objects  
+- Developer-friendly and lightweight  
 
 ---
 
-## 📦 Installation  
+## Installation  
 Add **DotSerial** to your project [nuget](https://www.nuget.org/packages/Dennis198.DotSerial).  
 Or include the source in your project.  
 
 ---
 
-## ⚡ Usage  
+## Usage  
 
-### Mark properties with `DSPropertyID`  
+### Mark properties with `DotSerialName`  
 ```csharp
 using DotSerial;
 
 public class Example
 {
-    [DSPropertyID(0)]
+    [DotSerialName("Example_Boolean")]
     public bool Boolean { get; set; }
 
-    [DSPropertyID(1)]
+    [DotSerialName("Example_Number")]
     public int Number { get; set; }
 
-    [DSPropertyID(2)]
+    [DotSerialName("Example_Text")]
     public string Text { get; set; }
 }
 ```
@@ -48,49 +49,66 @@ var obj = new Example
     Text = "Hello DotSerial!"
 };
 
-// Serialize (Xml)
-var serialized = DotSerialXML.Serialize(obj);
+// Serialize (Json)
+var serialized = DotSerialJson.Serialize(obj);
+//{
+//  "Example_Boolean": "true",
+//  "Example_Number": "42",
+//  "Example_Text": "Hello DotSerial!"
+//}
 
 // Deserialize back
-Example result = DotSerialXML.Deserialize<Example>(serialized);
+Example result = DotSerialJson.Deserialize<Example>(serialized);
 ```
 
 ### Save and Load from File  
 ```csharp
 // Save to file
-DotSerialXML.SaveToFile("example.xml", obj);
+DotSerialJson.SaveToFile("example.json", obj);
 
 // Load from file
-Example resultLoad = DotSerialXML.LoadFromFile<Example>("example.xml");
+Example resultLoad = DotSerialJson.LoadFromFile<Example>("example.json");
 ```
 
 ---
 
-## 🛠️ Attribute Reference  
+## Attribute Reference  
 
-- **`[DSPropertyID(int id)]`**  
-  Assign a unique **ID** to each property you want to serialize.  
-  - The ID must be unique within the class.
-  - Properties without this attribute will not be serialized.  
+- **`[DotSerialName(string name)]`**  
+  - Assign a custom **Name** to each property you want to serialize.  
+  - The name must be unique within the class.
+  - Properties without this attribute will be named after the propertie. 
+- **`[DotSerialName(string name)]`**  
+  - Properties with this attribute will be ignored.
 
 Example:
 ```csharp
-[DSPropertyID(0)]
+[DotSerialName("User_Name")]
 public string Name { get; set; }
 
-[DSPropertyID(1)]
+[DotSerialName("User_Age")]
 public int Age { get; set; }
+
+public int Occupation { get; set; }
+
+[DotSerialIgnore]
+public int Gender { get; set; }
+
+//{
+//  "User_Name": "Randy",
+//  "User_Age": "42",
+//  "Occupation": "Magician"
+//}
 ```
 
 ---
 
-## 📌 Notes   
-- Use DotSerialXML for Xml, DotSerialJSON for Json or DotSerialYAML for yaml.
-- Properties without **`DSPropertyID`** are ignored.
-- ID '-1' should not be used.
-- Currently only **XML, Json and Yaml format** is supported. Other formats will be added in the future. 
+## Notes   
+- Use DotSerialXml for Xml, DotSerialJson for Json or DotSerialYaml for yaml.
+- Properties without **`DotSerialName`** will be named as the propertie.
+- Currently only **XMml Json and Yaml format** is supported. Other formats will be added in the future. 
 
 ---
 
-## 📜 License  
+## License  
 MIT License – free to use and modify.  

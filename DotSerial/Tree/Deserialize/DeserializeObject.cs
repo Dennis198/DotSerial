@@ -24,7 +24,6 @@ using System.Reflection;
 
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
-using DotSerial.XML;
 using DotSerial.Common;
 using DotSerial.Attributes;
 
@@ -33,7 +32,7 @@ namespace DotSerial.Tree.Deserialize
     /// <summary>
     /// Class for deserialiation of object
     /// </summary>
-    public class DeserializeObject : INodeDeserializeVisitor
+    internal class DeserializeObject : INodeDeserializeVisitor
     {
         /// <inheritdoc/>
         public object? VisitLeafNode(LeafNode node, Type? type)
@@ -89,7 +88,7 @@ namespace DotSerial.Tree.Deserialize
                 if (null != propDSName)
                 {
                     // Check if type is supported
-                    if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
+                    if (false == TypeCheckMethods.IsTypeSupported(prop.PropertyType))
                     {
                         throw new NotImplementedException();
                     }
@@ -132,7 +131,7 @@ namespace DotSerial.Tree.Deserialize
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
             // Check if type is supported
-            if (false == DotSerialXML.IsTypeSupported(itemType))
+            if (false == TypeCheckMethods.IsTypeSupported(itemType))
             {
                 throw new DotSerialException($"Deserialize: Type {itemType} is not supported.");
             }
@@ -185,12 +184,12 @@ namespace DotSerial.Tree.Deserialize
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                  // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(keyType))
+                if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
                     throw new DotSerialException($"Deserialize: Type {keyType} is not supported.");
                 }
                 // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(valueType))
+                if (false == TypeCheckMethods.IsTypeSupported(valueType))
                 {
                     throw new DotSerialException($"Deserialize: Type {valueType} is not supported.");
                 }

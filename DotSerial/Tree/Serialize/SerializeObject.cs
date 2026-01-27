@@ -25,7 +25,6 @@ using System.Reflection;
 
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
-using DotSerial.XML;
 using DotSerial.Common;
 using DotSerial.Attributes;
 
@@ -34,7 +33,7 @@ namespace DotSerial.Tree.Serialize
     /// <summary>
     /// Class for serialization of an object
     /// </summary>
-    public class SerializeObject
+    internal class SerializeObject
     {
         /// <summary>
         /// Node factory;
@@ -64,7 +63,7 @@ namespace DotSerial.Tree.Serialize
             Type typeObj = obj.GetType();
 
             // Check if type is supported
-            if (false == DotSerialXML.IsTypeSupported(typeObj))
+            if (false == TypeCheckMethods.IsTypeSupported(typeObj))
             {
                 throw new DotSerialException($"Serialize: Type {typeObj} is not supported.");
             }
@@ -142,7 +141,7 @@ namespace DotSerial.Tree.Serialize
                 if (null != dsPropName)
                 {
                     // Check if type is supported
-                    if (false == DotSerialXML.IsTypeSupported(prop.PropertyType))
+                    if (false == TypeCheckMethods.IsTypeSupported(prop.PropertyType))
                     {
                         throw new DotSerialException($"Serialize: Type {prop.PropertyType} is not supported.");
                     }
@@ -229,12 +228,12 @@ namespace DotSerial.Tree.Serialize
                 if (GetTypeMethods.GetKeyValueTypeOfDictionary(dic, out Type keyType, out Type valueType))
                 {
                     // Check if type is supported
-                    if (false == DotSerialXML.IsTypeSupported(keyType))
+                    if (false == TypeCheckMethods.IsTypeSupported(keyType))
                     {
                         throw new DotSerialException($"Serialize: Type {keyType} is not supported.");
                     }
                     // Check if type is supported
-                    if (false == DotSerialXML.IsTypeSupported(valueType))
+                    if (false == TypeCheckMethods.IsTypeSupported(valueType))
                     {
                         throw new DotSerialException($"Serialize: Type {valueType} is not supported.");
                     }
@@ -243,7 +242,7 @@ namespace DotSerial.Tree.Serialize
                     {
                         var key = keyValuePair.Key;
                         var value = keyValuePair.Value;
-                        // IDSNode keyValuepair;
+                                                
                         IDSNode keyValue;
                         string? keyString = null;
                         #region Key
@@ -388,7 +387,7 @@ namespace DotSerial.Tree.Serialize
                 Type type = GetTypeMethods.GetItemTypeOfIEnumerable(castedList);
 
                 // Check if type is supported
-                if (false == DotSerialXML.IsTypeSupported(type))
+                if (false == TypeCheckMethods.IsTypeSupported(type))
                 {
                     throw new DotSerialException($"Serialize: Type {type} is not supported.");
                 }

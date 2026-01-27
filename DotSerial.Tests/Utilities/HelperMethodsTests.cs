@@ -78,52 +78,52 @@ namespace DotSerial.Tests.Utilities
         }
 
         [Fact]
-        public void BoolToInt_True()
+        public void BoolToString_True()
         {
             // Arrange
             bool tmp = true;
 
             // Act
-            int result = DotSerial.Utilities.HelperMethods.BoolToInt(tmp);
+            string result = DotSerial.Utilities.HelperMethods.BoolToString(tmp);
 
             // Assert
-            Assert.Equal(1, result);
+            Assert.Equal("true", result);
         }
 
         [Fact]
-        public void BoolToInt_False()
+        public void BoolToString_False()
         {
             // Arrange
             bool tmp = false;
 
             // Act
-            int result = DotSerial.Utilities.HelperMethods.BoolToInt(tmp);
+            string result = DotSerial.Utilities.HelperMethods.BoolToString(tmp);
 
             // Assert
-            Assert.Equal(0, result);
+            Assert.Equal("false", result);
         }
 
         [Fact]
-        public void IntToBool_False()
+        public void StringToBool_False()
         {
             // Arrange
-            int tmp = 0;
+            string tmp = "false";
 
             // Act
-            bool result = DotSerial.Utilities.HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Utilities.HelperMethods.StringToBool(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IntToBool_True()
+        public void StringToBool_True()
         {
             // Arrange
-            int tmp = 1;
+            string tmp = "true";
 
             // Act
-            bool result = DotSerial.Utilities.HelperMethods.IntToBool(tmp);
+            bool result = DotSerial.Utilities.HelperMethods.StringToBool(tmp);
 
             // Assert
             Assert.True(result);

@@ -24,6 +24,9 @@ namespace DotSerial.Common
 {
     internal static class CommonConstants
     {
+        /// <summary>
+        /// Main Object Key
+        /// </summary>
         internal const string MainObjectKey = "0";
         /// <summary>
         /// Whitespace
@@ -57,5 +60,13 @@ namespace DotSerial.Common
         /// Coma and whitespace
         /// </summary>
         internal const string CommaAndWhiteSpace = ", ";
+        /// <summary>
+        /// True string
+        /// </summary>
+        internal const string TrueString = "true";
+        /// <summary>
+        /// False string
+        /// </summary>
+        internal const string FalseString = "false";
     }
 }

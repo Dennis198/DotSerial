@@ -32,6 +32,42 @@ namespace DotSerial.Utilities
     /// </summary>
     internal static class TypeCheckMethods
     {
+
+        /// <summary>
+        /// Check if Type is supprted for serialization and deserialization.
+        /// </summary>
+        /// <param name="t">Type</param>
+        /// <returns>True, if supported</returns>
+        internal static bool IsTypeSupported(Type t)
+        {
+            // Primitive + string.
+            if (IsPrimitive(t))
+            {
+                return true;
+            }
+
+            if (HelperMethods.ImplementsIEnumerable(t))
+            {
+                if (IsDictionary(t) ||
+                    IsList(t) ||
+                    IsArray(t))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            if (IsClass(t) || IsStruct(t) || IsSpecialParsableObject(t))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Returns true, if Type is a primitive
         /// </summary>

@@ -27,7 +27,7 @@ namespace DotSerial.Tree
     /// <summary>
     /// Node factory interface
     /// </summary>
-    public interface INodeFactory
+    internal interface INodeFactory
     {
         /// <summary>
         /// Creates a node of the given type

@@ -28,7 +28,7 @@ namespace DotSerial.Tree
     /// <summary>
     /// Implementation of factory pattern as singelton
     /// </summary>
-    public sealed class NodeFactory : INodeFactory
+    internal sealed class NodeFactory : INodeFactory
     {
         /// <summary>
         /// Factory instance

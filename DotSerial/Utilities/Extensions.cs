@@ -27,10 +27,15 @@ namespace DotSerial.Utilities
 {
     internal static class Extensions
     {
-        public static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
-        {
-            // TODO Null Check damit machen????
-            
+        /// <summary>
+        /// Check if the content of two Stringbuilders are equal.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="sbToCheck">StringBuilder</param>
+        /// <param name="startIndex">Startindex for comparissen</param>
+        /// <returns>True, if equal</returns>
+        internal static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
+        {            
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(sbToCheck);
 
@@ -50,12 +55,40 @@ namespace DotSerial.Utilities
             return true;
         }
 
-        public static StringBuilder Trim(this StringBuilder sb)
+        /// <summary>
+        /// Trim starting and ending whitespace from StringBuilder
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>Trimed Stringbuilder</returns>
+        internal static StringBuilder TrimStartAndEnd(this StringBuilder sb)
         {
-            //  TODO BEI TRIM END AUCH NEUE SB
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.Length == 0) return sb;
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
+
+            sb = sb.Trim();
+            sb = sb.TrimEnd();
+
+            return sb;
+        }
+
+        /// <summary>
+        /// Trim starting whitespace from StringBuilder
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <returns>Stringbuilder</returns>
+        internal static StringBuilder Trim(this StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
+
             int i = 0;
             for (; i < sb.Length; i++)
                 if (!char.IsWhiteSpace(sb[i]))
@@ -71,11 +104,14 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Stringbuilder</returns>
-        public static StringBuilder TrimEnd(this StringBuilder sb)
+        internal static StringBuilder TrimEnd(this StringBuilder sb)
         {            
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.Length == 0) return sb;
+            if (sb.Length == 0)
+            {
+                return new StringBuilder();
+            }
 
             int i = sb.Length - 1;
 
@@ -84,9 +120,12 @@ namespace DotSerial.Utilities
                     break;
 
             if (i < sb.Length - 1)
-                sb.Length = i + 1;
+            {
+                StringBuilder result = sb.SubString(0, i + 1);
+                return result;
+            }
 
-            return sb;
+            return new StringBuilder(sb.ToString());
         }            
 
         /// <summary>
@@ -96,7 +135,7 @@ namespace DotSerial.Utilities
         /// <param name="str"></param>
         /// <param name="startIndex"></param>
         /// <returns></returns>
-        public static int IndexOf(this StringBuilder sb, string str, int startIndex = 0)
+        internal static int IndexOf(this StringBuilder sb, string str, int startIndex = 0)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(str);
@@ -158,73 +197,6 @@ namespace DotSerial.Utilities
             return -1;
         }
 
-        public static int LastIndexOf(this StringBuilder sb, string str, int startIndex = 0)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(str);
-
-            if (str.Length == 0)
-            {
-                throw new ArgumentException($"{nameof(str)} is empty.");
-            }
-
-            if (startIndex < 0 || startIndex >= sb.Length)
-            {
-                return -1;
-            }
-
-            int strLength = str.Length;
-
-            if (strLength > sb.Length)
-            {
-                return -1;
-            }
-
-            // Reverse string to match
-            char[] charArray = str.ToCharArray();
-            Array.Reverse(charArray);
-
-            // Get first char to match
-            char firstChar = charArray[0];
-            int effectiveStartIndex = startIndex == 0 ? sb.Length - 1 : startIndex;
-
-            for (int i = effectiveStartIndex; i >= 0; i--)
-            {
-                char c = sb[i];
-
-                // Check if first character matches
-                if (c == firstChar)
-                {
-                    // If only one char to match, return index
-                    if (strLength == 1)
-                    {
-                        return i;
-                    }
-
-                    // Check if string fits in remaining length
-                    if (i - strLength + 1 < 0)
-                    {
-                        return -1;
-                    }
-
-                    for (int j = 1; j < strLength; j++)
-                    {
-                        if (sb[i - j] != charArray[j])
-                        {
-                            break;
-                        }
-
-                        if (j == strLength - 1)
-                        {
-                            return i;
-                        }
-                    }
-                }
-            }
-
-            return -1;
-        }
-
         /// <summary>
         /// Builds a Stringbuilder from another strting builder
         /// </summary>
@@ -232,7 +204,7 @@ namespace DotSerial.Utilities
         /// <param name="index">Index</param>
         /// <param name="length">Length</param>
         /// <returns>Sub stringbuilder</returns>
-        public static StringBuilder SubString(this StringBuilder input, int index, int length)
+        internal static StringBuilder SubString(this StringBuilder input, int index, int length)
         {
             StringBuilder subString = new();
             if (index + length - 1 >= input.Length || index < 0) 
@@ -254,7 +226,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="input">Stringbuilder</param>
         /// <returns>True, if null or whitespace.</returns>
-        public static bool IsNullOrWhiteSpace(this StringBuilder input)
+        internal static bool IsNullOrWhiteSpace(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -280,7 +252,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="input">Stringbuilder</param>
         /// <returns>True, if content of Stringbuilder only contains "null".</returns>
-        public static bool EqualsNullString(this StringBuilder input)
+        internal static bool EqualsNullString(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -302,12 +274,39 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Check if Stringbuilder content equals "null" starting from given index.
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <param name="startIndex">Starting index to check.</param>
+        /// <returns>True, if null is at index.</returns>
+        internal static bool EqualsNullString(this StringBuilder input, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length - startIndex < 4)
+            {
+                return false;
+            }
+
+            if (char.ToLower(input[startIndex]) != CommonConstants.N)
+                return false;
+            if (char.ToLower(input[startIndex + 1]) != CommonConstants.U)
+                return false;
+            if (char.ToLower(input[startIndex + 2]) != CommonConstants.L)
+                return false;
+            if (char.ToLower(input[startIndex + 3]) != CommonConstants.L)
+                return false;
+            
+            return true;
+        }        
+
+        /// <summary>
         /// Check if the first non white space char equals the given char.
         /// </summary>
         /// <param name="input">StringBuilder</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if char is equal.</returns>
-        public static bool EqualFirstNoWhiteSpaceChar(this StringBuilder input, char c)
+        internal static bool EqualFirstNoWhiteSpaceChar(this StringBuilder input, char c)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -337,7 +336,7 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if char is equal.</returns>
-        public static bool EqualLastNoWhiteSpaceChar(this StringBuilder input, char c)
+        internal static bool EqualLastNoWhiteSpaceChar(this StringBuilder input, char c)
         {
             ArgumentNullException.ThrowIfNull(input);
 
@@ -367,33 +366,29 @@ namespace DotSerial.Utilities
         /// <param name="input">StringBuilder</param>
         /// <param name="considerNull">True, if null should also be counted as a quoted value.</param>
         /// <returns></returns>
-        public static int CountQuotedValues(this StringBuilder input, bool considerNull = true)
+        internal static int CountQuotedValues(this StringBuilder input, bool considerNull = true)
         {
             ArgumentNullException.ThrowIfNull(input);
 
             int count = 0;
-            string str = input.ToString();
 
             for (int i = 0; i < input.Length; i++)
             {
                 var currChar = input[i];
                 if (CommonConstants.Quote == currChar)
                 {
-                    StringBuilder dontNeed = new();
-                    i = ParseMethods.AppendStringValue(dontNeed, i, str);
+                    i = input.SkipStringValue(i);
 
                     count++;
                 }
                 else if (CommonConstants.N == currChar)
                 {
-                    if (i + 3 > input.Length - 1) throw new NotImplementedException();
+                    if (false == input.EqualsNullString(i))
+                    {
+                        throw new NotImplementedException();
+                    }
 
-                    i++;
-                    if (input[i] != CommonConstants.U) throw new NotImplementedException();
-                    i++;
-                    if (input[i] != CommonConstants.L) throw new NotImplementedException();
-                    i++;
-                    if (input[i] != CommonConstants.L) throw new NotImplementedException();
+                    i += 3;
                     
                     if (considerNull)
                     {
@@ -405,6 +400,99 @@ namespace DotSerial.Utilities
 
             return count;
         }
+
+        /// <summary>
+        /// Skips a string value in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex to check</param>
+        /// <returns>End index</returns>
+        internal static int SkipStringValue(this StringBuilder sb, int startIndex)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb[startIndex] != CommonConstants.Quote)
+            {
+                throw new ArgumentException(sb.ToString());
+            }        
+
+            for (int j = startIndex + 1; j < sb.Length; j++)
+            {
+                var c2 = sb[j];
+                if (c2 == '\\')
+                {
+                    j++;
+                }
+                else if (c2 == CommonConstants.Quote)
+                {
+                    return j;
+                }
+            }
+
+            throw new ArgumentException("No closing quote found.");
+        }   
+
+        /// <summary>
+        /// Skips an enclosed value in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Index to start check</param>
+        /// <param name="openChar">Open char</param>
+        /// <param name="closeChar">Closing char</param>
+        /// <returns>End index</returns>
+        internal static int SkipEnclosedValue(this StringBuilder sb, int startIndex, char openChar, char closeChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb[startIndex] != openChar)
+            {
+                throw new ArgumentException(sb.ToString());
+            }   
+
+            int numOpen = 0;
+
+            for (int i = startIndex + 1; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                if (c == closeChar)
+                {
+                    if (numOpen == 0)
+                    {
+                        return i;
+                    }
+                    else
+                    {
+                        numOpen--;
+                    }
+                }
+                else if (c == openChar)
+                {
+                    numOpen++;
+                }
+            }
+
+            throw new ArgumentException("No closing character found.");
+        }      
 
     }
 }

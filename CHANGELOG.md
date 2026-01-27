@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ---
+## [2.0.0] - 2026-01-25
+
+### Added
+- Updated Json, Yaml, XMl writting
+
+### Info
+- Older versions can't be loaded
+
+---
+
 ## [1.2.1] - 2025-11-23
 
 ### Added
@@ -36,6 +46,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [1.0.0] - 2025-09-25
 
 ### Added
-- Initial release with support for XML serialization and deserialization.
+- Initial release with support for Xml serialization and deserialization.
 
 ---

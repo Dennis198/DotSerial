@@ -96,12 +96,19 @@ namespace DotSerial.Tests
 
         [DotSerialIgnore]
         public bool BooleanNoAttribute { get; set; }
+        [DotSerialIgnore]
         public int IntNoAttribute { get; set; }
+        [DotSerialIgnore]
         public string? StringNoAttribute { get; set; }
+        [DotSerialIgnore]
         public SimpleClass? SimpleClassNoAttribute { get; set; }
+        [DotSerialIgnore]
         public PrimitiveClass? PrimitiveClassNoAttribute { get; set; }
+        [DotSerialIgnore]
         public TestEnum EnumNoAttribute { get; set; }
+        [DotSerialIgnore]
         public int[]? ArrayNoAttribute { get; set; }
+        [DotSerialIgnore]
         public List<int>? ListNoAttribute { get; set; }
 
         public static NoAttributeClass CreateTestDefault()
@@ -134,6 +141,46 @@ namespace DotSerial.Tests
             {
                 return false;
             }
+
+            if (actual.BooleanNoAttribute != false)
+            {
+                return false;
+            }
+
+            if (actual.IntNoAttribute != 0)
+            {
+                return false;
+            }   
+
+            if (actual.StringNoAttribute != null)
+            {
+                return false;
+            }    
+
+            if (actual.SimpleClassNoAttribute != null)
+            {
+                return false;
+            }    
+
+            if (actual.PrimitiveClassNoAttribute != null)
+            {
+                return false;
+            }          
+
+            if (actual.EnumNoAttribute != TestEnum.None)
+            {
+                return false;
+            }         
+
+            if (actual.ArrayNoAttribute != null)
+            {
+                return false;
+            }    
+
+            if (actual.ListNoAttribute != null)
+            {
+                return false;
+            }                                                                              
             
             return true;
         }

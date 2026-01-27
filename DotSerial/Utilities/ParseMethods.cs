@@ -30,7 +30,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
@@ -40,13 +40,13 @@ namespace DotSerial.Utilities
         /// <param name="startIndex">Index of the opeing quote</param>
         /// <param name="str">string</param>
         /// <returns>Index of the closing quote</returns>
-        internal static int AppendStringValue(StringBuilder sb, int startIndex, string str)
+        internal static int AppendStringValue(StringBuilder sb, int startIndex, StringBuilder str)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (string.IsNullOrWhiteSpace(str))
+            if (str.IsNullOrWhiteSpace())
             {
-                throw new ArgumentException(str);
+                throw new ArgumentException(str.ToString());
             }
 
             if (str.Length < startIndex)
@@ -56,7 +56,7 @@ namespace DotSerial.Utilities
 
             if (str[startIndex] != CommonConstants.Quote)
             {
-                throw new ArgumentException(str);
+                throw new ArgumentException(str.ToString());
             }
 
             sb.Append(CommonConstants.Quote);
@@ -82,7 +82,71 @@ namespace DotSerial.Utilities
             }
 
             return str.Length - 1;
-        }     
+        }      
+
+        /// <summary>
+        /// Appends an enclosed value from starting openChar to closing closeChar to
+        /// the stringbuilder.
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="startIndex">Index of the opeing quote</param>
+        /// <param name="str">Stringbuilder</param>
+        /// <param name="openChar">Open char</param>
+        /// <param name="closeChar">Closing char</param>
+        /// <returns>Index of the closing char</returns>
+        internal static int AppendEnclosingValue(StringBuilder sb, int startIndex, StringBuilder str, char openChar, char closeChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (str[startIndex] != openChar)
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            sb.Append(openChar);
+
+            int numOpen = 0;
+
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+
+                if (c == closeChar)
+                {
+                    if (numOpen == 0)
+                    {
+                        sb.Append(c);
+                        return i;
+                    }
+                    else
+                    {
+                        numOpen--;
+                        sb.Append(c);
+                    }
+                }
+                else if (c == openChar)
+                {
+                    numOpen++;
+                    sb.Append(c);
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            return str.Length - 1;
+        }  
 
         /// <summary>
         /// Removes all whitespaces inside a string
@@ -90,16 +154,17 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>String without whitespaces.</returns>
-        internal static string RemoveWhiteSpace(string str)
+        internal static StringBuilder RemoveWhiteSpace(string str)
         {
             // Check if value has value
             if (string.IsNullOrWhiteSpace(str))
             {
-                return str;
+                return new StringBuilder();
             }
 
             StringBuilder sb = new();
             int stringLength = str.Length;
+            StringBuilder strBuilder = new(str);
 
             for (int i = 0; i < stringLength; i++)
             {
@@ -109,7 +174,7 @@ namespace DotSerial.Utilities
                 // till the closing quote is reached
                 if (c == CommonConstants.Quote)
                 {
-                    i = AppendStringValue(sb, i, str);
+                    i = AppendStringValue(sb, i, strBuilder);
                     continue;
                 }
                 if (char.IsWhiteSpace(c))
@@ -120,7 +185,7 @@ namespace DotSerial.Utilities
                 sb.Append(c);
             }
 
-            return sb.ToString();
+            return sb;
         }         
         
         /// <summary>
@@ -142,7 +207,7 @@ namespace DotSerial.Utilities
 
             StringBuilder sbPrim = new();
 
-            int i = ParseMethods.AppendStringValue(sbPrim, startIndex, sb.ToString());
+            int i = AppendStringValue(sbPrim, startIndex, sb);
             if (i != sb.Length -1)
             {
                 throw new DotSerialException("Parse: Can't parse single value.");
