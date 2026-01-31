@@ -1,0 +1,80 @@
+#region License
+//Copyright (c) 2025 Dennis Sölch
+
+//Permission is hereby granted, free of charge, to any person obtaining a copy
+//of this software and associated documentation files (the "Software"), to deal
+//in the Software without restriction, including without limitation the rights
+//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//copies of the Software, and to permit persons to whom the Software is
+//furnished to do so, subject to the following conditions:
+
+//The above copyright notice and this permission notice shall be included in all
+//copies or substantial portions of the Software.
+
+//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//SOFTWARE.
+#endregion
+
+using DotSerial.Common;
+
+namespace DotSerial.Toon
+{
+    /// <summary>
+    /// Class which represents an Toon document
+    /// </summary>
+    internal class ToonDocument : DSDocument
+    {
+        /// <summary>
+        /// Root node
+        /// </summary>
+        internal DSToonNode? RootNode;
+
+        /// <inheritdoc/>
+        internal override void Load(string fileName)
+        {
+            try
+            {
+                if (false == LoadFileContent(fileName, out string content))
+                {
+                    throw new NotSupportedException();
+                }
+
+                var tmp = DSToonNode.FromString(content);
+                RootNode = tmp;
+            }
+            catch
+            {
+                throw;
+            }
+
+        }
+
+        /// <inheritdoc/>
+        internal override void Save(string fileName)
+        {
+            try
+            {
+                if (null == RootNode)
+                {
+                    throw new NullReferenceException(nameof(RootNode));
+                }
+
+                var content = RootNode.Stringify();
+
+                if (false == SaveContentToFile(fileName, content))
+                {
+                    throw new NotSupportedException();
+                }
+            }
+            catch
+            {
+                throw;
+            }          
+        }
+    }
+}
