@@ -25,9 +25,9 @@ namespace DotSerial.Toon.Writer
     /// <summary>
     /// Additional options for node visitors.
     /// </summary>
-    internal struct ToonWriterOptions(int level, bool addKey = true)
+    internal struct ToonWriterOptions(int level, bool addKey = true, int numberOfListPrefix = 0)
     {
-        /// <summary>
+             /// <summary>
         /// Indentation level
         /// </summary>
         internal int Level { get; private set; } = level;
@@ -35,5 +35,45 @@ namespace DotSerial.Toon.Writer
         /// Add Key to object
         /// </summary>
         internal bool AddKey { get; private set; } = addKey;
+        /// <summary>
+        /// Number of ListItem Indicator to add.
+        /// </summary>
+        internal int NumberOfPrefix = numberOfListPrefix;
+        private static readonly string? s_ListItemIndicator = ToonConstants.ListItemIndicator.ToString();
+
+        /// <summary>
+        /// Returns the ListItemIndicator(s) Prefix.
+        /// </summary>
+        /// <returns>ListItemIndicator(s)</returns>
+        internal readonly string? GetPrefix()
+        {
+            if (NumberOfPrefix < 1)
+            {
+                return null;
+            }
+
+            string result = string.Empty;
+
+            for (int i = 0; i < NumberOfPrefix; i++)
+            {
+                result += string.Format("{0} ", s_ListItemIndicator);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Decreases the number of ListItemIndicator(s)
+        /// </summary>
+        internal void DecreasePrefixCount()
+        {
+            NumberOfPrefix--;
+                
+            if (NumberOfPrefix < 0)
+            {
+                NumberOfPrefix = 0;
+            }
+
+        }
     }
 }

@@ -23,6 +23,7 @@
 using DotSerial.Attributes;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
 using System.Globalization;
 using System.Net;
 
@@ -37,7 +38,33 @@ namespace DotSerial.Tests
 #pragma warning disable CS8602
 #pragma warning disable CS8604
 
-    /// <summary>
+    public class DebugClass : ITestable<DebugClass>
+    {
+        [DotSerialName("pairs")]
+        public List<List<int>> Tmp { get; set; }
+
+        public static DebugClass CreateTestDefault()
+        {
+            List<int> tmp1 = [1, 2];
+            List<int> tmp2 = [3, 4];
+            List<List<int>> tmp = [tmp1, tmp2];
+
+            var result = new DebugClass
+            {
+                Tmp = tmp
+            };
+
+            return result;
+            
+        }
+
+        public bool AssertTest(DebugClass actual)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>   
     /// Example class (ReadMe.md)
     /// </summary>
     public class ExampleClass : ITestable<ExampleClass>

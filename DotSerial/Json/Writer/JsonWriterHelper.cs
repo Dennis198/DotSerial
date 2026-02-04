@@ -188,6 +188,9 @@ namespace DotSerial.Json.Writer
         /// <param name="options">Options</param>
         internal static void AddPrimitiveList(StringBuilder sb, ListNode node, JsonWriterOptions options)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
             if (options.AddKey)
             {
                 // Add Key

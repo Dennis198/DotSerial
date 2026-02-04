@@ -105,7 +105,6 @@ namespace DotSerial.Yaml.Writer
                 YamlWriterHelper.AddOnlyValue(sb, value, level, prefix);
             }
 
-
         }           
 
         /// <inheritdoc/>

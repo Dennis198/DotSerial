@@ -7,6 +7,37 @@ namespace DotSerial.Tests.Toon
     {
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;               
 
+
+        [Fact]
+        public void ToObject_DSTODO()
+        {   
+            // Arrange
+            var example = DebugClass.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<DebugClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         [Fact]
         public void Create()
         {
