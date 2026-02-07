@@ -20,6 +20,8 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Common;
+
 namespace DotSerial.Toon.Writer
 {
     /// <summary>
@@ -53,11 +55,20 @@ namespace DotSerial.Toon.Writer
             }
 
             string result = string.Empty;
+            result += string.Format("{0} ", s_ListItemIndicator);    
 
-            for (int i = 0; i < NumberOfPrefix; i++)
-            {
-                result += string.Format("{0} ", s_ListItemIndicator);
-            }
+            // for (int i = 0; i < NumberOfPrefix; i++)
+            // {
+            //     if (i == NumberOfPrefix - 1)
+            //     {
+            //         result += string.Format("{0} ", s_ListItemIndicator);    
+            //     }
+            //     else
+            //     {
+            //         // TODO andersz lösen
+            //         result += string.Format("{0} ", CommonConstants.WhiteSpace);
+            //     }
+            // }
 
             return result;
         }

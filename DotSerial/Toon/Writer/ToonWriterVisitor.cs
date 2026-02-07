@@ -142,11 +142,11 @@ namespace DotSerial.Toon.Writer
                 {    
                     var children = node.GetChildren();  
 
-                    if (options.AddKey)
-                    {
+                    // if (options.AddKey)
+                    // {
                         ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
                         level++;
-                    }
+                    // }
 
                     if (ToonWriterHelper.UseToonSchema(node, out _))
                     {
@@ -159,14 +159,14 @@ namespace DotSerial.Toon.Writer
                             StringBuilder sbChild = new();
                             WriterAccept(child, this, sbChild, new ToonWriterOptions(level, false, options.NumberOfPrefix + 1));
 
-                            if(0 != options.NumberOfPrefix)
-                            {
-                                // Is the currenlty writen node the first item of a list,
-                                // then the following items dont need the list indicator
-                                // in the same level.
-                                options.DecreasePrefixCount();
-                                level++;
-                            }
+                            // if(0 != options.NumberOfPrefix)
+                            // {
+                            //     // Is the currenlty writen node the first item of a list,
+                            //     // then the following items dont need the list indicator
+                            //     // in the same level.
+                            //     options.DecreasePrefixCount();
+                            //     level++;
+                            // }
                             sb.Append(sbChild);
                         }
                     }
@@ -176,7 +176,7 @@ namespace DotSerial.Toon.Writer
                 {
                     // if (options.AddKey)
                     // {
-                        ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
+                    ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
                         // level++;
                     // }
 
@@ -186,6 +186,7 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
+                ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
                 // if (options.AddKey)
                 // {
                 //     // Empty node
@@ -202,8 +203,34 @@ namespace DotSerial.Toon.Writer
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, ToonWriterOptions options)
         {
-            // TODO
-            return;
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            int level = options.Level;
+
+            if (node.HasChildren())
+            {
+                var children = node.GetChildren();  
+
+                if (options.AddKey)
+                {
+                    ToonWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
+                    level++;
+                }
+
+                foreach(var child in children)
+                {
+                    WriterAccept(child, this, sb, new ToonWriterOptions(level, true));
+                }
+            }
+            else
+            {
+                if (options.AddKey)
+                {
+                    // Empty node
+                    ToonWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
+                }
+            }
             // throw new NotImplementedException();
         }
     }

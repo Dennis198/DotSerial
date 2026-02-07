@@ -39,7 +39,8 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            sb.AppendFormat("{0}: ", key);
+            // sb.AppendFormat("{0}: ", key);
+            sb.AppendFormat("\"{0}\": ", key);
 
             if (null == value)
             {
@@ -162,11 +163,11 @@ namespace DotSerial.Toon.Writer
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("{0}[{1}]", key, count);
+                sb.AppendFormat("\"{0}\"[{1}]", key, count);
             }
             else
             {
-                sb.AppendFormat("{0}{1}[{2}]", prefix, key, count);
+                sb.AppendFormat("{0}\"{1}\"[{2}]", prefix, key, count);
             }       
 
             if (UseToonSchema(lNode, out string schema))
@@ -271,13 +272,13 @@ namespace DotSerial.Toon.Writer
             if (false == string.IsNullOrWhiteSpace(key))
             {
                 AddObjectStart(sb, key, level, prefix);
-                sb.Append(" {}");
+                // sb.Append(" {}");
             }
             else
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
-                sb.Append("{}");
+                // sb.Append("{}");
             }
         }           
 
@@ -287,6 +288,9 @@ namespace DotSerial.Toon.Writer
             {
                 return false;
             }
+
+            // TODO
+            return true;
             
             if (value == string.Empty)
             {
