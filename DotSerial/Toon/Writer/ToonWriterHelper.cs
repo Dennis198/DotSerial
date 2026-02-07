@@ -163,11 +163,18 @@ namespace DotSerial.Toon.Writer
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("\"{0}\"[{1}]", key, count);
+                if (addKey)
+                    sb.AppendFormat("\"{0}\"[{1}]", key, count);
+                else
+                    sb.AppendFormat("[{0}]", count);
             }
             else
             {
-                sb.AppendFormat("{0}\"{1}\"[{2}]", prefix, key, count);
+                if (addKey)
+                    sb.AppendFormat("{0}\"{1}\"[{2}]", prefix, key, count);
+                else
+                    sb.AppendFormat("{0}[{1}]", prefix, count);
+
             }       
 
             if (UseToonSchema(lNode, out string schema))
@@ -445,7 +452,7 @@ namespace DotSerial.Toon.Writer
             // Remove last ';'
             for (int i = 0; i < keysTmp.Count; i++)
             {
-                keys += keysTmp[i] + ",";
+                keys += "\"" + keysTmp[i] + "\"" + ",";
             }
 
             keys = keys[..^1];
