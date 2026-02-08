@@ -407,7 +407,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     continue;
                 }
-                else if (c == '}')
+                else if (c == CommonConstants.BracesEnd)
                 {
                     if (true == closedBracletFound)
                     {
@@ -415,7 +415,7 @@ namespace DotSerial.Yaml.Parser
                     }
                     closedBracletFound = true;
                 }
-                else if (c == '{')
+                else if (c == CommonConstants.BracesStart)
                 {
                     if (false == closedBracletFound)
                     {

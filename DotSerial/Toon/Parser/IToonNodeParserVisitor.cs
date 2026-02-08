@@ -20,8 +20,8 @@
 //SOFTWARE.
 #endregion
 
-using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Toon.Parser
 {
@@ -41,24 +41,24 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="node">Leaf node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb);
+        public abstract void VisitLeafNode(LeafNode node, MultiLineStringBuilder sb);
         /// <summary>
         /// Visitor for inner node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb);
+        public abstract void VisitInnerNode(InnerNode node, MultiLineStringBuilder sb);
         /// <summary>
         /// Visitor for list node
         /// </summary>
         /// <param name="node">List node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitListNode(ListNode node, StringBuilder sb);
+        public abstract void VisitListNode(ListNode node, MultiLineStringBuilder sb);
         /// <summary>
         /// Visitor for directory node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb);
+        public abstract void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder sb);
     }
 }
