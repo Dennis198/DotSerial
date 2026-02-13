@@ -750,6 +750,38 @@ namespace DotSerial.Tests
         }
     }
 
+    // TODO über all hinzufügen
+    public class ClassWithOneList : ITestable<ClassWithOneList>
+    {
+        [DotSerialName("0")]
+        public bool[]? Boolean { get; set; }
+
+        public static ClassWithOneList CreateTestDefault()
+        {
+            var tmp = new ClassWithOneList
+            {
+                Boolean = [true, true, false, true]
+            };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOneList actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean.Length != actual.Boolean.Length)        
+                return false;
+            
+            for (int i = 0; i < expected.Boolean.Length; i++)
+            {
+                if (expected.Boolean[i] != actual.Boolean[i])
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
     /// <summary>
     /// Class with all primitives in arrays/list
     /// </summary>

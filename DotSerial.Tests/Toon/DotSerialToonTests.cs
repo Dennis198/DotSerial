@@ -36,7 +36,7 @@ namespace DotSerial.Tests.Toon
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
             path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
-            path = Path.Combine(path,string.Format("Resources{0}ToonTest.Toon", Path.DirectorySeparatorChar));
+            path = Path.Combine(path,string.Format("Resources{0}ToonTest.toon", Path.DirectorySeparatorChar));
 
             try
             {

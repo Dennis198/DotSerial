@@ -41,24 +41,24 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="node">Leaf node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitLeafNode(LeafNode node, MultiLineStringBuilder sb);
+        public abstract void VisitLeafNode(LeafNode node, ToonMulitLineStringBuilder sb, bool isRootElement = false);
         /// <summary>
         /// Visitor for inner node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitInnerNode(InnerNode node, MultiLineStringBuilder sb);
+        public abstract void VisitInnerNode(InnerNode node, ToonMulitLineStringBuilder sb, bool isRootElement = false);
         /// <summary>
         /// Visitor for list node
         /// </summary>
         /// <param name="node">List node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitListNode(ListNode node, MultiLineStringBuilder sb);
+        public abstract void VisitListNode(ListNode node, ToonMulitLineStringBuilder sb, bool isRootElement = false);
         /// <summary>
         /// Visitor for directory node
         /// </summary>
         /// <param name="node">Inner node</param>
         /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder sb);
+        public abstract void VisitDictionaryNode(DictionaryNode node, ToonMulitLineStringBuilder sb, bool isRootElement = false);
     }
 }

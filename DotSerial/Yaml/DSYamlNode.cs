@@ -171,6 +171,7 @@ namespace DotSerial.Yaml
         {
             try
             {
+                // TODO whitespace auch erlauben
                 if (string.IsNullOrWhiteSpace(str))
                 {
                     throw new DSYamlException($"{str} can't be null or whitespace.");
