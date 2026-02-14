@@ -599,7 +599,71 @@ namespace DotSerial.Tests.Json
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                                                                                                                           
+        }    
+
+        [Fact]
+        public void ToObject_EmptyObjectClass()
+        {   
+            // Arrange
+            var example = EmptyObjectClass.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<EmptyObjectClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }              
+
+        [Fact]
+        public void ToObject_ClassWithOneList()
+        {   
+            // Arrange
+            var example = ClassWithOneList.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassWithOneList>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }      
+
+        [Fact]
+        public void ToObject_ClassWithOneDictionary()
+        {   
+            // Arrange
+            var example = ClassWithOneDictionary.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassWithOneDictionary>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }              
+
+        [Fact]
+        public void ToObject_ClassWithOnePrimitive()
+        {   
+            // Arrange
+            var example = ClassWithOnePrimitive.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassWithOnePrimitive>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                                   
      
     }
 }

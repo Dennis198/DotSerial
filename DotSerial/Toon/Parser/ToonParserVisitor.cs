@@ -1,4 +1,3 @@
-using System.Data;
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
@@ -20,12 +19,10 @@ namespace DotSerial.Toon.Parser
         {
             StringBuilder sb = new(str);
 
-            // Create help object, which contains every line of the yaml file
+            // Create help object, which contains every line of the toon file
             var lines = new ToonMulitLineStringBuilder(sb);
 
             IDSNode rootNode;
-
-            rootNode = null;
 
             // Check if its an empty yaml file
             if (0 == lines.Count)
@@ -176,12 +173,12 @@ namespace DotSerial.Toon.Parser
 
             if (ToonParserHelper.IsToonList(lines, isRootElement))
             {
-                
+                // Check if list have a key line from parsing
                 if (false == string.IsNullOrWhiteSpace(lines.KeyLine))
                 {
+                    // Check if list uses toon schema
                     if (ToonParserHelper.IsSchemaList(lines))
                     {
-                        // TODO
                         ToonParserHelper.ParseSchemaList(node, lines);
                     }
                     else
@@ -203,8 +200,6 @@ namespace DotSerial.Toon.Parser
                             }
                             else if (ToonParserHelper.IsToonSingleValue(value))
                             {
-                                // string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLine(0));
-                                // var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
                                 var tmp = value.GetLine(0).TrimStartAndEnd();
                                 var childNode = ParseMethods.ParsePrimitiveNode(tmp, 0, key);
                                 node.AddChild(childNode);
@@ -249,70 +244,25 @@ namespace DotSerial.Toon.Parser
                 {
                     if (ToonParserHelper.IsPrimitiveList(lines))
                     {
-                        // // Create list node
-                        // var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode) as ListNode ?? throw new DSToonException("Parse: Can't create list node");
-
                         ToonParserHelper.ParsePrimitiveList(node, lines.GetLine(0));
-
-                        // node.AddChild(listNode);
                     }
                     else
                     {
-                        throw new NotImplementedException();
+                        throw new DSToonException("Parse: String is not a toon object.");
                     }
                 }
-
-
-
-                // Extract object list
-                // var items2 = ToonParserHelper.ExtractObjectList(lines);
-                // int index = 0;
-
-                // foreach (var keyValuePair in items2)
-                // {
-                //     // Convert key to int key
-                //     string key = index.ToString();
-                //     var value = keyValuePair;
-
-                //     if (ToonParserHelper.IsToonSingleValue(value))
-                //     {
-                //         // geht das überhaupt????
-                //         var val = value.GetLine(0);
-                //         val = val.Trim();
-                //         var innerNode = ParseMethods.ParsePrimitiveNode(val, 0, key);
-                //         node.AddChild(innerNode);
-                //     }
-                //     else if (ToonParserHelper.IsPrimitiveList(value))
-                //     {
-                //         // // Create list node
-                //         // var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode) as ListNode ?? throw new DSToonException("Parse: Can't create list node");
-
-                //         ToonParserHelper.ParsePrimitiveList(node, value.GetLine(0));
-
-                //         // node.AddChild(listNode);
-                //     }
-                //     else if (ToonParserHelper.IsSchemaList(value))
-                //     {
-                //         // TODO
-                //         ToonParserHelper.ParseSchemaList(node, value);
-                //     }
-                //     else
-                //     {
-                //         throw new DSToonException("Parse: String is not a toon object.");
-                //     }  
-
-                //     index++;  
-                // }
             }
             else
             {
-                throw new DSToonException("Parse: String is not a yaml list.");
+                throw new DSToonException("Parse: String is not a toon list.");
             }
         }            
 
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, ToonMulitLineStringBuilder lines, bool isRootElement = false)
         {
+            // Currenlty not needed
+            // Will be procced in the VisitInnerNode
             throw new NotImplementedException();
         }
     }

@@ -21,7 +21,6 @@
 #endregion
 
 using DotSerial.Tree.Nodes;
-using DotSerial.Utilities;
 
 namespace DotSerial.Toon.Parser
 {
@@ -31,9 +30,9 @@ namespace DotSerial.Toon.Parser
     internal interface IToonNodeParserVisitor
     {
         /// <summary>
-        /// Parse the json string to create tree structure
+        /// Parse the toon string to create tree structure
         /// </summary>
-        /// <param name="str">Json string</param>
+        /// <param name="str">Toon string</param>
         /// <returns>Root node of tree.</returns>
         public static abstract DSToonNode Parse(string str);
         /// <summary>

@@ -38,7 +38,7 @@ namespace DotSerial.Utilities
         /// </summary>
         internal int Count => null != _lines ? _lines.Count : throw new NotImplementedException();
 
-        // Special case. (Currenly only needed in yaml)
+        // Special case. (Currenly only needed in yaml/toon)
         internal bool IsOneLineObject = false;
         
         /// <summary>

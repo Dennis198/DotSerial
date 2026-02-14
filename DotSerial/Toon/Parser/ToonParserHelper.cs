@@ -1,10 +1,3 @@
-using System.ComponentModel;
-using System.Net.Mail;
-using System.Numerics;
-using System.Reflection.Metadata;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
@@ -13,11 +6,19 @@ using DotSerial.Utilities;
 
 namespace DotSerial.Toon.Parser
 {
+    /// <summary>
+    /// Helper class with methode for parsing toon.
+    /// </summary>
     internal static  class ToonParserHelper
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
+        /// <summary>
+        /// Extracts key value pairs from yaml object
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
+        /// <returns>Dictionary<string, ToonMulitLineStringBuilder></returns>
         internal static Dictionary<string, ToonMulitLineStringBuilder> ExtractKeyValuePairsFromToonObject(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -38,10 +39,15 @@ namespace DotSerial.Toon.Parser
                 // "Key":
                 if (IsKeyLine(line))
                 {
-                    string key = ExtractKeyFromLine(line);
+                    string? key = ExtractKeyFromLine(line);
+
+                    if  (string.IsNullOrWhiteSpace(key))
+                    {
+                        throw new DSToonException("Invalid toon");
+                    }
 
                     int sIndex = i + 1;
-                    int eIndex = -1;
+                    int eIndex;
                     if (sIndex>= lines.Count || currLevel >= LineLevel(lines.GetLine(sIndex)))
                     {
                         sIndex = i;
@@ -64,6 +70,7 @@ namespace DotSerial.Toon.Parser
                     }
 
                     // Set Key line
+                    // Needed for list parsing
                     helpObj.KeyLine = line.ToString();
 
                     result.Add(key, helpObj);
@@ -73,7 +80,13 @@ namespace DotSerial.Toon.Parser
                 // "Key": "Value"
                 else
                 {
-                    string key = ExtractKeyFromLine(line);
+                    string? key = ExtractKeyFromLine(line);
+
+                    if  (string.IsNullOrWhiteSpace(key))
+                    {
+                        throw new DSToonException("Invalid toon");
+                    }
+
                     var helpObj = lines.Slice(i, i);                    
                    
                     result.Add(key, helpObj);
@@ -83,6 +96,11 @@ namespace DotSerial.Toon.Parser
             return result;            
         }
 
+        /// <summary>
+        /// Check if ToonMulitLineStringBuilder is a toon object
+        /// </summary>
+        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <returns>True, if yaml object</returns>
         internal static bool IsToonObject(ToonMulitLineStringBuilder lines, bool isRootElement = false)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -108,7 +126,12 @@ namespace DotSerial.Toon.Parser
             return true;
         }
 
-        internal static List<string?> ExtractPrimitiveListFromLine(StringBuilder line)
+        /// <summary>
+        /// Parses a primitive list from a line
+        /// </summary>
+        /// <param name="line">StringBuilder</param>
+        /// <returns>Values in a list</returns>
+        private static List<string?> ExtractPrimitiveListFromLine(StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(line);
 
@@ -123,14 +146,14 @@ namespace DotSerial.Toon.Parser
                 {
                     if (seperatorFound)
                     {
-                        StringBuilder todo = new();
-                        i = ParseMethods.AppendStringValue(todo, i, line);
+                        StringBuilder tmp = new();
+                        i = ParseMethods.AppendStringValue(tmp, i, line);
                         // Remove ending quote
-                        todo.Remove(todo.Length - 1, 1);
+                        tmp.Remove(tmp.Length - 1, 1);
                         // Remove starting quote
-                        todo.Remove(0, 1);
+                        tmp.Remove(0, 1);
 
-                        result.Add(todo.ToString());
+                        result.Add(tmp.ToString());
                     }
                     else
                     {
@@ -207,6 +230,11 @@ namespace DotSerial.Toon.Parser
             throw new NotImplementedException();
         }    
 
+        /// <summary>
+        /// Extracts list of objcts from toon string
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
+        /// <returns>List<ToonMulitLineStringBuilder></returns>
         internal static List<ToonMulitLineStringBuilder> ExtractObjectList(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -224,14 +252,13 @@ namespace DotSerial.Toon.Parser
                     break;
                 }
 
-                // if (true == line.EqualFirstNoWhiteSpaceChar(ToonConstants.ListItemIndicator))
                 if (-1 != ParseListCount(line))
                 {
                     // "Key":
                     if (IsKeyLine(line))
                     {
                         int sIndex = i + 1;
-                        int eIndex = -1;
+                        int eIndex;
                         if (sIndex>= lines.Count || currLevel >= LineLevel(lines.GetLine(sIndex)))
                         {
                             sIndex = i;
@@ -252,10 +279,6 @@ namespace DotSerial.Toon.Parser
                     else
                     {
                         int endIndex = GetEndIndexOfToonObject(lines, i);
-
-                        // Remove List indicator of the objects
-                        // RemoveListItemIndicator(lines, i, endIndex); TODO AUCH MACHEN????
-
                         var helpObj = lines.Slice(i, endIndex);
                         result.Add(helpObj);
                         i = endIndex;
@@ -263,8 +286,9 @@ namespace DotSerial.Toon.Parser
                 }
                 else if (line.EqualFirstNoWhiteSpaceChar(CommonConstants.Minus))
                 {
-                    // How to be an object!!
-                    // TODO
+                    // Has no list cound, => Must be an objject
+
+
                     int endIndex = GetEndIndexOfToonObject(lines, i);
                     var helpObj = lines.Slice(i, endIndex);
 
@@ -287,6 +311,10 @@ namespace DotSerial.Toon.Parser
             return result;
         }        
 
+       /// <summary>
+        /// Removes the List indicator for the objects
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
         private static void RemoveListItemIndicator(ToonMulitLineStringBuilder lines)
         {
             var startLine = lines.GetLine(0);
@@ -373,6 +401,11 @@ namespace DotSerial.Toon.Parser
             return keyWasFound && valueWasFound;
         }        
 
+        /// <summary>
+        /// Check if string is a primitive list
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <returns></returns>
         internal static bool IsPrimitiveList(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -399,26 +432,36 @@ namespace DotSerial.Toon.Parser
             }
         } 
 
+        /// <summary>
+        /// Parse primitive list
+        /// </summary>
+        /// <param name="node">Listnode</param>
+        /// <param name="line">StringBuilder</param>
         internal static void ParsePrimitiveList(ListNode node, StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(line);
 
             int count = ParseListCount(line);
-            var gg = ExtractPrimitiveListFromLine(line);
+            var lItems = ExtractPrimitiveListFromLine(line);
 
-            if (count != gg.Count)
+            if (count != lItems.Count)
             {
                 throw new NotImplementedException();
             }
 
             for (int i = 0; i < count; i++)
             {
-                var listNode = _nodeFactory.CreateNode(i.ToString(), gg[i], NodeType.Leaf);
+                var listNode = _nodeFactory.CreateNode(i.ToString(), lItems[i], NodeType.Leaf);
                 node.AddChild(listNode);
             }
         }
 
+        /// <summary>
+        /// Check if ToonMulitLineStringBuilder is a single value
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
+         /// <returns>True, if toon single value</returns>
         internal static bool IsToonSingleValue(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -450,7 +493,12 @@ namespace DotSerial.Toon.Parser
             return false;
         }
 
-        internal static bool IsToonList(ToonMulitLineStringBuilder lines, bool isRootElement = false)
+        /// <summary>
+        /// Check if ToonMulitLineStringBuilder is a list
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
+        /// <returns>True, if list</returns>
+        internal static bool IsToonList(ToonMulitLineStringBuilder lines, bool rootElement = false)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -475,115 +523,35 @@ namespace DotSerial.Toon.Parser
                 }
 
                 if (-1 != ParseListCount(firstLine))
-                {
+                {                    
+                    if(rootElement)
+                    {
+                        if (null == ExtractKeyFromLine(firstLine))
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            // Root element must be a list, otherwise there would
+                            // be no way to differentiate between a list and an object with one item.
+                            return false;
+                        }
+                    }
+
                     return true;
                 }
                 else
                 {
                     return false;
                 }
-
-                // No Key Line
-                // string? key = ExtractKeyFromLine(firstLine);
-                // if (string.IsNullOrWhiteSpace(key))
-                // {
-                //     return true;
-                // }
-                // else
-                // {
-                //     if (isRootElement)
-                //     {
-                //         return false;
-                //     }
-                //     else
-                //     {
-                //         return true;
-                //     }
-                // }
             }
-
-
-
-
-            // var firstLine = lines.GetLine(0);
-
-            // if (null == firstLine)
-            // {
-            //     throw new NotImplementedException();
-            // }
-
-            // // 1. "'key'[0]:"
-            // // 2. "[0]:"
-            // if (IsEmptyList(firstLine))
-            // {
-            //     return true;
-            // }
-
-            //  TODO TEST, WENN Im Object NUR eine List ist, was dann??
-
-            // Empty List
-            // if (-1 != ParseListCount(firstLine))
-            // {
-            //     string? key = ExtractKeyFromLine(firstLine);
-
-            //     if (string.IsNullOrWhiteSpace(key))
-            //     {
-            //         return true;
-            //     }
-            //     else
-            //     {
-            //         if (isRootElement)
-            //         {
-            //             return false;
-            //         }
-            //         else
-            //         {
-            //             return true;
-            //         }
-            //     }
-
-            //     // if (lines.Count == 1)
-            //     // {
-            //     //     string? key = ExtractKeyFromLine(firstLine);
-            //     //     if (string.IsNullOrWhiteSpace(key))
-            //     //     {
-            //     //         return false;
-            //     //     }
-            //     //     else
-            //     //     {
-            //     //         return true;
-            //     //     }
-            //     // }
-            //     // else
-            //     // {
-            //     //     int levelFirst = LineLevel(firstLine);
-            //     //     bool ggg = false;
-            //     //     for (int i = 1; i < lines.Count; i++)
-            //     //     {
-            //     //         var level = LineLevel(lines.GetLine(i));
-            //     //         if (level == levelFirst)
-            //     //         {
-            //     //             ggg = true;
-            //     //             break;
-            //     //         }
-            //     //     }
-            //     //     // var secondLine = lines.GetLine(1);
-            //     //     // int levelSecond = LineLevel(secondLine);
-
-            //     //     return levelFirst != levelSecond;
-            //     // }
-            // }
-
-            // 1. "- 'item'"
-            // 2. "- 'key' : 'item'"
-            if (firstLine.EqualFirstNoWhiteSpaceChar(ToonConstants.ListItemIndicator))
-            {
-                return true;
-            }
-
-            return false;
         }
 
+        /// <summary>
+        /// Parses a toon schema list and adds the objects to the node
+        /// </summary>
+        /// <param name="node">ListNode</param>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
         internal static void ParseSchemaList(ListNode node, ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(node);
@@ -619,6 +587,12 @@ namespace DotSerial.Toon.Parser
             }
         }
 
+        /// <summary>
+        /// Parses values which are sepearted by comma.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">StartIndex for parsing</param>
+        /// <returns>List of the values</returns>
         internal static List<string> ParseCommaSeperateValues(StringBuilder sb, int startIndex = 0)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -643,7 +617,12 @@ namespace DotSerial.Toon.Parser
             return result;
         }
 
-        internal static List<string> ParseSchemaKeys(ToonMulitLineStringBuilder lines)
+        /// <summary>
+        /// Parses the schema keys from the key line of a toon schema list
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <returns></returns>
+        private static List<string> ParseSchemaKeys(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -652,7 +631,7 @@ namespace DotSerial.Toon.Parser
                 throw new NotImplementedException();
             }
 
-            var firstLine = new StringBuilder(lines.KeyLine);//lines.GetLine(0);
+            var firstLine = new StringBuilder(lines.KeyLine);
 
             int start = firstLine.IndexOf("{", 0);
 
@@ -686,6 +665,11 @@ namespace DotSerial.Toon.Parser
             return result;
         }
 
+        /// <summary>
+        /// Check if ToonMulitLineStringBuilder is a toon schema list
+        /// </summary>
+        /// <param name="lines">ToonMulitLineStringBuilder</param>
+        /// <returns>True, if list wioth schema</returns>
         internal static bool IsSchemaList(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -695,7 +679,7 @@ namespace DotSerial.Toon.Parser
                 return false;
             }
 
-            var firstLine = new StringBuilder(lines.KeyLine);//lines.GetLine(0);
+            var firstLine = new StringBuilder(lines.KeyLine);
             if (1 > ParseListCount(firstLine))
             {
                 return false;
@@ -742,6 +726,11 @@ namespace DotSerial.Toon.Parser
             return startSchemaFound && endSchemaFound;
         }
 
+        /// <summary>
+        /// Check if String is a empty toon list.
+        /// </summary>
+        /// <param name="line">StringBuilder</param>
+        /// <returns>true, if empty toon list</returns>
         internal static bool IsEmptyList(StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(line);
@@ -749,70 +738,19 @@ namespace DotSerial.Toon.Parser
             int count = ParseListCount(line);
 
             return 0 == count;
-
-            // bool countIndicatorFound =  false;
-            // string countAsString = string.Empty;
-
-            // for(int i = 0; i < line.Length - 1; i++)
-            // {
-            //     char c = line[i];
-
-            //     if (char.IsWhiteSpace(c))
-            //     {
-            //         continue;
-            //     }
-            //     else if (c == CommonConstants.Quote)
-            //     {
-            //         if (true == countIndicatorFound)
-            //         {
-            //             throw new NotImplementedException();
-            //         }
-            //         i = line.SkipStringValue(i);
-            //     }
-            //     else if (c == CommonConstants.BracketsStart)
-            //     {
-            //         if (true == countIndicatorFound)
-            //         {
-            //             throw new NotImplementedException();
-            //         }
-            //         countIndicatorFound = true;
-            //     }
-            //     else if (c == CommonConstants.BracketsEnd)
-            //     {
-            //         if (false == countIndicatorFound)
-            //         {
-            //             throw new NotImplementedException();
-            //         }
-            //         break;
-            //     }
-            //     else if (char.IsDigit(c))
-            //     {
-            //         if (true == countIndicatorFound)
-            //         {
-            //             countAsString += c;
-            //         }
-            //     }
-            //     else if (c == ToonConstants.KeyValueSeperator)
-            //     {
-            //         return false;
-            //     }
-            // }
-
-            // if (false == int.TryParse(countAsString, out int listCount))
-            // {
-            //     return false;
-                
-            // }
-
         }
 
+        /// <summary>
+        /// Parses the list count of a toon list from a string
+        /// </summary>
+        /// <param name="line">StringBuilder</param>
+        /// <returns>Count, if the toon list count indicator is there, -1 otherwise.</returns>
         internal static int ParseListCount(StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(line);
 
             bool countIndicatorStartFound =  false;
             bool countIndicatorEndFound =  false;
-            bool firstDigitFromCountFound = false;
             string countAsString = string.Empty;
 
             for (int i = 0; i < line.Length; i++)
@@ -853,7 +791,6 @@ namespace DotSerial.Toon.Parser
                     if (true == countIndicatorStartFound)
                     {
                         countAsString += c;
-                        firstDigitFromCountFound = true;
                     }
                 }    
                 else
@@ -870,7 +807,6 @@ namespace DotSerial.Toon.Parser
                 return -1;
             }
 
-            // TODO TESTEN OB "22 33" geht?
             if (false == int.TryParse(countAsString, out int listCount))
             {
                 return -1;
@@ -884,7 +820,11 @@ namespace DotSerial.Toon.Parser
             return listCount;
         }
 
-
+        /// <summary>
+        /// Check if ToonMulitLineStringBuilder is an empty toon object.
+        /// </summary>
+        /// <param name="lines"></param>
+        /// <returns>True, if empty objcet</returns>
         internal static bool IsEmptyObject(ToonMulitLineStringBuilder lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
@@ -895,6 +835,11 @@ namespace DotSerial.Toon.Parser
             }
 
             var line = lines.GetLine(0);
+
+            if (-1 != ParseListCount(line))
+            {
+                return false;
+            }
 
             if (false == line.EqualLastNoWhiteSpaceChar(ToonConstants.KeyValueSeperator))
             {

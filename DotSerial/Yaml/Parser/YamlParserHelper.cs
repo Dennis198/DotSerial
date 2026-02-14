@@ -266,6 +266,10 @@ namespace DotSerial.Yaml.Parser
             // 2. "[]"
             if (IsEmptyList(firstLine))
             {
+                if(lines.Count != 1)
+                {
+                    return false;
+                }
                 return true;
             }
 
