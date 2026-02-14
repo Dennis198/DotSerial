@@ -200,8 +200,6 @@ namespace DotSerial.Utilities
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            // TODO TRIM sb???
-
             if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
             {
                 return _nodeFactory.CreateNode(key, null, NodeType.Leaf);

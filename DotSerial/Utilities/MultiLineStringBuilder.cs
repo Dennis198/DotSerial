@@ -63,8 +63,6 @@ namespace DotSerial.Utilities
             TrimLines(_lines);
         }    
 
-        // TODO Constrcutor für string machen!
-
         /// <summary>
         /// Creates a shallow copy of a range of lines.
         /// </summary>
