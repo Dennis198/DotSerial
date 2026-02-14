@@ -295,6 +295,8 @@ namespace DotSerial.Tests
         public string? StringAsText { get; set; }
         [DotSerialName("17")]
         public string? StringEmpty { get; set; }
+        // TODO ListEmpty
+        // TODO DIC EMpty
 
         public static NullClass CreateTestDefault()
         {

@@ -123,10 +123,10 @@ namespace DotSerial.Toon
         {
             try
             {
-                // if (string.IsNullOrWhiteSpace(str))
-                // {
-                //     throw new DSToonException($"{str} can't be null or whitespace.");
-                // }   
+                if (null == str)
+                {
+                    throw new DSToonException($"{str} can't be null.");
+                }
 
                 var root = ToonParserVisitor.Parse(str);        
 

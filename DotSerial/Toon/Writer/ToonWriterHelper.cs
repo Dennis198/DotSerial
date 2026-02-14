@@ -1,10 +1,5 @@
-
-using System.Reflection.Metadata;
-using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 using DotSerial.Common;
-using DotSerial.Tree;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -13,7 +8,7 @@ namespace DotSerial.Toon.Writer
     internal static class ToonWriterHelper
     {
         /// <summary>
-        /// Converts a key : value pair to an yaml string.
+        /// Converts a key : value pair to an toon string.
         /// </summary>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="key">Key</param>
@@ -39,30 +34,16 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            // sb.AppendFormat("{0}: ", key);
             sb.AppendFormat("\"{0}\": ", key);
 
             if (null == value)
             {
                 sb.Append(CommonConstants.Null);
             }
-            if(UseQuotes(value))
+            else
             {
                 sb.AppendFormat("\"{0}\"", value);
             }
-            else 
-            {
-                sb.Append(value);
-            }
-            // else if (value == string.Empty)
-            // {
-            //     // todo RICHTIG?
-            //     sb.AppendFormat("{0}: \"\"", key);
-            // }
-            // else
-            // {
-            //     sb.AppendFormat("{0}: {1}", key, value);
-            // }
         }  
 
         /// <summary>
@@ -85,40 +66,23 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            // if (null == value)
-            // {
-            //     sb.Append("null");
-            // }
-            // else if (value == string.Empty)
-            // {
-            //     sb.Append("\"\"");
-            // }
-            // else
-            // {
-            //     sb.AppendFormat("\"{0}\"", value);
-            // }
-
             if (null == value)
             {
                 sb.Append(CommonConstants.Null);
             }
-            if(UseQuotes(value))
+            else
             {
                 sb.AppendFormat("\"{0}\"", value);
-            }
-            else 
-            {
-                sb.Append(value);
             }            
         }           
 
         /// <summary>
-        /// Helper methode to add object start to yaml
+        /// Helper methode to add object start to toon
         /// </summary>
         /// <param name="sb">Strinbuilder</param>
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
-        /// <param name="prefix">Key-Prefix</param>
+        /// <param name="prefix">Prefix</param>
         internal static void AddObjectStart(StringBuilder sb, string key, int level, string? prefix)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -142,6 +106,14 @@ namespace DotSerial.Toon.Writer
             }
         }    
 
+        /// <summary>
+        /// Helper methode to add list start to toon
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="lNode">List node</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="addKey">True, to add key</param>
+        /// <param name="prefix">Prefix</param>
         internal static void AddListStart(StringBuilder sb, ListNode lNode, int level, bool addKey, string? prefix)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -177,7 +149,7 @@ namespace DotSerial.Toon.Writer
 
             }       
 
-            if (UseToonSchema(lNode, out string schema))
+            if (UseToonSchema(lNode, out string? schema))
             {
                 sb.Append(schema);
             }
@@ -185,6 +157,12 @@ namespace DotSerial.Toon.Writer
             sb.Append(": ");
         }
 
+        /// <summary>
+        /// Helper method to add a list with Toon Schema
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="node">ListNode</param>
+        /// <param name="level">Indentation level</param>
         internal static void AddSchemaList(StringBuilder sb, ListNode node, int level)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -206,14 +184,10 @@ namespace DotSerial.Toon.Writer
                     {
                         sb.Append(CommonConstants.Null);
                     }
-                    if(UseQuotes(value))
+                    else
                     {
                         sb.AppendFormat("\"{0}\"", value);
                     }
-                    else 
-                    {
-                        sb.Append(value);
-                    }  
 
                     sb.Append(CommonConstants.Comma);
                 }
@@ -223,6 +197,11 @@ namespace DotSerial.Toon.Writer
             }
         }        
 
+        /// <summary>
+        /// Helper method to add a primitive list to toon
+        /// </summary>
+        /// <param name="sb">StinrgBuilder</param>
+        /// <param name="node">ListNode</param>
         internal static void AddPrimitiveList(StringBuilder sb, ListNode node)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -234,29 +213,14 @@ namespace DotSerial.Toon.Writer
             foreach (var child in children)
             {
                 string? val = child.GetValue();
-
-                // if (null == val)
-                // {
-                //     sb.Append(CommonConstants.Null);
-                // }
-                // else
-                // {
-                //     sb.Append(CommonConstants.Quote);
-                //     sb.Append(val);
-                //     sb.Append(CommonConstants.Quote);
-                // }
                 if (null == val)
                 {
                     sb.Append(CommonConstants.Null);
                 }
-                if(UseQuotes(val))
+                else
                 {
                     sb.AppendFormat("\"{0}\"", val);
-                }
-                else 
-                {
-                    sb.Append(val);
-                }                 
+                }               
 
                 sb.Append(CommonConstants.Comma);
             }            
@@ -279,111 +243,21 @@ namespace DotSerial.Toon.Writer
             if (false == string.IsNullOrWhiteSpace(key))
             {
                 AddObjectStart(sb, key, level, prefix);
-                // sb.Append(" {}");
             }
             else
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
-                // sb.Append("{}");
             }
-        }           
+        }     
 
-        private static bool UseQuotes(string? value)
-        {
-            if (null == value)
-            {
-                return false;
-            }
-
-            // TODO
-            return true;
-            
-            if (value == string.Empty)
-            {
-                return true;
-            }
-
-            if (value.Equals(CommonConstants.Null))
-            {
-                return true;
-            }
-            if (value.Equals(CommonConstants.TrueString))
-            {
-                return true;
-            }       
-            if (value.Equals(CommonConstants.FalseString))
-            {
-                return true;
-            }                 
-
-            char firstChar =  value[0];
-            char lastChar = value[^1];
-
-            // '-'
-            if (firstChar == CommonConstants.Minus)
-            {
-                return true;
-            }
-            // Leading/Trailing whitespapce
-            if (firstChar == CommonConstants.WhiteSpace || lastChar == CommonConstants.WhiteSpace)
-            {
-                return true;
-            }
-            // array delimiter ','
-            if (value.Contains(CommonConstants.Comma))
-            {
-                return true;
-            }            
-            // ':'
-            if (value.Contains(ToonConstants.KeyValueSeperator))
-            {
-                return true;
-            }
-            // '"'
-            if (value.Contains(CommonConstants.Quote))
-            {
-                return true;
-            }       
-            // '\'
-            if (value.Contains(CommonConstants.Backslash))
-            {
-                return true;
-            }     
-            // '{', '}'
-            if (value.Contains(CommonConstants.BracesStart) || value.Contains(CommonConstants.BracesEnd))
-            {
-                return true;
-            }       
-            // '[', ']'
-            if (value.Contains(CommonConstants.BracketsStart) || value.Contains(CommonConstants.BracketsEnd))
-            {
-                return true;
-            }       
-            // NewLine
-            if (value.Contains(Environment.NewLine))
-            {
-                return true;
-            }  
-            // Is Number     
-            if(UsingCompiledRegex(value))
-            {
-                return true;
-            }               
-
-            return false;                  
-        }
-
-        // [GeneratedRegex(@"^-?[0-9]+(?:\.[0-9]+)?$")]
-        // private static partial Regex IsDigitRegex();
-        public static bool UsingCompiledRegex(string stringValue)
-        {
-            var pattern = @"^-?[0-9]+(?:\.[0-9]+)?$"; 
-            var regex = new Regex(pattern);
-            return regex.IsMatch(stringValue);
-            // return IsDigitRegex().IsMatch(stringValue); 
-        }        
-
+        /// <summary>
+        /// Check if listNode can be written with Toon Schema. If so,
+        ///  the schema is returned in the out parameter.
+        /// </summary>
+        /// <param name="listNode">ListNode</param>
+        /// <param name="keys">Schema keys</param>
+        /// <returns>True, if schema should be used</returns>
         internal static bool UseToonSchema(ListNode listNode, out string? keys)
         {
             keys = null;
@@ -393,7 +267,7 @@ namespace DotSerial.Toon.Writer
                 return false;
             }
 
-            List<string> keysTmp = new();
+            List<string> keysTmp = [];
             bool firstIt = true;
             
             var children = listNode.GetChildren();
@@ -401,21 +275,10 @@ namespace DotSerial.Toon.Writer
 
             foreach(var child in children)
             {
-                // TODO Sonder fall null => LeafNode
 
                 if (child is InnerNode)
                 {
                      var childChidlren = child.GetChildren();
-                    // foreach (var carchildChild in childChidlren)
-                    // {
-                    //     if (carchildChild is not LeafNode)
-                    //     {
-                    //         keys = null;
-                    //         return false;
-                    //     }
-
-                    //     keys += keys + carchildChild.Key + ",";
-                    // }
 
                     for (int i = 0; i < childChidlren.Count; i++)
                     {
@@ -449,13 +312,14 @@ namespace DotSerial.Toon.Writer
                 firstIt  = false;
             }
 
-            // Remove last ';'
             for (int i = 0; i < keysTmp.Count; i++)
             {
                 keys += "\"" + keysTmp[i] + "\"" + ",";
             }
 
+            // Remove last ','
             keys = keys[..^1];
+            // Wrap list of keys in {}
             keys = string.Format("{{{0}}}", keys);
 
             return true;

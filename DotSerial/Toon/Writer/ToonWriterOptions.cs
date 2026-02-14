@@ -20,8 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using DotSerial.Common;
-
 namespace DotSerial.Toon.Writer
 {
     /// <summary>
@@ -29,7 +27,7 @@ namespace DotSerial.Toon.Writer
     /// </summary>
     internal struct ToonWriterOptions(int level, bool addKey = true, int numberOfListPrefix = 0)
     {
-             /// <summary>
+        /// <summary>
         /// Indentation level
         /// </summary>
         internal int Level { get; private set; } = level;
@@ -57,34 +55,7 @@ namespace DotSerial.Toon.Writer
             string result = string.Empty;
             result += string.Format("{0} ", s_ListItemIndicator);    
 
-            // for (int i = 0; i < NumberOfPrefix; i++)
-            // {
-            //     if (i == NumberOfPrefix - 1)
-            //     {
-            //         result += string.Format("{0} ", s_ListItemIndicator);    
-            //     }
-            //     else
-            //     {
-            //         // TODO andersz lösen
-            //         result += string.Format("{0} ", CommonConstants.WhiteSpace);
-            //     }
-            // }
-
             return result;
-        }
-
-        /// <summary>
-        /// Decreases the number of ListItemIndicator(s)
-        /// </summary>
-        internal void DecreasePrefixCount()
-        {
-            NumberOfPrefix--;
-                
-            if (NumberOfPrefix < 0)
-            {
-                NumberOfPrefix = 0;
-            }
-
         }
     }
 }

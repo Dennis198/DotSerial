@@ -19,7 +19,6 @@ namespace DotSerial.Toon.Writer
             var internalNode = node.GetInternalData();
             WriterAccept(internalNode, new ToonWriterVisitor(), sb, new ToonWriterOptions(0, false));
 
-
             // Trim start and ending
             sb = sb.TrimStartAndEnd();
             
@@ -106,16 +105,7 @@ namespace DotSerial.Toon.Writer
                         // in this level, so we need to reset the count for the next nodes.
                         level += options.NumberOfPrefix;
                         options.NumberOfPrefix = 0;
-                    }
-
-                    if(0 != options.NumberOfPrefix)
-                    {
-                        // Is the currenlty writen node the first item of a list,
-                        // then the following items dont need the list indicator
-                        // in the same level.
-                        options.DecreasePrefixCount();
-                        level++;
-                    }                                 
+                    }                              
                 }
             }
             else
@@ -142,11 +132,8 @@ namespace DotSerial.Toon.Writer
                 {    
                     var children = node.GetChildren();  
 
-                    // if (options.AddKey)
-                    // {
-                        ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
-                        level++;
-                    // }
+                    ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
+                    level++;
 
                     if (ToonWriterHelper.UseToonSchema(node, out _))
                     {
@@ -158,15 +145,6 @@ namespace DotSerial.Toon.Writer
                         {
                             StringBuilder sbChild = new();
                             WriterAccept(child, this, sbChild, new ToonWriterOptions(level, false, options.NumberOfPrefix + 1));
-
-                            // if(0 != options.NumberOfPrefix)
-                            // {
-                            //     // Is the currenlty writen node the first item of a list,
-                            //     // then the following items dont need the list indicator
-                            //     // in the same level.
-                            //     options.DecreasePrefixCount();
-                            //     level++;
-                            // }
                             sb.Append(sbChild);
                         }
                     }
@@ -174,29 +152,15 @@ namespace DotSerial.Toon.Writer
                 }
                 else
                 {
-                    // if (options.AddKey)
-                    // {
                     ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
-                        // level++;
-                    // }
-
                     // List to Toon
                     ToonWriterHelper.AddPrimitiveList(sb, node);
                 }
             }
             else
             {
+                // Empty list
                 ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
-                // if (options.AddKey)
-                // {
-                //     // Empty node
-                //     ToonWriterHelper.AddEmptyList(sb, node.Key, level, options.GetPrefix());
-                // }
-                // else
-                // {
-                //     // Empty node
-                //     ToonWriterHelper.AddEmptyList(sb, null, level, options.GetPrefix());
-                // }
             }            
         }           
 
@@ -231,7 +195,6 @@ namespace DotSerial.Toon.Writer
                     ToonWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
                 }
             }
-            // throw new NotImplementedException();
         }
     }
 }
