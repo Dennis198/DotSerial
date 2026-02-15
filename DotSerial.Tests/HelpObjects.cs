@@ -37,7 +37,33 @@ namespace DotSerial.Tests
 #pragma warning disable CS8602
 #pragma warning disable CS8604
 
-    /// <summary>
+    public class DebugClass : ITestable<DebugClass>
+    {
+        [DotSerialName("pairs")]
+        public List<List<int>> Tmp { get; set; }
+
+        public static DebugClass CreateTestDefault()
+        {
+            List<int> tmp1 = [1, 2];
+            List<int> tmp2 = [3, 4];
+            List<List<int>> tmp = [tmp1, tmp2];
+
+            var result = new DebugClass
+            {
+                Tmp = tmp
+            };
+
+            return result;
+            
+        }
+
+        public bool AssertTest(DebugClass actual)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    /// <summary>   
     /// Example class (ReadMe.md)
     /// </summary>
     public class ExampleClass : ITestable<ExampleClass>
@@ -1992,6 +2018,137 @@ namespace DotSerial.Tests
             return true; 
         }
     }
+
+    public class EmptyObjectClass : ITestable<EmptyObjectClass>
+    {
+        [DotSerialName("1")]
+        public SimpleClass[]? EmptyArray { get; set; }
+        [DotSerialName("2")]
+        public Dictionary<int, SimpleClass>? EmptyDictionary { get; set; }
+        [DotSerialName("3")]
+        public string? StringEmpty { get; set; }
+
+        public static EmptyObjectClass CreateTestDefault()
+        {
+            var tmp = new EmptyObjectClass
+            {
+                EmptyArray = [],
+                EmptyDictionary = [],
+                StringEmpty = string.Empty
+            };
+            return tmp;
+        }
+
+        public bool AssertTest(EmptyObjectClass actual)
+        {
+            if (actual.EmptyArray == null || actual.EmptyArray.Length != 0)
+                return false;
+            if (actual.EmptyDictionary == null || actual.EmptyDictionary.Count != 0)
+                return false;
+            if (actual.StringEmpty == null || !actual.StringEmpty.Equals(string.Empty))
+                return false;
+
+             return true;
+        }
+    }    
+
+    public class ClassWithOneList : ITestable<ClassWithOneList>
+    {
+        [DotSerialName("0")]
+        public bool[]? Boolean { get; set; }
+
+        public static ClassWithOneList CreateTestDefault()
+        {
+            var tmp = new ClassWithOneList
+            {
+                Boolean = [true, true, false, true]
+            };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOneList actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean.Length != actual.Boolean.Length)        
+                return false;
+            
+            for (int i = 0; i < expected.Boolean.Length; i++)
+            {
+                if (expected.Boolean[i] != actual.Boolean[i])
+                    return false;
+            }
+
+            return true;
+        }
+    }    
+
+    public class ClassWithOneDictionary : ITestable<ClassWithOneDictionary>
+    {
+        [DotSerialName("0")]
+        public Dictionary<int, int>? DicIntInt { get; set; }
+
+        public static ClassWithOneDictionary CreateTestDefault()
+        {
+            var tmp = new ClassWithOneDictionary
+            {
+                DicIntInt = []
+            };
+
+            tmp.DicIntInt.Add(33, 44);
+            tmp.DicIntInt.Add(-33, 88);            
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOneDictionary actual)
+        {
+            var expected = this;
+
+            if (expected.DicIntInt.Count != actual.DicIntInt.Count)
+                return false;
+            foreach(var keyValue in expected.DicIntInt)
+            {
+                if (actual.DicIntInt.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            } 
+
+            return true;
+        }
+    }     
+
+    public class ClassWithOnePrimitive : ITestable<ClassWithOnePrimitive>
+    {
+        [DotSerialName("0")]
+        public int Value { get; set; }
+
+        public static ClassWithOnePrimitive CreateTestDefault()
+        {
+            var tmp = new ClassWithOnePrimitive
+            {
+                Value = 55
+            };
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOnePrimitive actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+
+            return true;
+        }
+    }           
 
     #region Helper Class, Enum, Struct, ...
 

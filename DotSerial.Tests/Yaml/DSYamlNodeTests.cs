@@ -599,7 +599,71 @@ namespace DotSerial.Tests.Yaml
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                                                                                                                           
+        }   
+
+        [Fact]
+        public void ToObject_EmptyObjectClass()
+        {   
+            // Arrange
+            var example = EmptyObjectClass.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<EmptyObjectClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }              
+
+        [Fact]
+        public void ToObject_ClassWithOneList()
+        {   
+            // Arrange
+            var example = ClassWithOneList.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ClassWithOneList>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }      
+
+        [Fact]
+        public void ToObject_ClassWithOneDictionary()
+        {   
+            // Arrange
+            var example = ClassWithOneDictionary.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ClassWithOneDictionary>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }              
+
+        [Fact]
+        public void ToObject_ClassWithOnePrimitive()
+        {   
+            // Arrange
+            var example = ClassWithOnePrimitive.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ClassWithOnePrimitive>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                                 
      
     }
 }

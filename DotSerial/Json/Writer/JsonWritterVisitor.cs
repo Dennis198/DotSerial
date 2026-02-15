@@ -136,8 +136,16 @@ namespace DotSerial.Json.Writer
             }
             else
             {
-                // Empty node
-                JsonWriterHelper.AddEmptyObject(sb, level);
+                if (options.AddKey)
+                {
+                    // Empty node
+                    JsonWriterHelper.AddEmptyObject(sb, level, node.Key);
+                }
+                else
+                {
+                    // Empty node
+                    JsonWriterHelper.AddEmptyObject(sb, level);
+                }                
             }
         }
 
@@ -190,8 +198,16 @@ namespace DotSerial.Json.Writer
             }
             else
             {
-                // Empty list
-                JsonWriterHelper.AddEmptyList(sb, level);
+                if (options.AddKey)
+                {
+                    // Empty node
+                    JsonWriterHelper.AddEmptyList(sb, level, node.Key);
+                }
+                else
+                {
+                    // Empty node
+                    JsonWriterHelper.AddEmptyList(sb, level);
+                }                
             }
         }
 

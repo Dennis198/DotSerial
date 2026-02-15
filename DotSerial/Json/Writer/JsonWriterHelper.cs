@@ -171,13 +171,23 @@ namespace DotSerial.Json.Writer
         /// </summary>
         /// <param name="sb"Stringbuilder></param>
         /// <param name="level">Level</param>
-        internal static void AddEmptyList(StringBuilder sb, int level)
+        /// <param name="Key">Key</param>
+        internal static void AddEmptyList(StringBuilder sb, int level, string? key = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-            sb.Append("[],");
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                sb.Append("[],");            
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+                sb.AppendFormat("\"{0}\": [],", key);
+            }
         }
 
         /// <summary>
@@ -188,6 +198,9 @@ namespace DotSerial.Json.Writer
         /// <param name="options">Options</param>
         internal static void AddPrimitiveList(StringBuilder sb, ListNode node, JsonWriterOptions options)
         {
+            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
             if (options.AddKey)
             {
                 // Add Key

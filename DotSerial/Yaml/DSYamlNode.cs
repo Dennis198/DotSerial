@@ -145,10 +145,10 @@ namespace DotSerial.Yaml
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (null == str)
                 {
-                    throw new DSYamlException($"{str} can't be null or whitespace.");
-                }   
+                    throw new DSYamlException($"{str} can't be null.");
+                }      
 
                 var root = YamlParserVisitor.Parse(str);        
 
@@ -171,10 +171,10 @@ namespace DotSerial.Yaml
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (null == str)
                 {
-                    throw new DSYamlException($"{str} can't be null or whitespace.");
-                }
+                    throw new DSYamlException($"{str} can't be null.");
+                }                
 
                 // Parse yaml string to node
                 DSYamlNode dsNode = FromString(str);

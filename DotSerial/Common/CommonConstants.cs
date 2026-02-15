@@ -37,6 +37,30 @@ namespace DotSerial.Common
         /// </summary>
         internal const char Quote = '"';
         /// <summary>
+        /// Minus
+        /// </summary>
+        internal const char Minus = '-';     
+        /// <summary>
+        /// Backslash
+        /// </summary>
+        internal const char Backslash = '\\';              
+        /// <summary>
+        /// BracketsStart
+        /// </summary>
+        internal const char BracketsStart = '['; 
+        /// <summary>
+        /// BracketsEnd
+        /// </summary>
+        internal const char BracketsEnd = ']';    
+        /// <summary>
+        /// BracesStart
+        /// </summary>
+        internal const char BracesStart = '{'; 
+        /// <summary>
+        /// BracesEnd
+        /// </summary>
+        internal const char BracesEnd = '}';                             
+        /// <summary>
         /// N
         /// </summary>
         internal const char N = 'n';

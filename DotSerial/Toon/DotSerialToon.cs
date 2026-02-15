@@ -1,38 +1,16 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using DotSerial.Common;
 using DotSerial.Tree.Serialize;
 
-namespace DotSerial.Json
+namespace DotSerial.Toon
 {
-    /// <summary> Serialize and Deserialize an object with Json
+    /// <summary> Serialize and Deserialize an object with Toon
     /// </summary>
-    public class DotSerialJson : ISerial<DotSerialJson>
+    public class DotSerialToon : ISerial<DotSerialToon>
     {
         /// <summary>
-        /// Json Document
+        /// Toon Document
         /// </summary>
-        private JsonDocument? _document;
+        private ToonDocument? _document;
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
@@ -50,8 +28,8 @@ namespace DotSerial.Json
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">Argument null.</exception>
-        public static void SaveToFile(string path, DotSerialJson serialObj)
+        /// <exception cref="DSToonException">Argument null.</exception>
+        public static void SaveToFile(string path, DotSerialToon serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
@@ -62,7 +40,7 @@ namespace DotSerial.Json
 
             if (null == serialObj._document)
             {
-                throw new DSJsonException($"{serialObj._document} can't be null");
+                throw new DSToonException($"{serialObj._document} can't be null");
             }
 
             try
@@ -77,7 +55,7 @@ namespace DotSerial.Json
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">Argument null.</exception>
+        /// <exception cref="DSToonException">Argument null.</exception>
         public static U LoadFromFile<U>(string path)
         {
             if (string.IsNullOrWhiteSpace(path))
@@ -92,13 +70,13 @@ namespace DotSerial.Json
                     throw new FileNotFoundException(path);
                 }
 
-                JsonDocument jsonDoc = new();
+                ToonDocument toonDoc = new();
 
-                jsonDoc.Load(path);
+                toonDoc.Load(path);
 
-                var desObj = new DotSerialJson
+                var desObj = new DotSerialToon
                 {
-                    _document = jsonDoc
+                    _document = toonDoc
                 };
 
                 var result = Deserialize<U>(desObj);
@@ -112,32 +90,32 @@ namespace DotSerial.Json
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">Argument null.</exception>
-        public static DotSerialJson Serialize(object? obj)
+        /// <exception cref="DSToonException">Argument null.</exception>
+        public static DotSerialToon Serialize(object? obj)
         {        
             // Serialze Object
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
 
-            var result = new DotSerialJson
+            var result = new DotSerialToon
             {
-                _document = new JsonDocument()
+                _document = new ToonDocument()
             };
 
-            result._document.RootNode = new DSJsonNode(rootNode);
+            result._document.RootNode = new DSToonNode(rootNode);
 
             return result;
         }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">Argument null.</exception>
-        public static U Deserialize<U>(DotSerialJson serialObj)
+        /// <exception cref="DSToonException">Argument null.</exception>
+        public static U Deserialize<U>(DotSerialToon serialObj)
         {
             ArgumentNullException.ThrowIfNull(serialObj);
 
             if (null == serialObj._document)
             {
-                throw new DSJsonException($"{serialObj._document} can't be null");
+                throw new DSToonException($"{serialObj._document} can't be null");
             }
 
             // Get root element
@@ -149,11 +127,11 @@ namespace DotSerial.Json
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
-        public DSJsonNode GetRootNode()
+        public DSToonNode GetRootNode()
         {
             if (null == _document)
             {
-                throw new DSJsonException($"{_document} can't be null");
+                throw new DSToonException($"{_document} can't be null");
             }
 
             var result = _document.RootNode;

@@ -203,7 +203,6 @@ namespace DotSerial.Xml.Parser
                 int i = 0;
                 foreach(var keyValuepair in dic)                
                 {
-                    // TODO process key value pair
                     string key = i.ToString();
                     string tag = keyValuepair.Key.Tag;
                     StringBuilder? strValue = keyValuepair.Value;

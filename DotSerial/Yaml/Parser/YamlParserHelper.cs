@@ -266,6 +266,10 @@ namespace DotSerial.Yaml.Parser
             // 2. "[]"
             if (IsEmptyList(firstLine))
             {
+                if(lines.Count != 1)
+                {
+                    return false;
+                }
                 return true;
             }
 
@@ -407,7 +411,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     continue;
                 }
-                else if (c == '}')
+                else if (c == CommonConstants.BracesEnd)
                 {
                     if (true == closedBracletFound)
                     {
@@ -415,7 +419,7 @@ namespace DotSerial.Yaml.Parser
                     }
                     closedBracletFound = true;
                 }
-                else if (c == '{')
+                else if (c == CommonConstants.BracesStart)
                 {
                     if (false == closedBracletFound)
                     {

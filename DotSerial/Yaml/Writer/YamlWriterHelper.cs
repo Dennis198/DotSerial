@@ -61,7 +61,6 @@ namespace DotSerial.Yaml.Writer
             {
                 sb.AppendFormat("{0}\"{1}\":", prefix, key);
             }
-
         }
 
         /// <summary>
@@ -235,7 +234,7 @@ namespace DotSerial.Yaml.Writer
 
             if (null == value)
             {
-                sb.Append("null");
+                sb.Append(CommonConstants.Null);
             }
             else if (value == string.Empty)
             {

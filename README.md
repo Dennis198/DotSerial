@@ -104,9 +104,9 @@ public int Gender { get; set; }
 ---
 
 ## Notes   
-- Use DotSerialXml for Xml, DotSerialJson for Json or DotSerialYaml for yaml.
+- Use DotSerialXml for Xml, DotSerialJson for Json, DotSerialYaml for yaml or DotSerialToon for toon.
 - Properties without **`DotSerialName`** will be named as the propertie.
-- Currently only **XMml Json and Yaml format** is supported. Other formats will be added in the future. 
+- Currently only **Xml, Json, Yaml and Toon format** is supported. Other formats will be added in the future. 
 
 ---
 
