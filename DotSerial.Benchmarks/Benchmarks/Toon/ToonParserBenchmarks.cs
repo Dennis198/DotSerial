@@ -7,9 +7,9 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
     [MemoryDiagnoser]
     public class ToonParserBenchmarks
     {
-        private string _stringPrimitive;
-        private string _stringList;
-        private string _stringDictionary;
+        private string? _stringPrimitive;
+        private string? _stringList;
+        private string? _stringDictionary;
 
         [GlobalSetup]
         public void Setup()
@@ -30,6 +30,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
         [Benchmark]
         public DSToonNode PrimitiveParseTest()
         {
+            if (string.IsNullOrWhiteSpace(_stringPrimitive))
+            {
+                throw new InvalidOperationException("String is null or empty");
+            }
             var result = DSToonNode.FromString(_stringPrimitive);
             return result;
         }
@@ -37,6 +41,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
         [Benchmark]
         public DSToonNode ListParseTest()
         {
+            if (string.IsNullOrWhiteSpace(_stringList))
+            {
+                throw new InvalidOperationException("String is null or empty");
+            }
             var result = DSToonNode.FromString(_stringList);
             return result;
         }
@@ -44,6 +52,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
         [Benchmark]
         public DSToonNode DictionaryParseTest()
         {
+            if (string.IsNullOrWhiteSpace(_stringDictionary))
+            {
+                throw new InvalidOperationException("String is null or empty");
+            }
             var result = DSToonNode.FromString(_stringDictionary);
             return result;
         }

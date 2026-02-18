@@ -7,9 +7,9 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
     [MemoryDiagnoser]
     public class JsonWriterBenchmarks
     {
-        private DSJsonNode _nodePrimitve;
-        private DSJsonNode _nodeList;
-        private DSJsonNode _nodeDictionary;
+        private DSJsonNode? _nodePrimitve;
+        private DSJsonNode? _nodeList;
+        private DSJsonNode? _nodeDictionary;
 
         [GlobalSetup]
         public void Setup()
@@ -27,6 +27,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
         [Benchmark]
         public string PrimitiveWriteTest()
         {
+            if (null == _nodePrimitve)
+            {
+                throw new InvalidOperationException("Node is null");
+            }
             string result = _nodePrimitve.Stringify();
             return result;
         }
@@ -34,6 +38,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
         [Benchmark]
         public string ListWriteTest()
         {
+            if (null == _nodeList)
+            {
+                throw new InvalidOperationException("Node is null");
+            }
             string result = _nodeList.Stringify();
             return result;
         }
@@ -41,6 +49,10 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
         [Benchmark]
         public string DictionaryWriteTest()
         {
+            if (null == _nodeDictionary)
+            {
+                throw new InvalidOperationException("Node is null");
+            }
             string result = _nodeDictionary.Stringify();
             return result;
         }

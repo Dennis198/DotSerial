@@ -8,9 +8,9 @@ namespace DotSerial.Benchmarks.Benchmarks.Tree
     [MemoryDiagnoser]
     public class SerializeBenchmarks
     {
-        private PrimitiveClass _primitiveClass;
-        private ListClass _listClass;
-        private DictionaryClass _dictionaryClass;
+        private PrimitiveClass? _primitiveClass;
+        private ListClass? _listClass;
+        private DictionaryClass? _dictionaryClass;
 
         [GlobalSetup]
         public void Setup()
