@@ -40,7 +40,7 @@ namespace DotSerial.Tests
     public class DebugClass : ITestable<DebugClass>
     {
         [DotSerialName("pairs")]
-        public List<List<int>> Tmp { get; set; }
+        public List<List<int>>? Tmp { get; set; }
 
         public static DebugClass CreateTestDefault()
         {
