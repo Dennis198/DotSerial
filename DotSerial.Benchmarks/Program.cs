@@ -7,6 +7,8 @@ namespace DotSerial.Benchmarks
         public static void Main(string[] args)
         {
             BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
+
+            // Use for debugging
             //BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args, new DebugInProcessConfig());
         }
     }
