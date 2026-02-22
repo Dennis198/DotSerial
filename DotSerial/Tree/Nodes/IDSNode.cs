@@ -35,6 +35,11 @@ namespace DotSerial.Tree.Nodes
         public string Key {get;}
 
         /// <summary>
+        /// True, if the node value must be quoted when serialized
+        /// </summary>
+        public bool IsQuoted { get; }
+
+        /// <summary>
         /// Returns the value of the node.
         /// </summary>
         /// <returns>Value of node</returns>

@@ -34,6 +34,10 @@ namespace DotSerial.Tree.Nodes
     {
         /// <inheritdoc/>
         public string Key { get; private set; } = key;
+        
+        /// <inheritdoc/>
+        public bool IsQuoted { get; private set; } = false;
+
         /// <summary>
         /// Value of the leaf
         /// </summary>

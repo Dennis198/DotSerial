@@ -37,6 +37,9 @@ namespace DotSerial.Tree.Nodes
 
          /// <inheritdoc/>
         public string Key => _wrappedInnerNode.Key;
+        
+        /// <inheritdoc/>
+        public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
 
         /// <summary>
         /// Construcot

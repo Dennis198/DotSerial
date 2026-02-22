@@ -34,6 +34,9 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public string Key { get; private set; } = key;
 
+        /// <inheritdoc/>
+        public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
+
         /// <summary>
         /// Children of the node
         /// </summary>
