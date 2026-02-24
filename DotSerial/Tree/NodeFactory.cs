@@ -28,22 +28,23 @@ namespace DotSerial.Tree
     /// <summary>
     /// Implementation of factory pattern as singelton
     /// </summary>
-    internal sealed class NodeFactory : INodeFactory
+    [Obsolete("Not used any more", true)]
+    internal sealed class NodeFactoryObsolete : INodeFactory
     {
         /// <summary>
         /// Factory instance
         /// </summary>
-        private static NodeFactory? _instance = null;
+        private static NodeFactoryObsolete? _instance = null;
 
         /// <summary>
         /// Private constructor
         /// </summary>
-        private NodeFactory(){}
+        private NodeFactoryObsolete(){}
 
         /// <summary>
         /// Returns the instance
         /// </summary>
-        public static NodeFactory Instance
+        public static NodeFactoryObsolete Instance
         {
             get
             {
@@ -52,7 +53,7 @@ namespace DotSerial.Tree
                     return _instance;
                 }
 
-                _instance = new NodeFactory();
+                _instance = new NodeFactoryObsolete();
                 return _instance;
             }
         }

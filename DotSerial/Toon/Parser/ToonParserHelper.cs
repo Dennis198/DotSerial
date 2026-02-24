@@ -12,7 +12,7 @@ namespace DotSerial.Toon.Parser
     internal static  class ToonParserHelper
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <summary>
         /// Extracts key value pairs from yaml object

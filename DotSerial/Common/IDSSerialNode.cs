@@ -34,7 +34,7 @@ namespace DotSerial.Common
     public interface IDSSerialNode<T>
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
         
         /// <summary>
         /// Key of the node.

@@ -32,6 +32,12 @@ namespace DotSerial.Tree.Nodes
     /// <param name="value">Value of node</param>
     public class LeafNode(string key, string? value) : IDSNode
     {
+        // TODO als  Primär machen!
+        internal LeafNode(string key, string? value, bool isQuoted) : this(key, value)
+        {
+            IsQuoted = isQuoted;
+        }
+
         /// <inheritdoc/>
         public string Key { get; private set; } = key;
         

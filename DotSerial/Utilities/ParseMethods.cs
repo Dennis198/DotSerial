@@ -30,7 +30,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;  
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to

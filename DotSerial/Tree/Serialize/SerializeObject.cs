@@ -25,6 +25,7 @@ using System.Reflection;
 
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
+using DotSerial.Tree.Creation;
 using DotSerial.Common;
 using DotSerial.Attributes;
 
@@ -46,7 +47,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="obj">Object</param>
         /// <param name="objectID">Object-ID</param>
         /// <returns>Node</returns>
-        internal static IDSNode Serialize(object? obj, string objectID)
+        internal static IDSNode Serialize(object? obj, string objectID, StategyType strategyType)
         {
             ///      (node) (Class)
             ///        |
@@ -57,7 +58,7 @@ namespace DotSerial.Tree.Serialize
             // If classObj is null, create Null node
             if (obj == null)
             {
-                return _nodeFactory.CreateNode(objectID, null, NodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, objectID, null, NodeType.Leaf);
             }
 
             Type typeObj = obj.GetType();
@@ -72,20 +73,19 @@ namespace DotSerial.Tree.Serialize
             
             if (TypeCheckMethods.IsPrimitive(typeObj) || TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {                
-                string? strValue = HelperMethods.PrimitiveToString(obj);
-                result = _nodeFactory.CreateNode(objectID, strValue, NodeType.Leaf);
+                result = _nodeFactory.CreateNode(strategyType, objectID, obj, NodeType.Leaf);
             }
             else if (TypeCheckMethods.IsDictionary(typeObj))
             {   
-                result = SerializeDictionary(obj, objectID);
+                result = SerializeDictionary(obj, objectID, strategyType);
             }
             else if (TypeCheckMethods.IsList(typeObj) || TypeCheckMethods.IsArray(typeObj))
             {
-                result = SerializeList(obj, objectID);
+                result = SerializeList(obj, objectID, strategyType);
             }
             else if (TypeCheckMethods.IsClass(typeObj) || TypeCheckMethods.IsStruct(typeObj))
             {
-                result = SerializeClass(obj, objectID);
+                result = SerializeClass(obj, objectID, strategyType);
             }
             else
             {
@@ -106,7 +106,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="obj">Object</param>
         /// <param name="objectID">Object-ID</param>
         /// <returns>Node</returns>
-        private static IDSNode SerializeClass(object? classObj, string objectID)
+        private static IDSNode SerializeClass(object? classObj, string objectID, StategyType strategyType)
         {
             ///      (node) (Class)
             ///        |
@@ -117,11 +117,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is null, create Null node
             if (classObj == null)
             {
-                return _nodeFactory.CreateNode(objectID, null, NodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, objectID, null, NodeType.Leaf);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(objectID, null, NodeType.InnerNode);
+            var result = _nodeFactory.CreateNode(strategyType, objectID, null, NodeType.InnerNode);
 
             Type typeObj = classObj.GetType();
 
@@ -164,14 +164,13 @@ namespace DotSerial.Tree.Serialize
                     if (TypeCheckMethods.IsPrimitive(prop.PropertyType) || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType))
                     {
                         // Primitive types || String
-                        string? strValue = HelperMethods.PrimitiveToString(value);
-                        var childNode = _nodeFactory.CreateNode(dsPropName, strValue, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNode(strategyType, dsPropName, value, NodeType.Leaf);
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                     {
                         // Dictionary
-                        var childNode = SerializeDictionary(value, dsPropName);
+                        var childNode = SerializeDictionary(value, dsPropName, strategyType);
                         result.AddChild(childNode);
 
                     }
@@ -179,13 +178,13 @@ namespace DotSerial.Tree.Serialize
                              TypeCheckMethods.IsArray(prop.PropertyType))
                     {
                         // List || Array
-                        var childNode = SerializeList(value, dsPropName);
+                        var childNode = SerializeList(value, dsPropName, strategyType);
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType))
                     {
                         // Class || Struct
-                        var childNode = SerializeClass(value, dsPropName);
+                        var childNode = SerializeClass(value, dsPropName, strategyType);
                         result.AddChild(childNode);
                     }
                     else
@@ -204,7 +203,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="dic">Dictioanry</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeDictionary(object? dic, string id)
+        private static IDSNode SerializeDictionary(object? dic, string id, StategyType strategyType)
         {
             ///      (node) (Dictionary)
             ///        |
@@ -217,11 +216,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is list, create Null node
             if (dic == null)
             {
-                return _nodeFactory.CreateNode(id, null, NodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, id, null, NodeType.Leaf);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.DictionaryNode);            
+            var result = _nodeFactory.CreateNode(strategyType, id, null, NodeType.DictionaryNode);            
 
             if (dic is IDictionary castedDic)
             {
@@ -274,13 +273,12 @@ namespace DotSerial.Tree.Serialize
 
                         if (null == value)
                         {
-                            keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.Leaf);
+                            keyValue = _nodeFactory.CreateNode(strategyType, keyString, null, NodeType.Leaf);
                         }
                         else if (TypeCheckMethods.IsPrimitive(valueType) ||
                             TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            string? tmpValue = HelperMethods.PrimitiveToString(value);
-                            keyValue = _nodeFactory.CreateNode(keyString, tmpValue, NodeType.Leaf);
+                            keyValue = _nodeFactory.CreateNode(strategyType,keyString, value, NodeType.Leaf);
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
                         {
@@ -290,11 +288,11 @@ namespace DotSerial.Tree.Serialize
                                 if (GetTypeMethods.GetKeyValueTypeOfDictionary(dic, out Type innerKeyType, out Type _))
                                 {
 
-                                    keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.DictionaryNode);
+                                    keyValue = _nodeFactory.CreateNode(strategyType, keyString, null, NodeType.DictionaryNode);
                                     foreach (DictionaryEntry str in castedValue)
                                     {
                                         string? innerDicID = HelperMethods.PrimitiveToString(str.Key) ?? throw new DotSerialException($"Serialize: Can't convert {str.Key} to string.");
-                                        var childNode = SerializeDictionary(str, innerDicID);
+                                        var childNode = SerializeDictionary(str, innerDicID, strategyType);
                                         keyValue.AddChild(childNode);
                                     }
                                 }
@@ -316,12 +314,12 @@ namespace DotSerial.Tree.Serialize
 
                             if (value is IEnumerable castedValue)
                             {
-                                keyValue = _nodeFactory.CreateNode(keyString, null, NodeType.ListNode);
+                                keyValue = _nodeFactory.CreateNode(strategyType, keyString, null, NodeType.ListNode);
                                 int listID = 0;
                                 foreach (var str in castedValue)
                                 {
                                     string listIDString = listID.ToString();
-                                    var childNode = SerializeList(str, listIDString);
+                                    var childNode = SerializeList(str, listIDString, strategyType);
                                     keyValue.AddChild(childNode);
                                     listID++;
                                 }
@@ -334,7 +332,7 @@ namespace DotSerial.Tree.Serialize
                         else if (TypeCheckMethods.IsClass(valueType) ||
                                  TypeCheckMethods.IsStruct(valueType))
                         {
-                            keyValue = SerializeClass(value, keyString);
+                            keyValue = SerializeClass(value, keyString, strategyType);
                         }
                         else
                         {
@@ -365,7 +363,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="list">List</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeList(object? list, string id)
+        private static IDSNode SerializeList(object? list, string id, StategyType strategyType)
         {
             ///      (node) (List)
             ///        |
@@ -376,11 +374,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is list, create Null node
             if (list == null)
             {
-                return _nodeFactory.CreateNode(id, null, NodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, id, null, NodeType.Leaf);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(id, null, NodeType.ListNode);
+            var result = _nodeFactory.CreateNode(strategyType, id, null, NodeType.ListNode);
 
             if (list is IEnumerable castedList)
             {
@@ -399,8 +397,7 @@ namespace DotSerial.Tree.Serialize
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        string? strValue = HelperMethods.PrimitiveToString(str);
-                        var childNode = _nodeFactory.CreateNode(listIDString, strValue, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNode(strategyType, listIDString, str, NodeType.Leaf);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -413,7 +410,7 @@ namespace DotSerial.Tree.Serialize
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = SerializeList(str, listIDString);
+                        var childNode = SerializeList(str, listIDString, strategyType);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -425,7 +422,7 @@ namespace DotSerial.Tree.Serialize
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = SerializeDictionary(str, listIDString);
+                        var childNode = SerializeDictionary(str, listIDString, strategyType);
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -438,7 +435,7 @@ namespace DotSerial.Tree.Serialize
                     foreach (var entry in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = SerializeClass(entry, listIDString);
+                        var childNode = SerializeClass(entry, listIDString, strategyType);
                         result.AddChild(childNode);
                         listID++;
                     }

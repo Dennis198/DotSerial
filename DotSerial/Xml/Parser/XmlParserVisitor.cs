@@ -34,7 +34,7 @@ namespace DotSerial.Xml.Parser
     internal class XmlParserVisitor : IXmlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <inheritdoc/>
         public static DSXmlNode Parse(string str)

@@ -27,7 +27,7 @@ namespace DotSerial.Tests.Xml
 {
     public class DSXmlNodeTests
     {
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;  
 
         [Fact]
         public void Create()

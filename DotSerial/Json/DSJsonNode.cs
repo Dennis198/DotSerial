@@ -23,6 +23,7 @@
 using DotSerial.Common;
 using DotSerial.Json.Parser;
 using DotSerial.Json.Writer;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -97,7 +98,7 @@ namespace DotSerial.Json
                 string currKey = key ?? CommonConstants.MainObjectKey;
                 
                 // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey);
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
 
                 return new DSJsonNode(rootNode);
             }

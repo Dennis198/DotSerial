@@ -69,6 +69,27 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Determines if a type is a numeric type.
+        /// </summary>
+        /// <param name="type">Type</param>
+        /// <returns>True, if the type is a numeric type</returns>
+        internal static bool IsNumericType(Type type)
+        {
+            return type == typeof(byte) || type == typeof(byte?) ||
+                   type == typeof(sbyte) || type == typeof(sbyte?) ||
+                   type == typeof(int) || type == typeof(int?) ||
+                   type == typeof(uint) || type == typeof(uint?) ||
+                   type == typeof(nint) || type == typeof(nint?) ||
+                   type == typeof(nuint) || type == typeof(nuint?) ||
+                   type == typeof(ulong) || type == typeof(ulong?) ||
+                   type == typeof(short) || type == typeof(short?) ||
+                   type == typeof(ushort) || type == typeof(ushort?) ||
+                   type == typeof(float) || type == typeof(float?) ||
+                   type == typeof(double) || type == typeof(double?) ||
+                   type == typeof(decimal) || type == typeof(decimal?);
+        }        
+
+        /// <summary>
         /// Returns true, if Type is a primitive
         /// </summary>
         /// <param name="type">Type</param>
