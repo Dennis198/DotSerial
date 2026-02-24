@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Serialize;
 
 namespace DotSerial.Json
@@ -116,7 +117,7 @@ namespace DotSerial.Json
         public static DotSerialJson Serialize(object? obj)
         {        
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Json);            
 
             var result = new DotSerialJson
             {

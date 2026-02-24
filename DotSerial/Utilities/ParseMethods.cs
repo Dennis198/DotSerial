@@ -23,6 +23,7 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 
 namespace DotSerial.Utilities
@@ -30,7 +31,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;  
+        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;  
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
@@ -202,7 +203,7 @@ namespace DotSerial.Utilities
 
             if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
             {
-                return _nodeFactory.CreateNode(key, null, NodeType.Leaf);
+                return NodeFactory.CreateNodeFromString(key, null, NodeType.Leaf);
             }
 
             StringBuilder sbPrim = new();
@@ -218,7 +219,7 @@ namespace DotSerial.Utilities
             sbPrim.Remove(sbPrim.Length - 1, 1);
             string nodeValue = sbPrim.ToString();
             
-            return _nodeFactory.CreateNode(key, nodeValue, NodeType.Leaf);
+            return NodeFactory.CreateNodeFromString(key, nodeValue, NodeType.Leaf);
         }              
     }
 }

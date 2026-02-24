@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Serialize;
 
 namespace DotSerial.Yaml
@@ -117,7 +118,7 @@ namespace DotSerial.Yaml
         public static DotSerialYaml Serialize(object? obj)
         {
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Yaml);
 
             var result = new DotSerialYaml
             {

@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Serialize;
 
 namespace DotSerial.Xml
@@ -110,7 +111,7 @@ namespace DotSerial.Xml
         public static DotSerialXml Serialize(object? obj)
         {
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Xml);            
 
             var result = new DotSerialXml
             {

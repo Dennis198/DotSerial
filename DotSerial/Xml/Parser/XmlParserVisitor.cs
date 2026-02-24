@@ -23,6 +23,7 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -34,7 +35,7 @@ namespace DotSerial.Xml.Parser
     internal class XmlParserVisitor : IXmlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
+        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <inheritdoc/>
         public static DSXmlNode Parse(string str)
@@ -59,11 +60,11 @@ namespace DotSerial.Xml.Parser
 
             if (rootTagKeyPair.IsXmlObject())
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
+                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
             }
             else if (rootTagKeyPair.IsXmlList())
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.ListNode);
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
@@ -145,7 +146,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -159,7 +160,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -210,7 +211,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -224,7 +225,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {

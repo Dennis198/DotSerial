@@ -1,6 +1,7 @@
 using DotSerial.Common;
 using DotSerial.Toon.Parser;
 using DotSerial.Toon.Writer;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -75,7 +76,7 @@ namespace DotSerial.Toon
                 string currKey = key ?? CommonConstants.MainObjectKey;
                 
                 // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey);
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Toon);
 
                 return new DSToonNode(rootNode);
             }

@@ -1,6 +1,7 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -12,7 +13,7 @@ namespace DotSerial.Toon.Parser
     internal static  class ToonParserHelper
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
+        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <summary>
         /// Extracts key value pairs from yaml object
@@ -452,7 +453,7 @@ namespace DotSerial.Toon.Parser
 
             for (int i = 0; i < count; i++)
             {
-                var listNode = _nodeFactory.CreateNode(i.ToString(), lItems[i], NodeType.Leaf);
+                var listNode = NodeFactory.CreateNodeFromString(i.ToString(), lItems[i], NodeType.Leaf);
                 node.AddChild(listNode);
             }
         }
@@ -567,7 +568,7 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines.GetLine(i);
-                var child = _nodeFactory.CreateNode((i).ToString(), null, NodeType.InnerNode);
+                var child = NodeFactory.CreateNodeFromString((i).ToString(), null, NodeType.InnerNode);
                 var values = ParseCommaSeperateValues(line, 0);
 
                 if (keys.Count != values.Count)
@@ -579,7 +580,7 @@ namespace DotSerial.Toon.Parser
                 {
                     string key = keys[j];
                     string value = values[j];
-                    var childChild = _nodeFactory.CreateNode(key, value, NodeType.Leaf);
+                    var childChild = NodeFactory.CreateNodeFromString(key, value, NodeType.Leaf);
                     child.AddChild(childChild);
                 }
 

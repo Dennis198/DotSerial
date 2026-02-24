@@ -23,6 +23,7 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -34,7 +35,7 @@ namespace DotSerial.Yaml.Parser
     internal class YamlParserVisitor : IYamlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
+        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <inheritdoc/>
         public static DSYamlNode Parse(string yamlString)
@@ -52,7 +53,7 @@ namespace DotSerial.Yaml.Parser
             // Check if its an empty yaml file
             if (0 == lines.Count)
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
                 return new DSYamlNode(rootNode);   
             }
 
@@ -63,7 +64,7 @@ namespace DotSerial.Yaml.Parser
             }
             else if (YamlParserHelper.IsYamlObject(lines))
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
                 if (YamlParserHelper.IsEmptyObject(lines.GetLine(0)))
                 {
                     return new DSYamlNode(rootNode);    
@@ -71,7 +72,7 @@ namespace DotSerial.Yaml.Parser
             }
             else if (YamlParserHelper.IsYamlList(lines))
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.ListNode);
                 if (YamlParserHelper.IsEmptyList(lines.GetLine(0)))
                 {
                     return new DSYamlNode(rootNode);    
@@ -148,13 +149,13 @@ namespace DotSerial.Yaml.Parser
                     if (YamlParserHelper.IsYamlPrimitiveLine(value))
                     {
                         string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0));
-                        var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
+                        var childNode = NodeFactory.CreateNodeFromString(key, strValue, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
                     else if (YamlParserHelper.IsYamlObject(value))
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {
@@ -168,7 +169,7 @@ namespace DotSerial.Yaml.Parser
                     else if (YamlParserHelper.IsYamlList(value))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                         {
@@ -219,7 +220,7 @@ namespace DotSerial.Yaml.Parser
                     else if (YamlParserHelper.IsYamlObject(value))
                     {       
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {
@@ -233,7 +234,7 @@ namespace DotSerial.Yaml.Parser
                     else if (YamlParserHelper.IsYamlList(value))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                         {

@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 using DotSerial.Xml.Parser;
@@ -100,7 +101,7 @@ namespace DotSerial.Xml
                 string currKey = key ?? CommonConstants.MainObjectKey;
                 
                 // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey);
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Xml);
 
                 return new DSXmlNode(rootNode);
             }

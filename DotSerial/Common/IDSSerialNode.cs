@@ -21,6 +21,7 @@
 #endregion
 
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Deserialize;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
@@ -34,7 +35,7 @@ namespace DotSerial.Common
     public interface IDSSerialNode<T>
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
+        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
         
         /// <summary>
         /// Key of the node.
@@ -108,7 +109,7 @@ namespace DotSerial.Common
                 // dictionary node which wraps the inner node.
                 if (TypeCheckMethods.IsDictionary(typeof(U)) && nodeToSerialize is InnerNode)
                 {
-                    nodeToSerialize = _nodeFactory.WrappNode(nodeToSerialize, NodeType.DictionaryNode);
+                    nodeToSerialize = NodeFactory.WrappNode(nodeToSerialize, NodeType.DictionaryNode);
                 }
 
                 // Deserilize object
