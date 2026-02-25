@@ -22,18 +22,19 @@
 
 using DotSerial.Json;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Json
 {
     public class DSJsonNodeTests
     {
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;               
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         [Fact]
         public void Create()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(StategyType.Json, "key", "value", NodeType.Leaf);
 
             // Act
             var result = new DSJsonNode(tmp);
@@ -48,8 +49,8 @@ namespace DotSerial.Tests.Json
         public void GetChild()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode("key", null, NodeType.InnerNode);
+            var tmp = _nodeFactory.CreateNode(StategyType.Json, "child", "value", NodeType.Leaf);
+            var tmp2 = _nodeFactory.CreateNode(StategyType.Json, "key", null, NodeType.InnerNode);
             tmp2.AddChild(tmp);
             var resultNode = new DSJsonNode(tmp2);
 

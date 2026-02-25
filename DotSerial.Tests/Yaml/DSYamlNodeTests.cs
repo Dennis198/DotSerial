@@ -22,18 +22,19 @@
 
 using DotSerial.Yaml;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Yaml
 {
     public class DSYamlNodeTests
     {
-        private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
         
         [Fact]
         public void Create()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(StategyType.Yaml, "key", "value", NodeType.Leaf);
 
             // Act
             var result = new DSYamlNode(tmp);
@@ -48,8 +49,8 @@ namespace DotSerial.Tests.Yaml
         public void GetChild()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode("key", null, NodeType.InnerNode);
+            var tmp = _nodeFactory.CreateNode(StategyType.Yaml, "child", "value", NodeType.Leaf);
+            var tmp2 = _nodeFactory.CreateNode(StategyType.Yaml, "key", null, NodeType.InnerNode);
             tmp2.AddChild(tmp);
             var resultNode = new DSYamlNode(tmp2);
 
