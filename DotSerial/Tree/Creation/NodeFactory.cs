@@ -48,7 +48,24 @@ namespace DotSerial.Tree.Creation
             throw new NotSupportedException($"Strategy '{category}' is not supported.");
         }
 
-        internal static IDSNode CreateNodeFromString(string key, string? value, NodeType type)
+        /// <summary>
+        /// Creates a node of the given string value
+        /// </summary>
+        /// <param name="category">Create node strategy</param>
+        /// <param name="key">Key of the node</param>
+        /// <param name="Value">Value of the node</param>
+        /// <param name="type">Type of the node</param>
+        /// <returns>IDSNode</returns>
+        internal IDSNode CreateNodeFromString(StategyType category, string key, string? value, NodeType type)
+        {
+            if (_strategies.TryGetValue(category, out var strategy))
+            {
+                return strategy.CreateNodeFromString(key, value, type);
+            }
+            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+        }
+
+        internal static IDSNode CreateNodeFromStringObsolete(string key, string? value, NodeType type)
         {
             if (string.IsNullOrWhiteSpace(key))
             {

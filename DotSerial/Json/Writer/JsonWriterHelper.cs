@@ -84,7 +84,8 @@ namespace DotSerial.Json.Writer
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -105,11 +106,16 @@ namespace DotSerial.Json.Writer
             }
             else if (value == string.Empty)
             {
+                // NEEDED?????
                 sb.AppendFormat("\"{0}\": \"\",", key);
+            }
+            else if (needQuotes)
+            {
+                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
             }
             else
             {
-                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
+                sb.AppendFormat("\"{0}\": {1},", key, value);
             }
         } 
 
@@ -119,7 +125,8 @@ namespace DotSerial.Json.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -134,12 +141,17 @@ namespace DotSerial.Json.Writer
             }
             else if (value == string.Empty)
             {
+                // NEEDED?????
                 sb.Append("\"\",");
             }
-            else
+            else if (needQuotes)
             {
                 sb.AppendFormat("\"{0}\",", value);
             }
+            else
+            {
+                sb.AppendFormat("{0},", value);
+            }            
         }  
 
         /// <summary>
@@ -218,16 +230,21 @@ namespace DotSerial.Json.Writer
             foreach (var child in children)
             {
                 string? val = child.GetValue();
+                bool needQuotes = child.IsQuoted;
 
                 if (null == val)
                 {
                     sb.Append(CommonConstants.Null);
                 }
-                else
+                else if (needQuotes)
                 {
                     sb.Append(CommonConstants.Quote);
                     sb.Append(val);
                     sb.Append(CommonConstants.Quote);
+                }
+                else
+                {
+                    sb.Append(val);
                 }
 
                 sb.Append(CommonConstants.CommaAndWhiteSpace);

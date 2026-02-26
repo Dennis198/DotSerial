@@ -453,7 +453,7 @@ namespace DotSerial.Toon.Parser
 
             for (int i = 0; i < count; i++)
             {
-                var listNode = NodeFactory.CreateNodeFromString(i.ToString(), lItems[i], NodeType.Leaf);
+                var listNode = NodeFactory.CreateNodeFromStringObsolete(i.ToString(), lItems[i], NodeType.Leaf);
                 node.AddChild(listNode);
             }
         }
@@ -568,7 +568,7 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines.GetLine(i);
-                var child = NodeFactory.CreateNodeFromString((i).ToString(), null, NodeType.InnerNode);
+                var child = NodeFactory.CreateNodeFromStringObsolete((i).ToString(), null, NodeType.InnerNode);
                 var values = ParseCommaSeperateValues(line, 0);
 
                 if (keys.Count != values.Count)
@@ -580,7 +580,7 @@ namespace DotSerial.Toon.Parser
                 {
                     string key = keys[j];
                     string value = values[j];
-                    var childChild = NodeFactory.CreateNodeFromString(key, value, NodeType.Leaf);
+                    var childChild = NodeFactory.CreateNodeFromStringObsolete(key, value, NodeType.Leaf);
                     child.AddChild(childChild);
                 }
 

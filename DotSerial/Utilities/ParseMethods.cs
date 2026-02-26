@@ -31,7 +31,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;  
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
@@ -84,6 +84,35 @@ namespace DotSerial.Utilities
 
             return str.Length - 1;
         }      
+
+        internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char[] stopChars)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            
+            sb.Append(str[startIndex]);
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+                
+                if (stopChars.Contains(c))
+                {
+                    return i - 1;
+                }
+                sb.Append(c);
+            }
+
+            return str.Length - 1;
+        }
 
         /// <summary>
         /// Appends an enclosed value from starting openChar to closing closeChar to
@@ -187,23 +216,29 @@ namespace DotSerial.Utilities
             }
 
             return sb;
-        }         
+        }       
+
+        internal static string RemoveStartAndEndQuotes(string str)
+        {
+             return str[1..^1]; 
+        }
         
         /// <summary>
         /// Parses primitive node without a key, e.g "3.14"
         /// </summary>
+        /// <param name="strategyType">Strategy type</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="startIndex">StartIndex</param>
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
 
-        internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex, string key)
+        internal static IDSNode ParsePrimitiveNode(StategyType strategyType, StringBuilder sb, int startIndex, string key)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
             if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
             {
-                return NodeFactory.CreateNodeFromString(key, null, NodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
             }
 
             StringBuilder sbPrim = new();
@@ -214,12 +249,9 @@ namespace DotSerial.Utilities
                 throw new DotSerialException("Parse: Can't parse single value.");
             }
 
-            // Remove opening and closing quote
-            sbPrim.Remove(0, 1);
-            sbPrim.Remove(sbPrim.Length - 1, 1);
             string nodeValue = sbPrim.ToString();
             
-            return NodeFactory.CreateNodeFromString(key, nodeValue, NodeType.Leaf);
+            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
         }              
     }
 }

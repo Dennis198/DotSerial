@@ -28,18 +28,18 @@ namespace DotSerial.Toon.Parser
             // Check if its an empty yaml file
             if (0 == lines.Count)
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
                 return new DSToonNode(rootNode);   
             }
 
             if (ToonParserHelper.IsToonSingleValue(lines))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(lines.GetLine(0), 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Toon, lines.GetLine(0), 0, CommonConstants.MainObjectKey);
                 return new DSToonNode(rootNode);
             }
             else if (ToonParserHelper.IsToonObject(lines, true))
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
                 if (ToonParserHelper.IsEmptyObject(lines))
                 {
                     return new DSToonNode(rootNode);    
@@ -47,7 +47,7 @@ namespace DotSerial.Toon.Parser
             } 
             else if (ToonParserHelper.IsToonList(lines, true))
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.ListNode);
                 if (ToonParserHelper.IsEmptyList(lines.GetLine(0)))
                 {
                     return new DSToonNode(rootNode);    
@@ -123,13 +123,13 @@ namespace DotSerial.Toon.Parser
                     if (ToonParserHelper.IsToonPrimitiveLine(value))
                     {
                         string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLine(0));
-                        var childNode = NodeFactory.CreateNodeFromString(key, strValue, NodeType.Leaf);
+                        var childNode = NodeFactory.CreateNodeFromStringObsolete(key, strValue, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
                     else if (ToonParserHelper.IsToonObject(value))
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
 
                         if (false == ToonParserHelper.IsEmptyObject(value))
                         {
@@ -143,7 +143,7 @@ namespace DotSerial.Toon.Parser
                     else if (ToonParserHelper.IsToonList(value))
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
 
                         if (false == ToonParserHelper.IsEmptyList(value.GetLine(0)))
                         {
@@ -196,19 +196,19 @@ namespace DotSerial.Toon.Parser
                             if (ToonParserHelper.IsToonPrimitiveLine(value))
                             {
                                 string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLine(0));
-                                var childNode = NodeFactory.CreateNodeFromString(key, strValue, NodeType.Leaf);
+                                var childNode = NodeFactory.CreateNodeFromStringObsolete(key, strValue, NodeType.Leaf);
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonSingleValue(value))
                             {
                                 var tmp = value.GetLine(0).TrimStartAndEnd();
-                                var childNode = ParseMethods.ParsePrimitiveNode(tmp, 0, key);
+                                var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Toon, tmp, 0, key);
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonObject(value))
                             {
                                 // Create inner node
-                                var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
+                                var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
 
                                 if (false == ToonParserHelper.IsEmptyObject(value))
                                 {
@@ -222,7 +222,7 @@ namespace DotSerial.Toon.Parser
                             else if (ToonParserHelper.IsToonList(value))
                             {
                                 // Create list node
-                                var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
+                                var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
 
                                 if (false == ToonParserHelper.IsEmptyList(value.GetLine(0)))
                                 {

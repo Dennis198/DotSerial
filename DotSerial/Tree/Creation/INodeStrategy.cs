@@ -17,6 +17,14 @@ namespace DotSerial.Tree.Creation
         /// <returns>IDSNode</returns>
         public IDSNode CreateNode(string key, object? value, NodeType type);
 
+        /// <summary>
+        /// Creates a node from string value
+        /// </summary>
+        /// <param name="key">Key of the node</param>
+        /// <param name="Value">Value of the node</param>
+        /// <param name="type">Type of the node</param>
+        /// <returns>IDSNode</returns>
+        public IDSNode CreateNodeFromString(string key, string? value, NodeType type);
 
         internal static IDSNode CreateNotLeafNode(string key, NodeType type)
         {

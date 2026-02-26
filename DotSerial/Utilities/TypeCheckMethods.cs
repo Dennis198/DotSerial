@@ -81,12 +81,14 @@ namespace DotSerial.Utilities
                    type == typeof(uint) || type == typeof(uint?) ||
                    type == typeof(nint) || type == typeof(nint?) ||
                    type == typeof(nuint) || type == typeof(nuint?) ||
+                   type == typeof(long) || type == typeof(long?) ||
                    type == typeof(ulong) || type == typeof(ulong?) ||
                    type == typeof(short) || type == typeof(short?) ||
                    type == typeof(ushort) || type == typeof(ushort?) ||
                    type == typeof(float) || type == typeof(float?) ||
                    type == typeof(double) || type == typeof(double?) ||
-                   type == typeof(decimal) || type == typeof(decimal?);
+                   type == typeof(decimal) || type == typeof(decimal?) ||
+                   type.IsEnum;
         }        
 
         /// <summary>

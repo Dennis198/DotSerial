@@ -40,6 +40,12 @@ namespace DotSerial.Xml
             return new LeafNode(key, strValue, needQuotes);
         }
 
+        /// <inheritdoc/>
+        public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
+        {
+            throw new NotImplementedException();
+        }
+
         private bool DoValueNeedQuotes(object? value)
         {
             if (null == value)

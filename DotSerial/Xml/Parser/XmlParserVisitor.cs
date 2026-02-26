@@ -60,11 +60,11 @@ namespace DotSerial.Xml.Parser
 
             if (rootTagKeyPair.IsXmlObject())
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
+                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
             }
             else if (rootTagKeyPair.IsXmlList())
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.ListNode);
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
@@ -73,7 +73,7 @@ namespace DotSerial.Xml.Parser
                     throw new DSXmlException("Parse: String is not a xml object.");
                 }
 
-                rootNode = ParseMethods.ParsePrimitiveNode(rootValue, 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml,rootValue, 0, CommonConstants.MainObjectKey);
                 return new DSXmlNode(rootNode);
             }
             else
@@ -146,7 +146,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -160,7 +160,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -177,7 +177,7 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml,strValue, 0, key);
                         node.AddChild(childNode);
                     }
                     else
@@ -211,7 +211,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode);
+                        var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -225,7 +225,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode);
+                        var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -242,7 +242,7 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
                         node.AddChild(childNode);
                     }
                     else

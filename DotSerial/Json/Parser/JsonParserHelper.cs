@@ -49,6 +49,11 @@ namespace DotSerial.Json.Parser
             {
                 char c = sb[i];
 
+                if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
+                {
+                    continue;
+                }
+
                 // Check if opening quote for the key is found
                 if (c == CommonConstants.Quote && keyFound == false)
                 {
@@ -59,8 +64,8 @@ namespace DotSerial.Json.Parser
                     i = ParseMethods.AppendStringValue(sb2, i, sb);
 
                     // Remove opening and closing quote
-                    sb2.Remove(0, 1);
-                    sb2.Remove(sb2.Length - 1, 1);
+                    // sb2.Remove(0, 1);
+                    // sb2.Remove(sb2.Length - 1, 1);
 
                     // Save key
                     foundKey = sb2.ToString();
@@ -78,8 +83,8 @@ namespace DotSerial.Json.Parser
                     i = ParseMethods.AppendStringValue(sb2, i, sb);
 
                     // Remove opening and closing quote
-                    sb2.Remove(0, 1);
-                    sb2.Remove(sb2.Length - 1, 1);
+                    // sb2.Remove(0, 1);
+                    // sb2.Remove(sb2.Length - 1, 1);
                    
                     if (false == result.ContainsKey(foundKey))
                     {
@@ -93,24 +98,24 @@ namespace DotSerial.Json.Parser
                     foundKey = string.Empty;
                 }
                 // Check if "null" value is found  
-                else if (c == CommonConstants.N && keyFound == true)
-                {
-                    // value is found => null
-                    keyFound = false;
+                // else if (c == CommonConstants.N && keyFound == true)
+                // {
+                //     // value is found => null
+                //     keyFound = false;
 
-                    if (false == sb.EqualsNullString(i))
-                    {
-                        throw new DSJsonException("Invalid json");
-                    }
+                //     if (false == sb.EqualsNullString(i))
+                //     {
+                //         throw new DSJsonException("Invalid json");
+                //     }
 
-                    i += 3;
+                //     i += 3;
 
-                    // Add key
-                    result[foundKey] = null;
+                //     // Add key
+                //     result[foundKey] = null;
 
-                    // Reset found key
-                    foundKey = string.Empty;
-                }
+                //     // Reset found key
+                //     foundKey = string.Empty;
+                // }
                 // Check if opening symbol for the value is found (json object)
                 else if (c == JsonConstants.ObjectStart && keyFound == true)
                 {
@@ -158,6 +163,29 @@ namespace DotSerial.Json.Parser
 
                     // Update index
                     i = j;
+                }
+                else if (keyFound == true)
+                {
+                    // value is found => null
+                    keyFound = false;
+
+                    StringBuilder sb2 = new();
+                    i = ParseMethods.AppendTillStopChar(sb2, i, sb, JsonConstants.ParseStopChars);
+
+                    // Remove opening and closing quote
+                    // sb2.Remove(0, 1);
+                    // sb2.Remove(sb2.Length - 1, 1);
+                   
+                    if (false == result.ContainsKey(foundKey))
+                    {
+                        throw new DSJsonException("Key not found.");
+                    }
+
+                    // Add key
+                    result[foundKey] = sb2;
+
+                    // Reset found key
+                    foundKey = string.Empty;
                 }
             }
 

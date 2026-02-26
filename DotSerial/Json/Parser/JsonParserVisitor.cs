@@ -36,8 +36,7 @@ namespace DotSerial.Json.Parser
     internal class JsonParserVisitor : IJsonNodeParserVisitor
     {
         /// <summary>Node factory</summary>
-        // private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-        // private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
         public static DSJsonNode Parse(string jsonString)
@@ -49,15 +48,15 @@ namespace DotSerial.Json.Parser
 
             if (JsonParserHelper.IsStringJsonObject(sb))
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Json, CommonConstants.MainObjectKey, null, NodeType.InnerNode);
             }
             else if (JsonParserHelper.IsStringJsonList(sb))
             {
-                rootNode = NodeFactory.CreateNodeFromString(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Json, CommonConstants.MainObjectKey, null, NodeType.ListNode);
             }
             else
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(sb, 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, sb, 0, CommonConstants.MainObjectKey);
                 return new DSJsonNode(rootNode);
             }
 
@@ -123,13 +122,13 @@ namespace DotSerial.Json.Parser
 
                     if (null == strValue)
                     {
-                        var childNode = NodeFactory.CreateNodeFromString(key, null, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
                     else if (JsonParserHelper.IsStringJsonObject(strValue))
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromString(key, null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Create stringbuilder for inner content
                         StringBuilder innerSb = strValue;
@@ -143,7 +142,7 @@ namespace DotSerial.Json.Parser
                     else if (JsonParserHelper.IsStringJsonList(strValue))
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromString(key, null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Create stringbuilder for list content
                         StringBuilder listSb = strValue;
@@ -156,7 +155,7 @@ namespace DotSerial.Json.Parser
                     else
                     {
                         string leafValue = strValue.ToString();
-                        var childNode = NodeFactory.CreateNodeFromString(key, leafValue, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, leafValue, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
                 }
@@ -183,20 +182,19 @@ namespace DotSerial.Json.Parser
                     var item = items[i];
                     if (null == item)
                     {
-                        var child = NodeFactory.CreateNodeFromString(i.ToString(), null, NodeType.Leaf);
+                        var child = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.Leaf);
                         node.AddChild(child);
                     }
                     else if (1 == item.CountQuotedValues())
                     {
-                        // Remove Start/End Quote
-                        string? value = item.SubString(1, item.Length - 2).ToString();
-                        var child = NodeFactory.CreateNodeFromString(i.ToString(), value, NodeType.Leaf);
+                        string? value = item.ToString();
+                        var child = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), value, NodeType.Leaf);
                         node.AddChild(child);
                     }
                     else if (JsonParserHelper.IsStringJsonObject(item))
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromString(i.ToString(), null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.InnerNode) as InnerNode ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Create stringbuilder for inner content
                         StringBuilder innerSb = item;
@@ -210,7 +208,7 @@ namespace DotSerial.Json.Parser
                     else if (JsonParserHelper.IsStringJsonList(item))
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromString(i.ToString(), null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.ListNode) as ListNode ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Create stringbuilder for list content
                         StringBuilder listSb = item;

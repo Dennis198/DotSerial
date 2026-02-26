@@ -21,6 +21,7 @@
 #endregion
 
 using System.Text;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Utilities
 {
@@ -79,7 +80,7 @@ namespace DotSerial.Tests.Utilities
             StringBuilder strBuilder = new(str);
 
             // Act
-            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(strBuilder, 0, "testKey");
+            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(StategyType.Json, strBuilder, 0, "testKey");
 
             // Assert
             Assert.Equal("testKey", result.Key);

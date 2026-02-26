@@ -247,6 +247,57 @@ namespace DotSerial.Utilities
             return false;
         }
 
+        internal static bool IsNumericValue(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length == 0)
+            {
+                return false;
+            }
+
+            if (double.TryParse(input.ToString(), out _))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        internal static bool EqualsBooleanString(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length == 4)
+            {
+                if (char.ToLower(input[0]) != 't')
+                    return false;
+                if (char.ToLower(input[1]) != 'r')
+                    return false;
+                if (char.ToLower(input[2]) != 'u')
+                    return false;
+                if (char.ToLower(input[3]) != 'e')
+                    return false;
+            }
+            else
+            {
+                if (char.ToLower(input[0]) != 'f')
+                    return false;
+                if (char.ToLower(input[1]) != 'a')
+                    return false;
+                if (char.ToLower(input[2]) != 'l')
+                    return false;
+                if (char.ToLower(input[3]) != 's')
+                    return false;
+                if (char.ToLower(input[4]) != 'e')
+                    return false;
+            }
+            
+            return true;
+        }        
+
         /// <summary>
         /// Check if Stringbuilder content equals "null".
         /// </summary>

@@ -90,15 +90,16 @@ namespace DotSerial.Json.Writer
             int level = options.Level;
             
             string? value = node.GetValue();
+            bool needQuotes = node.IsQuoted;
             
             if (options.AddKey)
             {
                 string key = node.Key;
-                JsonWriterHelper.AddKeyValuePair(sb, key, value, level);    
+                JsonWriterHelper.AddKeyValuePair(sb, key, value, level, needQuotes);    
             }
             else
             {
-                JsonWriterHelper.AddOnlyValue(sb, value, level);
+                JsonWriterHelper.AddOnlyValue(sb, value, level, needQuotes);
             }
         }
 
