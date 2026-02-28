@@ -232,7 +232,7 @@ namespace DotSerial.Utilities
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
 
-        internal static IDSNode ParsePrimitiveNode(StategyType strategyType, StringBuilder sb, int startIndex, string key)
+        internal static IDSNode ParsePrimitiveNode(StategyType strategyType, StringBuilder sb, int startIndex, string key, char[]? stopChars = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -243,10 +243,26 @@ namespace DotSerial.Utilities
 
             StringBuilder sbPrim = new();
 
-            int i = AppendStringValue(sbPrim, startIndex, sb);
-            if (i != sb.Length -1)
+            if (sb[0] == CommonConstants.Quote && sb[^1] == CommonConstants.Quote)
             {
-                throw new DotSerialException("Parse: Can't parse single value.");
+                int i = AppendStringValue(sbPrim, startIndex, sb);
+                if (i != sb.Length -1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
+            }
+            else
+            {
+                if (null == stopChars)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
+                
+                int i = AppendTillStopChar(sbPrim, startIndex, sb, stopChars);
+                if (i != sb.Length -1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
             }
 
             string nodeValue = sbPrim.ToString();

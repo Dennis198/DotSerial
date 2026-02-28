@@ -452,6 +452,33 @@ namespace DotSerial.Utilities
             return count;
         }
 
+        internal static int SkipTillStopChar(this StringBuilder sb, int startIndex, char[] stopChars)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            for (int i = startIndex; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                
+                if (stopChars.Contains(c))
+                {
+                    return i - 1;
+                }
+            }
+
+            return sb.Length - 1;
+        }
+
         /// <summary>
         /// Skips a string value in a Stringbuilder.
         /// </summary>

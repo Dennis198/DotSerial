@@ -169,23 +169,31 @@ namespace DotSerial.Json.Parser
                     // value is found => null
                     keyFound = false;
 
-                    StringBuilder sb2 = new();
-                    i = ParseMethods.AppendTillStopChar(sb2, i, sb, JsonConstants.ParseStopChars);
-
-                    // Remove opening and closing quote
-                    // sb2.Remove(0, 1);
-                    // sb2.Remove(sb2.Length - 1, 1);
-                   
-                    if (false == result.ContainsKey(foundKey))
+                    if (true == sb.EqualsNullString(i))
                     {
-                        throw new DSJsonException("Key not found.");
+                        i += 3;
+                        result[foundKey] = null;
                     }
+                    else
+                    {
+                        StringBuilder sb2 = new();
+                        i = ParseMethods.AppendTillStopChar(sb2, i, sb, JsonConstants.ParseStopChars);
 
-                    // Add key
-                    result[foundKey] = sb2;
+                        // Remove opening and closing quote
+                        // sb2.Remove(0, 1);
+                        // sb2.Remove(sb2.Length - 1, 1);
+                    
+                        if (false == result.ContainsKey(foundKey))
+                        {
+                            throw new DSJsonException("Key not found.");
+                        }
 
-                    // Reset found key
-                    foundKey = string.Empty;
+                        // Add key
+                        result[foundKey] = sb2;
+
+                        // Reset found key
+                        foundKey = string.Empty;
+                    }
                 }
             }
 
@@ -206,6 +214,11 @@ namespace DotSerial.Json.Parser
             for (int i = 1; i < sb.Length - 1; i++)
             {
                 char c = sb[i];
+
+                if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
+                {
+                    continue;
+                }
 
                 if (c == CommonConstants.Quote)
                 {
@@ -242,16 +255,26 @@ namespace DotSerial.Json.Parser
                     // Update index
                     i = j;
                 }
-                else if (c == CommonConstants.N)
+                else
                 {
-                    if (false == sb.EqualsNullString(i))
+                    if (true == sb.EqualsNullString(i))
                     {
-                        throw new DSJsonException("Invalid json");
+                        i += 3;
+                        list.Add(null);
                     }
+                    else
+                    {
+                        int j = sb.SkipTillStopChar(i, JsonConstants.ParseStopChars);
 
-                    i += 3;
+                        // Add key
+                        int len = j - i + 1;
+                        var tmp = sb.SubString(i, len);
 
-                    list.Add(null);
+                        // Add object to result
+                        list.Add(tmp);   
+                        // Update index
+                        i = j;
+                    }                
                 }                
             }
 

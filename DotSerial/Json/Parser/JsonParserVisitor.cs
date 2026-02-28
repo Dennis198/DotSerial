@@ -56,7 +56,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, sb, 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, sb, 0, CommonConstants.MainObjectKey, JsonConstants.ParseStopChars);
                 return new DSJsonNode(rootNode);
             }
 
@@ -185,12 +185,6 @@ namespace DotSerial.Json.Parser
                         var child = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.Leaf);
                         node.AddChild(child);
                     }
-                    else if (1 == item.CountQuotedValues())
-                    {
-                        string? value = item.ToString();
-                        var child = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), value, NodeType.Leaf);
-                        node.AddChild(child);
-                    }
                     else if (JsonParserHelper.IsStringJsonObject(item))
                     {
                         // Create inner node
@@ -220,7 +214,9 @@ namespace DotSerial.Json.Parser
                     }
                     else
                     {
-                        throw new DSJsonException("Parse: String is not a json object or list.");
+                        string? value = item.ToString();
+                        var child = _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), value, NodeType.Leaf);
+                        node.AddChild(child);
                     }
                 }
             }
