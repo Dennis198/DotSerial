@@ -106,7 +106,7 @@ namespace DotSerial.Json
                 return false;
                 
             Type type = value.GetType();
-
+            
             if (type == typeof(string))
                 return true;
 

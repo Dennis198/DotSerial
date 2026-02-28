@@ -44,5 +44,6 @@ namespace DotSerial.Yaml
         /// End string of yaml document
         /// </summary>
         internal const char KeyValueSeperator = ':';
+        internal static readonly char[] YamlSpecialChars = ['-', '?', ':', ',', '[', ']', '{', '}', '#', '&', '*', '!', '|', '>', '\'', '"', '%', '@', '`'];
     }
 }

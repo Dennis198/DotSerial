@@ -98,11 +98,11 @@ namespace DotSerial.Yaml.Writer
             if (options.AddKey)
             {
                 string key = node.Key;
-                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, prefix);
+                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted,prefix);
             }
             else
             {
-                YamlWriterHelper.AddOnlyValue(sb, value, level, prefix);
+                YamlWriterHelper.AddOnlyValue(sb, value, level, node.IsQuoted, prefix);
             }
 
         }           

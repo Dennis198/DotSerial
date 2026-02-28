@@ -52,14 +52,29 @@ namespace DotSerial.Yaml.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+            bool keyNeedsQuotes = KeyNeedQuotes(key);
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("\"{0}\":", key);
+                if (keyNeedsQuotes)
+                {
+                    sb.AppendFormat("\"{0}\":", key);
+                }
+                else
+                {
+                    sb.AppendFormat("{0}:", key);
+                }
             }
             else
             {
-                sb.AppendFormat("{0}\"{1}\":", prefix, key);
+                if (keyNeedsQuotes)
+                {
+                    sb.AppendFormat("{0}\"{1}\":", prefix, key);
+                }
+                else
+                {
+                    sb.AppendFormat("{0}{1}:", prefix, key);
+                }
             }
         }
 
@@ -70,7 +85,9 @@ namespace DotSerial.Yaml.Writer
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, string? prefix = null)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        /// <param name="prefix">Key-Prefix</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -90,17 +107,54 @@ namespace DotSerial.Yaml.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
+            bool keyNeedsQuotes = KeyNeedQuotes(key);
+
             if (null == value)
             {
-                sb.AppendFormat("\"{0}\": null", key);
+                if (keyNeedsQuotes)
+                {
+                    sb.AppendFormat("\"{0}\": null", key);
+                }
+                else
+                {
+                    sb.AppendFormat("{0}: null", key);
+                }
             }
             else if (value == string.Empty)
             {
-                sb.AppendFormat("\"{0}\": \"\"", key);
+                if (keyNeedsQuotes)                
+                {
+                    sb.AppendFormat("\"{0}\": \"\"", key);
+                }
+                else
+                {
+                    sb.AppendFormat("{0}: \"\"", key);
+                }
             }
             else
             {
-                sb.AppendFormat("\"{0}\": \"{1}\"", key, value);
+                if (keyNeedsQuotes)
+                {
+                    if (needQuotes)
+                    {
+                        sb.AppendFormat("\"{0}\": \"{1}\"", key, value);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("\"{0}\": {1}", key, value);
+                    }
+                }
+                else
+                {
+                    if (needQuotes)
+                    {
+                        sb.AppendFormat("{0}: \"{1}\"", key, value);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("{0}: {1}", key, value);
+                    }
+                }
             }
         }   
 
@@ -136,6 +190,7 @@ namespace DotSerial.Yaml.Writer
                 {
 
                     string? val = leaf.GetValue();
+                    bool needQuotes = leaf.IsQuoted;
 
                     if (!skipFirstIndentation)
                     {
@@ -147,9 +202,13 @@ namespace DotSerial.Yaml.Writer
                     {
                         sb.AppendFormat("- {0}", CommonConstants.Null);
                     }
-                    else
+                    else if (needQuotes)
                     {
                         sb.AppendFormat("- \"{0}\"", val);
+                    }
+                    else
+                    {
+                        sb.AppendFormat("- {0}", val);
                     }               
 
                     sb.AppendLine();
@@ -218,7 +277,9 @@ namespace DotSerial.Yaml.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, string? prefix = null)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        /// <param name="prefix">Prefix</param>
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -240,11 +301,32 @@ namespace DotSerial.Yaml.Writer
             {
                 sb.Append("\"\"");
             }
-            else
+            else if (needQuotes)
             {
                 sb.AppendFormat("\"{0}\"", value);
             }
-        }          
+            else
+            {
+                sb.AppendFormat("{0}", value);
+            }  
+        }  
+
+        private static bool KeyNeedQuotes(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new NotImplementedException();
+            }   
+
+            for(int i = 0; i < key.Length; i++)
+            {
+                char c = key[i];
+                if (YamlConstants.YamlSpecialChars.Contains(c))
+                    return true;
+            }    
+
+            return false;
+        }                
 
     }
 }

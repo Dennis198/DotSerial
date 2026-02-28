@@ -8,6 +8,7 @@ namespace DotSerial.Yaml
 {
     internal class YamlNodeStrategy : INodeStrategy
     {
+
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
@@ -34,8 +35,8 @@ namespace DotSerial.Yaml
             }
 
             // bool needQuotes = DoValueNeedQuotes(value);
-            bool needQuotes = DoValueNeedQuotes(value);
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            bool needQuotes = DoValueNeedQuotes(value, strValue);
 
             return new LeafNode(key, strValue, needQuotes);
         }
@@ -46,12 +47,36 @@ namespace DotSerial.Yaml
             throw new NotImplementedException();
         }
 
-        private bool DoValueNeedQuotes(object? value)
+        private bool DoValueNeedQuotes(object? value, string? strValue)
         {
             if (null == value)
                 return false;
 
-            return true;
+            Type type = value.GetType();
+            
+            if (type == typeof(bool) || type == typeof(bool?))
+                return false;
+            
+            bool isNumeric = TypeCheckMethods.IsNumericType(type);
+
+            if (type == typeof(string) && isNumeric)
+                return true;
+            if (type != typeof(string) && isNumeric)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(strValue))
+            {
+                throw new NotImplementedException();
+            }
+            
+            for(int i = 0; i < strValue.Length; i++)
+            {
+                char c = strValue[i];
+                if (YamlConstants.YamlSpecialChars.Contains(c))
+                    return true;
+            }
+            
+            return false;
                 
             // Type type = value.GetType();
 
