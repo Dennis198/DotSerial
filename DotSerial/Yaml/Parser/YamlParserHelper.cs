@@ -139,37 +139,38 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
-            bool keyWasFound = false;
 
-            for (int i = 0; i < line.Length; i++)
+            int start = line.IndexOf(YamlConstants.KeyValueSeperator.ToString()); // TODO was wenn ':' im Namen
+
+            if (start == -1)
+            {
+                throw new NotImplementedException();
+            }
+            start++; // Skip seperator
+
+            for (int i = start; i < line.Length; i++)
             {
                 var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                        // Remove ending quote
-                        keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                        // Remove starting quote
-                        keyBuilder.Remove(0, 1);
-                        
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipStringValue(i);
-                        keyWasFound = true;
-                    }
+                   _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
+                    // // Remove ending quote
+                    // keyBuilder.Remove(keyBuilder.Length - 1, 1);
+                    // // Remove starting quote
+                    // keyBuilder.Remove(0, 1);
+                    
+                    return keyBuilder.ToString();
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else
                 {
-                    if (false == line.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
-
-                    return null;
+                   _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
+                   return keyBuilder.ToString();
                 }
             }
 
@@ -299,6 +300,11 @@ namespace DotSerial.Yaml.Parser
 
             var firstLine = lines.GetLine(0);
 
+            if (IsEmptyList(firstLine) || IsEmptyObject(firstLine))
+            {
+                return false;
+            }             
+
             // "null"
             if (firstLine.EqualsNullString())
             {
@@ -311,16 +317,53 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            if (1 == firstLine.CountQuotedValues())
+            bool seperatorFound = false;
+            bool keyFound = false;
+
+            for (int i = 0; i < firstLine.Length; i++)
             {
-                return true;
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (true == keyFound && c == YamlConstants.KeyValueSeperator)
+                {
+                    seperatorFound = true;
+                    continue;
+                }
+
+                if (seperatorFound)
+                {
+                    return false;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);
+                    keyFound = true;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                    keyFound = true;
+                }
             }
 
-            return false;
+            return true;
+
+            // if (1 == firstLine.CountQuotedValues())
+            // {
+            //     return true;
+            // }
+
+            // return false;
         }   
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a key only a key value pair
+        /// Check if MultiLineStringBuilder is only a key value pair
         /// </summary>
         /// <param name="lines">MultiLineStringBuilder</param>
         /// <returns>True, if yaml key value pair</returns>
@@ -338,6 +381,11 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
+            if (IsEmptyObject(lines.GetLine(0)))
+            {
+                return false;
+            }
+
             if (IsYamlList(lines))
             {
                 return false;
@@ -349,47 +397,51 @@ namespace DotSerial.Yaml.Parser
             }
 
             var firstLine = lines.GetLine(0);
-            bool keyWasFound = false;
+            int start = firstLine.IndexOf(YamlConstants.KeyValueSeperator.ToString()); // TODO was wenn ':' im Namen
+
+            if (start == -1)
+            {
+                return false;
+            }
+
+            // bool keyWasFound = false;
             bool valueWasFound =  false;
 
-            for (int i = 0; i < firstLine.Length; i++)
+            for (int i = start; i < firstLine.Length; i++)
             {
                 var c = firstLine[i];
-                
-                if (false == char.IsWhiteSpace(c))
+
+                if (char.IsWhiteSpace(c))
                 {
-                    if (keyWasFound && valueWasFound)
-                    {
-                        throw new NotImplementedException();
-                    }
+                    continue;
                 }
+
+                if (valueWasFound)
+                {
+                    throw new NotImplementedException();
+                }
+                
+                // if (false == char.IsWhiteSpace(c))
+                // {
+                    // if (keyWasFound && valueWasFound)
+                    // {
+                    //     throw new NotImplementedException();
+                    // }
+                // }
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipStringValue(i);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipStringValue(i);   
-                        keyWasFound = true;
-                    }
+                    i = firstLine.SkipStringValue(i);                        
+                    valueWasFound = true;
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else
                 {
-                    if (false == firstLine.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
-
-                    i += 3;
+                    i= firstLine.SkipTillStopChar(i, null);       // TODO NUR BIS WHITESPACE??                  
                     valueWasFound = true;
                 }
             }
 
-            return keyWasFound && valueWasFound;
+            return valueWasFound;
         } 
                                 
         /// <summary>
@@ -569,13 +621,24 @@ namespace DotSerial.Yaml.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }                 
+
                 if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                    // Remove ending quote
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                     // Remove starting quote
-                    keyBuilder.Remove(0, 1);
+                    // // Remove ending quote
+                    // keyBuilder.Remove(keyBuilder.Length - 1, 1);
+                    //  // Remove starting quote
+                    // keyBuilder.Remove(0, 1);
+                    return keyBuilder.ToString();
+                }
+                else
+                {
+                    _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, YamlConstants.KeyValueSeperator);
                     return keyBuilder.ToString();
                 }
             }

@@ -85,13 +85,54 @@ namespace DotSerial.Utilities
             return str.Length - 1;
         }      
 
-        internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char[] stopChars)
+        internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char? stopChar)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
             if (str.IsNullOrWhiteSpace())
             {
                 throw new ArgumentException(str.ToString());
+            }
+
+            if (null == stopChar)
+            {
+                sb.Append(str.SubString(startIndex, str.Length - startIndex));
+                return str.Length - 1;
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            
+            sb.Append(str[startIndex]);
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+                
+                if (c == stopChar)
+                {
+                    return i - 1;
+                }
+                sb.Append(c);
+            }
+
+            return str.Length - 1;
+        }        
+
+        internal static int AppendTillStopChars(StringBuilder sb, int startIndex, StringBuilder str, char[]? stopChars)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (null == stopChars)
+            {
+                sb.Append(str.SubString(startIndex, str.Length - startIndex));
+                return str.Length - 1;
             }
 
             if (str.Length < startIndex)
@@ -253,12 +294,12 @@ namespace DotSerial.Utilities
             }
             else
             {
-                if (null == stopChars)
-                {
-                    throw new DotSerialException("Parse: Can't parse single value.");
-                }
+                // if (null == stopChars)
+                // {
+                //     throw new DotSerialException("Parse: Can't parse single value.");
+                // }
                 
-                int i = AppendTillStopChar(sbPrim, startIndex, sb, stopChars);
+                int i = AppendTillStopChars(sbPrim, startIndex, sb, stopChars);
                 if (i != sb.Length -1)
                 {
                     throw new DotSerialException("Parse: Can't parse single value.");

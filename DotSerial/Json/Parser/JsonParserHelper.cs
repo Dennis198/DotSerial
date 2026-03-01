@@ -177,7 +177,7 @@ namespace DotSerial.Json.Parser
                     else
                     {
                         StringBuilder sb2 = new();
-                        i = ParseMethods.AppendTillStopChar(sb2, i, sb, JsonConstants.ParseStopChars);
+                        i = ParseMethods.AppendTillStopChars(sb2, i, sb, JsonConstants.ParseStopChars);
 
                         // Remove opening and closing quote
                         // sb2.Remove(0, 1);
@@ -264,7 +264,7 @@ namespace DotSerial.Json.Parser
                     }
                     else
                     {
-                        int j = sb.SkipTillStopChar(i, JsonConstants.ParseStopChars);
+                        int j = sb.SkipTillStopChars(i, JsonConstants.ParseStopChars);
 
                         // Add key
                         int len = j - i + 1;
