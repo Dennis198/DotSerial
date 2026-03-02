@@ -69,11 +69,11 @@ namespace DotSerial.Toon.Writer
             if (options.AddKey)
             {
                 string key = node.Key;
-                ToonWriterHelper.AddKeyValuePair(sb, key, value, level, prefix);
+                ToonWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted, prefix);
             }
             else
             {
-                ToonWriterHelper.AddOnlyValue(sb, value, level, prefix);
+                ToonWriterHelper.AddOnlyValue(sb, value, level, node.IsQuoted, prefix);
             }
         }
 

@@ -14,5 +14,6 @@ namespace DotSerial.Toon
         /// End string of yaml document
         /// </summary>
         internal const char KeyValueSeperator = ':';
+        internal static readonly char[] ToonSpecialChars = ['-', ':', ',', '[', ']', '{', '}', '\'', '"', '`'];
     }
 }

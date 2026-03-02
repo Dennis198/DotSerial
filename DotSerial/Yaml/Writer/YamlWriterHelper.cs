@@ -318,6 +318,11 @@ namespace DotSerial.Yaml.Writer
                 throw new NotImplementedException();
             }   
 
+            if (key.HaveLeadingOrTrailingWhitespace())
+            {
+                return true;
+            }
+
             for(int i = 0; i < key.Length; i++)
             {
                 char c = key[i];

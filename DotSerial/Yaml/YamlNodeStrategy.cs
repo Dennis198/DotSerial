@@ -98,7 +98,7 @@ namespace DotSerial.Yaml
             }
 
             return new LeafNode(keyWithoutQuotes, tmp.ToString(), needQuotes);
-        }
+        }        
 
         private bool DoValueNeedQuotes(object? value, string? strValue)
         {
@@ -132,7 +132,10 @@ namespace DotSerial.Yaml
                 return true;                
 
             if (strValue.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
-                return true;                                
+                return true;     
+                                        
+            if (strValue.HaveLeadingOrTrailingWhitespace())
+                return true;
             
             for(int i = 0; i < strValue.Length; i++)
             {
@@ -156,6 +159,9 @@ namespace DotSerial.Yaml
 
             if (sb.IsNumericValue())
                 return true;  
+
+            if (sb.HaveLeadingOrTrailingWhitespace())
+                return false;
             
             for(int i = 0; i < sb.Length; i++)
             {
