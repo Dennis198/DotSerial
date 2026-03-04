@@ -1,3 +1,4 @@
+using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -34,16 +35,58 @@ namespace DotSerial.Xml
             }
 
             // bool needQuotes = DoValueNeedQuotes(value);
-            bool needQuotes = DoValueNeedQuotes(value);
+            // bool needQuotes = false;//DoValueNeedQuotes(value);
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
 
-            return new LeafNode(key, strValue, needQuotes);
+            return new LeafNode(key, strValue, false);
         }
 
         /// <inheritdoc/>
         public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
         {
-            throw new NotImplementedException();
+            string keyWithoutQuotes = key;
+            if (keyWithoutQuotes[0] == CommonConstants.Quote && keyWithoutQuotes[^1] == CommonConstants.Quote)
+            {
+                keyWithoutQuotes = ParseMethods.RemoveStartAndEndQuotes(key);
+            }
+            else
+            {
+                // throw new DotSerialException("NodeFactory: Key must be quoted.");
+                throw  new NotImplementedException();
+            }
+
+           if (string.IsNullOrWhiteSpace(keyWithoutQuotes))
+            {
+                throw new DotSerialException("NodeFactory: Key can't be null.");
+            }
+
+            if (null != value && (type != NodeType.Leaf))
+            {
+                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
+            }
+
+            // Create inner node
+            if (type != NodeType.Leaf)
+            {
+                return INodeStrategy.CreateNotLeafNode(keyWithoutQuotes, type);
+            }
+
+            if (null == value)
+            {
+                return new LeafNode(keyWithoutQuotes, null, false);
+            }
+
+            // TODO
+            StringBuilder tmp = new(value.ToString());
+            if (tmp.IsNullOrWhiteSpace() || tmp.EqualsNullString())
+            {
+                return new LeafNode(keyWithoutQuotes, null, false);
+            }
+
+            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
+
+            return new LeafNode(keyWithoutQuotes, tmp.ToString(), false);
         }
 
         private bool DoValueNeedQuotes(object? value)

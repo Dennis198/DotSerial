@@ -60,11 +60,11 @@ namespace DotSerial.Xml.Writer
             }
             else if (value == string.Empty)
             {
-                sb.Append("\"\"");
+                // sb.Append("\"\"");
             }
             else
             {
-                sb.AppendFormat("\"{0}\"", value);
+                sb.AppendFormat("{0}", value);
             }
 
             AddEndTag(sb, XmlConstants.XmlLeafProp);
