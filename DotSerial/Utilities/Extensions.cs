@@ -537,6 +537,11 @@ namespace DotSerial.Utilities
                 throw new IndexOutOfRangeException();
             }
 
+            if (sb[startIndex] == stopChar)
+            {
+                throw new NotImplementedException();
+            }
+
             for (int i = startIndex; i < sb.Length; i++)
             {
                 var c = sb[i];
@@ -559,9 +564,19 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(sb.ToString());
             }
 
+            if (stopChars.Contains(sb[startIndex]))
+            {
+                throw new IndexOutOfRangeException();
+            }
+
             if (sb.Length < startIndex)
             {
                 throw new IndexOutOfRangeException();
+            }
+
+            if (stopChars.Contains(sb[startIndex]))
+            {
+                throw new NotImplementedException();
             }
 
             for (int i = startIndex; i < sb.Length; i++)
