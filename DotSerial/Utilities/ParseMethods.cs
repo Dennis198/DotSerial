@@ -277,6 +277,11 @@ namespace DotSerial.Utilities
         {
             ArgumentNullException.ThrowIfNull(sb);
 
+            // if (sb.Length == 0)
+            // {
+            //     return _nodeFactory.CreateNodeFromString(strategyType, key, string.Empty, NodeType.Leaf);
+            // }
+
             if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
             {
                 return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);

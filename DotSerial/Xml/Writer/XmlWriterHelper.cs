@@ -56,11 +56,11 @@ namespace DotSerial.Xml.Writer
 
             if (null == value)
             {
-                sb.Append("null");
+                // sb.Append("null");
             }
             else if (value == string.Empty)
             {
-                // sb.Append("\"\"");
+                sb.Append("\"\"");
             }
             else
             {

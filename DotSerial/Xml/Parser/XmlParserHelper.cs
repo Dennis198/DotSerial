@@ -129,7 +129,7 @@ namespace DotSerial.Xml.Parser
             var startAndEnd = FindIndexEndOfXmlTag(sb, start, tagKeyPair.Tag);
 
             // Extract value
-            int len = (startAndEnd.start - 1) - (start + 1) + 1;
+            int len = startAndEnd.start - 1 - (start + 1) + 1;
             value = sb.SubString(start + 1, len);
 
             return startAndEnd.end;
@@ -167,6 +167,11 @@ namespace DotSerial.Xml.Parser
             for (int i = indexStartSearch; i < sb.Length; i++)
             {
                 char c = sb[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
 
                 // Skip quoted values
                 if (c == CommonConstants.Quote)
@@ -228,6 +233,7 @@ namespace DotSerial.Xml.Parser
                         i = start;
                     }
                 }
+
             }
 
             if (-1 == startIndex || -1 == endIndex)
@@ -266,6 +272,10 @@ namespace DotSerial.Xml.Parser
                 else if (c == XmlConstants.XmlTagOpening)
                 {
                     i = ParseMethods.AppendEnclosingValue(sb, i, strAsStringBuilder, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+                }
+                else
+                {
+                    i = ParseMethods.AppendTillStopChar(sb, i, strAsStringBuilder, XmlConstants.XmlTagClosing);
                 }
             }
 
@@ -413,8 +423,8 @@ namespace DotSerial.Xml.Parser
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, indexKey, sb);
                     // Remove opening and closing quote
-                    keyBuilder.Remove(0, 1);
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
+                    // keyBuilder.Remove(0, 1);
+                    // keyBuilder.Remove(keyBuilder.Length - 1, 1);
                     break;
                 }
                 else

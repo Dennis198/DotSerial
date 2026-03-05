@@ -50,11 +50,11 @@ namespace DotSerial.Xml
             {
                 keyWithoutQuotes = ParseMethods.RemoveStartAndEndQuotes(key);
             }
-            else
-            {
-                // throw new DotSerialException("NodeFactory: Key must be quoted.");
-                throw  new NotImplementedException();
-            }
+            // else
+            // {
+            //     // throw new DotSerialException("NodeFactory: Key must be quoted.");
+            //     throw  new NotImplementedException();
+            // }
 
            if (string.IsNullOrWhiteSpace(keyWithoutQuotes))
             {
@@ -77,11 +77,22 @@ namespace DotSerial.Xml
                 return new LeafNode(keyWithoutQuotes, null, false);
             }
 
+            if (value.Equals("\"\""))
+            {
+                return new LeafNode(keyWithoutQuotes, string.Empty, true);
+            }
+
             // TODO
             StringBuilder tmp = new(value.ToString());
-            if (tmp.IsNullOrWhiteSpace() || tmp.EqualsNullString())
+
+            if (tmp.Length == 0)
             {
-                return new LeafNode(keyWithoutQuotes, null, false);
+                return new LeafNode(keyWithoutQuotes, string.Empty, false);
+            }
+
+            if (tmp.EqualsNullString())
+            {
+                return new LeafNode(keyWithoutQuotes, CommonConstants.Null, false);
             }
 
             // TODO <, >, & ersetzen mit &lt; &gt; &amp;

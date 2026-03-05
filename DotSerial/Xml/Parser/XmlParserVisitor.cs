@@ -35,6 +35,7 @@ namespace DotSerial.Xml.Parser
     internal class XmlParserVisitor : IXmlNodeParserVisitor
     {
         /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
         // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <inheritdoc/>
@@ -60,11 +61,11 @@ namespace DotSerial.Xml.Parser
 
             if (rootTagKeyPair.IsXmlObject())
             {
-                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
             }
             else if (rootTagKeyPair.IsXmlList())
             {
-                rootNode = NodeFactory.CreateNodeFromStringObsolete(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, CommonConstants.MainObjectKey, null, NodeType.ListNode);
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
@@ -146,7 +147,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -160,7 +161,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -177,8 +178,22 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml,strValue, 0, key);
-                        node.AddChild(childNode);
+
+                        if (strValue.Equals("\"\""))
+                        {                            
+                            var childNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, string.Empty, NodeType.Leaf);
+                            node.AddChild(childNode);
+                        }
+                        else if (strValue.EqualsNullString())
+                        {
+                            var childNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, CommonConstants.Null, NodeType.Leaf);
+                            node.AddChild(childNode);
+                        }
+                        else
+                        {
+                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
+                            node.AddChild(childNode);
+                        }
                     }
                     else
                     {
@@ -211,7 +226,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -225,7 +240,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = NodeFactory.CreateNodeFromStringObsolete(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
