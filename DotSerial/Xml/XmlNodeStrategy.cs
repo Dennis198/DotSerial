@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -7,6 +6,9 @@ using DotSerial.Utilities;
 
 namespace DotSerial.Xml
 {
+    /// <summary>
+    /// Xml strategy for parsing and writing.
+    /// </summary>
     internal class XmlNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
@@ -25,19 +27,16 @@ namespace DotSerial.Xml
             // Create inner node
             if (type != NodeType.Leaf)
             {
-                return INodeStrategy.CreateNotLeafNode(key, type);
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
             if (null == value)
             {
-                // throw new DotSerialException("NodeFactory: value can't be null.");
                 return new LeafNode(key, null, false);
             }
 
-            // bool needQuotes = DoValueNeedQuotes(value);
-            // bool needQuotes = false;//DoValueNeedQuotes(value);
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
             // TODO <, >, & ersetzen mit &lt; &gt; &amp;
+            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;            
 
             return new LeafNode(key, strValue, false);
         }
@@ -45,18 +44,12 @@ namespace DotSerial.Xml
         /// <inheritdoc/>
         public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
         {
-            string keyWithoutQuotes = key;
-            if (keyWithoutQuotes[0] == CommonConstants.Quote && keyWithoutQuotes[^1] == CommonConstants.Quote)
+            if (key.HasStartAndEndQuotes())
             {
-                keyWithoutQuotes = ParseMethods.RemoveStartAndEndQuotes(key);
+                key = StringMethods.RemoveStartAndEndQuotes(key);
             }
-            // else
-            // {
-            //     // throw new DotSerialException("NodeFactory: Key must be quoted.");
-            //     throw  new NotImplementedException();
-            // }
 
-           if (string.IsNullOrWhiteSpace(keyWithoutQuotes))
+           if (string.IsNullOrWhiteSpace(key))
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -69,56 +62,50 @@ namespace DotSerial.Xml
             // Create inner node
             if (type != NodeType.Leaf)
             {
-                return INodeStrategy.CreateNotLeafNode(keyWithoutQuotes, type);
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
             if (null == value)
             {
-                return new LeafNode(keyWithoutQuotes, null, false);
+                return new LeafNode(key, null, false);
             }
 
             if (value.Equals("\"\""))
             {
-                return new LeafNode(keyWithoutQuotes, string.Empty, true);
+                return new LeafNode(key, string.Empty, true);
             }
 
-            // TODO
-            StringBuilder tmp = new(value.ToString());
-
-            if (tmp.Length == 0)
+            if (value.Length == 0)
             {
-                return new LeafNode(keyWithoutQuotes, string.Empty, false);
+                return new LeafNode(key, string.Empty, false);
             }
 
-            if (tmp.EqualsNullString())
+            if (value.EqualsNullString())
             {
-                return new LeafNode(keyWithoutQuotes, CommonConstants.Null, false);
+                return new LeafNode(key, CommonConstants.Null, false);
             }
 
             // TODO <, >, & ersetzen mit &lt; &gt; &amp;
 
-            return new LeafNode(keyWithoutQuotes, tmp.ToString(), false);
+            return new LeafNode(key, value, false);
         }
 
-        private bool DoValueNeedQuotes(object? value)
+        /// <inheritdoc/>
+        public bool IsValueValidWithoutQuotes(string value)
         {
-            if (null == value)
-                return false;
-
-            return true;
-                
-            // Type type = value.GetType();
-
-            // if (type == typeof(string))
-            //     return true;
-
-            // if (type == typeof(bool) || type == typeof(bool?))
-            //     return false;
-
-            // if (TypeCheckMethods.IsNumericType(type))
-            //     return false;             
-
-            // return true;
+            throw new NotImplementedException();
         }
+
+        /// <inheritdoc/>
+        public bool AreQuotesNeededForKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public bool AreQuotesNeededForValue(object? value, string? strValue)
+        {
+            throw new NotImplementedException();
+        }        
     }
 }

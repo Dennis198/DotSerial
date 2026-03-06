@@ -25,6 +25,7 @@ using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Yaml.Writer
 {
@@ -33,6 +34,9 @@ namespace DotSerial.Yaml.Writer
     /// </summary>
     internal static class YamlWriterHelper
     {
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        
         /// <summary>
         /// Helper methode to add object start to yaml
         /// </summary>
@@ -52,29 +56,18 @@ namespace DotSerial.Yaml.Writer
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
-            bool keyNeedsQuotes = KeyNeedQuotes(key);
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                if (keyNeedsQuotes)
-                {
-                    sb.AppendFormat("\"{0}\":", key);
-                }
-                else
-                {
-                    sb.AppendFormat("{0}:", key);
-                }
+                sb.AppendFormat("{0}:", key);
             }
             else
             {
-                if (keyNeedsQuotes)
-                {
-                    sb.AppendFormat("{0}\"{1}\":", prefix, key);
-                }
-                else
-                {
-                    sb.AppendFormat("{0}{1}:", prefix, key);
-                }
+                sb.AppendFormat("{0}{1}:", prefix, key);
             }
         }
 
@@ -107,53 +100,28 @@ namespace DotSerial.Yaml.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            bool keyNeedsQuotes = KeyNeedQuotes(key);
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
 
             if (null == value)
             {
-                if (keyNeedsQuotes)
-                {
-                    sb.AppendFormat("\"{0}\": null", key);
-                }
-                else
-                {
-                    sb.AppendFormat("{0}: null", key);
-                }
+                sb.AppendFormat("{0}: null", key);
             }
             else if (value == string.Empty)
             {
-                if (keyNeedsQuotes)                
-                {
-                    sb.AppendFormat("\"{0}\": \"\"", key);
-                }
-                else
-                {
-                    sb.AppendFormat("{0}: \"\"", key);
-                }
+                sb.AppendFormat("{0}: \"\"", key);
             }
             else
             {
-                if (keyNeedsQuotes)
+                if (needQuotes)
                 {
-                    if (needQuotes)
-                    {
-                        sb.AppendFormat("\"{0}\": \"{1}\"", key, value);
-                    }
-                    else
-                    {
-                        sb.AppendFormat("\"{0}\": {1}", key, value);
-                    }
+                    sb.AppendFormat("{0}: \"{1}\"", key, value);
                 }
                 else
                 {
-                    if (needQuotes)
-                    {
-                        sb.AppendFormat("{0}: \"{1}\"", key, value);
-                    }
-                    else
-                    {
-                        sb.AppendFormat("{0}: {1}", key, value);
-                    }
+                    sb.AppendFormat("{0}: {1}", key, value);
                 }
             }
         }   
@@ -309,28 +277,6 @@ namespace DotSerial.Yaml.Writer
             {
                 sb.AppendFormat("{0}", value);
             }  
-        }  
-
-        private static bool KeyNeedQuotes(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                throw new NotImplementedException();
-            }   
-
-            if (key.HaveLeadingOrTrailingWhitespace())
-            {
-                return true;
-            }
-
-            for(int i = 0; i < key.Length; i++)
-            {
-                char c = key[i];
-                if (YamlConstants.YamlSpecialChars.Contains(c))
-                    return true;
-            }    
-
-            return false;
         }                
 
     }

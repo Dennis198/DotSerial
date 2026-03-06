@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using DotSerial.Common;
 using DotSerial.Json;
 using DotSerial.Toon;
@@ -65,39 +64,19 @@ namespace DotSerial.Tree.Creation
             throw new NotSupportedException($"Strategy '{category}' is not supported.");
         }
 
-        internal static IDSNode CreateNodeFromStringObsolete(string key, string? value, NodeType type)
+        /// <summary>
+        /// Check if a key needes quotes
+        /// </summary>
+        /// <param name="category">Create node strategy</param>
+        /// <param name="key">Key of the node</param>
+        /// <returns>True, if quotes are needed</returns>
+        internal bool AreQuotesNeededForKey(StategyType category, string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (_strategies.TryGetValue(category, out var strategy))
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                return strategy.AreQuotesNeededForKey(key);
             }
-
-            if (null != value && (type != NodeType.Leaf))
-            {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
-            }
-
-            // Create inner node
-            if (type != NodeType.Leaf)
-            {
-                return INodeStrategy.CreateNotLeafNode(key, type);
-            }
-
-            if (null == value)
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            bool needQuotes = false;
-
-            // TODO richtig machen
-            if (value.StartsWith(CommonConstants.Quote) && value.EndsWith(CommonConstants.Quote))
-            {
-                needQuotes = true;
-                value = value.Substring(1, value.Length - 2);
-            }
-
-            return new LeafNode(key, value, needQuotes);
+            throw new NotSupportedException($"Strategy '{category}' is not supported.");
         }
 
         /// <summary>

@@ -16,7 +16,6 @@ namespace DotSerial.Tree.Creation
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
         public IDSNode CreateNode(string key, object? value, NodeType type);
-
         /// <summary>
         /// Creates a node from string value
         /// </summary>
@@ -25,8 +24,33 @@ namespace DotSerial.Tree.Creation
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
         public IDSNode CreateNodeFromString(string key, string? value, NodeType type);
+        /// <summary>
+        /// Check if a object and his string represntive need quotes.
+        /// </summary>
+        /// <param name="value">Object</param>
+        /// <param name="strValue">Object as string</param>
+        /// <returns>True, if quotes are needed.</returns>
+        public bool AreQuotesNeededForValue(object? value, string? strValue);
+        /// <summary>
+        /// Check if a key needes quotes
+        /// </summary>
+        /// <param name="key">Key</param>
+        /// <returns>True, if quotes are needed</returns>
+        public bool AreQuotesNeededForKey(string key);
+        /// <summary>
+        /// Check if the key is valid without quotes
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <returns>True, if value dont need quotes</returns>
+        public bool IsValueValidWithoutQuotes(string value);
 
-        internal static IDSNode CreateNotLeafNode(string key, NodeType type)
+        /// <summary>
+        /// Creates all nodes, which are not leafs.
+        /// </summary>
+        /// <param name="key">Key of the node</param>
+        /// <param name="type">Type of the node</param>
+        /// <returns>IDSNode</returns>
+        protected static IDSNode CreateInnerNode(string key, NodeType type)
         {
             if (string.IsNullOrWhiteSpace(key))
             {

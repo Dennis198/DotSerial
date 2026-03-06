@@ -27,56 +27,8 @@ namespace DotSerial.Utilities
 {
     internal static class Extensions
     {
-        // TODO als nnormale Methdoe??
-        internal static bool HaveLeadingOrTrailingWhitespace(this string str)
-        {
-            ArgumentNullException.ThrowIfNull(str);
-
-            if (str.Length == 0)
-            {
-                return false;
-            }
-
-            if (char.IsWhiteSpace(str[0]) || char.IsWhiteSpace(str[^1]))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        internal static string AddQuotesAtStartAndEnd(this string str)
-        {
-            ArgumentNullException.ThrowIfNull(str);
-
-            string result = CommonConstants.Quote + str + CommonConstants.Quote;
-            return result;
-        }
-
-        internal static bool IsNumericValue(this string input)
-        {
-            ArgumentNullException.ThrowIfNull(input);
-
-            if (input.Length == 0)
-            {
-                return false;
-            }
-
-            if (double.TryParse(input, out _))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }        
-
-
-
-
-
-        internal static bool HaveLeadingOrTrailingWhitespace(this StringBuilder sb)
+   
+        internal static bool HasLeadingOrTrailingWhitespaces(this StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
 

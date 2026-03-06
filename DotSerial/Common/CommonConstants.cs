@@ -73,6 +73,30 @@ namespace DotSerial.Common
         /// </summary>
         internal const char L = 'l';
         /// <summary>
+        /// T
+        /// </summary>
+        internal const char T = 't';       
+        /// <summary>
+        /// R
+        /// </summary>
+        internal const char R = 'r';         
+        /// <summary>
+        /// E
+        /// </summary>
+        internal const char E = 'e';          
+        /// <summary>
+        /// F
+        /// </summary>
+        internal const char F = 'f';       
+        /// <summary>
+        /// A
+        /// </summary>
+        internal const char A = 'a';    
+        /// <summary>
+        /// S
+        /// </summary>
+        internal const char S = 's';                
+        /// <summary>
         /// Json null string
         /// </summary>
         internal const string Null = "null";

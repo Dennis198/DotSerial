@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -7,6 +6,9 @@ using DotSerial.Utilities;
 
 namespace DotSerial.Yaml
 {
+    /// <summary>
+    /// Yaml strategy for parsing and writing.
+    /// </summary>
     internal class YamlNodeStrategy : INodeStrategy
     {
 
@@ -26,7 +28,7 @@ namespace DotSerial.Yaml
             // Create inner node
             if (type != NodeType.Leaf)
             {
-                return INodeStrategy.CreateNotLeafNode(key, type);
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
             if (null == value)
@@ -35,9 +37,8 @@ namespace DotSerial.Yaml
                 return new LeafNode(key, null, false);
             }
 
-            // bool needQuotes = DoValueNeedQuotes(value);
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
-            bool needQuotes = DoValueNeedQuotes(value, strValue);
+            bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
             return new LeafNode(key, strValue, needQuotes);
         }
@@ -45,13 +46,12 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
         {
-            string keyWithoutQuotes = key;
-            if (keyWithoutQuotes[0] == CommonConstants.Quote && keyWithoutQuotes[^1] == CommonConstants.Quote)
+            if (key.HasStartAndEndQuotes())
             {
-                keyWithoutQuotes = ParseMethods.RemoveStartAndEndQuotes(key);
+                key = StringMethods.RemoveStartAndEndQuotes(key);
             }
 
-            if (string.IsNullOrWhiteSpace(keyWithoutQuotes))
+            if (string.IsNullOrWhiteSpace(key))
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -64,45 +64,39 @@ namespace DotSerial.Yaml
             // Create inner node
             if (type != NodeType.Leaf)
             {
-                return INodeStrategy.CreateNotLeafNode(keyWithoutQuotes, type);
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
             if (null == value)
             {
-                return new LeafNode(keyWithoutQuotes, null, false);
+                return new LeafNode(key, null, false);
             }
 
-            // TODO
-            StringBuilder tmp = new(value.ToString());
-            if (tmp.IsNullOrWhiteSpace() || tmp.EqualsNullString())
+            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
             {
-                return new LeafNode(keyWithoutQuotes, null, false);
+                return new LeafNode(key, null, false);
             }
 
             bool needQuotes = false;
 
-            // TODO richtig machen
-            if (tmp[0] == CommonConstants.Quote && tmp[^1] == CommonConstants.Quote)
+            if (value.HasStartAndEndQuotes())
             {
                 needQuotes = true;
-                // Remove opening and closing quote
-                tmp.Remove(0, 1);
-                tmp.Remove(tmp.Length - 1, 1);
-            }
-            else
-            {
-                if (false == IsValueValidWithoutQuotes(tmp))
-                {
-                    throw new DotSerialException("NodeFactory: Invalid yaml value.");
-                }
+                value = StringMethods.RemoveStartAndEndQuotes(value);
             }
 
-            return new LeafNode(keyWithoutQuotes, tmp.ToString(), needQuotes);
+            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
+            {
+                throw new DotSerialException("NodeFactory: Invalid yaml value.");
+            }
+
+            return new LeafNode(key, value, needQuotes);
         }        
 
-        private bool DoValueNeedQuotes(object? value, string? strValue)
+        /// <inheritdoc/>
+        public bool AreQuotesNeededForValue(object? value, string? strValue)
         {
-            if (null == value)
+                        if (null == value)
                 return false;
 
             Type type = value.GetType();
@@ -125,18 +119,19 @@ namespace DotSerial.Yaml
                 throw new NotImplementedException();
             }
 
-            if (strValue.Equals(CommonConstants.Null, StringComparison.OrdinalIgnoreCase))
+            if (strValue.EqualsNullString())
                 return true;
 
-            if (strValue.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
-                return true;                
-
-            if (strValue.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
+            if (strValue.EqualsBooleanString())
                 return true;     
-                                        
-            if (strValue.HaveLeadingOrTrailingWhitespace())
+
+            if (strValue.HasLeadingOrTrailingWhitespaces())
                 return true;
-            
+
+            if (strValue.ContainsChars(YamlConstants.YamlSpecialChars))
+            {
+                return true;
+            }
             for(int i = 0; i < strValue.Length; i++)
             {
                 char c = strValue[i];
@@ -144,33 +139,51 @@ namespace DotSerial.Yaml
                     return true;
             }
             
-            return false;                
+            return false;   
         }
 
-        private static bool IsValueValidWithoutQuotes(StringBuilder sb)
+        /// <inheritdoc/>
+        public bool AreQuotesNeededForKey(string key)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                throw new NotImplementedException();
+            }   
 
-            if (sb.EqualsNullString())
+            if (key.HasLeadingOrTrailingWhitespaces())
+            {
+                return true;
+            }
+
+            if (key.ContainsChars(YamlConstants.YamlSpecialChars))
+            {
+                return true;
+            } 
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public bool IsValueValidWithoutQuotes(string value)
+        {
+            ArgumentNullException.ThrowIfNull(value);
+
+            if (value.EqualsNullString())
                 return true;
                 
-            if (sb.EqualsBooleanString())
+            if (value.EqualsBooleanString())
                 return true;
 
-            if (sb.IsNumericValue())
+            if (value.IsNumericValue())
                 return true;  
 
-            if (sb.HaveLeadingOrTrailingWhitespace())
+            if (value.HasLeadingOrTrailingWhitespaces())
                 return false;
             
-            for(int i = 0; i < sb.Length; i++)
-            {
-                char c = sb[i];
-                if (YamlConstants.YamlSpecialChars.Contains(c))
-                    return false;
-            }               
+            if (value.ContainsChars(YamlConstants.YamlSpecialChars))
+                return false;        
 
             return true;
-        }        
+        }
     }
 }

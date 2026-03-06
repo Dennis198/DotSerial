@@ -1,5 +1,6 @@
 using System.Text;
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -7,6 +8,9 @@ namespace DotSerial.Toon.Writer
 {
     internal static class ToonWriterHelper
     {
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        
         /// <summary>
         /// Converts a key : value pair to an toon string.
         /// </summary>
@@ -36,9 +40,9 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            if (KeyNeedQuotes(key))
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
-                key = key.AddQuotesAtStartAndEnd();
+                key = StringMethods.AddStartAndEndQuotes(key);
             }
 
             sb.AppendFormat("{0}: ", key);
@@ -120,9 +124,9 @@ namespace DotSerial.Toon.Writer
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
 
-            if (KeyNeedQuotes(key))
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
-                key = key.AddQuotesAtStartAndEnd();
+                key = StringMethods.AddStartAndEndQuotes(key);
             }
 
             if (string.IsNullOrWhiteSpace(prefix))
@@ -159,9 +163,9 @@ namespace DotSerial.Toon.Writer
 
             int count = lNode.GetChildren().Count;
 
-            if (key != string.Empty && KeyNeedQuotes(key))
+            if (key != string.Empty && _nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
-                key = key.AddQuotesAtStartAndEnd();
+                key = StringMethods.AddStartAndEndQuotes(key);
             }
 
             sb.AppendLine();
@@ -362,7 +366,7 @@ namespace DotSerial.Toon.Writer
 
             for (int i = 0; i < keysTmp.Count; i++)
             {
-                if (KeyNeedQuotes(keysTmp[i]))
+                if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, keysTmp[i]))
                 {
                     keys += "\"" + keysTmp[i] + "\"" + ",";
                 }
@@ -378,33 +382,6 @@ namespace DotSerial.Toon.Writer
             keys = string.Format("{{{0}}}", keys);
 
             return true;
-        }
-
-        private static bool KeyNeedQuotes(string key)
-        {
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                throw new NotImplementedException();
-            }   
-
-            if (key.HaveLeadingOrTrailingWhitespace())
-            {
-                return true;
-            }
-
-            if (key.IsNumericValue())
-            {
-                return false;
-            }
-
-            for(int i = 0; i < key.Length; i++)
-            {
-                char c = key[i];
-                if (ToonConstants.ToonSpecialChars.Contains(c))
-                    return true;
-            }    
-
-            return false;
-        }           
+        }      
     }
 }
