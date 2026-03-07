@@ -100,22 +100,19 @@ namespace DotSerial.Json.Writer
 
             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
 
+            sb.AppendFormat("\"{0}\": ", key);
+
             if (null == value)
             {
-                sb.AppendFormat("\"{0}\": null,", key);
-            }
-            else if (value == string.Empty)
-            {
-                // NEEDED?????
-                sb.AppendFormat("\"{0}\": \"\",", key);
-            }
-            else if (needQuotes)
-            {
-                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
+                sb.AppendFormat("null,", key);
             }
             else
             {
-                sb.AppendFormat("\"{0}\": {1},", key, value);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.AppendFormat("{0},", value);
             }
         } 
 
@@ -139,19 +136,14 @@ namespace DotSerial.Json.Writer
             {
                 sb.Append("null,");
             }
-            else if (value == string.Empty)
-            {
-                // NEEDED?????
-                sb.Append("\"\",");
-            }
-            else if (needQuotes)
-            {
-                sb.AppendFormat("\"{0}\",", value);
-            }
             else
             {
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
                 sb.AppendFormat("{0},", value);
-            }            
+            }           
         }  
 
         /// <summary>

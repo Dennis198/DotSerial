@@ -27,7 +27,34 @@ namespace DotSerial.Utilities
 {
     internal static class Extensions
     {
-   
+        
+        /// <summary>
+        /// Check if a stringbuilder has start and end quotes
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if the first and last char in a string is a quote.</returns>
+        internal static bool HasStartAndEndQuotes(this StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length < 2)
+            {
+                return false;
+            }
+
+            if (sb[0] == CommonConstants.Quote && sb[^1] == CommonConstants.Quote)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a stringbuilder has leading or trailing whitespaces.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if string has leading or/and trailing whitespaces.</returns>
         internal static bool HasLeadingOrTrailingWhitespaces(this StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);

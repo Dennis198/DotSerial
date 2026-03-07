@@ -33,10 +33,7 @@ namespace DotSerial.Common
     /// </summary>
     /// <typeparam name="T">Type of the node (Json, Yaml, ...)</typeparam>
     public interface IDSSerialNode<T>
-    {
-        /// <summary>Node factory</summary>
-        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
-        
+    {        
         /// <summary>
         /// Key of the node.
         /// </summary>

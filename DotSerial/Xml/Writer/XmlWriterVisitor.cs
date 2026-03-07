@@ -99,7 +99,7 @@ namespace DotSerial.Xml.Writer
             string? value = node.GetValue();
             string key = node.Key;
 
-            XmlWriterHelper.AddKeyValuePair(sb, key, value, level);
+            XmlWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted);
         }
 
         /// <inheritdoc/>

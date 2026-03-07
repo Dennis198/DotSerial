@@ -54,7 +54,9 @@ namespace DotSerial.Yaml.Writer
                 throw new NotImplementedException();
             }
 
+            // Make sure key:value has its own line.            
             sb.AppendLine();
+
             WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
             {
@@ -109,20 +111,13 @@ namespace DotSerial.Yaml.Writer
             {
                 sb.AppendFormat("{0}: null", key);
             }
-            else if (value == string.Empty)
-            {
-                sb.AppendFormat("{0}: \"\"", key);
-            }
             else
             {
                 if (needQuotes)
                 {
-                    sb.AppendFormat("{0}: \"{1}\"", key, value);
+                    value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                else
-                {
-                    sb.AppendFormat("{0}: {1}", key, value);
-                }
+                sb.AppendFormat("{0}: {1}", key, value);
             }
         }   
 
@@ -170,14 +165,14 @@ namespace DotSerial.Yaml.Writer
                     {
                         sb.AppendFormat("- {0}", CommonConstants.Null);
                     }
-                    else if (needQuotes)
-                    {
-                        sb.AppendFormat("- \"{0}\"", val);
-                    }
                     else
                     {
+                        if (needQuotes)
+                        {
+                            val = StringMethods.AddStartAndEndQuotes(val);
+                        }
                         sb.AppendFormat("- {0}", val);
-                    }               
+                    }             
 
                     sb.AppendLine();
                 }
@@ -265,18 +260,14 @@ namespace DotSerial.Yaml.Writer
             {
                 sb.Append(CommonConstants.Null);
             }
-            else if (value == string.Empty)
-            {
-                sb.Append("\"\"");
-            }
-            else if (needQuotes)
-            {
-                sb.AppendFormat("\"{0}\"", value);
-            }
             else
             {
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
                 sb.AppendFormat("{0}", value);
-            }  
+            }
         }                
 
     }

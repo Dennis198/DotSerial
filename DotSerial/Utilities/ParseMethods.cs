@@ -258,11 +258,6 @@ namespace DotSerial.Utilities
 
             return sb;
         }       
-
-        internal static string RemoveStartAndEndQuotes(string str)
-        {
-             return str[1..^1]; 
-        }
         
         /// <summary>
         /// Parses primitive node without a key, e.g "3.14"
@@ -277,19 +272,14 @@ namespace DotSerial.Utilities
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            // if (sb.Length == 0)
-            // {
-            //     return _nodeFactory.CreateNodeFromString(strategyType, key, string.Empty, NodeType.Leaf);
-            // }
-
-            if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
+            if (sb.IsNullOrWhiteSpace())
             {
                 return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
             }
 
             StringBuilder sbPrim = new();
 
-            if (sb[0] == CommonConstants.Quote && sb[^1] == CommonConstants.Quote)
+            if (sb.HasStartAndEndQuotes())
             {
                 int i = AppendStringValue(sbPrim, startIndex, sb);
                 if (i != sb.Length -1)
@@ -298,12 +288,7 @@ namespace DotSerial.Utilities
                 }
             }
             else
-            {
-                // if (null == stopChars)
-                // {
-                //     throw new DotSerialException("Parse: Can't parse single value.");
-                // }
-                
+            {                
                 int i = AppendTillStopChars(sbPrim, startIndex, sb, stopChars);
                 if (i != sb.Length -1)
                 {
@@ -314,6 +299,38 @@ namespace DotSerial.Utilities
             string nodeValue = sbPrim.ToString();
             
             return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
-        }              
+        }  
+
+        /// <summary>
+        /// Returns the indentation level of a line
+        /// </summary>
+        /// <param name="lines">Stringbuilder</param>
+        /// <param name="indentationSize">IndentationSize</param>
+        /// <returns>indentation level of a line</returns>
+        internal static int LineLevel(StringBuilder line, int indentationSize)
+        {
+            ArgumentNullException.ThrowIfNull(line);
+
+            if (indentationSize < 1)
+            {
+                throw new DotSerialException("Parse: Indentation size must be at least 1.");
+            }
+
+            int level = 0;
+            for (int i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+                if (c == CommonConstants.WhiteSpace)
+                {
+                    level++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return level / indentationSize;
+        }                       
     }
 }

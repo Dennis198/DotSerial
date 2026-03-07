@@ -6,6 +6,9 @@ using DotSerial.Utilities;
 
 namespace DotSerial.Toon.Writer
 {
+    /// <summary>
+    /// Helper class with methode for writing toon.
+    /// </summary>
     internal static class ToonWriterHelper
     {
         /// <summary>Node factory</summary>
@@ -55,12 +58,9 @@ namespace DotSerial.Toon.Writer
             {
                 if (needQuotes)
                 {
-                    sb.AppendFormat("\"{0}\"", value);
+                    value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                else
-                {
-                    sb.AppendFormat("{0}", value);
-                }
+                sb.AppendFormat("{0}", value);
             }
         }  
 
@@ -90,18 +90,14 @@ namespace DotSerial.Toon.Writer
             {
                 sb.Append(CommonConstants.Null);
             }
-            else if (value == string.Empty)
-            {
-                sb.Append("\"\"");
-            }
-            else if (needQuotes)
-            {
-                sb.AppendFormat("\"{0}\"", value);
-            }
             else
             {
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
                 sb.AppendFormat("{0}", value);
-            }              
+            }           
         }           
 
         /// <summary>
@@ -226,12 +222,9 @@ namespace DotSerial.Toon.Writer
                     {
                         if (chilChild.IsQuoted)
                         {
-                            sb.AppendFormat("\"{0}\"", value);
+                            value = StringMethods.AddStartAndEndQuotes(value);
                         }
-                        else
-                        {
-                            sb.AppendFormat("{0}", value);
-                        }
+                        sb.AppendFormat("{0}", value);
                     }
 
                     sb.Append(CommonConstants.Comma);
@@ -266,12 +259,9 @@ namespace DotSerial.Toon.Writer
                 {
                     if (child.IsQuoted)
                     {
-                        sb.AppendFormat("\"{0}\"", val);
+                        val = StringMethods.AddStartAndEndQuotes(val);
                     }
-                    else
-                    {
-                        sb.AppendFormat("{0}", val);
-                    }
+                    sb.AppendFormat("{0}", val);
                 }               
 
                 sb.Append(CommonConstants.Comma);
@@ -368,11 +358,11 @@ namespace DotSerial.Toon.Writer
             {
                 if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, keysTmp[i]))
                 {
-                    keys += "\"" + keysTmp[i] + "\"" + ",";
+                    keys += CommonConstants.Quote + keysTmp[i] + CommonConstants.Quote + CommonConstants.Comma;
                 }
                 else
                 {
-                    keys += keysTmp[i] + ",";
+                    keys += keysTmp[i] + CommonConstants.Comma;
                 }
             }
 

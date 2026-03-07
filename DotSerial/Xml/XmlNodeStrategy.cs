@@ -37,8 +37,9 @@ namespace DotSerial.Xml
 
             // TODO <, >, & ersetzen mit &lt; &gt; &amp;
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;            
+            bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
-            return new LeafNode(key, strValue, false);
+            return new LeafNode(key, strValue, needQuotes);
         }
 
         /// <inheritdoc/>
@@ -69,6 +70,27 @@ namespace DotSerial.Xml
             {
                 return new LeafNode(key, null, false);
             }
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            bool needQuotes = false;
+
+            if (value.HasStartAndEndQuotes())
+            {
+                needQuotes = true;
+                value = StringMethods.RemoveStartAndEndQuotes(value);
+            }
+
+            // if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
+            // {
+            //     throw new DotSerialException("NodeFactory: Invalid toon value.");
+            // }
+
+            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
+            return new LeafNode(key, value, needQuotes);
 
             if (value.Equals("\"\""))
             {
@@ -105,7 +127,15 @@ namespace DotSerial.Xml
         /// <inheritdoc/>
         public bool AreQuotesNeededForValue(object? value, string? strValue)
         {
-            throw new NotImplementedException();
+            if (null == value)
+                return false;
+
+            Type type = value.GetType();
+
+            if (type == typeof(string) && strValue == string.Empty)
+                return true;
+            
+            return false;
         }        
     }
 }

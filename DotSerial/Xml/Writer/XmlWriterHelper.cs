@@ -37,7 +37,8 @@ namespace DotSerial.Xml.Writer
         /// <param name="key">Key of object</param>
         /// <param name="value">Value of object</param>
         /// <param name="level">Indentation level</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -54,16 +55,12 @@ namespace DotSerial.Xml.Writer
 
             AddStartTag(sb, XmlConstants.XmlLeafProp, key);
 
-            if (null == value)
+            if (null != value)
             {
-                // sb.Append("null");
-            }
-            else if (value == string.Empty)
-            {
-                sb.Append("\"\"");
-            }
-            else
-            {
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
                 sb.AppendFormat("{0}", value);
             }
 

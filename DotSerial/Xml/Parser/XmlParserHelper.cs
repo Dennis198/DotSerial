@@ -422,9 +422,6 @@ namespace DotSerial.Xml.Parser
                 else if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, indexKey, sb);
-                    // Remove opening and closing quote
-                    // keyBuilder.Remove(0, 1);
-                    // keyBuilder.Remove(keyBuilder.Length - 1, 1);
                     break;
                 }
                 else

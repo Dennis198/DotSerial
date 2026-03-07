@@ -13,7 +13,6 @@ namespace DotSerial.Toon.Parser
     internal class ToonParserVisitor : IToonNodeParserVisitor
     {
         /// <summary>Node factory</summary>
-        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>

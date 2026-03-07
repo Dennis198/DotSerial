@@ -63,10 +63,6 @@ namespace DotSerial.Json.Parser
                     StringBuilder sb2 = new();
                     i = ParseMethods.AppendStringValue(sb2, i, sb);
 
-                    // Remove opening and closing quote
-                    // sb2.Remove(0, 1);
-                    // sb2.Remove(sb2.Length - 1, 1);
-
                     // Save key
                     foundKey = sb2.ToString();
 
@@ -81,10 +77,6 @@ namespace DotSerial.Json.Parser
 
                     StringBuilder sb2 = new();
                     i = ParseMethods.AppendStringValue(sb2, i, sb);
-
-                    // Remove opening and closing quote
-                    // sb2.Remove(0, 1);
-                    // sb2.Remove(sb2.Length - 1, 1);
                    
                     if (false == result.ContainsKey(foundKey))
                     {
@@ -97,25 +89,6 @@ namespace DotSerial.Json.Parser
                     // Reset found key
                     foundKey = string.Empty;
                 }
-                // Check if "null" value is found  
-                // else if (c == CommonConstants.N && keyFound == true)
-                // {
-                //     // value is found => null
-                //     keyFound = false;
-
-                //     if (false == sb.EqualsNullString(i))
-                //     {
-                //         throw new DSJsonException("Invalid json");
-                //     }
-
-                //     i += 3;
-
-                //     // Add key
-                //     result[foundKey] = null;
-
-                //     // Reset found key
-                //     foundKey = string.Empty;
-                // }
                 // Check if opening symbol for the value is found (json object)
                 else if (c == JsonConstants.ObjectStart && keyFound == true)
                 {
@@ -143,9 +116,6 @@ namespace DotSerial.Json.Parser
                 {
                     // value is found
                     keyFound = false;
-
-                    // Extract value
-                    // int j = ExtractJsonList(sb, i);
 
                     if (false == result.ContainsKey(foundKey))
                     {
@@ -178,10 +148,6 @@ namespace DotSerial.Json.Parser
                     {
                         StringBuilder sb2 = new();
                         i = ParseMethods.AppendTillStopChars(sb2, i, sb, JsonConstants.ParseStopChars);
-
-                        // Remove opening and closing quote
-                        // sb2.Remove(0, 1);
-                        // sb2.Remove(sb2.Length - 1, 1);
                     
                         if (false == result.ContainsKey(foundKey))
                         {
@@ -257,24 +223,16 @@ namespace DotSerial.Json.Parser
                 }
                 else
                 {
-                    if (true == sb.EqualsNullString(i))
-                    {
-                        i += 3;
-                        list.Add(null);
-                    }
-                    else
-                    {
-                        int j = sb.SkipTillStopChars(i, JsonConstants.ParseStopChars);
+                    int j = sb.SkipTillStopChars(i, JsonConstants.ParseStopChars);
 
-                        // Add key
-                        int len = j - i + 1;
-                        var tmp = sb.SubString(i, len);
+                    // Add key
+                    int len = j - i + 1;
+                    var tmp = sb.SubString(i, len);
 
-                        // Add object to result
-                        list.Add(tmp);   
-                        // Update index
-                        i = j;
-                    }                
+                    // Add object to result
+                    list.Add(tmp);   
+                    // Update index
+                    i = j;            
                 }                
             }
 

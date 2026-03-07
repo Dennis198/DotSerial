@@ -36,7 +36,6 @@ namespace DotSerial.Xml.Parser
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
-        // private static readonly NodeFactoryObsolete _nodeFactory = NodeFactoryObsolete.Instance;
 
         /// <inheritdoc/>
         public static DSXmlNode Parse(string str)
@@ -178,22 +177,8 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-
-                        if (strValue.Equals("\"\""))
-                        {                            
-                            var childNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, string.Empty, NodeType.Leaf);
-                            node.AddChild(childNode);
-                        }
-                        else if (strValue.EqualsNullString())
-                        {
-                            var childNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, CommonConstants.Null, NodeType.Leaf);
-                            node.AddChild(childNode);
-                        }
-                        else
-                        {
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
-                            node.AddChild(childNode);
-                        }
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
+                        node.AddChild(childNode);
                     }
                     else
                     {

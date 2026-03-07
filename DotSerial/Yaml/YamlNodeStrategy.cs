@@ -33,7 +33,6 @@ namespace DotSerial.Yaml
 
             if (null == value)
             {
-                // throw new DotSerialException("NodeFactory: value can't be null.");
                 return new LeafNode(key, null, false);
             }
 
