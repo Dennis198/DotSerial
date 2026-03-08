@@ -58,6 +58,7 @@ namespace DotSerial.Yaml.Writer
             sb.AppendLine();
 
             WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+            key = key.EscapeChars(YamlConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
@@ -87,9 +88,9 @@ namespace DotSerial.Yaml.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             // Make sure key:value has its own line.
@@ -102,6 +103,7 @@ namespace DotSerial.Yaml.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
+            key = key.EscapeChars(YamlConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
@@ -113,6 +115,7 @@ namespace DotSerial.Yaml.Writer
             }
             else
             {
+                value = value.EscapeChars(YamlConstants.CharsToEscape);
                 if (needQuotes)
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
@@ -167,6 +170,7 @@ namespace DotSerial.Yaml.Writer
                     }
                     else
                     {
+                        val = val.EscapeChars(YamlConstants.CharsToEscape);
                         if (needQuotes)
                         {
                             val = StringMethods.AddStartAndEndQuotes(val);
@@ -199,6 +203,7 @@ namespace DotSerial.Yaml.Writer
 
             if (false == string.IsNullOrWhiteSpace(key))
             {
+                // key = key.EscapeChars(YamlConstants.CharsToEscape);
                 AddObjectStart(sb, key, level, prefix);
                 sb.Append(" {}");
             }
@@ -223,6 +228,7 @@ namespace DotSerial.Yaml.Writer
 
             if (false == string.IsNullOrWhiteSpace(key))
             {
+                // key = key.EscapeChars(YamlConstants.CharsToEscape);
                 AddObjectStart(sb, key, level, prefix);
                 sb.Append(" []");
             }
@@ -262,6 +268,7 @@ namespace DotSerial.Yaml.Writer
             }
             else
             {
+                value = value.EscapeChars(YamlConstants.CharsToEscape);
                 if (needQuotes)
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);

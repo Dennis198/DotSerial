@@ -664,7 +664,39 @@ namespace DotSerial.Tests.Yaml
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                                                                                                                                 
+        }               
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsKeys()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsKeys.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ClassSpecialCharsKeys>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsValue()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsValue.CreateTestDefault();
+            var tmp = DSYamlNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<ClassSpecialCharsValue>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                             
      
     }
 }

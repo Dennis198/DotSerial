@@ -672,10 +672,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = ClassSpecialCharsKeys.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var resultString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<ClassSpecialCharsKeys>(toonString);
+            var result = DSJsonNode.ToObject<ClassSpecialCharsKeys>(resultString);
 
             // Assert
             Assert.NotNull(result);
@@ -688,10 +688,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = ClassSpecialCharsValue.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var resultString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<ClassSpecialCharsValue>(toonString);
+            var result = DSJsonNode.ToObject<ClassSpecialCharsValue>(resultString);
 
             // Assert
             Assert.NotNull(result);

@@ -20,6 +20,8 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Common;
+
 namespace DotSerial.Yaml
 {
     internal static class YamlConstants
@@ -44,6 +46,10 @@ namespace DotSerial.Yaml
         /// End string of yaml document
         /// </summary>
         internal const char KeyValueSeperator = ':';
+        /// <summary>
+        /// Chars which must be escaped
+        /// </summary>
+        internal readonly static char[] CharsToEscape = [CommonConstants.Quote, CommonConstants.Backslash];
         internal static readonly char[] YamlSpecialChars = ['-', '?', ':', ',', '[', ']', '{', '}', '#', '&', '*', '!', '|', '>', '\'', '"', '%', '@', '`'];
     }
 }

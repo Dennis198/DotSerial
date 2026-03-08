@@ -20,6 +20,7 @@
 //SOFTWARE.
 #endregion
 
+using System.Numerics;
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
@@ -140,12 +141,35 @@ namespace DotSerial.Yaml.Parser
 
             StringBuilder keyBuilder = new();
 
-            int start = line.IndexOf(YamlConstants.KeyValueSeperator.ToString());
+            int start = -1;
+            for (int i = 0; i < line.Length; i++)
+            {
+                char c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = line.SkipStringValue(i);
+                }
+                else if (c == YamlConstants.KeyValueSeperator)
+                {
+                    start = i;
+                }
+                else
+                {
+                    i = line.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                }
+            }
 
             if (start == -1)
             {
                 throw new NotImplementedException();
             }
+
             // Skip seperator
             start++;
 
@@ -386,7 +410,29 @@ namespace DotSerial.Yaml.Parser
             }
 
             var firstLine = lines.GetLine(0);
-            int start = firstLine.IndexOf(YamlConstants.KeyValueSeperator.ToString());
+            int start = -1;
+            for (int i = 0; i < firstLine.Length; i++)
+            {
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);
+                }
+                else if (c == YamlConstants.KeyValueSeperator)
+                {
+                    start = i;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                }
+            }
 
             if (start == -1)
             {

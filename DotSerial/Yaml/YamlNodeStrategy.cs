@@ -15,7 +15,7 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -50,7 +50,7 @@ namespace DotSerial.Yaml
                 key = StringMethods.RemoveStartAndEndQuotes(key);
             }
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -59,6 +59,8 @@ namespace DotSerial.Yaml
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
+
+            key = key.UnescapeString(YamlConstants.CharsToEscape);
 
             // Create inner node
             if (type != NodeType.Leaf)
@@ -84,6 +86,8 @@ namespace DotSerial.Yaml
                 value = StringMethods.RemoveStartAndEndQuotes(value);
             }
 
+            value = value.UnescapeString(YamlConstants.CharsToEscape);
+
             if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
             {
                 throw new DotSerialException("NodeFactory: Invalid yaml value.");
@@ -95,7 +99,7 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         public bool AreQuotesNeededForValue(object? value, string? strValue)
         {
-                        if (null == value)
+            if (null == value)
                 return false;
 
             Type type = value.GetType();
@@ -115,7 +119,7 @@ namespace DotSerial.Yaml
 
             if (string.IsNullOrWhiteSpace(strValue))
             {
-                throw new NotImplementedException();
+                return true;
             }
 
             if (strValue.EqualsNullString())
@@ -144,9 +148,14 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         public bool AreQuotesNeededForKey(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new NotImplementedException();
+            }
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return true;
             }   
 
             if (key.HasLeadingOrTrailingWhitespaces())
