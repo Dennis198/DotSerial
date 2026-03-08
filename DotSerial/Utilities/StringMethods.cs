@@ -231,6 +231,121 @@ namespace DotSerial.Utilities
             }
         }
 
+        private static readonly Dictionary<char, string> _xmlEscapeCharDic = new ()
+        {
+            {'<', "&lt;"},
+            {'&', "&amp;"},
+            {'"', "&quot;"},
+            {'\'', "&apos;"},            
+            {'>', "&gt;"},            
+        };
+
+        internal static string XmlEscape(this string str)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (str.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            // Create array with max possible number of chars (&apos; => 6 chars)
+            char[] tmp = new char[str.Length * 6];
+            int index = 0;
+
+            for(int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+
+                if (_xmlEscapeCharDic.TryGetValue(c, out string? replaceString))
+                {
+                    for (int j = 0; j < replaceString.Length; j++)
+                    {
+                        tmp[index++] = replaceString[j];
+                    }
+                }
+                else
+                {
+                    tmp[index++] = c;
+                }
+            }
+
+            return new string(tmp, 0, index);
+        }
+
+        internal static string XmlUnEscape(this string str)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (str.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            char[] tmp = new char[str.Length];
+            int index = 0;
+
+            for(int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+
+                if (c == CommonConstants.AND && i + 3 < str.Length)
+                {
+                    if (str[i + 1] == 'l' && str[i + 2] == 't' && str[i + 3] == ';')
+                    {
+                        tmp[index++] = '<';   
+                        i+=3;
+                    }
+                    else if (str[i + 1] == 'g' && str[i + 2] == 't' && str[i + 3] == ';')
+                    {
+                        tmp[index++] = '>'; 
+                        i+=3;  
+                    }
+                    else if (i + 4 < str.Length)
+                    {
+                        if (str[i + 1] == 'a' && str[i + 2] == 'm' && str[i + 3] == 'p' && str[i + 4] == ';')
+                        {
+                            tmp[index++] = CommonConstants.AND;   
+                            i+=4;
+                        }
+                        else if (i + 5 < str.Length)
+                        {
+                            if (str[i + 1] == 'q' && str[i + 2] == 'u' && str[i + 3] == 'o' && str[i + 4] == 't' &&
+                                str[i + 5] == ';')
+                            {
+                                tmp[index++] = CommonConstants.Quote;  
+                                i+=5; 
+                            }
+                            else if (str[i + 1] == 'a' && str[i + 2] == 'p' && str[i + 3] == 'o' && str[i + 4] == 's' &&
+                                    str[i + 5] == ';')
+                            {
+                                tmp[index++] = '\'';   
+                                i+=5;
+                            }
+                            else
+                            {
+                                tmp[index++] = c;    
+                            }
+                        }
+                        else
+                        {
+                            tmp[index++] = c;    
+                        }
+                    }
+                    else
+                    {
+                        tmp[index++] = c;
+                    }
+                }
+                else
+                {
+                    tmp[index++] = c;
+                }
+            }
+
+            return new string(tmp, 0, index);             
+        }
+
         internal static string EscapeChars(this string str, char[] charsToEscape)
         {
             ArgumentNullException.ThrowIfNull(str);

@@ -148,7 +148,22 @@ namespace DotSerial.Tests.Xml
 
             // Assert
             Assert.Equal(tmp, result);         
-        }               
+        }             
+
+       [Fact]
+        public void PrimitiveSpecialChar()
+        {
+            // Arrange
+            string tmp = "{{}<><:;[[]-?!#!";
+            var node = DSXmlNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSXmlNode.ToObject<string>(toonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }           
 
         [Fact]
         public void List()
@@ -664,6 +679,38 @@ namespace DotSerial.Tests.Xml
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                
+        }      
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsKeys()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsKeys.CreateTestDefault();
+            var tmp = DSXmlNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSXmlNode.ToObject<ClassSpecialCharsKeys>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsValue()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsValue.CreateTestDefault();
+            var tmp = DSXmlNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSXmlNode.ToObject<ClassSpecialCharsValue>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                    
     }
 }

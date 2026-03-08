@@ -227,7 +227,6 @@ namespace DotSerial.Yaml.Writer
 
             if (false == string.IsNullOrWhiteSpace(key))
             {
-                // key = key.EscapeChars(YamlConstants.CharsToEscape);
                 AddObjectStart(sb, key, level, prefix);
                 sb.Append(" []");
             }

@@ -148,7 +148,22 @@ namespace DotSerial.Tests.Yaml
 
             // Assert
             Assert.Equal(tmp, result);         
-        }               
+        }        
+
+        [Fact]
+        public void PrimitiveSpecialChar()
+        {
+            // Arrange
+            string tmp = "{{}<><:;[[]-?!#!";
+            var node = DSYamlNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSYamlNode.ToObject<string>(toonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }                 
 
         [Fact]
         public void List()

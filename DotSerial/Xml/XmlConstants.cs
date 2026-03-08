@@ -20,6 +20,8 @@
 //SOFTWARE.
 #endregion
 
+using DotSerial.Common;
+
 namespace DotSerial.Xml
 {
     internal static class XmlConstants
@@ -64,5 +66,9 @@ namespace DotSerial.Xml
         /// Xml List Value display
         /// </summary>
         internal const string XmlListProp = "List";    
+        /// <summary>
+        /// Chars which must be escaped
+        /// </summary>
+        internal readonly static char[] CharsToEscape = [CommonConstants.Quote, CommonConstants.Backslash];                
     }
 }

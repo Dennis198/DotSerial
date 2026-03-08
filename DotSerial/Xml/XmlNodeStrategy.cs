@@ -10,11 +10,11 @@ namespace DotSerial.Xml
     /// Xml strategy for parsing and writing.
     /// </summary>
     internal class XmlNodeStrategy : INodeStrategy
-    {
+    {        
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -35,7 +35,6 @@ namespace DotSerial.Xml
                 return new LeafNode(key, null, false);
             }
 
-            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;            
             bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
@@ -50,7 +49,7 @@ namespace DotSerial.Xml
                 key = StringMethods.RemoveStartAndEndQuotes(key);
             }
 
-           if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -59,6 +58,8 @@ namespace DotSerial.Xml
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
+
+            key = key.XmlUnEscape();
 
             // Create inner node
             if (type != NodeType.Leaf)
@@ -84,32 +85,10 @@ namespace DotSerial.Xml
                 value = StringMethods.RemoveStartAndEndQuotes(value);
             }
 
-            // if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
-            // {
-            //     throw new DotSerialException("NodeFactory: Invalid toon value.");
-            // }
+            value = value.XmlUnEscape();
 
-            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
             return new LeafNode(key, value, needQuotes);
 
-            if (value.Equals("\"\""))
-            {
-                return new LeafNode(key, string.Empty, true);
-            }
-
-            if (value.Length == 0)
-            {
-                return new LeafNode(key, string.Empty, false);
-            }
-
-            if (value.EqualsNullString())
-            {
-                return new LeafNode(key, CommonConstants.Null, false);
-            }
-
-            // TODO <, >, & ersetzen mit &lt; &gt; &amp;
-
-            return new LeafNode(key, value, false);
         }
 
         /// <inheritdoc/>
@@ -132,8 +111,8 @@ namespace DotSerial.Xml
 
             Type type = value.GetType();
 
-            if (type == typeof(string) && strValue == string.Empty)
-                return true;
+            if (type == typeof(string) && string.IsNullOrWhiteSpace(strValue))
+                return true;        
             
             return false;
         }        

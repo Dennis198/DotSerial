@@ -132,7 +132,7 @@ namespace DotSerial.Tests.Toon
         public void PrimitiveSpecialChar()
         {
             // Arrange
-            string tmp = "{}<><:;[]-?!#!";
+            string tmp = "{{}<><:;[[]-?!#!";
             var node = DSToonNode.ToNode(tmp);
             string toonString = node.Stringify();
 

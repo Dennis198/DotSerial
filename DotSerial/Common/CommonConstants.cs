@@ -116,5 +116,9 @@ namespace DotSerial.Common
         /// False string
         /// </summary>
         internal const string FalseString = "false";
+        /// <summary>
+        /// False string
+        /// </summary>
+        internal const char AND = '&';
     }
 }

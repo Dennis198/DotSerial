@@ -148,6 +148,21 @@ namespace DotSerial.Tests.Json
 
             // Assert
             Assert.Equal(tmp, result);         
+        }          
+
+        [Fact]
+        public void PrimitiveSpecialChar()
+        {
+            // Arrange
+            string tmp = "{{}<><:;[[]-?!#!";
+            var node = DSJsonNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<string>(toonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
         }               
 
         [Fact]

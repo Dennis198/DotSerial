@@ -43,7 +43,7 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
@@ -57,6 +57,7 @@ namespace DotSerial.Xml.Writer
 
             if (null != value)
             {
+                value = value.XmlEscape();
                 if (needQuotes)
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
@@ -78,7 +79,7 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
@@ -113,7 +114,7 @@ namespace DotSerial.Xml.Writer
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null)
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
@@ -138,7 +139,7 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
@@ -173,7 +174,7 @@ namespace DotSerial.Xml.Writer
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null)
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
@@ -198,12 +199,13 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(tag);
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (name == null)
             {
                 sb.AppendFormat("<{0}>", tag);
             }
             else
             {
+                name = name.XmlEscape();
                 sb.AppendFormat("<{0} {1}=\"{2}\">", tag, XmlConstants.XmlAttributeKey, name);
             }            
         }
@@ -233,12 +235,13 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(tag);
             ArgumentNullException.ThrowIfNull(name);
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (name == null)
             {
                 sb.AppendFormat("<{0} />", tag);
             }
             else
             {
+                name = name.XmlEscape();
                 sb.AppendFormat("<{0} {1}=\"{2}\"/>", tag,XmlConstants.XmlAttributeKey, name);
             }
         }        

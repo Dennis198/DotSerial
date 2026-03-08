@@ -42,9 +42,8 @@ namespace DotSerial.Xml.Parser
         {
             // Remove xml declaration
             str = str.Replace(XmlConstants.XmlDeclaration, string.Empty);
-
-            // Remove not needed whitespaces
-            StringBuilder sb = XmlParserHelper.RemoveWhiteSpaceXmlString(str);
+            
+            StringBuilder sb = new(str);
 
             var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
 
