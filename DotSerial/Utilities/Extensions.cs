@@ -280,6 +280,11 @@ namespace DotSerial.Utilities
                 return true;
             }
 
+            if (input.Length > 1)
+            {
+                return false;
+            }
+
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
@@ -521,14 +526,29 @@ namespace DotSerial.Utilities
                 throw new NotImplementedException();
             }
 
+            bool isEscaped = false;
+
             for (int i = startIndex; i < sb.Length; i++)
             {
                 var c = sb[i];
                 
-                 if (c == stopChar)
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == stopChar)
                 {
                     return i - 1;
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             return sb.Length - 1;
@@ -558,14 +578,29 @@ namespace DotSerial.Utilities
                 throw new NotImplementedException();
             }
 
+            bool isEscaped = false;
+
             for (int i = startIndex; i < sb.Length; i++)
             {
                 var c = sb[i];
                 
-                if (stopChars.Contains(c))
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (stopChars.Contains(c))
                 {
                     return i - 1;
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             return sb.Length - 1;
@@ -596,17 +631,29 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(sb.ToString());
             }        
 
+            bool isEscaped = false;
+
             for (int j = startIndex + 1; j < sb.Length; j++)
             {
                 var c2 = sb[j];
-                if (c2 == '\\')
+
+                if (isEscaped)
                 {
-                    j++;
+                    isEscaped = false;
+                }
+                else if (c2 == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
                 }
                 else if (c2 == CommonConstants.Quote)
                 {
                     return j;
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             throw new ArgumentException("No closing quote found.");
@@ -639,12 +686,21 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(sb.ToString());
             }   
 
+            bool isEscaped = false;
             int numOpen = 0;
 
             for (int i = startIndex + 1; i < sb.Length; i++)
             {
                 var c = sb[i];
-                if (c == closeChar)
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == closeChar)
                 {
                     if (numOpen == 0)
                     {
@@ -658,7 +714,12 @@ namespace DotSerial.Utilities
                 else if (c == openChar)
                 {
                     numOpen++;
-                }
+                }                            
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             throw new ArgumentException("No closing character found.");

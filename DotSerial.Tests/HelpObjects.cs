@@ -2148,7 +2148,263 @@ namespace DotSerial.Tests
 
             return true;
         }
-    }           
+    }  
+
+    public class ClassSpecialCharsKeys : ITestable<ClassSpecialCharsKeys>
+    {        
+        public int Value { get; set; }
+        [DotSerialName("1234")]
+        public int KeyAsInt { get; set; }
+        [DotSerialName("12.34")]
+        public int KeyAsDouble { get; set; }
+        [DotSerialName("-1234")]
+        public int KeyAsIntNegative { get; set; }
+        [DotSerialName("-12.34")]
+        public int KeyAsDoubleNegative { get; set; }
+        [DotSerialName("true")]
+        public int KeyAsTrue { get; set; }
+        [DotSerialName("false")]
+        public int KeyAsFalse { get; set; }
+        [DotSerialName("null")]
+        public int KeyAsNull { get; set; } 
+        [DotSerialName("Hello World")]
+        public int KeyWithWhiteSpaceMiddle { get; set; }        
+        [DotSerialName(" HelloWorld")]
+        public int KeyWithWhiteSpaceStart { get; set; }        
+        [DotSerialName("HelloWorld ")]
+        public int KeyWithWhiteSpaceEnd { get; set; }        
+        [DotSerialName(" HelloWorld ")]
+        public int KeyWithWhiteSpaceStartEnd { get; set; }      
+        [DotSerialName("[{;,!? \\§$%&'\"|-.}]")]
+        public int KeyWithSpecialChars1 { get; set; }   
+        [DotSerialName(";,.-'!")]
+        public int KeyWithSpecialChars2 { get; set; }   
+        [DotSerialName("<><:;-?!#!")]
+        public int KeyWithSpecialChars3 { get; set; }   
+        [DotSerialName("{}<><:;-?!#!")]
+        public int KeyWithSpecialChars4{ get; set; }          
+        [DotSerialName("   ")]
+        public int KeyWithOnlyWhiteSpaces { get; set; }   
+        [DotSerialName("[ \"\\[]")]
+        public string[]? Array { get; set; } 
+        [DotSerialName("{}<><:;[]-?!#!")]
+        public Dictionary<string, string>? Dictionary { get; set; } 
+
+        public static ClassSpecialCharsKeys CreateTestDefault()
+        {
+            var tmp = new ClassSpecialCharsKeys
+            {
+                Value = 55,
+                KeyAsInt = 1,
+                KeyAsDouble = 2,
+                KeyAsIntNegative = 3,
+                KeyAsDoubleNegative = 4,
+                KeyAsTrue = 5,
+                KeyAsFalse = 6,
+                KeyAsNull = 7,
+                KeyWithWhiteSpaceMiddle = 8,
+                KeyWithWhiteSpaceStart = 9,
+                KeyWithWhiteSpaceEnd = 10,
+                KeyWithWhiteSpaceStartEnd = 11,
+                KeyWithSpecialChars1 = 12,
+                KeyWithSpecialChars2 = 13,
+                KeyWithSpecialChars3 = 14,
+                KeyWithSpecialChars4 = 15,
+                KeyWithOnlyWhiteSpaces = 16,
+                Array = ["[{;,! \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
+                Dictionary = []
+            };
+
+            tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
+            tmp.Dictionary.Add("   ", ";,.-'!");
+            tmp.Dictionary.Add("[ \"\\[]", "[ \"\\[]");
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSpecialCharsKeys actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+            if (expected.KeyAsInt != actual.KeyAsInt)
+                return false;
+            if (expected.KeyAsDouble != actual.KeyAsDouble)
+                return false;
+            if (expected.KeyAsIntNegative != actual.KeyAsIntNegative)
+                return false;
+            if (expected.KeyAsDoubleNegative != actual.KeyAsDoubleNegative)
+                return false;
+            if (expected.KeyAsTrue != actual.KeyAsTrue)
+                return false;
+            if (expected.KeyAsFalse != actual.KeyAsFalse)
+                return false;
+            if (expected.KeyAsNull != actual.KeyAsNull)
+                return false;
+            if (expected.KeyWithWhiteSpaceMiddle != actual.KeyWithWhiteSpaceMiddle)
+                return false;
+            if (expected.KeyWithWhiteSpaceStart != actual.KeyWithWhiteSpaceStart)
+                return false;
+            if (expected.KeyWithWhiteSpaceEnd != actual.KeyWithWhiteSpaceEnd)
+                return false;
+            if (expected.KeyWithWhiteSpaceStartEnd != actual.KeyWithWhiteSpaceStartEnd)
+                return false;
+            if (expected.KeyWithSpecialChars1 != actual.KeyWithSpecialChars1)
+                return false;
+            if (expected.KeyWithSpecialChars2 != actual.KeyWithSpecialChars2)
+                return false;
+            if (expected.KeyWithSpecialChars3 != actual.KeyWithSpecialChars3)
+                return false;    
+            if (expected.KeyWithOnlyWhiteSpaces != actual.KeyWithOnlyWhiteSpaces)
+                return false;     
+            if (expected.Array.Length != actual.Array.Length)
+                return false;
+            for (int i = 0; i < expected.Array.Length; i++)
+            {
+                if (!expected.Array[i].Equals(actual.Array[i]))
+                    return false;
+            }
+            if (expected.Dictionary.Count != actual.Dictionary.Count)
+                return false;
+            foreach(var keyValue in expected.Dictionary)
+            {
+                if (actual.Dictionary.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }              
+
+            return true;
+        }
+    }   
+
+    public class ClassSpecialCharsValue : ITestable<ClassSpecialCharsValue>
+    {
+        public int Value { get; set; }
+        public string? StringAsInt { get; set; }
+        public string? StringAsDouble { get; set; }
+        public string? StringAsIntNegative { get; set; }
+        public string? StringAsDoubleNegative { get; set; }
+        public string? StringAsTrue { get; set; }
+        public string? StringAsFalse { get; set; }
+        public string? StringAsNull { get; set; }
+        public string? StringAsEmpty { get; set; }
+        public string? StringWithWhiteSpaceMiddle { get; set; }
+        public string? StringWithWhiteSpaceStart { get; set; }
+        public string? StringWithWhiteSpaceEnd { get; set; }
+        public string? StringWithWhiteSpaceStartEnd { get; set; }
+        public string? SpecialChars1 { get; set; }
+        public string? SpecialChars2 { get; set; }
+        public string? SpecialChars3 { get; set; }
+        public string? SpecialChars4 { get; set; }
+        public string? StringWithOnlyWhiteSpaces { get; set; }
+        public string[]? Array { get; set; } 
+        public Dictionary<string, string>? Dictionary { get; set; } 
+
+        public static ClassSpecialCharsValue CreateTestDefault()
+        {
+            var tmp = new ClassSpecialCharsValue
+            {
+                Value = 55,
+                StringAsInt = "1234",
+                StringAsDouble = "12.34",
+                StringAsIntNegative = "-1234",
+                StringAsDoubleNegative = "-12.34",
+                StringAsTrue = "true",
+                StringAsFalse = "false",
+                StringAsNull = "null",
+                StringAsEmpty = string.Empty,
+                StringWithWhiteSpaceMiddle = "Hello  World",
+                StringWithWhiteSpaceStart = " HelloWorld",
+                StringWithWhiteSpaceEnd = "HelloWorld ",
+                StringWithWhiteSpaceStartEnd = " HelloWorld ",
+                SpecialChars1 = "[{;,!? \\§$%&'\"|-.}]",
+                SpecialChars2 = ";,.-'!",
+                SpecialChars3 = "<><:;-?!#!",
+                SpecialChars4 = "{}<><:;-?!#!",
+                StringWithOnlyWhiteSpaces = "   ",
+                Array = ["[{;,!? \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
+                Dictionary = [],
+            };
+
+            tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
+            tmp.Dictionary.Add("   ", ";,.-'!");
+            tmp.Dictionary.Add("[ \"\\[]", "[ \"\\[]");
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSpecialCharsValue actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+            if (!expected.StringAsInt.Equals(actual.StringAsInt))
+                return false;    
+            if (!expected.StringAsDouble.Equals(actual.StringAsDouble))
+                return false;    
+            if (!expected.StringAsIntNegative.Equals(actual.StringAsIntNegative))
+                return false;    
+            if (!expected.StringAsDoubleNegative.Equals(actual.StringAsDoubleNegative))
+                return false;                 
+            if (!expected.StringAsTrue.Equals(actual.StringAsTrue))
+                return false;    
+            if (!expected.StringAsFalse.Equals(actual.StringAsFalse))
+                return false;    
+            if (!expected.StringAsNull.Equals(actual.StringAsNull))
+                return false;                 
+            if (!expected.StringAsEmpty.Equals(actual.StringAsEmpty))
+                return false;    
+            if (!expected.StringWithWhiteSpaceMiddle.Equals(actual.StringWithWhiteSpaceMiddle))
+                return false;    
+            if (!expected.StringWithWhiteSpaceStart.Equals(actual.StringWithWhiteSpaceStart))
+                return false;    
+            if (!expected.StringWithWhiteSpaceEnd.Equals(actual.StringWithWhiteSpaceEnd))
+                return false;    
+            if (!expected.StringWithWhiteSpaceStartEnd.Equals(actual.StringWithWhiteSpaceStartEnd))
+                return false;    
+            if (!expected.SpecialChars1.Equals(actual.SpecialChars1))
+                return false;    
+            if (!expected.SpecialChars2.Equals(actual.SpecialChars2))
+                return false;    
+            if (!expected.SpecialChars3.Equals(actual.SpecialChars3))
+                return false;    
+            if (!expected.SpecialChars4.Equals(actual.SpecialChars4))
+                return false;                
+            if (!expected.StringWithOnlyWhiteSpaces.Equals(actual.StringWithOnlyWhiteSpaces))
+                return false;  
+            if (expected.Array.Length != actual.Array.Length)
+                return false;
+            for (int i = 0; i < expected.Array.Length; i++)
+            {
+                if (!expected.Array[i].Equals(actual.Array[i]))
+                    return false;
+            }         
+            if (expected.Dictionary.Count != actual.Dictionary.Count)
+                return false;
+            foreach(var keyValue in expected.Dictionary)
+            {
+                if (actual.Dictionary.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }         
+
+            return true;
+        }
+    }                
 
     #region Helper Class, Enum, Struct, ...
 

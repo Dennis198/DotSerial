@@ -64,10 +64,10 @@ namespace DotSerial.Attributes
                 {
                     string result = saveAtt.Name;
 
-                    if (string.IsNullOrWhiteSpace(result))
+                    if (result.Length == 0)
                     {
                         throw new DotSerialException($"{nameof(DotSerialNameAttribute)} can't be null.");
-                    } 
+                    }
 
                     return result;
                 }

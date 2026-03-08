@@ -664,7 +664,39 @@ namespace DotSerial.Tests.Json
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }                                                                                                                                   
+        }    
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsKeys()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsKeys.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassSpecialCharsKeys>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsValue()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsValue.CreateTestDefault();
+            var tmp = DSJsonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSJsonNode.ToObject<ClassSpecialCharsValue>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                                                                                                                                                 
      
     }
 }

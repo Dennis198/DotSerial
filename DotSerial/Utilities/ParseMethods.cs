@@ -60,16 +60,22 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(str.ToString());
             }
 
+            bool isEscaped = false;
             sb.Append(CommonConstants.Quote);
 
             for (int j = startIndex + 1; j < str.Length; j++)
             {
                 var c2 = str[j];
-                if (c2 == '\\')
+
+                if (isEscaped)
                 {
                     sb.Append(c2);
-                    sb.Append(str[j + 1]);
-                    j++;
+                    isEscaped = false;
+                }
+                else if (c2 == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c2);
                 }
                 else if (c2 == CommonConstants.Quote)
                 {
@@ -82,7 +88,7 @@ namespace DotSerial.Utilities
                 }
             }
 
-            return str.Length - 1;
+            throw new DotSerialException("Parse: Escapable char is not escaped.");
         }      
 
         internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char? stopChar)
@@ -104,17 +110,37 @@ namespace DotSerial.Utilities
             {
                 throw new IndexOutOfRangeException();
             }
-            
+
+            bool isEscaped = false;
             sb.Append(str[startIndex]);
+
             for (int i = startIndex + 1; i < str.Length; i++)
             {
                 var c = str[i];
-                
-                if (c == stopChar)
+
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (c == stopChar)
                 {
                     return i - 1;
                 }
-                sb.Append(c);
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
             }
 
             return str.Length - 1;
@@ -139,17 +165,37 @@ namespace DotSerial.Utilities
             {
                 throw new IndexOutOfRangeException();
             }
-            
+
+            bool isEscaped = false;
             sb.Append(str[startIndex]);
+
             for (int i = startIndex + 1; i < str.Length; i++)
             {
                 var c = str[i];
                 
-                if (stopChars.Contains(c))
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (stopChars.Contains(c))
                 {
                     return i - 1;
                 }
-                sb.Append(c);
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
             }
 
             return str.Length - 1;
@@ -184,6 +230,7 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(str.ToString());
             }
 
+            bool isEscaped = false;
             sb.Append(openChar);
 
             int numOpen = 0;
@@ -192,7 +239,17 @@ namespace DotSerial.Utilities
             {
                 var c = str[i];
 
-                if (c == closeChar)
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (c == closeChar)
                 {
                     if (numOpen == 0)
                     {
@@ -214,6 +271,11 @@ namespace DotSerial.Utilities
                 {
                     sb.Append(c);
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
             }
 
             return str.Length - 1;

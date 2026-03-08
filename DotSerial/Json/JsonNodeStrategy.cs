@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
@@ -15,7 +16,7 @@ namespace DotSerial.Json
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -50,7 +51,7 @@ namespace DotSerial.Json
                 key = StringMethods.RemoveStartAndEndQuotes(key);
             }
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -59,6 +60,8 @@ namespace DotSerial.Json
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
+
+            key = key.UnescapeString(JsonConstants.CharsToEscape);
 
             // Create inner node
             if (type != NodeType.Leaf)
@@ -83,6 +86,8 @@ namespace DotSerial.Json
                 needQuotes = true;
                 value = StringMethods.RemoveStartAndEndQuotes(value);
             }
+
+            value = value.UnescapeString(JsonConstants.CharsToEscape);
 
             if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
             {

@@ -42,14 +42,26 @@ namespace DotSerial.Json.Parser
             ArgumentNullException.ThrowIfNull(sb);
 
             var result = new Dictionary<string, StringBuilder?>();
+            bool startObjectSymbolFound = false;
             bool keyFound = false;
-            string foundKey = string.Empty;
+            string foundKey = string.Empty;            
 
             for (int i = 0; i < sb.Length; i++)
             {
                 char c = sb[i];
 
+                if (c == JsonConstants.ObjectStart && false == startObjectSymbolFound)
+                {
+                    startObjectSymbolFound = true;
+                    continue;
+                }
+
                 if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
+                {
+                    continue;
+                }
+
+                if (false == startObjectSymbolFound)
                 {
                     continue;
                 }
@@ -294,9 +306,48 @@ namespace DotSerial.Json.Parser
             }
 
             objContent = new StringBuilder();
-            int endIndex = ParseMethods.AppendEnclosingValue(objContent, startIndex, sb, JsonConstants.ObjectStart, JsonConstants.ObjectEnd);
+            objContent.Append(JsonConstants.ObjectStart);
+            int i;
+            for (i = startIndex + 1; i < sb.Length; i++)
+            {
+                char c = sb[i];
 
-            return endIndex;
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    StringBuilder sb2 = new();
+                    i = ParseMethods.AppendStringValue(sb2, i, sb);
+
+                    objContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ListStart)
+                {
+                    i = ExtractJsonList(sb, i, out StringBuilder sb2);
+
+                    objContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ObjectStart)
+                {
+                    i = ExtractJsonObject(sb, i, out StringBuilder sb2);
+
+                    objContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ObjectEnd)
+                {
+                    objContent.Append(c);
+                    break;
+                }
+                else 
+                {
+                    objContent.Append(c);
+                }
+            }
+
+            return i;
         }    
 
         /// <summary>
@@ -318,9 +369,48 @@ namespace DotSerial.Json.Parser
             }
 
             listContent = new StringBuilder();
-            int endIndex = ParseMethods.AppendEnclosingValue(listContent, startIndex, sb, JsonConstants.ListStart, JsonConstants.ListEnd);
+            listContent.Append(JsonConstants.ListStart);
+            int i;
+            for (i = startIndex + 1; i < sb.Length; i++)
+            {
+                char c = sb[i];
 
-            return endIndex;
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    StringBuilder sb2 = new();
+                    i = ParseMethods.AppendStringValue(sb2, i, sb);
+
+                    listContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ListStart)
+                {
+                    i = ExtractJsonList(sb, i, out StringBuilder sb2);
+
+                    listContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ObjectStart)
+                {
+                    i = ExtractJsonObject(sb, i, out StringBuilder sb2);
+
+                    listContent.Append(sb2);
+                }
+                else if (c == JsonConstants.ListEnd)
+                {
+                    listContent.Append(c);
+                    break;
+                }
+                else 
+                {
+                    listContent.Append(c);
+                }
+            }
+
+            return i;
         }            
     }
 }

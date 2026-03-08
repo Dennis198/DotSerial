@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
@@ -228,6 +229,87 @@ namespace DotSerial.Utilities
             {
                 return false;
             }
+        }
+
+        internal static string EscapeChars(this string str, char[] charsToEscape)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (null == charsToEscape || charsToEscape.Length == 0)
+            {
+                return str;
+            }
+
+            if (str.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            // Create array with max possible number of chars
+            char[] tmp = new char[str.Length * 2];
+            int index = 0;
+
+            for(int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+
+                if (charsToEscape.Contains(c))
+                {
+                    tmp[index++] = CommonConstants.Backslash;
+                    tmp[index++] = c;
+                }
+                else
+                {
+                    tmp[index++] = c;
+                }
+            }
+
+            return new string(tmp, 0, index);
+        }
+
+        internal static string UnescapeString(this string str, char[] charsToEscape)
+        {
+            ArgumentNullException.ThrowIfNull(str);
+
+            if (null == charsToEscape || charsToEscape.Length == 0)
+            {
+                return str;
+            }
+
+            if (str.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            char[] tmp = new char[str.Length];
+            int index = 0;
+
+            for(int i = 0; i < str.Length; i++)
+            {
+                char c = str[i];
+
+                if (c == CommonConstants.Backslash && i + 1 < str.Length)
+                {                    
+                    char escapedChar = str[i + 1];
+                    if (charsToEscape.Contains(escapedChar))
+                    {
+                        tmp[index++] = escapedChar;
+
+                        // Skip Escaped char in next iteration
+                        i++;
+                    }
+                    else
+                    {
+                        tmp[index++] = c;
+                    }
+                }
+                else
+                {
+                    tmp[index++] = c;
+                }
+            }
+
+            return new string(tmp, 0, index);            
         }
 
 #endregion

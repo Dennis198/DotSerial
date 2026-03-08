@@ -51,6 +51,10 @@ namespace DotSerial.Json
         /// </summary>
         internal const char KeyValueSeperator = ':';
         /// <summary>
+        /// Chars which must be escaped
+        /// </summary>
+        internal readonly static char[] CharsToEscape = [CommonConstants.Quote, CommonConstants.Backslash];
+        /// <summary>
         /// Chars that indicate the end of a value when parsing a json string. This is used to determine where a value ends when parsing without quotes.
         /// </summary>
         internal readonly static char[] ParseStopChars = [ObjectStart, ObjectEnd, ListStart, ListEnd, CommonConstants.Comma, KeyValueSeperator];
