@@ -20,7 +20,6 @@
 //SOFTWARE.
 #endregion
 
-using System.Numerics;
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;

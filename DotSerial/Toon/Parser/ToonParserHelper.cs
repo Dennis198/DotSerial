@@ -198,11 +198,11 @@ namespace DotSerial.Toon.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
-            bool keyWasFound = false;
-
+            int start = -1;
             for (int i = 0; i < line.Length; i++)
             {
-                var c = line[i];
+                char c = line[i];
+
                 if (char.IsWhiteSpace(c))
                 {
                     continue;
@@ -210,38 +210,46 @@ namespace DotSerial.Toon.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipStringValue(i);
-                        keyWasFound = true;
-                    }
+                    i = line.SkipStringValue(i);
                 }
                 else if (c == ToonConstants.KeyValueSeperator)
                 {
-                    if (!keyWasFound)
-                    {
-                        throw new DSToonException("Invalid toon");
-                    }
+                    start = i;
                 }
                 else
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
-                        keyWasFound = true;
-                    }
+                    i = line.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
                 }
             }
+
+            if (start == -1)
+            {
+                throw new NotImplementedException();
+            }
+
+            // Skip seperator
+            start++;
+
+            for (int i = start; i < line.Length; i++)
+            {
+                var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                   _ = ParseMethods.AppendStringValue(keyBuilder, i, line);                    
+                    return keyBuilder.ToString();
+                }
+                else
+                {
+                   _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
+                   return keyBuilder.ToString();
+                }
+            }            
 
             throw new NotImplementedException();
         }    
@@ -373,47 +381,59 @@ namespace DotSerial.Toon.Parser
             }
 
             var firstLine = lines.GetLine(0);
-            bool keyWasFound = false;
+            int start = -1;
+            for (int i = 0; i < firstLine.Length; i++)
+            {
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);
+                }
+                else if (c == ToonConstants.KeyValueSeperator)
+                {
+                    start = i;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
+                }
+            }
+
             bool valueWasFound =  false;
 
-            for (int i = 0; i < firstLine.Length; i++)
+            for (int i = start; i < firstLine.Length; i++)
             {
                 var c = firstLine[i];
 
                 if (char.IsWhiteSpace(c))
                 {
                     continue;
-                }            
+                }
+
+                if (valueWasFound)
+                {
+                    throw new NotImplementedException();
+                }                
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipStringValue(i);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipStringValue(i);   
-                        keyWasFound = true;
-                    }
+                    i = firstLine.SkipStringValue(i);                        
+                    valueWasFound = true;
                 }
                 else
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipTillStopChar(i, null);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);   
-                        keyWasFound = true;
-                    }
+                    i= firstLine.SkipTillStopChar(i, null);
+                    valueWasFound = true;
                 }
-            }
+            }            
 
-            return keyWasFound && valueWasFound;
+            return valueWasFound;
         }        
 
         /// <summary>

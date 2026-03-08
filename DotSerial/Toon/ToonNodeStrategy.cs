@@ -14,7 +14,7 @@ namespace DotSerial.Toon
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -49,7 +49,7 @@ namespace DotSerial.Toon
                 key = StringMethods.RemoveStartAndEndQuotes(key);
             }
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
@@ -58,6 +58,8 @@ namespace DotSerial.Toon
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
+
+            key = key.UnescapeString(ToonConstants.CharsToEscape);
 
             // Create inner node
             if (type != NodeType.Leaf)
@@ -82,6 +84,8 @@ namespace DotSerial.Toon
                 needQuotes = true;
                 value = StringMethods.RemoveStartAndEndQuotes(value);
             }
+
+            value = value.UnescapeString(ToonConstants.CharsToEscape);
 
             if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
             {
@@ -114,7 +118,7 @@ namespace DotSerial.Toon
 
             if (string.IsNullOrWhiteSpace(strValue))
             {
-                throw new NotImplementedException();
+                return true;
             }
 
             if (strValue.EqualsNullString())
@@ -137,10 +141,15 @@ namespace DotSerial.Toon
         /// <inheritdoc/>
         public bool AreQuotesNeededForKey(string key)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (key == null || key.Length == 0)
             {
                 throw new NotImplementedException();
-            }   
+            }
+
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                return true;
+            }  
 
             if (key.HasLeadingOrTrailingWhitespaces())
             {

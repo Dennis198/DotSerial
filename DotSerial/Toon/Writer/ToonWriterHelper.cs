@@ -28,9 +28,9 @@ namespace DotSerial.Toon.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             // Make sure key:value has its own line.
@@ -43,6 +43,7 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
@@ -56,6 +57,7 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
+                value = value.EscapeChars(ToonConstants.CharsToEscape);
                 if (needQuotes)
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
@@ -92,6 +94,7 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
+                value = value.EscapeChars(ToonConstants.CharsToEscape);
                 if (needQuotes)
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
@@ -112,14 +115,14 @@ namespace DotSerial.Toon.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
-
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
@@ -150,15 +153,16 @@ namespace DotSerial.Toon.Writer
 
             string key = lNode.Key;
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             key = addKey ? key : string.Empty;
 
             int count = lNode.GetChildren().Count;
 
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
             if (key != string.Empty && _nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
@@ -220,6 +224,7 @@ namespace DotSerial.Toon.Writer
                     }
                     else
                     {
+                        value = value.EscapeChars(ToonConstants.CharsToEscape);
                         if (chilChild.IsQuoted)
                         {
                             value = StringMethods.AddStartAndEndQuotes(value);
@@ -257,6 +262,7 @@ namespace DotSerial.Toon.Writer
                 }
                 else
                 {
+                    val = val.EscapeChars(ToonConstants.CharsToEscape);
                     if (child.IsQuoted)
                     {
                         val = StringMethods.AddStartAndEndQuotes(val);
@@ -317,7 +323,6 @@ namespace DotSerial.Toon.Writer
 
             foreach(var child in children)
             {
-
                 if (child is InnerNode)
                 {
                      var childChidlren = child.GetChildren();
@@ -356,6 +361,7 @@ namespace DotSerial.Toon.Writer
 
             for (int i = 0; i < keysTmp.Count; i++)
             {
+                keysTmp[i] = keysTmp[i].EscapeChars(ToonConstants.CharsToEscape);
                 if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, keysTmp[i]))
                 {
                     keys += CommonConstants.Quote + keysTmp[i] + CommonConstants.Quote + CommonConstants.Comma;
