@@ -23,7 +23,7 @@ namespace DotSerial.Tree.Creation
         /// <summary>
         /// Private constructor
         /// </summary>
-        private NodeFactory() 
+        private NodeFactory()
         {
             //  TODO Auslagern, in diespeareten Ornder json, xml, ..
             // Initialize strategies
@@ -99,7 +99,7 @@ namespace DotSerial.Tree.Creation
 
             if (node is InnerNode wrapper)
             {
-                switch(targetType)
+                switch (targetType)
                 {
                     case NodeType.ListNode:
                     {
@@ -117,6 +117,6 @@ namespace DotSerial.Tree.Creation
             {
                 throw new DotSerialException("NodeFactory: Wrapped node must be an inner node.");
             }
-        }        
+        }
     }
 }

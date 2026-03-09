@@ -55,7 +55,7 @@ namespace DotSerial.Attributes
             }
 
             return null;
-        }       
+        }
 
         /// <summary>
         /// Check if the property should be ignored.
@@ -74,7 +74,6 @@ namespace DotSerial.Attributes
             }
 
             return false;
-        } 
-
+        }
     }
 }

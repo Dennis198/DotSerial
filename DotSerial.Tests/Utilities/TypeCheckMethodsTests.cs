@@ -481,7 +481,7 @@ namespace DotSerial.Tests.Utilities
         public void IsDictionary_HashSet_False()
         {
             // Arrange
-           HashSet<int> tmp = [];
+            HashSet<int> tmp = [];
 
             // Act
             bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
@@ -826,7 +826,6 @@ namespace DotSerial.Tests.Utilities
             // Assert
             Assert.False(result);
         }
-
 
         [Fact]
         public void IsSpecialParsableObject_Class_False()

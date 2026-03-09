@@ -1,8 +1,7 @@
 using System.Text;
-
 using DotSerial.Common;
-using DotSerial.Utilities;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Json.Writer
 {
@@ -26,7 +25,7 @@ namespace DotSerial.Json.Writer
             sb = sb.TrimStartAndEnd();
 
             return sb.ToString();
-        } 
+        }
 
         /// <summary>
         /// Writer for json
@@ -35,19 +34,24 @@ namespace DotSerial.Json.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, JsonWriterVisitor visitor, StringBuilder sb, JsonWriterOptions options)
+        private static void WriterAccept(
+            IDSNode node,
+            JsonWriterVisitor visitor,
+            StringBuilder sb,
+            JsonWriterOptions options
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, sb, options);    
+                visitor.VisitLeafNode(leafNode, sb, options);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, sb, options);    
+                visitor.VisitInnerNode(innerNode, sb, options);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, sb, options);    
+                visitor.VisitListNode(listNode, sb, options);
             }
             else if (node is DictionaryNode dicNode)
             {
@@ -56,8 +60,8 @@ namespace DotSerial.Json.Writer
             else
             {
                 throw new NotImplementedException();
-            }            
-        }            
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, JsonWriterOptions options)
@@ -66,14 +70,14 @@ namespace DotSerial.Json.Writer
             ArgumentNullException.ThrowIfNull(sb);
 
             int level = options.Level;
-            
+
             string? value = node.GetValue();
             bool needQuotes = node.IsQuoted;
-            
+
             if (options.AddKey)
             {
                 string key = node.Key;
-                JsonWriterHelper.AddKeyValuePair(sb, key, value, level, needQuotes);    
+                JsonWriterHelper.AddKeyValuePair(sb, key, value, level, needQuotes);
             }
             else
             {
@@ -93,7 +97,7 @@ namespace DotSerial.Json.Writer
             {
                 if (options.AddKey)
                 {
-                    JsonWriterHelper.AddObjectStart(sb, node.Key, level);    
+                    JsonWriterHelper.AddObjectStart(sb, node.Key, level);
                 }
                 else
                 {
@@ -101,9 +105,9 @@ namespace DotSerial.Json.Writer
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ObjectStart);
                 }
-                
+
                 var children = node.GetChildren();
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new JsonWriterOptions(level + 1));
                 }
@@ -124,7 +128,7 @@ namespace DotSerial.Json.Writer
                 {
                     // Empty node
                     JsonWriterHelper.AddEmptyObject(sb, level);
-                }                
+                }
             }
         }
 
@@ -165,7 +169,6 @@ namespace DotSerial.Json.Writer
                     WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                     sb.Append(JsonConstants.ListEnd);
                     sb.Append(CommonConstants.Comma);
-
                 }
                 else
                 {
@@ -186,7 +189,7 @@ namespace DotSerial.Json.Writer
                 {
                     // Empty node
                     JsonWriterHelper.AddEmptyList(sb, level);
-                }                
+                }
             }
         }
 
@@ -195,7 +198,7 @@ namespace DotSerial.Json.Writer
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(sb);
-            
+
             int level = options.Level;
 
             if (node.HasChildren())
@@ -203,7 +206,7 @@ namespace DotSerial.Json.Writer
                 var children = node.GetChildren();
                 if (options.AddKey)
                 {
-                    JsonWriterHelper.AddObjectStart(sb, node.Key.ToString(), level);    
+                    JsonWriterHelper.AddObjectStart(sb, node.Key.ToString(), level);
                 }
                 else
                 {
@@ -211,7 +214,7 @@ namespace DotSerial.Json.Writer
                     sb.Append(JsonConstants.ObjectStart);
                 }
 
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new JsonWriterOptions(level + 1));
                 }
@@ -219,7 +222,7 @@ namespace DotSerial.Json.Writer
                 // Remove last ','
                 sb.Remove(sb.Length - 1, 1);
 
-                JsonWriterHelper.AddObjectEnd(sb, level); 
+                JsonWriterHelper.AddObjectEnd(sb, level);
             }
             else
             {
@@ -235,6 +238,5 @@ namespace DotSerial.Json.Writer
                 }
             }
         }
-
     }
 }

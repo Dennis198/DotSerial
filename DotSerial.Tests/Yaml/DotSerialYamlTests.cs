@@ -5,7 +5,6 @@ namespace DotSerial.Tests.Yaml
 {
     public class DotSerialYamlTests
     {
-
         [Fact]
         public void Save_True()
         {
@@ -36,8 +35,8 @@ namespace DotSerial.Tests.Yaml
             PrimitiveClass? tmp = null;
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
-            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
-            path = Path.Combine(path,string.Format("Resources{0}YamlTest.yml", Path.DirectorySeparatorChar));
+            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar)));
+            path = Path.Combine(path, string.Format("Resources{0}YamlTest.yml", Path.DirectorySeparatorChar));
 
             try
             {
@@ -65,8 +64,8 @@ namespace DotSerial.Tests.Yaml
             var result = DotSerialYaml.Deserialize<double>(yamlDocument);
 
             // Assert
-            Assert.Equal(tmp, result); 
-        }    
+            Assert.Equal(tmp, result);
+        }
 
         [Fact]
         public void CreateSerializedObject_Primitive_Null()
@@ -79,8 +78,8 @@ namespace DotSerial.Tests.Yaml
             var result = DotSerialYaml.Deserialize<string?>(yamlDocument);
 
             // Assert
-            Assert.Null(result); 
-        }     
+            Assert.Null(result);
+        }
 
         [Fact]
         public void List()
@@ -98,7 +97,7 @@ namespace DotSerial.Tests.Yaml
             Assert.Equal(tmp[0], result[0]);
             Assert.Equal(tmp[1], result[1]);
             Assert.Equal(tmp[2], result[2]);
-            Assert.Equal(tmp[3], result[3]);            
+            Assert.Equal(tmp[3], result[3]);
         }
 
         [Fact]
@@ -112,8 +111,8 @@ namespace DotSerial.Tests.Yaml
             var result = DotSerialYaml.Deserialize<double[]>(yamlDocument);
 
             // Assert
-            Assert.Null(result);           
-        }    
+            Assert.Null(result);
+        }
 
         [Fact]
         public void Dictionary()
@@ -132,8 +131,8 @@ namespace DotSerial.Tests.Yaml
             Assert.NotEmpty(result);
             Assert.Equal(tmp.Count, result.Count);
             Assert.Equal(tmp["test1"], result["test1"]);
-            Assert.Equal(tmp["test2"], result["test2"]);            
-        }     
+            Assert.Equal(tmp["test2"], result["test2"]);
+        }
 
         [Fact]
         public void Dictionary_Null()
@@ -146,8 +145,8 @@ namespace DotSerial.Tests.Yaml
             var result = DotSerialYaml.Deserialize<Dictionary<string, double>?>(yamlDocument);
 
             // Assert
-            Assert.Null(result);              
-        }           
+            Assert.Null(result);
+        }
 
         [Fact]
         public void CreateSerializedObject_EmptyClass()
@@ -183,7 +182,6 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
-
 
             // Act
             var yamlDocument = DotSerialYaml.Serialize(tmp);
@@ -289,11 +287,7 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var tmp2 = PrimitiveClass.CreateTestDefault();
-            var tmp = new NestedClass
-            {
-                Boolean = true,
-                PrimitiveClass = tmp2
-            };
+            var tmp = new NestedClass { Boolean = true, PrimitiveClass = tmp2 };
 
             // Act
             var yamlDocument = DotSerialYaml.Serialize(tmp);
@@ -327,18 +321,14 @@ namespace DotSerial.Tests.Yaml
                 Short = 12,
                 UShort = 13,
                 String = "HelloWorld",
-                Enum = TestEnum.Second
+                Enum = TestEnum.Second,
             };
-            var tmp2 = new NestedClass
-            {
-                Boolean = true,
-                PrimitiveClass = tmp3
-            };
+            var tmp2 = new NestedClass { Boolean = true, PrimitiveClass = tmp3 };
             var tmp = new NestedNestedClass
             {
                 NestedClass = tmp2,
                 PrimitiveClass = tmp4,
-                Boolean = true
+                Boolean = true,
             };
 
             // Act
@@ -359,7 +349,6 @@ namespace DotSerial.Tests.Yaml
             // Act
             var yamlDocument = DotSerialYaml.Serialize(tmp);
             var result = DotSerialYaml.Deserialize<EnumClass>(yamlDocument);
-
 
             // Assert
             Assert.NotNull(result);
@@ -409,7 +398,6 @@ namespace DotSerial.Tests.Yaml
             // Assert
             Assert.NotNull(result);
             Assert.True(tmp.AssertTest(result));
-
         }
 
         [Fact]
@@ -467,7 +455,7 @@ namespace DotSerial.Tests.Yaml
             // Arrange
             var tmp = new ClassRecordNoParameterlessConstructor
             {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7),
             };
 
             // Act
@@ -513,10 +501,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -526,10 +511,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassStack()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack
-            {
-                Value0 = new Stack<int>()
-            };
+            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -539,10 +521,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassQueue()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassQueue
-            {
-                Value0 = new Queue<int>()
-            };
+            var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -552,10 +531,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList
-            {
-                Value0 = new LinkedList<int>()
-            };
+            var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -565,10 +541,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -578,10 +551,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassSortedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedList
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -591,10 +561,7 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
@@ -605,13 +572,13 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             object? tmp = null;
-           
+
             // Act
             var yamlDocument = DotSerialYaml.Serialize(tmp);
             var result = DotSerialYaml.Deserialize<object?>(yamlDocument);
 
             // Assert
-            Assert.Null(result); 
+            Assert.Null(result);
         }
 
         [Fact]

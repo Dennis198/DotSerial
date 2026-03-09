@@ -2,12 +2,13 @@ using DotSerial.Common;
 
 namespace DotSerial.Toon
 {
-     /// <summary>
+    /// <summary>
     /// Exception for toon.
     /// </summary>
     [Serializable()]
     public class DSToonException : DotSerialException
     {
-        public DSToonException(string message) : base (message){}
+        public DSToonException(string message)
+            : base(message) { }
     }
 }

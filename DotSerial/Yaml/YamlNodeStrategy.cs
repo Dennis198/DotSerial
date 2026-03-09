@@ -93,7 +93,7 @@ namespace DotSerial.Yaml
             }
 
             return new LeafNode(key, value, needQuotes);
-        }        
+        }
 
         /// <inheritdoc/>
         public bool AreQuotesNeededForValue(object? value, string? strValue)
@@ -102,10 +102,10 @@ namespace DotSerial.Yaml
                 return false;
 
             Type type = value.GetType();
-            
+
             if (type == typeof(bool) || type == typeof(bool?))
                 return false;
-            
+
             bool isNumeric = TypeCheckMethods.IsNumericType(type);
 
             if (type == typeof(string) && isNumeric)
@@ -114,7 +114,7 @@ namespace DotSerial.Yaml
                 return false;
 
             if (string.Empty == strValue)
-                return true;        
+                return true;
 
             if (string.IsNullOrWhiteSpace(strValue))
             {
@@ -125,7 +125,7 @@ namespace DotSerial.Yaml
                 return true;
 
             if (strValue.EqualsBooleanString())
-                return true;     
+                return true;
 
             if (strValue.HasLeadingOrTrailingWhitespaces())
                 return true;
@@ -134,14 +134,14 @@ namespace DotSerial.Yaml
             {
                 return true;
             }
-            for(int i = 0; i < strValue.Length; i++)
+            for (int i = 0; i < strValue.Length; i++)
             {
                 char c = strValue[i];
                 if (YamlConstants.YamlSpecialChars.Contains(c))
                     return true;
             }
-            
-            return false;   
+
+            return false;
         }
 
         /// <inheritdoc/>
@@ -155,7 +155,7 @@ namespace DotSerial.Yaml
             if (string.IsNullOrWhiteSpace(key))
             {
                 return true;
-            }   
+            }
 
             if (key.HasLeadingOrTrailingWhitespaces())
             {
@@ -165,7 +165,7 @@ namespace DotSerial.Yaml
             if (key.ContainsChars(YamlConstants.YamlSpecialChars))
             {
                 return true;
-            } 
+            }
 
             return false;
         }
@@ -177,18 +177,18 @@ namespace DotSerial.Yaml
 
             if (value.EqualsNullString())
                 return true;
-                
+
             if (value.EqualsBooleanString())
                 return true;
 
             if (value.IsNumericValue())
-                return true;  
+                return true;
 
             if (value.HasLeadingOrTrailingWhitespaces())
                 return false;
-            
+
             if (value.ContainsChars(YamlConstants.YamlSpecialChars))
-                return false;        
+                return false;
 
             return true;
         }

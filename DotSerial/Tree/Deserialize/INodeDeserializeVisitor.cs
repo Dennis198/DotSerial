@@ -14,6 +14,7 @@ namespace DotSerial.Tree.Deserialize
         /// <param name="type">Type</param>
         /// <returns>Object</returns>
         public abstract object? VisitLeafNode(LeafNode node, Type? type);
+
         /// <summary>
         /// Deserialize inner node
         /// </summary>
@@ -21,6 +22,7 @@ namespace DotSerial.Tree.Deserialize
         /// <param name="type">Type</param>
         /// <returns>Object</returns>
         public abstract object? VisitInnerNode(InnerNode node, Type? type);
+
         /// <summary>
         /// Deserialize list node
         /// </summary>
@@ -28,6 +30,7 @@ namespace DotSerial.Tree.Deserialize
         /// <param name="type">Type</param>
         /// <returns>Object</returns>
         public abstract object? VisitListNode(ListNode node, Type? type);
+
         /// <summary>
         /// Deserialize dictionary node
         /// </summary>

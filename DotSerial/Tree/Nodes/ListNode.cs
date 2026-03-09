@@ -20,7 +20,7 @@ namespace DotSerial.Tree.Nodes
         public bool IsPrimitiveList()
         {
             var children = GetChildren();
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 if (child is not LeafNode)
                 {

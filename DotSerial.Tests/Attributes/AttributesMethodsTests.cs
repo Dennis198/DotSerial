@@ -8,7 +8,7 @@ namespace DotSerial.Tests.Attributes
         public void GetSerializeName_True()
         {
             // Arrange
-            NoAttributeClass tmp = new ();            
+            NoAttributeClass tmp = new();
             PropertyInfo[] props = tmp.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
@@ -29,7 +29,7 @@ namespace DotSerial.Tests.Attributes
         public void GetSerializeName_False()
         {
             // Arrange
-            NoAttributeClass tmp = new ();
+            NoAttributeClass tmp = new();
             PropertyInfo[] props = tmp.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
@@ -50,7 +50,7 @@ namespace DotSerial.Tests.Attributes
         public void GetCustomPropertyName()
         {
             // Arrange
-            NoAttributeClass tmp = new ();            
+            NoAttributeClass tmp = new();
             PropertyInfo[] props = tmp.GetType().GetProperties();
 
             foreach (PropertyInfo prop in props)
@@ -65,6 +65,6 @@ namespace DotSerial.Tests.Attributes
                     return;
                 }
             }
-        }        
+        }
     }
 }

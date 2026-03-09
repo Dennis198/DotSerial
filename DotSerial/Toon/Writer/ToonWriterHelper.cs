@@ -12,8 +12,8 @@ namespace DotSerial.Toon.Writer
     internal static class ToonWriterHelper
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
-        
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
         /// <summary>
         /// Converts a key : value pair to an toon string.
         /// </summary>
@@ -23,7 +23,14 @@ namespace DotSerial.Toon.Writer
         /// <param name="level">Indentation level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Prefix for key</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes, string? prefix = null)
+        internal static void AddKeyValuePair(
+            StringBuilder sb,
+            string key,
+            string? value,
+            int level,
+            bool needQuotes,
+            string? prefix = null
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -64,7 +71,7 @@ namespace DotSerial.Toon.Writer
                 }
                 sb.AppendFormat("{0}", value);
             }
-        }  
+        }
 
         /// <summary>
         /// Appends only the value without the key
@@ -74,7 +81,13 @@ namespace DotSerial.Toon.Writer
         /// <param name="level">Level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Prefix</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes, string? prefix = null)
+        internal static void AddOnlyValue(
+            StringBuilder sb,
+            string? value,
+            int level,
+            bool needQuotes,
+            string? prefix = null
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -100,8 +113,8 @@ namespace DotSerial.Toon.Writer
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
                 sb.AppendFormat("{0}", value);
-            }           
-        }           
+            }
+        }
 
         /// <summary>
         /// Helper methode to add object start to toon
@@ -136,7 +149,7 @@ namespace DotSerial.Toon.Writer
             {
                 sb.AppendFormat("{0}{1}:", prefix, key);
             }
-        }    
+        }
 
         /// <summary>
         /// Helper methode to add list start to toon
@@ -184,8 +197,7 @@ namespace DotSerial.Toon.Writer
                     sb.AppendFormat("{0}{1}[{2}]", prefix, key, count);
                 else
                     sb.AppendFormat("{0}[{1}]", prefix, count);
-
-            }       
+            }
 
             if (UseToonSchema(lNode, out string? schema))
             {
@@ -209,13 +221,13 @@ namespace DotSerial.Toon.Writer
             // Get all children of node
             var children = node.GetChildren();
 
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
 
-                var childChidlren = child.GetChildren();                
-                foreach(var chilChild in childChidlren)
+                var childChidlren = child.GetChildren();
+                foreach (var chilChild in childChidlren)
                 {
                     string? value = chilChild.GetValue();
                     if (null == value)
@@ -238,7 +250,7 @@ namespace DotSerial.Toon.Writer
                 // Remove last ","
                 sb.Remove(sb.Length - 1, 1);
             }
-        }        
+        }
 
         /// <summary>
         /// Helper method to add a primitive list to toon
@@ -268,10 +280,10 @@ namespace DotSerial.Toon.Writer
                         val = StringMethods.AddStartAndEndQuotes(val);
                     }
                     sb.AppendFormat("{0}", val);
-                }               
+                }
 
                 sb.Append(CommonConstants.Comma);
-            }            
+            }
 
             // Remove last ","
             sb.Remove(sb.Length - 1, 1);
@@ -297,7 +309,7 @@ namespace DotSerial.Toon.Writer
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
             }
-        }     
+        }
 
         /// <summary>
         /// Check if listNode can be written with Toon Schema. If so,
@@ -317,15 +329,15 @@ namespace DotSerial.Toon.Writer
 
             List<string> keysTmp = [];
             bool firstIt = true;
-            
+
             var children = listNode.GetChildren();
             keys = string.Empty;
 
-            foreach(var child in children)
+            foreach (var child in children)
             {
                 if (child is InnerNode)
                 {
-                     var childChidlren = child.GetChildren();
+                    var childChidlren = child.GetChildren();
 
                     for (int i = 0; i < childChidlren.Count; i++)
                     {
@@ -356,7 +368,7 @@ namespace DotSerial.Toon.Writer
                     return false;
                 }
 
-                firstIt  = false;
+                firstIt = false;
             }
 
             for (int i = 0; i < keysTmp.Count; i++)
@@ -378,6 +390,6 @@ namespace DotSerial.Toon.Writer
             keys = string.Format("{{{0}}}", keys);
 
             return true;
-        }      
+        }
     }
 }

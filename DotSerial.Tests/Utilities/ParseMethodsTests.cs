@@ -35,7 +35,7 @@ namespace DotSerial.Tests.Utilities
             // Assert
             Assert.Equal(12, result);
             Assert.Equal("<<Hello>>", sb.ToString());
-        }        
+        }
 
         [Fact]
         public void RemoveWhiteSpace()
@@ -58,11 +58,16 @@ namespace DotSerial.Tests.Utilities
             StringBuilder strBuilder = new(str);
 
             // Act
-            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(StategyType.Json, strBuilder, 0, "testKey");
+            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(
+                StategyType.Json,
+                strBuilder,
+                0,
+                "testKey"
+            );
 
             // Assert
             Assert.Equal("testKey", result.Key);
             Assert.Equal("4.4", result.GetValue());
-        }        
+        }
     }
 }

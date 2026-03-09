@@ -12,7 +12,7 @@ namespace DotSerial.Utilities
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <summary>
         /// Apends the whole string from starting quote to end quote to
@@ -70,7 +70,7 @@ namespace DotSerial.Utilities
             }
 
             throw new DotSerialException("Parse: Escapable char is not escaped.");
-        }      
+        }
 
         /// <summary>
         /// Append a string to a StringBuilder till a char is reached.
@@ -133,7 +133,7 @@ namespace DotSerial.Utilities
             }
 
             return str.Length - 1;
-        }        
+        }
 
         /// <summary>
         /// Append a string to a StringBuilder till a char is reached.
@@ -169,7 +169,7 @@ namespace DotSerial.Utilities
             for (int i = startIndex + 1; i < str.Length; i++)
             {
                 var c = str[i];
-                
+
                 if (isEscaped)
                 {
                     sb.Append(c);
@@ -208,7 +208,13 @@ namespace DotSerial.Utilities
         /// <param name="openChar">Open char</param>
         /// <param name="closeChar">Closing char</param>
         /// <returns>Index of the closing char</returns>
-        internal static int AppendEnclosingValue(StringBuilder sb, int startIndex, StringBuilder str, char openChar, char closeChar)
+        internal static int AppendEnclosingValue(
+            StringBuilder sb,
+            int startIndex,
+            StringBuilder str,
+            char openChar,
+            char closeChar
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -276,7 +282,7 @@ namespace DotSerial.Utilities
             }
 
             return str.Length - 1;
-        }  
+        }
 
         /// <summary>
         /// Removes all whitespaces inside a string
@@ -316,8 +322,8 @@ namespace DotSerial.Utilities
             }
 
             return sb;
-        }       
-        
+        }
+
         /// <summary>
         /// Parses primitive node without a key, e.g "3.14"
         /// </summary>
@@ -326,8 +332,13 @@ namespace DotSerial.Utilities
         /// <param name="startIndex">StartIndex</param>
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
-
-        internal static IDSNode ParsePrimitiveNode(StategyType strategyType, StringBuilder sb, int startIndex, string key, char[]? stopChars = null)
+        internal static IDSNode ParsePrimitiveNode(
+            StategyType strategyType,
+            StringBuilder sb,
+            int startIndex,
+            string key,
+            char[]? stopChars = null
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -341,24 +352,24 @@ namespace DotSerial.Utilities
             if (sb.HasStartAndEndQuotes())
             {
                 int i = AppendStringValue(sbPrim, startIndex, sb);
-                if (i != sb.Length -1)
+                if (i != sb.Length - 1)
                 {
                     throw new DotSerialException("Parse: Can't parse single value.");
                 }
             }
             else
-            {                
+            {
                 int i = AppendTillStopChars(sbPrim, startIndex, sb, stopChars);
-                if (i != sb.Length -1)
+                if (i != sb.Length - 1)
                 {
                     throw new DotSerialException("Parse: Can't parse single value.");
                 }
             }
 
             string nodeValue = sbPrim.ToString();
-            
+
             return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
-        }  
+        }
 
         /// <summary>
         /// Returns the indentation level of a line
@@ -390,6 +401,6 @@ namespace DotSerial.Utilities
             }
 
             return level / indentationSize;
-        }                       
+        }
     }
 }

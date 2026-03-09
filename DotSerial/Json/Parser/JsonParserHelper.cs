@@ -9,7 +9,6 @@ namespace DotSerial.Json.Parser
     /// </summary>
     internal static class JsonParserHelper
     {
-
         /// <summary>
         /// Extracts key value pairs from json object
         /// </summary>
@@ -22,7 +21,7 @@ namespace DotSerial.Json.Parser
             var result = new Dictionary<string, StringBuilder?>();
             bool startObjectSymbolFound = false;
             bool keyFound = false;
-            string foundKey = string.Empty;            
+            string foundKey = string.Empty;
 
             for (int i = 0; i < sb.Length; i++)
             {
@@ -67,7 +66,7 @@ namespace DotSerial.Json.Parser
 
                     StringBuilder sb2 = new();
                     i = ParseMethods.AppendStringValue(sb2, i, sb);
-                   
+
                     if (false == result.ContainsKey(foundKey))
                     {
                         throw new DSJsonException("Key not found.");
@@ -112,7 +111,7 @@ namespace DotSerial.Json.Parser
                         throw new DSJsonException("Key not found.");
                     }
 
-                     // Extract value
+                    // Extract value
                     int j = ExtractJsonList(sb, i, out StringBuilder tmp);
 
                     // Add object to result
@@ -138,7 +137,7 @@ namespace DotSerial.Json.Parser
                     {
                         StringBuilder sb2 = new();
                         i = ParseMethods.AppendTillStopChars(sb2, i, sb, JsonConstants.ParseStopChars);
-                    
+
                         if (false == result.ContainsKey(foundKey))
                         {
                             throw new DSJsonException("Key not found.");
@@ -154,7 +153,7 @@ namespace DotSerial.Json.Parser
             }
 
             return result;
-        }  
+        }
 
         /// <summary>
         /// Extracts object list from json string
@@ -220,14 +219,14 @@ namespace DotSerial.Json.Parser
                     var tmp = sb.SubString(i, len);
 
                     // Add object to result
-                    list.Add(tmp);   
+                    list.Add(tmp);
                     // Update index
-                    i = j;            
-                }                
+                    i = j;
+                }
             }
 
             return list;
-        }        
+        }
 
         /// <summary>
         /// Check if string is a json object.
@@ -237,14 +236,14 @@ namespace DotSerial.Json.Parser
         internal static bool IsStringJsonObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
-            
+
             // // Check if first element is '{'
             bool startFound = sb.EqualFirstNoWhiteSpaceChar(JsonConstants.ObjectStart);
             // // Check if last element is '}'
             bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ObjectEnd);
 
             return startFound && endFound;
-        }  
+        }
 
         /// <summary>
         /// Check if string is a json list.
@@ -261,7 +260,7 @@ namespace DotSerial.Json.Parser
             bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ListEnd);
 
             return startFound && endFound;
-        }    
+        }
 
         /// <summary>
         /// Extracts a json object
@@ -319,14 +318,14 @@ namespace DotSerial.Json.Parser
                     objContent.Append(c);
                     break;
                 }
-                else 
+                else
                 {
                     objContent.Append(c);
                 }
             }
 
             return i;
-        }    
+        }
 
         /// <summary>
         /// Extracts a json list
@@ -382,13 +381,13 @@ namespace DotSerial.Json.Parser
                     listContent.Append(c);
                     break;
                 }
-                else 
+                else
                 {
                     listContent.Append(c);
                 }
             }
 
             return i;
-        }            
+        }
     }
 }

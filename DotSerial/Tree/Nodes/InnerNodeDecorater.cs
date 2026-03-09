@@ -13,9 +13,9 @@ namespace DotSerial.Tree.Nodes
         /// </summary>
         protected IDSNode _wrappedInnerNode;
 
-         /// <inheritdoc/>
+        /// <inheritdoc/>
         public string Key => _wrappedInnerNode.Key;
-        
+
         /// <inheritdoc/>
         public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
 
@@ -29,7 +29,7 @@ namespace DotSerial.Tree.Nodes
             {
                 throw new DotSerialException($"Wrapped node {wrappedNode} is not of type ${nameof(InnerNode)}.");
             }
-            
+
             _wrappedInnerNode = wrappedNode;
         }
 
@@ -62,7 +62,7 @@ namespace DotSerial.Tree.Nodes
         {
             _wrappedInnerNode.AddChild(node);
         }
-        
+
         /// <inheritdoc/>
         public virtual object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {

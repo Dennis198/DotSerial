@@ -12,10 +12,12 @@ namespace DotSerial.Toon.Parser
         /// Key line of the parsed object. (Currently only for lists)
         /// </summary>
         internal string? KeyLine = null;
+
         /// <summary>
         /// Wrapped MultiLineStringBuilder to store the lines of the parsed object.
         /// </summary>
         private readonly MultiLineStringBuilder? _lines = null;
+
         /// <summary>
         /// Number of lines
         /// </summary>
@@ -25,10 +27,10 @@ namespace DotSerial.Toon.Parser
         internal bool IsOneLineObject
         {
             get
-            { 
+            {
                 if (_lines == null)
                     throw new NotImplementedException();
-        
+
                 return _lines.IsOneLineObject;
             }
             set
@@ -39,10 +41,10 @@ namespace DotSerial.Toon.Parser
                 _lines.IsOneLineObject = value;
             }
         }
-                
+
         internal ToonMulitLineStringBuilder(StringBuilder sb, string? keyLine = null)
         {
-            KeyLine =  keyLine;
+            KeyLine = keyLine;
             _lines = new MultiLineStringBuilder(sb);
         }
 

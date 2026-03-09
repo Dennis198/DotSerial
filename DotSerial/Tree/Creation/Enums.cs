@@ -8,6 +8,6 @@ namespace DotSerial.Tree.Creation
         Json = 0,
         Toon = 1,
         Xml = 2,
-        Yaml = 3
+        Yaml = 3,
     }
 }

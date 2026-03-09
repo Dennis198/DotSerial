@@ -13,7 +13,7 @@ namespace DotSerial.Tree.Nodes
     {
         /// <inheritdoc/>
         public string Key { get; private set; } = key;
-        
+
         /// <inheritdoc/>
         public bool IsQuoted { get; private set; } = isQuoted;
 
@@ -44,7 +44,7 @@ namespace DotSerial.Tree.Nodes
         public List<IDSNode> GetChildren()
         {
             throw new DotSerialException($"{nameof(GetChildren)} can't be called on a leaf node.");
-        }        
+        }
 
         /// <inheritdoc/>
         public void AddChild(IDSNode? node)

@@ -4,7 +4,7 @@ using DotSerial.Utilities;
 
 namespace DotSerial.Xml.Writer
 {
-     /// <summary>
+    /// <summary>
     /// Implementation of the visitor for xml writer.
     /// </summary>
     internal class XmlWriterVisitor : IXmlNodeWriterVisitor
@@ -22,10 +22,10 @@ namespace DotSerial.Xml.Writer
 
             var internalNode = node.GetInternalData();
             WriterAccept(internalNode, new XmlWriterVisitor(), sb, new XmlWriterOptions(0));
-            
+
             // Trim start and ending
             sb = sb.TrimStartAndEnd();
-            
+
             // Append to xml declaration
             sbXmlDeclaration.Append(sb);
 
@@ -42,19 +42,24 @@ namespace DotSerial.Xml.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, XmlWriterVisitor visitor, StringBuilder sb, XmlWriterOptions options)
+        private static void WriterAccept(
+            IDSNode node,
+            XmlWriterVisitor visitor,
+            StringBuilder sb,
+            XmlWriterOptions options
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, sb, options);    
+                visitor.VisitLeafNode(leafNode, sb, options);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, sb, options);    
+                visitor.VisitInnerNode(innerNode, sb, options);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, sb, options);    
+                visitor.VisitListNode(listNode, sb, options);
             }
             else if (node is DictionaryNode dicNode)
             {
@@ -63,8 +68,8 @@ namespace DotSerial.Xml.Writer
             else
             {
                 throw new NotImplementedException();
-            }            
-        }            
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, XmlWriterOptions options)
@@ -93,7 +98,7 @@ namespace DotSerial.Xml.Writer
                 XmlWriterHelper.AddObjectStart(sb, node.Key, level);
 
                 var children = node.GetChildren();
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new XmlWriterOptions(level + 1));
                 }
@@ -105,9 +110,8 @@ namespace DotSerial.Xml.Writer
                 // Empty node
                 XmlWriterHelper.AddEmptyObject(sb, level, node.Key);
             }
-
         }
-        
+
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, XmlWriterOptions options)
         {
@@ -121,7 +125,7 @@ namespace DotSerial.Xml.Writer
                 XmlWriterHelper.AddListStart(sb, node.Key, level);
 
                 var children = node.GetChildren();
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new XmlWriterOptions(level + 1));
                 }
@@ -147,7 +151,7 @@ namespace DotSerial.Xml.Writer
                 XmlWriterHelper.AddObjectStart(sb, node.Key, level);
 
                 var children = node.GetChildren();
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new XmlWriterOptions(level + 1));
                 }

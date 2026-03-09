@@ -34,13 +34,13 @@ namespace DotSerial.Json
             {
                 return new LeafNode(key, null, false);
             }
-            
+
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
             bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
             return new LeafNode(key, strValue, needQuotes);
         }
-    
+
         /// <inheritdoc/>
         public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
         {
@@ -100,9 +100,9 @@ namespace DotSerial.Json
         {
             if (null == value)
                 return false;
-                
+
             Type type = value.GetType();
-            
+
             if (type == typeof(string))
                 return true;
 
@@ -110,7 +110,7 @@ namespace DotSerial.Json
                 return false;
 
             if (TypeCheckMethods.IsNumericType(type))
-                return false;             
+                return false;
 
             return true;
         }
@@ -124,16 +124,16 @@ namespace DotSerial.Json
         /// <inheritdoc/>
         public bool IsValueValidWithoutQuotes(string value)
         {
-             ArgumentNullException.ThrowIfNull(value);
-            
+            ArgumentNullException.ThrowIfNull(value);
+
             if (value.EqualsNullString())
                 return true;
-                
+
             if (value.EqualsBooleanString())
                 return true;
 
             if (value.IsNumericValue())
-                return true;                 
+                return true;
 
             return false;
         }

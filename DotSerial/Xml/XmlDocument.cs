@@ -29,7 +29,6 @@ namespace DotSerial.Xml
             {
                 throw;
             }
-
         }
 
         /// <inheritdoc/>
@@ -52,7 +51,7 @@ namespace DotSerial.Xml
             catch
             {
                 throw;
-            }          
+            }
         }
     }
 }

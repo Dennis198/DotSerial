@@ -102,10 +102,10 @@ namespace DotSerial.Toon
                 return false;
 
             Type type = value.GetType();
-            
+
             if (type == typeof(bool) || type == typeof(bool?))
                 return false;
-            
+
             bool isNumeric = TypeCheckMethods.IsNumericType(type);
 
             if (type == typeof(string) && isNumeric)
@@ -114,7 +114,7 @@ namespace DotSerial.Toon
                 return false;
 
             if (string.Empty == strValue)
-                return true;        
+                return true;
 
             if (string.IsNullOrWhiteSpace(strValue))
             {
@@ -125,8 +125,8 @@ namespace DotSerial.Toon
                 return true;
 
             if (strValue.EqualsBooleanString())
-                return true;                
-                                        
+                return true;
+
             if (strValue.HasLeadingOrTrailingWhitespaces())
                 return true;
 
@@ -134,8 +134,8 @@ namespace DotSerial.Toon
             {
                 return true;
             }
-        
-            return false;  
+
+            return false;
         }
 
         /// <inheritdoc/>
@@ -149,7 +149,7 @@ namespace DotSerial.Toon
             if (string.IsNullOrWhiteSpace(key))
             {
                 return true;
-            }  
+            }
 
             if (key.HasLeadingOrTrailingWhitespaces())
             {
@@ -176,20 +176,20 @@ namespace DotSerial.Toon
 
             if (value.EqualsNullString())
                 return true;
-                
+
             if (value.EqualsBooleanString())
                 return true;
 
             if (value.IsNumericValue())
-                return true;  
+                return true;
 
             if (value.HasLeadingOrTrailingWhitespaces())
                 return false;
-            
+
             if (value.ContainsChars(ToonConstants.ToonSpecialChars))
-                return false;        
+                return false;
 
             return true;
-        }        
+        }
     }
 }

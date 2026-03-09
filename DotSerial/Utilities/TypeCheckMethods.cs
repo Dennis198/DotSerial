@@ -25,9 +25,7 @@ namespace DotSerial.Utilities
 
             if (HelperMethods.ImplementsIEnumerable(t))
             {
-                if (IsDictionary(t) ||
-                    IsList(t) ||
-                    IsArray(t))
+                if (IsDictionary(t) || IsList(t) || IsArray(t))
                 {
                     return true;
                 }
@@ -52,21 +50,34 @@ namespace DotSerial.Utilities
         /// <returns>True, if the type is a numeric type</returns>
         internal static bool IsNumericType(Type type)
         {
-            return type == typeof(byte) || type == typeof(byte?) ||
-                   type == typeof(sbyte) || type == typeof(sbyte?) ||
-                   type == typeof(int) || type == typeof(int?) ||
-                   type == typeof(uint) || type == typeof(uint?) ||
-                   type == typeof(nint) || type == typeof(nint?) ||
-                   type == typeof(nuint) || type == typeof(nuint?) ||
-                   type == typeof(long) || type == typeof(long?) ||
-                   type == typeof(ulong) || type == typeof(ulong?) ||
-                   type == typeof(short) || type == typeof(short?) ||
-                   type == typeof(ushort) || type == typeof(ushort?) ||
-                   type == typeof(float) || type == typeof(float?) ||
-                   type == typeof(double) || type == typeof(double?) ||
-                   type == typeof(decimal) || type == typeof(decimal?) ||
-                   type.IsEnum;
-        }        
+            return type == typeof(byte)
+                || type == typeof(byte?)
+                || type == typeof(sbyte)
+                || type == typeof(sbyte?)
+                || type == typeof(int)
+                || type == typeof(int?)
+                || type == typeof(uint)
+                || type == typeof(uint?)
+                || type == typeof(nint)
+                || type == typeof(nint?)
+                || type == typeof(nuint)
+                || type == typeof(nuint?)
+                || type == typeof(long)
+                || type == typeof(long?)
+                || type == typeof(ulong)
+                || type == typeof(ulong?)
+                || type == typeof(short)
+                || type == typeof(short?)
+                || type == typeof(ushort)
+                || type == typeof(ushort?)
+                || type == typeof(float)
+                || type == typeof(float?)
+                || type == typeof(double)
+                || type == typeof(double?)
+                || type == typeof(decimal)
+                || type == typeof(decimal?)
+                || type.IsEnum;
+        }
 
         /// <summary>
         /// Returns true, if Type is a primitive
@@ -79,30 +90,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
 
-            // Special Cases 
-            if (type == typeof(string) ||
-                type.IsEnum)
+            // Special Cases
+            if (type == typeof(string) || type.IsEnum)
             {
                 return true;
             }
 
             // c# Primitive class
-            if (type == typeof(bool) ||
-                type == typeof(byte) ||
-                type == typeof(sbyte) ||
-                type == typeof(char) ||
-                type == typeof(decimal) ||
-                type == typeof(double) ||
-                type == typeof(float) ||
-                type == typeof(int) ||
-                type == typeof(uint) ||
-                type == typeof(nint) ||
-                type == typeof(nuint) ||
-                type == typeof(long) ||
-                type == typeof(ulong) ||
-                type == typeof(short) ||
-                type == typeof(ushort)
-               )
+            if (
+                type == typeof(bool)
+                || type == typeof(byte)
+                || type == typeof(sbyte)
+                || type == typeof(char)
+                || type == typeof(decimal)
+                || type == typeof(double)
+                || type == typeof(float)
+                || type == typeof(int)
+                || type == typeof(uint)
+                || type == typeof(nint)
+                || type == typeof(nuint)
+                || type == typeof(long)
+                || type == typeof(ulong)
+                || type == typeof(short)
+                || type == typeof(ushort)
+            )
             {
                 return true;
             }
@@ -117,7 +128,8 @@ namespace DotSerial.Utilities
         /// <returns>True if array</returns>
         internal static bool IsArray(object? o)
         {
-            if (o == null) return false;
+            if (o == null)
+                return false;
             return IsArray(o.GetType());
         }
 
@@ -128,7 +140,8 @@ namespace DotSerial.Utilities
         /// <returns>True if array</returns>
         internal static bool IsArray(Type type)
         {
-            if (type == null) return false;
+            if (type == null)
+                return false;
             return type.IsArray;
         }
 
@@ -139,7 +152,8 @@ namespace DotSerial.Utilities
         /// <returns>True if list</returns>
         internal static bool IsList(object? o)
         {
-            if (o == null) return false;
+            if (o == null)
+                return false;
             return o is IList && IsList(o.GetType());
         }
 
@@ -150,9 +164,9 @@ namespace DotSerial.Utilities
         /// <returns>True if list</returns>
         internal static bool IsList(Type type)
         {
-            if (type == null) return false;
-            return type.IsGenericType &&
-                   type.GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
         }
 
         /// <summary>
@@ -162,7 +176,8 @@ namespace DotSerial.Utilities
         /// <returns>True if list</returns>
         internal static bool IsDictionary(object? o)
         {
-            if (o == null) return false;
+            if (o == null)
+                return false;
             return o is IDictionary && IsDictionary(o.GetType());
         }
 
@@ -173,9 +188,9 @@ namespace DotSerial.Utilities
         /// <returns>True if dictionary</returns>
         internal static bool IsDictionary(Type type)
         {
-            if (type == null) return false;
-            return type.IsGenericType &&
-                   type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
         }
 
         /// <summary>
@@ -185,7 +200,8 @@ namespace DotSerial.Utilities
         /// <returns>True if struct</returns>
         internal static bool IsStruct(object? obj)
         {
-            if (obj == null) return false;
+            if (obj == null)
+                return false;
             return IsStruct(obj.GetType());
         }
 
@@ -196,7 +212,8 @@ namespace DotSerial.Utilities
         /// <returns>True if struct</returns>
         internal static bool IsStruct(Type type)
         {
-            if (IsSpecialParsableObject(type)) return false;
+            if (IsSpecialParsableObject(type))
+                return false;
             return (type.IsValueType && !type.IsPrimitive && !type.IsEnum && type != typeof(decimal));
         }
 
@@ -207,10 +224,14 @@ namespace DotSerial.Utilities
         /// <returns>True if class</returns>
         internal static bool IsClass(Type type)
         {
-            if (type == null) return false;
-            if (type == typeof(string)) return false;
-            if (HelperMethods.ImplementsIEnumerable(type)) return false;
-            if (IsSpecialParsableObject(type)) return false;
+            if (type == null)
+                return false;
+            if (type == typeof(string))
+                return false;
+            if (HelperMethods.ImplementsIEnumerable(type))
+                return false;
+            if (IsSpecialParsableObject(type))
+                return false;
             return type.IsClass;
         }
 
@@ -221,7 +242,8 @@ namespace DotSerial.Utilities
         /// <returns>True, if special parsable type.</returns>
         internal static bool IsSpecialParsableObject(object? obj)
         {
-            if (obj == null) return false;
+            if (obj == null)
+                return false;
             return IsSpecialParsableObject(obj.GetType());
         }
 

@@ -59,7 +59,6 @@ namespace DotSerial.Yaml
         /// <exception cref="DSYamlException">Argument null.</exception>
         public static U LoadFromFile<U>(string path)
         {
-
             if (string.IsNullOrWhiteSpace(path))
             {
                 throw new ArgumentNullException(nameof(path));
@@ -76,10 +75,7 @@ namespace DotSerial.Yaml
 
                 yamlDoc.Load(path);
 
-                var desObj = new DotSerialYaml
-                {
-                    _document = yamlDoc
-                };
+                var desObj = new DotSerialYaml { _document = yamlDoc };
 
                 var result = Deserialize<U>(desObj);
                 return result;
@@ -98,10 +94,7 @@ namespace DotSerial.Yaml
             // Serialze Object
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Yaml);
 
-            var result = new DotSerialYaml
-            {
-                _document = new YamlDocument()
-            };
+            var result = new DotSerialYaml { _document = new YamlDocument() };
 
             result._document.RootNode = new DSYamlNode(rootNode);
 
@@ -120,12 +113,12 @@ namespace DotSerial.Yaml
                 throw new DSYamlException($"{serialObj._document} can't be null");
             }
 
-            // Get root element    
+            // Get root element
             var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
             var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
             return result;
-        }     
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -144,7 +137,7 @@ namespace DotSerial.Yaml
             }
 
             return result;
-        }        
+        }
 
         /// <summary>
         /// Converts the serialized object to an string.
@@ -160,7 +153,7 @@ namespace DotSerial.Yaml
             try
             {
                 string result = _document.RootNode?.Stringify() ?? string.Empty;
-                return result;          
+                return result;
             }
             catch (Exception)
             {

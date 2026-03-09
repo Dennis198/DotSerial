@@ -76,7 +76,7 @@
 
             return objType.GetElementType();
         }
-      
+
         /// <summary>
         /// Get key and value type of dictionary
         /// </summary>

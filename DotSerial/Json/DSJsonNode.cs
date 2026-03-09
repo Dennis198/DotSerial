@@ -74,13 +74,13 @@ namespace DotSerial.Json
             {
                 // Determine key
                 string currKey = key ?? CommonConstants.MainObjectKey;
-                
+
                 // Serialize object
                 var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
 
                 return new DSJsonNode(rootNode);
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSJsonException(ex.Message);
             }
@@ -107,14 +107,14 @@ namespace DotSerial.Json
 
                 return jsonString;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSJsonException(ex.Message);
             }
             catch
             {
                 throw;
-            }            
+            }
         }
 
         /// <inheritdoc/>
@@ -127,20 +127,20 @@ namespace DotSerial.Json
                 if (string.IsNullOrWhiteSpace(str))
                 {
                     throw new DSJsonException($"{str} can't be null or whitespace.");
-                }   
+                }
 
-                var root = JsonParserVisitor.Parse(str);        
+                var root = JsonParserVisitor.Parse(str);
 
                 return root;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSJsonException(ex.Message);
             }
             catch
             {
                 throw;
-            }             
+            }
         }
 
         /// <inheritdoc/>
@@ -160,14 +160,14 @@ namespace DotSerial.Json
 
                 return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSJsonException(ex.Message);
             }
             catch
             {
                 throw;
-            }              
-        }       
+            }
+        }
     }
 }

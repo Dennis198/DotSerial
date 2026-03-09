@@ -1,8 +1,8 @@
 using System.Text;
 using DotSerial.Common;
-using DotSerial.Utilities;
-using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Creation;
+using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Yaml.Writer
 {
@@ -12,8 +12,8 @@ namespace DotSerial.Yaml.Writer
     internal static class YamlWriterHelper
     {
         /// <summary>Node factory</summary>
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
-        
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
         /// <summary>
         /// Helper methode to add object start to yaml
         /// </summary>
@@ -31,7 +31,7 @@ namespace DotSerial.Yaml.Writer
                 throw new NotImplementedException();
             }
 
-            // Make sure key:value has its own line.            
+            // Make sure key:value has its own line.
             sb.AppendLine();
 
             WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
@@ -60,7 +60,14 @@ namespace DotSerial.Yaml.Writer
         /// <param name="level">Indentation level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes, string? prefix = null)
+        internal static void AddKeyValuePair(
+            StringBuilder sb,
+            string key,
+            string? value,
+            int level,
+            bool needQuotes,
+            string? prefix = null
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
@@ -99,7 +106,7 @@ namespace DotSerial.Yaml.Writer
                 }
                 sb.AppendFormat("{0}: {1}", key, value);
             }
-        }   
+        }
 
         /// <summary>
         /// Converts a primitive list into yaml
@@ -118,7 +125,7 @@ namespace DotSerial.Yaml.Writer
             if (!string.IsNullOrWhiteSpace(options.GetPrefix()))
             {
                 WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
-                sb.Append(options.GetPrefix());                
+                sb.Append(options.GetPrefix());
                 level += options.NumberOfPrefix;
                 skipFirstIndentation = true;
                 options.DecreasePrefixCount();
@@ -131,7 +138,6 @@ namespace DotSerial.Yaml.Writer
             {
                 if (keyValue is LeafNode leaf)
                 {
-
                     string? val = leaf.GetValue();
                     bool needQuotes = leaf.IsQuoted;
 
@@ -153,7 +159,7 @@ namespace DotSerial.Yaml.Writer
                             val = StringMethods.AddStartAndEndQuotes(val);
                         }
                         sb.AppendFormat("- {0}", val);
-                    }             
+                    }
 
                     sb.AppendLine();
                 }
@@ -165,7 +171,7 @@ namespace DotSerial.Yaml.Writer
 
             // Remove last New Line
             sb.Remove(sb.Length - 1, 1);
-        }    
+        }
 
         /// <summary>
         /// Add empty Object
@@ -189,7 +195,7 @@ namespace DotSerial.Yaml.Writer
                 WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
                 sb.Append("{}");
             }
-        }       
+        }
 
         /// <summary>
         /// Add empty list
@@ -212,8 +218,8 @@ namespace DotSerial.Yaml.Writer
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
                 sb.Append("[]");
-            }            
-        }   
+            }
+        }
 
         /// <summary>
         /// Appends only the value without the key
@@ -223,7 +229,13 @@ namespace DotSerial.Yaml.Writer
         /// <param name="level">Level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Prefix</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes, string? prefix = null)
+        internal static void AddOnlyValue(
+            StringBuilder sb,
+            string? value,
+            int level,
+            bool needQuotes,
+            string? prefix = null
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -250,7 +262,6 @@ namespace DotSerial.Yaml.Writer
                 }
                 sb.AppendFormat("{0}", value);
             }
-        }                
-
+        }
     }
 }

@@ -73,7 +73,11 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp, out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(
+                tmp,
+                out Type typeKey,
+                out Type typeValue
+            );
 
             // Assert
             Assert.True(result);
@@ -90,7 +94,11 @@
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(tmp.GetType(), out Type typeKey, out Type typeValue);
+            bool result = DotSerial.Utilities.GetTypeMethods.GetKeyValueTypeOfDictionary(
+                tmp.GetType(),
+                out Type typeKey,
+                out Type typeValue
+            );
 
             // Assert
             Assert.True(result);

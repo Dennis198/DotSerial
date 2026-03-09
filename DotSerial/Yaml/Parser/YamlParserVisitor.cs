@@ -31,29 +31,49 @@ namespace DotSerial.Yaml.Parser
             // Check if its an empty yaml file
             if (0 == lines.Count)
             {
-                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, CommonConstants.MainObjectKey, null, NodeType.InnerNode);
-                return new DSYamlNode(rootNode);   
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+                return new DSYamlNode(rootNode);
             }
 
             if (YamlParserHelper.IsYamlSingleValue(lines))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Yaml, lines.GetLine(0), 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(
+                    StategyType.Yaml,
+                    lines.GetLine(0),
+                    0,
+                    CommonConstants.MainObjectKey
+                );
                 return new DSYamlNode(rootNode);
             }
             else if (YamlParserHelper.IsYamlObject(lines))
             {
-                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, CommonConstants.MainObjectKey, null, NodeType.InnerNode);
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLine(0)))
                 {
-                    return new DSYamlNode(rootNode);    
+                    return new DSYamlNode(rootNode);
                 }
             }
             else if (YamlParserHelper.IsYamlList(lines))
             {
-                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.ListNode
+                );
                 if (YamlParserHelper.IsEmptyList(lines.GetLine(0)))
                 {
-                    return new DSYamlNode(rootNode);    
+                    return new DSYamlNode(rootNode);
                 }
             }
             else
@@ -74,20 +94,20 @@ namespace DotSerial.Yaml.Parser
         /// </summary>
         /// <param name="node">IDSNode</param>
         /// <param name="visitor">Visitor</param>
-        /// <param name="lines">MultiLineStringBuilder</param>    
+        /// <param name="lines">MultiLineStringBuilder</param>
         private static void ParserAccept(IDSNode node, YamlParserVisitor visitor, MultiLineStringBuilder lines)
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, lines);    
+                visitor.VisitLeafNode(leafNode, lines);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, lines);    
+                visitor.VisitInnerNode(innerNode, lines);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, lines);    
+                visitor.VisitListNode(listNode, lines);
             }
             else if (node is DictionaryNode dicNode)
             {
@@ -96,15 +116,15 @@ namespace DotSerial.Yaml.Parser
             else
             {
                 throw new DSYamlException("Parse: Unknown node type.");
-            }   
-        }             
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, MultiLineStringBuilder lines)
         {
             // Currenlty not needed
             throw new NotImplementedException();
-        }        
+        }
 
         /// <inheritdoc/>
         public void VisitInnerNode(InnerNode node, MultiLineStringBuilder lines)
@@ -127,13 +147,23 @@ namespace DotSerial.Yaml.Parser
                     if (YamlParserHelper.IsYamlPrimitiveLine(value))
                     {
                         string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0));
-                        var childNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, strValue, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNodeFromString(
+                            StategyType.Yaml,
+                            key,
+                            strValue,
+                            NodeType.Leaf
+                        );
                         node.AddChild(childNode);
                     }
                     else if (YamlParserHelper.IsYamlObject(value))
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(
+                            StategyType.Yaml,
+                            key,
+                            null,
+                            NodeType.InnerNode
+                        );
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {
@@ -147,7 +177,12 @@ namespace DotSerial.Yaml.Parser
                     else if (YamlParserHelper.IsYamlList(value))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            StategyType.Yaml,
+                            key,
+                            null,
+                            NodeType.ListNode
+                        );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                         {
@@ -156,7 +191,7 @@ namespace DotSerial.Yaml.Parser
                         }
 
                         // Add inner node to parent
-                        node.AddChild(listNode);                        
+                        node.AddChild(listNode);
                     }
                     else
                     {
@@ -168,7 +203,7 @@ namespace DotSerial.Yaml.Parser
             {
                 throw new DSYamlException("Parse: String is not a yaml object.");
             }
-        }        
+        }
 
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, MultiLineStringBuilder lines)
@@ -194,12 +229,14 @@ namespace DotSerial.Yaml.Parser
                         val = val.Trim();
                         var innerNode = ParseMethods.ParsePrimitiveNode(StategyType.Yaml, val, 0, key);
                         node.AddChild(innerNode);
-
                     }
                     else if (YamlParserHelper.IsYamlObject(value))
-                    {       
+                    {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+                        var innerNode =
+                            _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.InnerNode)
+                                as InnerNode
+                            ?? throw new NotImplementedException();
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
                         {
@@ -213,7 +250,12 @@ namespace DotSerial.Yaml.Parser
                     else if (YamlParserHelper.IsYamlList(value))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            StategyType.Yaml,
+                            key,
+                            null,
+                            NodeType.ListNode
+                        );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
                         {
@@ -222,28 +264,27 @@ namespace DotSerial.Yaml.Parser
                         }
 
                         // Add inner node to parent
-                        node.AddChild(listNode); 
+                        node.AddChild(listNode);
                     }
                     else
                     {
                         throw new DSYamlException("Parse: String is not a yaml object.");
-                    }       
+                    }
 
-                    index++;  
-                }                
+                    index++;
+                }
             }
             else
             {
                 throw new DSYamlException("Parse: String is not a yaml list.");
             }
-        }        
+        }
 
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder lines)
         {
             // Currenlty not needed
             throw new NotImplementedException();
-        }        
-                                
+        }
     }
 }

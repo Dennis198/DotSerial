@@ -12,7 +12,7 @@
         public int Int { get; set; }
         public uint UInt { get; set; }
         public nint NInt { get; set; }
-        public nuint NUInt { get; set; }       
+        public nuint NUInt { get; set; }
         public long Long { get; set; }
         public ulong ULong { get; set; }
         public short Short { get; set; }
@@ -42,7 +42,6 @@
             };
 
             return result;
-
         }
     }
 }

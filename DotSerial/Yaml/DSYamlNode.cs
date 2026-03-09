@@ -37,7 +37,7 @@ namespace DotSerial.Yaml
         internal IDSNode GetInternalData()
         {
             return _node;
-        }        
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -74,7 +74,7 @@ namespace DotSerial.Yaml
             {
                 // Determine key
                 string currKey = key ?? CommonConstants.MainObjectKey;
-                
+
                 // Serialize object
                 var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Yaml);
 
@@ -88,13 +88,13 @@ namespace DotSerial.Yaml
             {
                 throw;
             }
-        }       
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSYamlException">DotSerial Exception.</exception>
         public string Stringify()
-        {            
+        {
             try
             {
                 if (null == _node)
@@ -114,8 +114,8 @@ namespace DotSerial.Yaml
             catch
             {
                 throw;
-            }            
-        }         
+            }
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -127,9 +127,9 @@ namespace DotSerial.Yaml
                 if (null == str)
                 {
                     throw new DSYamlException($"{str} can't be null.");
-                }      
+                }
 
-                var root = YamlParserVisitor.Parse(str);        
+                var root = YamlParserVisitor.Parse(str);
 
                 return root;
             }
@@ -140,8 +140,8 @@ namespace DotSerial.Yaml
             catch
             {
                 throw;
-            }               
-        }        
+            }
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -153,7 +153,7 @@ namespace DotSerial.Yaml
                 if (null == str)
                 {
                     throw new DSYamlException($"{str} can't be null.");
-                }                
+                }
 
                 // Parse yaml string to node
                 DSYamlNode dsNode = FromString(str);
@@ -167,7 +167,7 @@ namespace DotSerial.Yaml
             catch
             {
                 throw;
-            }              
-        }                
+            }
+        }
     }
 }

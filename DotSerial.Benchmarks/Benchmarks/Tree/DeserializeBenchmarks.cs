@@ -1,9 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Deserialize;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
-using DotSerial.Tree.Creation;
 
 namespace DotSerial.Benchmarks.Benchmarks.Tree
 {

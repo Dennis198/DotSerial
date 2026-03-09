@@ -39,19 +39,24 @@ namespace DotSerial.Yaml.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, YamlWriterVisitor visitor, StringBuilder sb, YamlWriterOptions options)
+        private static void WriterAccept(
+            IDSNode node,
+            YamlWriterVisitor visitor,
+            StringBuilder sb,
+            YamlWriterOptions options
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, sb, options);    
+                visitor.VisitLeafNode(leafNode, sb, options);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, sb, options);    
+                visitor.VisitInnerNode(innerNode, sb, options);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, sb, options);    
+                visitor.VisitListNode(listNode, sb, options);
             }
             else if (node is DictionaryNode dicNode)
             {
@@ -60,8 +65,8 @@ namespace DotSerial.Yaml.Writer
             else
             {
                 throw new NotImplementedException();
-            }            
-        }       
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, YamlWriterOptions options)
@@ -72,18 +77,17 @@ namespace DotSerial.Yaml.Writer
             int level = options.Level;
             string? value = node.GetValue();
             string? prefix = options.GetPrefix();
-            
+
             if (options.AddKey)
             {
                 string key = node.Key;
-                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted,prefix);
+                YamlWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted, prefix);
             }
             else
             {
                 YamlWriterHelper.AddOnlyValue(sb, value, level, node.IsQuoted, prefix);
             }
-
-        }           
+        }
 
         /// <inheritdoc/>
         public void VisitInnerNode(InnerNode node, StringBuilder sb, YamlWriterOptions options)
@@ -102,8 +106,8 @@ namespace DotSerial.Yaml.Writer
                 }
 
                 var children = node.GetChildren();
-                
-                foreach(var child in children)
+
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new YamlWriterOptions(level, true, options.NumberOfPrefix));
 
@@ -115,14 +119,14 @@ namespace DotSerial.Yaml.Writer
                         options.NumberOfPrefix = 0;
                     }
 
-                    if(0 != options.NumberOfPrefix)
+                    if (0 != options.NumberOfPrefix)
                     {
                         // Is the currenlty writen node the first item of a list,
                         // then the following items dont need the list indicator
                         // in the same level.
                         options.DecreasePrefixCount();
                         level++;
-                    }                                 
+                    }
                 }
             }
             else
@@ -133,8 +137,7 @@ namespace DotSerial.Yaml.Writer
                     YamlWriterHelper.AddEmptyObject(sb, node.Key.ToString(), level, options.GetPrefix());
                 }
             }
-        } 
-
+        }
 
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, YamlWriterOptions options)
@@ -147,8 +150,8 @@ namespace DotSerial.Yaml.Writer
             if (node.HasChildren())
             {
                 if (false == node.IsPrimitiveList())
-                {    
-                    var children = node.GetChildren();  
+                {
+                    var children = node.GetChildren();
 
                     if (options.AddKey)
                     {
@@ -159,9 +162,14 @@ namespace DotSerial.Yaml.Writer
                     foreach (var child in children)
                     {
                         StringBuilder sbChild = new();
-                        WriterAccept(child, this, sbChild, new YamlWriterOptions(level, false, options.NumberOfPrefix + 1));
+                        WriterAccept(
+                            child,
+                            this,
+                            sbChild,
+                            new YamlWriterOptions(level, false, options.NumberOfPrefix + 1)
+                        );
 
-                        if(0 != options.NumberOfPrefix)
+                        if (0 != options.NumberOfPrefix)
                         {
                             // Is the currenlty writen node the first item of a list,
                             // then the following items dont need the list indicator
@@ -171,7 +179,6 @@ namespace DotSerial.Yaml.Writer
                         }
                         sb.Append(sbChild);
                     }
-
                 }
                 else
                 {
@@ -210,7 +217,7 @@ namespace DotSerial.Yaml.Writer
 
             if (node.HasChildren())
             {
-                var children = node.GetChildren();  
+                var children = node.GetChildren();
 
                 if (options.AddKey)
                 {
@@ -218,7 +225,7 @@ namespace DotSerial.Yaml.Writer
                     level++;
                 }
 
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new YamlWriterOptions(level, true));
                 }
@@ -236,6 +243,6 @@ namespace DotSerial.Yaml.Writer
                     YamlWriterHelper.AddEmptyObject(sb, null, level, options.GetPrefix());
                 }
             }
-        }   
+        }
     }
 }

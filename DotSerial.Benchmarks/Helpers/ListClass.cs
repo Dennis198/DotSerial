@@ -6,10 +6,7 @@
 
         internal static ListClass Create(int numOfList, int numOfListItems)
         {
-            var result = new ListClass
-            {
-                Value0 = []
-            };
+            var result = new ListClass { Value0 = [] };
 
             for (int i = 0; i < numOfList; i++)
             {
@@ -22,7 +19,6 @@
             }
 
             return result;
-
         }
     }
 }

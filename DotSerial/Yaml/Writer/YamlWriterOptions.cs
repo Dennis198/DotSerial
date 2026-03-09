@@ -12,10 +12,12 @@ namespace DotSerial.Yaml.Writer
         /// Indentation level
         /// </summary>
         internal int Level { get; private set; } = level;
+
         /// <summary>
         /// Add Key to object
         /// </summary>
         internal bool AddKey { get; private set; } = addKey;
+
         /// <summary>
         /// Number of ListItem Indicator to add.
         /// </summary>
@@ -49,12 +51,11 @@ namespace DotSerial.Yaml.Writer
         internal void DecreasePrefixCount()
         {
             NumberOfPrefix--;
-                
+
             if (NumberOfPrefix < 0)
             {
                 NumberOfPrefix = 0;
             }
-
         }
     }
 }

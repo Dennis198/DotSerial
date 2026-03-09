@@ -63,7 +63,7 @@ namespace DotSerial.Toon
             }
 
             return children;
-        }  
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -74,13 +74,13 @@ namespace DotSerial.Toon
             {
                 // Determine key
                 string currKey = key ?? CommonConstants.MainObjectKey;
-                
+
                 // Serialize object
                 var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Toon);
 
                 return new DSToonNode(rootNode);
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSToonException(ex.Message);
             }
@@ -88,7 +88,7 @@ namespace DotSerial.Toon
             {
                 throw;
             }
-        }    
+        }
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -107,14 +107,14 @@ namespace DotSerial.Toon
 
                 return str;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSToonException(ex.Message);
             }
             catch
             {
                 throw;
-            }            
+            }
         }
 
         /// <inheritdoc/>
@@ -129,18 +129,18 @@ namespace DotSerial.Toon
                     throw new DSToonException($"{str} can't be null.");
                 }
 
-                var root = ToonParserVisitor.Parse(str);        
+                var root = ToonParserVisitor.Parse(str);
 
                 return root;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSToonException(ex.Message);
             }
             catch
             {
                 throw;
-            }             
+            }
         }
 
         /// <inheritdoc/>
@@ -160,14 +160,14 @@ namespace DotSerial.Toon
 
                 return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSToonException(ex.Message);
             }
             catch
             {
                 throw;
-            }              
-        }                     
+            }
+        }
     }
 }

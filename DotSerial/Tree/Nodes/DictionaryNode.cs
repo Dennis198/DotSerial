@@ -7,7 +7,7 @@ namespace DotSerial.Tree.Nodes
     /// </summary>
     /// <param name="wrappedNode">Wrapped node</param>
     public class DictionaryNode(IDSNode wrappedNode) : InnerNodeDecorater(wrappedNode)
-    {        
+    {
         /// <inheritdoc/>
         public override object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {

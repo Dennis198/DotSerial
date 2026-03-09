@@ -15,13 +15,13 @@ namespace DotSerial.Xml
 
         /// <inheritdoc/>
         public static void SaveToFile(string path, object? obj)
-        {           
+        {
             try
             {
                 var xmlDocument = Serialize(obj);
                 SaveToFile(path, xmlDocument);
             }
-            catch 
+            catch
             {
                 throw;
             }
@@ -49,7 +49,7 @@ namespace DotSerial.Xml
             catch
             {
                 throw;
-            }            
+            }
         }
 
         /// <inheritdoc/>
@@ -71,10 +71,7 @@ namespace DotSerial.Xml
 
                 xmlDoc.Load(path);
 
-                var desObj = new DotSerialXml
-                {
-                    _document = xmlDoc
-                };
+                var desObj = new DotSerialXml { _document = xmlDoc };
 
                 var result = Deserialize<U>(desObj);
                 return result;
@@ -82,23 +79,20 @@ namespace DotSerial.Xml
             catch
             {
                 throw;
-            }            
+            }
         }
 
         /// <inheritdoc/>
         public static DotSerialXml Serialize(object? obj)
         {
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Xml);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Xml);
 
-            var result = new DotSerialXml
-            {
-                _document = new XmlDocument()
-            };
+            var result = new DotSerialXml { _document = new XmlDocument() };
 
             result._document.RootNode = new DSXmlNode(rootNode);
 
-            return result;            
+            return result;
         }
 
         /// <inheritdoc/>
@@ -115,7 +109,7 @@ namespace DotSerial.Xml
             var rootNode = serialObj._document.RootNode ?? throw new NullReferenceException();
             var result = IDSSerialNode<U>.ToObject<U>(rootNode.GetInternalData());
 
-            return result;            
+            return result;
         }
 
         /// <inheritdoc/>
@@ -135,7 +129,7 @@ namespace DotSerial.Xml
             }
 
             return result;
-        }        
+        }
 
         /// <summary>
         /// Converts the serialized object to an string.

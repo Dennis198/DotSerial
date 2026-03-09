@@ -2,7 +2,6 @@
 {
     public class HelperMethodsTests
     {
-
         [Fact]
         public void ImplementsIEnumerable_ListInt_Object()
         {
@@ -106,6 +105,5 @@
             // Assert
             Assert.True(result);
         }
-
     }
 }

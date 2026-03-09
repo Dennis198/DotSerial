@@ -6,6 +6,7 @@ namespace DotSerial.Common
     [Serializable()]
     public class DotSerialException : Exception
     {
-        internal DotSerialException(string message) : base (message){}
+        internal DotSerialException(string message)
+            : base(message) { }
     }
 }
