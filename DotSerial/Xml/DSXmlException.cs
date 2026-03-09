@@ -8,6 +8,7 @@ namespace DotSerial.Xml
     [Serializable()]
     public class DSXmlException : DotSerialException
     {
-        public DSXmlException(string message) : base (message){}
+        public DSXmlException(string message)
+            : base(message) { }
     }
 }

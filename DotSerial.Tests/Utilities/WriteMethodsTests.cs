@@ -21,6 +21,5 @@ namespace DotSerial.Tests.Utilities
             // Assert
             Assert.Equal(new string(' ', count * 4) + str, sb.ToString());
         }
-
     }
 }

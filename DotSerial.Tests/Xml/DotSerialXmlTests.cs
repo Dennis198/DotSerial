@@ -5,7 +5,6 @@ namespace DotSerial.Tests.Xml
 {
     public class DotSerialXmlTests
     {
-
         [Fact]
         public void Save_True()
         {
@@ -36,8 +35,8 @@ namespace DotSerial.Tests.Xml
             PrimitiveClass? tmp = null;
             var expected = PrimitiveClass.CreateTestDefault();
             string path = Directory.GetCurrentDirectory();
-            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar) ));
-            path = Path.Combine(path,string.Format("Resources{0}XmlTest.xml", Path.DirectorySeparatorChar));
+            path = Path.GetFullPath(Path.Combine(path, string.Format("..{0}..{0}..", Path.DirectorySeparatorChar)));
+            path = Path.Combine(path, string.Format("Resources{0}XmlTest.xml", Path.DirectorySeparatorChar));
 
             try
             {
@@ -52,7 +51,6 @@ namespace DotSerial.Tests.Xml
             // Assert
             Assert.NotNull(tmp);
             Assert.True(tmp.AssertTest(expected));
-
         }
 
         [Fact]
@@ -89,10 +87,9 @@ namespace DotSerial.Tests.Xml
         {
             // Arrange
             var tmp = DictionaryClass.CreateTestDefault();
-            
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);           
+            var xmlDocument = DotSerialXml.Serialize(tmp);
             var result = DotSerialXml.Deserialize<DictionaryClass>(xmlDocument);
 
             // Assert
@@ -195,11 +192,7 @@ namespace DotSerial.Tests.Xml
         {
             // Arrange
             var tmp2 = PrimitiveClass.CreateTestDefault();
-            var tmp = new NestedClass
-            {
-                Boolean = true,
-                PrimitiveClass = tmp2
-            };
+            var tmp = new NestedClass { Boolean = true, PrimitiveClass = tmp2 };
 
             // Act
             var xmlDocument = DotSerialXml.Serialize(tmp);
@@ -234,7 +227,6 @@ namespace DotSerial.Tests.Xml
             // Act
             var xmlDocument = DotSerialXml.Serialize(tmp);
             var result = DotSerialXml.Deserialize<EnumClass>(xmlDocument);
-
 
             // Assert
             Assert.NotNull(result);
@@ -284,7 +276,6 @@ namespace DotSerial.Tests.Xml
             // Assert
             Assert.NotNull(result);
             Assert.True(tmp.AssertTest(result));
-
         }
 
         [Fact]
@@ -342,7 +333,7 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var tmp = new ClassRecordNoParameterlessConstructor
             {
-                Value0 = new TestRecordNoParameterlessConstructor(5, 7)
+                Value0 = new TestRecordNoParameterlessConstructor(5, 7),
             };
 
             // Act
@@ -352,7 +343,6 @@ namespace DotSerial.Tests.Xml
             // Assert
             Assert.NotNull(result);
             Assert.True(tmp.AssertTest(result));
-
         }
 
         [Fact]
@@ -389,10 +379,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -402,10 +389,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassStack()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack
-            {
-                Value0 = new Stack<int>()
-            };
+            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -415,10 +399,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassQueue()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassQueue
-            {
-                Value0 = new Queue<int>()
-            };
+            var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -428,10 +409,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList
-            {
-                Value0 = new LinkedList<int>()
-            };
+            var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -441,10 +419,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -454,10 +429,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassSortedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedList
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -467,10 +439,7 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
@@ -479,7 +448,7 @@ namespace DotSerial.Tests.Xml
         [Fact]
         public void CreateSerializedObject_Null()
         {
-             // Arrange
+            // Arrange
             object? tmp = null;
 
             // Act
@@ -487,7 +456,7 @@ namespace DotSerial.Tests.Xml
             var result = DotSerialXml.Deserialize<object?>(xmlDocument);
 
             // Assert
-            Assert.Null(result);  
+            Assert.Null(result);
         }
 
         [Fact]

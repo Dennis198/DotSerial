@@ -8,6 +8,7 @@ namespace DotSerial.Yaml
     [Serializable()]
     public class DSYamlException : DotSerialException
     {
-        public DSYamlException(string message) : base (message){}
+        public DSYamlException(string message)
+            : base(message) { }
     }
 }

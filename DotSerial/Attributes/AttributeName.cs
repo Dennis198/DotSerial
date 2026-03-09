@@ -1,5 +1,5 @@
 namespace DotSerial.Attributes
-{ 
+{
     /// <summary> Attribute "DotSerialName"
     /// </summary>
     /// <param name="name">Custom name for the property</param>
@@ -11,5 +11,4 @@ namespace DotSerial.Attributes
         /// </summary>
         public string Name { get; private set; } = name;
     }
-
 }

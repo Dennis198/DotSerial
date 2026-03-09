@@ -2,7 +2,6 @@
 {
     public class ConverterMethodsTests
     {
-
         [Fact]
         public void ConvertDeserializedList_IntArray()
         {
@@ -38,7 +37,7 @@
         {
             // Arrange
             Dictionary<int, string> tmp = [];
-            Dictionary<object, object?> tmp2= [];
+            Dictionary<object, object?> tmp2 = [];
             tmp2.Add(0, "A");
             tmp2.Add(1, "B");
             tmp2.Add(2, "C");
@@ -89,7 +88,10 @@
             DateTime expected = DateTime.Now;
 
             // Act
-            object? result = DotSerial.Utilities.ConverterMethods.ConvertStringToSpecialParsableObject(str, expected.GetType());
+            object? result = DotSerial.Utilities.ConverterMethods.ConvertStringToSpecialParsableObject(
+                str,
+                expected.GetType()
+            );
 
             // Assert
             Assert.NotNull(result);

@@ -10,7 +10,7 @@ namespace DotSerial.Xml
     /// Xml strategy for parsing and writing.
     /// </summary>
     internal class XmlNodeStrategy : INodeStrategy
-    {        
+    {
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {
@@ -35,7 +35,7 @@ namespace DotSerial.Xml
                 return new LeafNode(key, null, false);
             }
 
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;            
+            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
             bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
             return new LeafNode(key, strValue, needQuotes);
@@ -88,7 +88,6 @@ namespace DotSerial.Xml
             value = value.XmlUnEscape();
 
             return new LeafNode(key, value, needQuotes);
-
         }
 
         /// <inheritdoc/>
@@ -112,9 +111,9 @@ namespace DotSerial.Xml
             Type type = value.GetType();
 
             if (type == typeof(string) && string.IsNullOrWhiteSpace(strValue))
-                return true;        
-            
+                return true;
+
             return false;
-        }        
+        }
     }
 }

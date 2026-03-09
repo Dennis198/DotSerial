@@ -90,7 +90,7 @@ namespace DotSerial.Tree.Nodes
                 return false;
             }
 
-            return _children.Count > 0;        
+            return _children.Count > 0;
         }
 
         /// <inheritdoc/>

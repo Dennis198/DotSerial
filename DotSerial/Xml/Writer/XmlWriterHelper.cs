@@ -80,7 +80,7 @@ namespace DotSerial.Xml.Writer
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
             AddEndTag(sb, XmlConstants.XmlInnerNodeProp);
-        }        
+        }
 
         /// <summary>
         /// Add an empty object
@@ -105,7 +105,7 @@ namespace DotSerial.Xml.Writer
                 AddEmptyTag(sb, XmlConstants.XmlInnerNodeProp, key);
             }
         }
-        
+
         /// <summary>
         /// Helper methode to add list start symbol and to xml
         /// </summary>
@@ -140,7 +140,7 @@ namespace DotSerial.Xml.Writer
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
             AddEndTag(sb, XmlConstants.XmlListProp);
-        }           
+        }
 
         /// <summary>
         /// Add an empty list
@@ -164,7 +164,7 @@ namespace DotSerial.Xml.Writer
                 WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
                 AddEmptyTag(sb, XmlConstants.XmlListProp, key);
             }
-        }        
+        }
 
         /// <summary>
         /// Add start tag
@@ -185,7 +185,7 @@ namespace DotSerial.Xml.Writer
             {
                 name = name.XmlEscape();
                 sb.AppendFormat("<{0} {1}=\"{2}\">", tag, XmlConstants.XmlAttributeKey, name);
-            }            
+            }
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace DotSerial.Xml.Writer
             ArgumentNullException.ThrowIfNull(tag);
 
             sb.AppendFormat("</{0}>", tag);
-        }   
+        }
 
         /// <summary>
         /// Add an empty tag
@@ -220,8 +220,8 @@ namespace DotSerial.Xml.Writer
             else
             {
                 name = name.XmlEscape();
-                sb.AppendFormat("<{0} {1}=\"{2}\"/>", tag,XmlConstants.XmlAttributeKey, name);
+                sb.AppendFormat("<{0} {1}=\"{2}\"/>", tag, XmlConstants.XmlAttributeKey, name);
             }
-        }        
+        }
     }
 }

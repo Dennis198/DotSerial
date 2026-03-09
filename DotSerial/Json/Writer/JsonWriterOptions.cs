@@ -9,6 +9,7 @@ namespace DotSerial.Json.Writer
         /// Indentation level
         /// </summary>
         internal int Level { get; private set; } = level;
+
         /// <summary>
         /// Add Key to object
         /// </summary>

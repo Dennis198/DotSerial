@@ -51,12 +51,11 @@ namespace DotSerial.Xml.Parser
     /// </summary>
     internal static class XmlParserHelper
     {
-
         /// <summary>
         /// Extracts all key value pairs from an xml object string builder.
         /// </summary>
         /// <param name="sb">StringBuilder</param>
-        /// <returns>Dictionary<XmlTagKeyPair, StringBuilder?> </returns>        
+        /// <returns>Dictionary<XmlTagKeyPair, StringBuilder?> </returns>
         internal static Dictionary<XmlTagKeyPair, StringBuilder?> ExtractKeyValuePairsFromXmlObject(StringBuilder sb)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -64,7 +63,7 @@ namespace DotSerial.Xml.Parser
             var result = new Dictionary<XmlTagKeyPair, StringBuilder?>();
 
             for (int i = 0; i < sb.Length; i++)
-            {  
+            {
                 char c = sb[i];
 
                 if (c == XmlConstants.XmlTagOpening)
@@ -85,13 +84,24 @@ namespace DotSerial.Xml.Parser
         /// <param name="tagKeyPair">XmlTagKeyPair</param>
         /// <param name="value">Extracted Value</param>
         /// <returns>End Index of the object</returns>
-        private static int ExtractKeyValuePair(StringBuilder sb, int startIndex, out XmlTagKeyPair tagKeyPair, out StringBuilder? value)
+        private static int ExtractKeyValuePair(
+            StringBuilder sb,
+            int startIndex,
+            out XmlTagKeyPair tagKeyPair,
+            out StringBuilder? value
+        )
         {
             ArgumentNullException.ThrowIfNull(sb);
 
             // Extract opening tag
             StringBuilder tmp = new();
-            int start = ParseMethods.AppendEnclosingValue(tmp, startIndex, sb, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+            int start = ParseMethods.AppendEnclosingValue(
+                tmp,
+                startIndex,
+                sb,
+                XmlConstants.XmlTagOpening,
+                XmlConstants.XmlTagClosing
+            );
 
             // Extract tag and key
             tagKeyPair = ExtractTagAndKey(tmp);
@@ -193,7 +203,13 @@ namespace DotSerial.Xml.Parser
                     {
                         // Extract full object to check its tag
                         StringBuilder tmp = new();
-                        int start = ParseMethods.AppendEnclosingValue(tmp, i, sb, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+                        int start = ParseMethods.AppendEnclosingValue(
+                            tmp,
+                            i,
+                            sb,
+                            XmlConstants.XmlTagOpening,
+                            XmlConstants.XmlTagClosing
+                        );
 
                         // Check if it is a closing or empty tag
                         if (false == IsClosingXmlTag(tmp) && false == IsEmptyXmlTag(tmp))
@@ -211,7 +227,6 @@ namespace DotSerial.Xml.Parser
                         i = start;
                     }
                 }
-
             }
 
             if (-1 == startIndex || -1 == endIndex)
@@ -220,7 +235,7 @@ namespace DotSerial.Xml.Parser
             }
 
             return (startIndex, endIndex);
-        }       
+        }
 
         /// <summary>
         /// Removes all whitespace from an xml string, except for whitespace within quoted strings.
@@ -249,7 +264,13 @@ namespace DotSerial.Xml.Parser
                 }
                 else if (c == XmlConstants.XmlTagOpening)
                 {
-                    i = ParseMethods.AppendEnclosingValue(sb, i, strAsStringBuilder, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+                    i = ParseMethods.AppendEnclosingValue(
+                        sb,
+                        i,
+                        strAsStringBuilder,
+                        XmlConstants.XmlTagOpening,
+                        XmlConstants.XmlTagClosing
+                    );
                 }
                 else
                 {
@@ -334,7 +355,7 @@ namespace DotSerial.Xml.Parser
                     return false;
                 }
             }
-            
+
             throw new DSXmlException("Parse: Unkown error.");
         }
 
@@ -363,7 +384,7 @@ namespace DotSerial.Xml.Parser
             // Tag
             bool tagStartFound = false;
             int indexTag = 1;
-            for(; indexTag < sb.Length - 1; indexTag++)
+            for (; indexTag < sb.Length - 1; indexTag++)
             {
                 char c = sb[indexTag];
                 if (char.IsWhiteSpace(c))

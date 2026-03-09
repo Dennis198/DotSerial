@@ -75,10 +75,7 @@ namespace DotSerial.Toon
 
                 toonDoc.Load(path);
 
-                var desObj = new DotSerialToon
-                {
-                    _document = toonDoc
-                };
+                var desObj = new DotSerialToon { _document = toonDoc };
 
                 var result = Deserialize<U>(desObj);
                 return result;
@@ -93,14 +90,11 @@ namespace DotSerial.Toon
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSToonException">Argument null.</exception>
         public static DotSerialToon Serialize(object? obj)
-        {        
+        {
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Toon);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Toon);
 
-            var result = new DotSerialToon
-            {
-                _document = new ToonDocument()
-            };
+            var result = new DotSerialToon { _document = new ToonDocument() };
 
             result._document.RootNode = new DSToonNode(rootNode);
 
@@ -143,7 +137,7 @@ namespace DotSerial.Toon
             }
 
             return result;
-        }             
+        }
 
         /// <summary>
         /// Converts the serialized object to an string.

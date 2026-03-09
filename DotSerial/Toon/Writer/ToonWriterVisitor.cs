@@ -8,7 +8,7 @@ namespace DotSerial.Toon.Writer
     /// Implementation of the visitor for toon writer.
     /// </summary>
     internal class ToonWriterVisitor : IToonNodeWriterVisitor
-    {       
+    {
         /// <inheritdoc/>
         public static string Write(DSToonNode node)
         {
@@ -21,7 +21,7 @@ namespace DotSerial.Toon.Writer
 
             // Trim start and ending
             sb = sb.TrimStartAndEnd();
-            
+
             return sb.ToString();
         }
 
@@ -32,19 +32,24 @@ namespace DotSerial.Toon.Writer
         /// <param name="visitor">Visitor</param>
         /// <param name="sb">Stringbuild</param>
         /// <param name="options">Additional options</param>
-        private static void WriterAccept(IDSNode node, ToonWriterVisitor visitor, StringBuilder sb, ToonWriterOptions options)
+        private static void WriterAccept(
+            IDSNode node,
+            ToonWriterVisitor visitor,
+            StringBuilder sb,
+            ToonWriterOptions options
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, sb, options);    
+                visitor.VisitLeafNode(leafNode, sb, options);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, sb, options);    
+                visitor.VisitInnerNode(innerNode, sb, options);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, sb, options);    
+                visitor.VisitListNode(listNode, sb, options);
             }
             else if (node is DictionaryNode dicNode)
             {
@@ -53,8 +58,8 @@ namespace DotSerial.Toon.Writer
             else
             {
                 throw new NotImplementedException();
-            }            
-        }            
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitLeafNode(LeafNode node, StringBuilder sb, ToonWriterOptions options)
@@ -65,7 +70,7 @@ namespace DotSerial.Toon.Writer
             int level = options.Level;
             string? value = node.GetValue();
             string? prefix = options.GetPrefix();
-            
+
             if (options.AddKey)
             {
                 string key = node.Key;
@@ -94,8 +99,8 @@ namespace DotSerial.Toon.Writer
                 }
 
                 var children = node.GetChildren();
-                
-                foreach(var child in children)
+
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new ToonWriterOptions(level, true, options.NumberOfPrefix));
 
@@ -105,7 +110,7 @@ namespace DotSerial.Toon.Writer
                         // in this level, so we need to reset the count for the next nodes.
                         level += options.NumberOfPrefix;
                         options.NumberOfPrefix = 0;
-                    }                              
+                    }
                 }
             }
             else
@@ -115,8 +120,8 @@ namespace DotSerial.Toon.Writer
                 {
                     ToonWriterHelper.AddEmptyObject(sb, node.Key.ToString(), level, options.GetPrefix());
                 }
-            }            
-        }     
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitListNode(ListNode node, StringBuilder sb, ToonWriterOptions options)
@@ -129,8 +134,8 @@ namespace DotSerial.Toon.Writer
             if (node.HasChildren())
             {
                 if (false == node.IsPrimitiveList())
-                {    
-                    var children = node.GetChildren();  
+                {
+                    var children = node.GetChildren();
 
                     ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
                     level++;
@@ -144,11 +149,15 @@ namespace DotSerial.Toon.Writer
                         foreach (var child in children)
                         {
                             StringBuilder sbChild = new();
-                            WriterAccept(child, this, sbChild, new ToonWriterOptions(level, false, options.NumberOfPrefix + 1));
+                            WriterAccept(
+                                child,
+                                this,
+                                sbChild,
+                                new ToonWriterOptions(level, false, options.NumberOfPrefix + 1)
+                            );
                             sb.Append(sbChild);
                         }
                     }
-
                 }
                 else
                 {
@@ -161,8 +170,8 @@ namespace DotSerial.Toon.Writer
             {
                 // Empty list
                 ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
-            }            
-        }           
+            }
+        }
 
         /// <inheritdoc/>
         public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, ToonWriterOptions options)
@@ -174,7 +183,7 @@ namespace DotSerial.Toon.Writer
 
             if (node.HasChildren())
             {
-                var children = node.GetChildren();  
+                var children = node.GetChildren();
 
                 if (options.AddKey)
                 {
@@ -182,7 +191,7 @@ namespace DotSerial.Toon.Writer
                     level++;
                 }
 
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     WriterAccept(child, this, sb, new ToonWriterOptions(level, true));
                 }

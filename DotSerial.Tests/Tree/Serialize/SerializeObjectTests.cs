@@ -402,7 +402,6 @@ namespace DotSerial.Tests.Tree.Serialize
             {
                 Assert.Fail();
             }
-
         }
 
         [Fact]
@@ -439,10 +438,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -452,10 +448,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassStack()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack
-            {
-                Value0 = new Stack<int>()
-            };
+            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -465,10 +458,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassQueue()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassQueue
-            {
-                Value0 = new Queue<int>()
-            };
+            var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -478,10 +468,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList
-            {
-                Value0 = new LinkedList<int>()
-            };
+            var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -491,10 +478,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -504,10 +488,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassSortedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedList
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -517,10 +498,7 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet
-            {
-                Value0 = []
-            };
+            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
@@ -535,6 +513,5 @@ namespace DotSerial.Tests.Tree.Serialize
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
-
     }
 }

@@ -77,20 +77,20 @@ namespace DotSerial.Xml
             {
                 // Determine key
                 string currKey = key ?? CommonConstants.MainObjectKey;
-                
+
                 // Serialize object
                 var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Xml);
 
                 return new DSXmlNode(rootNode);
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSXmlException(ex.Message);
             }
             catch
             {
                 throw;
-            }        
+            }
         }
 
         /// <inheritdoc/>
@@ -110,14 +110,14 @@ namespace DotSerial.Xml
 
                 return xmlString;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSXmlException(ex.Message);
             }
             catch
             {
                 throw;
-            }                  
+            }
         }
 
         /// <inheritdoc/>
@@ -130,20 +130,20 @@ namespace DotSerial.Xml
                 if (string.IsNullOrWhiteSpace(str))
                 {
                     throw new DSXmlException($"{str} can't be null or whitespace.");
-                }   
+                }
 
-                var root = XmlParserVisitor.Parse(str);        
+                var root = XmlParserVisitor.Parse(str);
 
                 return root;
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSXmlException(ex.Message);
             }
             catch
             {
                 throw;
-            }          
+            }
         }
 
         /// <inheritdoc/>
@@ -163,14 +163,14 @@ namespace DotSerial.Xml
 
                 return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DSXmlException(ex.Message);
             }
             catch
             {
                 throw;
-            }                   
-        }        
+            }
+        }
     }
 }

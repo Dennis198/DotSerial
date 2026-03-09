@@ -14,6 +14,7 @@ namespace DotSerial.Xml.Writer
         /// <param name="node">Node</param>
         /// <returns>xml string</returns>
         public static abstract string Write(DSXmlNode node);
+
         /// <summary>
         /// Visit leaf node
         /// </summary>
@@ -21,6 +22,7 @@ namespace DotSerial.Xml.Writer
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
         public abstract void VisitLeafNode(LeafNode node, StringBuilder sb, XmlWriterOptions options);
+
         /// <summary>
         /// Visit inner node
         /// </summary>
@@ -28,13 +30,15 @@ namespace DotSerial.Xml.Writer
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
         public abstract void VisitInnerNode(InnerNode node, StringBuilder sb, XmlWriterOptions options);
+
         /// <summary>
         /// Visit list node
         /// </summary>
         /// <param name="node">List node</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="options">Additional options</param>
-        public abstract void VisitListNode(ListNode node,StringBuilder sb, XmlWriterOptions options);
+        public abstract void VisitListNode(ListNode node, StringBuilder sb, XmlWriterOptions options);
+
         /// <summary>
         /// Visit dictionary node
         /// </summary>

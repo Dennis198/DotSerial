@@ -10,7 +10,7 @@ namespace DotSerial.Tree.Nodes
         /// <summary>
         /// Key of the node
         /// </summary>
-        public string Key {get;}
+        public string Key { get; }
 
         /// <summary>
         /// True, if the node value must be quoted when serialized

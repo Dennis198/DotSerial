@@ -56,7 +56,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.True(result);
-        }      
+        }
 
         [Fact]
         public void EqualsContent_False()
@@ -70,7 +70,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.False(result);
-        }        
+        }
 
         [Fact]
         public void IndexOf_Found()
@@ -83,7 +83,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(8, result);
-        }       
+        }
 
         [Fact]
         public void IndexOf_NotFound()
@@ -96,7 +96,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(-1, result);
-        }         
+        }
 
         [Fact]
         public void SubString()
@@ -109,7 +109,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal("Hello World", result.ToString());
-        }      
+        }
 
         [Fact]
         public void EqualsNullString_True()
@@ -122,7 +122,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.True(result);
-        }    
+        }
 
         [Fact]
         public void EqualsNullString_False()
@@ -135,7 +135,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.False(result);
-        } 
+        }
 
         [Fact]
         public void EqualsNullString_True_Index()
@@ -148,7 +148,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.True(result);
-        }    
+        }
 
         [Fact]
         public void EqualsNullString_False_Index()
@@ -161,7 +161,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.False(result);
-        }     
+        }
 
         [Fact]
         public void EqualFirstNoWhiteSpaceChar_True()
@@ -174,7 +174,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.True(result);
-        }    
+        }
 
         [Fact]
         public void EqualFirstNoWhiteSpaceChar_False()
@@ -187,7 +187,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.False(result);
-        }      
+        }
 
         [Fact]
         public void EqualLastNoWhiteSpaceChar_True()
@@ -200,7 +200,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.True(result);
-        }    
+        }
 
         [Fact]
         public void EqualLastNoWhiteSpaceChar_False()
@@ -213,7 +213,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.False(result);
-        }       
+        }
 
         [Fact]
         public void CountQuotedValues_Zero()
@@ -226,7 +226,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(0, result);
-        }              
+        }
 
         [Fact]
         public void CountQuotedValues_Three()
@@ -239,7 +239,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(3, result);
-        }   
+        }
 
         [Fact]
         public void CountQuotedValues_Three_Null()
@@ -252,7 +252,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(3, result);
-        }        
+        }
 
         [Fact]
         public void CountQuotedValues_Three_WithoutNull()
@@ -265,7 +265,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(2, result);
-        }      
+        }
 
         [Fact]
         public void SkipStringValue()
@@ -278,7 +278,7 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(6, result);
-        }    
+        }
 
         [Fact]
         public void SkipEnclosedValue()
@@ -291,6 +291,6 @@ namespace DotSerial.Tests.Utilities
 
             // Assert
             Assert.Equal(6, result);
-        }                                                          
+        }
     }
 }

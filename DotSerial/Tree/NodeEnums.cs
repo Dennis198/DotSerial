@@ -8,7 +8,6 @@
         Leaf = 0,
         InnerNode = 1,
         ListNode = 2,
-        DictionaryNode = 3
+        DictionaryNode = 3,
     }
-
 }

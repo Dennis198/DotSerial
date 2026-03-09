@@ -29,7 +29,6 @@ namespace DotSerial.Json
             {
                 throw;
             }
-
         }
 
         /// <inheritdoc/>
@@ -52,7 +51,7 @@ namespace DotSerial.Json
             catch
             {
                 throw;
-            }          
+            }
         }
     }
 }

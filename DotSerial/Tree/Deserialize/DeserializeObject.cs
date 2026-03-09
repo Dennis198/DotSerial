@@ -1,9 +1,8 @@
 using System.Reflection;
-
-using DotSerial.Utilities;
-using DotSerial.Tree.Nodes;
-using DotSerial.Common;
 using DotSerial.Attributes;
+using DotSerial.Common;
+using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Deserialize
 {
@@ -41,7 +40,6 @@ namespace DotSerial.Tree.Deserialize
             }
 
             return result;
-
         }
 
         /// <inheritdoc/>
@@ -89,8 +87,10 @@ namespace DotSerial.Tree.Deserialize
 
                     if (null == child)
                     {
-                        throw new DotSerialException($"Deserialize: Child with ID {propDSName} not found in node {node.Key}");
-                    }                    
+                        throw new DotSerialException(
+                            $"Deserialize: Child with ID {propDSName} not found in node {node.Key}"
+                        );
+                    }
 
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
                     prop.SetValue(result, tmp);
@@ -146,7 +146,7 @@ namespace DotSerial.Tree.Deserialize
             object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
 
             return tmpValue;
-        }        
+        }
 
         /// <summary>
         /// Deserialize dictionary
@@ -161,7 +161,7 @@ namespace DotSerial.Tree.Deserialize
 
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
-                 // Check if type is supported
+                // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
                     throw new DotSerialException($"Deserialize: Type {keyType} is not supported.");
@@ -187,7 +187,7 @@ namespace DotSerial.Tree.Deserialize
                 Dictionary<object, object?> result = [];
                 var children = node.GetChildren();
 
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     string key = child.Key;
                     object? value;
@@ -209,8 +209,6 @@ namespace DotSerial.Tree.Deserialize
             {
                 throw new DotSerialException("Type is not a Dictionary.");
             }
-
         }
-
     }
 }

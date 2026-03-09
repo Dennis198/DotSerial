@@ -7,12 +7,19 @@
     public sealed class TemporaryFile(FileInfo temporaryFile) : IDisposable
     {
         private readonly FileInfo file = temporaryFile;
-        public FileInfo FileInfo { get { return file; } }
+        public FileInfo FileInfo
+        {
+            get { return file; }
+        }
 
-        public TemporaryFile() : this(Path.GetTempFileName()) { }
-        public TemporaryFile(string fileName) : this(new FileInfo(fileName)) { }
+        public TemporaryFile()
+            : this(Path.GetTempFileName()) { }
 
-        public TemporaryFile(Stream initialFileContents) : this()
+        public TemporaryFile(string fileName)
+            : this(new FileInfo(fileName)) { }
+
+        public TemporaryFile(Stream initialFileContents)
+            : this()
         {
             using var file = new FileStream(this, FileMode.Open);
             initialFileContents.CopyTo(file);
@@ -22,16 +29,19 @@
         {
             return temporaryFile.file;
         }
+
         public static implicit operator string(TemporaryFile temporaryFile)
         {
             return temporaryFile.file.FullName;
         }
+
         public static explicit operator TemporaryFile(FileInfo temporaryFile)
         {
             return new TemporaryFile(temporaryFile);
         }
 
         private volatile bool disposed;
+
         public void Dispose()
         {
             try
@@ -41,9 +51,11 @@
             }
             catch (Exception) { } // Ignore
         }
+
         ~TemporaryFile()
         {
-            if (!disposed) Dispose();
+            if (!disposed)
+                Dispose();
         }
     }
 }

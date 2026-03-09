@@ -6,10 +6,7 @@
 
         internal static DictionaryClass Create(int numOfDicItems)
         {
-            var result = new DictionaryClass
-            {
-                Value0 = []
-            };
+            var result = new DictionaryClass { Value0 = [] };
 
             for (int i = 0; i < numOfDicItems; i++)
             {
@@ -17,7 +14,6 @@
             }
 
             return result;
-
         }
     }
 }

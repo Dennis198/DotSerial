@@ -11,16 +11,16 @@ namespace DotSerial.Common
     /// </summary>
     /// <typeparam name="T">Type of the node (Json, Yaml, ...)</typeparam>
     public interface IDSSerialNode<T>
-    {        
+    {
         /// <summary>
         /// Key of the node.
         /// </summary>
-        public string Key {get;}
+        public string Key { get; }
 
         /// <summary>
         /// Check if node has children.
         /// </summary>
-        public bool HasChildren {get;}
+        public bool HasChildren { get; }
 
         /// <summary>
         /// Gets the child with the key.
@@ -35,7 +35,7 @@ namespace DotSerial.Common
         /// <param name="obj">Object</param>
         /// <param name="key">Key of the object</param>
         /// <returns>Node</returns>
-        public abstract static T ToNode(object? obj, string? key = null);
+        public static abstract T ToNode(object? obj, string? key = null);
 
         /// <summary>
         /// Converts the node to a string.
@@ -48,7 +48,7 @@ namespace DotSerial.Common
         /// </summary>
         /// <param name="str">String</param>
         /// <returns>Node</returns>
-        public abstract static T FromString(string str);
+        public static abstract T FromString(string str);
 
         /// <summary>
         /// Deserializes a string to an object of type U.
@@ -56,7 +56,7 @@ namespace DotSerial.Common
         /// <param name="str">String</param>
         /// <typeparam name="U">Type of the object</typeparam>
         /// <returns>Deserilized object</returns>
-        public abstract static U ToObject<U>(string str);
+        public static abstract U ToObject<U>(string str);
 
         /// <summary>
         /// Deserializes the node to an object of type U.
@@ -94,9 +94,9 @@ namespace DotSerial.Common
                 {
 #pragma warning disable CS8603
                     return default;
-#pragma warning restore CS8603                    
+#pragma warning restore CS8603
                 }
-                
+
                 // cast object to U
                 if (resultObj is U result)
                 {
@@ -105,16 +105,16 @@ namespace DotSerial.Common
                 else
                 {
                     throw new DotSerialException($"{resultObj} is not of type {nameof(U)}.");
-                }  
+                }
             }
-            catch(DotSerialException ex)
+            catch (DotSerialException ex)
             {
                 throw new DotSerialException(ex.Message);
             }
             catch
             {
                 throw;
-            }               
-        }        
+            }
+        }
     }
 }

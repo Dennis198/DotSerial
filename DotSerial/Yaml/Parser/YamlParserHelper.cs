@@ -9,13 +9,14 @@ namespace DotSerial.Yaml.Parser
     /// </summary>
     internal static class YamlParserHelper
     {
-
         /// <summary>
         /// Extracts key value pairs from yaml object
         /// </summary>
         /// <param name="lines">MultiLineStringBuilder</param>
         /// <returns>Dictionary<string, MultiLineStringBuilder></returns>
-        internal static Dictionary<string, MultiLineStringBuilder> ExtractKeyValuePairsFromYamlObject(MultiLineStringBuilder lines)
+        internal static Dictionary<string, MultiLineStringBuilder> ExtractKeyValuePairsFromYamlObject(
+            MultiLineStringBuilder lines
+        )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -41,7 +42,7 @@ namespace DotSerial.Yaml.Parser
                     int eIndex = GetEndIndexOfYamlObject(lines, i);
 
                     var helpObj = lines.Slice(sIndex, eIndex);
-                    
+
                     if (sIndex == eIndex && !IsYamlList(helpObj))
                     {
                         // Special case an object with exaclty one item.
@@ -52,21 +53,20 @@ namespace DotSerial.Yaml.Parser
                     }
 
                     result.Add(key, helpObj);
-                    i = eIndex;                    
-
+                    i = eIndex;
                 }
                 // "Key": "Value"
                 else
                 {
                     string key = ExtractKeyFromLine(line);
                     var helpObj = lines.Slice(i, i);
-                   
+
                     result.Add(key, helpObj);
                 }
             }
 
             return result;
-        }        
+        }
 
         /// <summary>
         /// Extracts list of objcts from yaml string
@@ -101,11 +101,10 @@ namespace DotSerial.Yaml.Parser
                     result.Add(helpObj);
                     i = endIndex;
                 }
-                
             }
 
             return result;
-        }   
+        }
 
         /// <summary>
         /// Extracts the value from a line
@@ -161,19 +160,19 @@ namespace DotSerial.Yaml.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                   _ = ParseMethods.AppendStringValue(keyBuilder, i, line);                    
+                    _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
                     return keyBuilder.ToString();
                 }
                 else
                 {
-                   _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
-                   return keyBuilder.ToString();
+                    _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
+                    return keyBuilder.ToString();
                 }
             }
 
             throw new NotImplementedException();
-        }                  
- 
+        }
+
         /// <summary>
         /// Removes the List indicator for the objects
         /// </summary>
@@ -183,7 +182,8 @@ namespace DotSerial.Yaml.Parser
         private static void RemoveListItemIndicator(MultiLineStringBuilder lines, int startIndex, int endIndex)
         {
             var startLine = lines.GetLine(startIndex);
-            int index = ParseMethods.LineLevel(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
+            int index =
+                ParseMethods.LineLevel(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
 
             if (startLine[index] != YamlConstants.ListItemIndicator)
             {
@@ -195,7 +195,7 @@ namespace DotSerial.Yaml.Parser
             for (int i = startIndex; i <= endIndex; i++)
             {
                 var line = lines.GetLine(i);
-                for(int j = index; j < index + YamlConstants.IndentationSize; j++)
+                for (int j = index; j < index + YamlConstants.IndentationSize; j++)
                 {
                     if (char.IsWhiteSpace(line[index]))
                     {
@@ -205,9 +205,9 @@ namespace DotSerial.Yaml.Parser
                     {
                         break;
                     }
-                }   
+                }
             }
-        }           
+        }
 
         /// <summary>
         /// Check if MultiLineStringBuilder is a yaml object
@@ -264,7 +264,7 @@ namespace DotSerial.Yaml.Parser
             // 2. "[]"
             if (IsEmptyList(firstLine))
             {
-                if(lines.Count != 1)
+                if (lines.Count != 1)
                 {
                     return false;
                 }
@@ -279,7 +279,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             return false;
-        } 
+        }
 
         /// <summary>
         /// Check if MultiLineStringBuilder is a single value
@@ -300,7 +300,7 @@ namespace DotSerial.Yaml.Parser
             if (IsEmptyList(firstLine) || IsEmptyObject(firstLine))
             {
                 return false;
-            }             
+            }
 
             // "null"
             if (firstLine.EqualsNullString())
@@ -350,7 +350,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             return true;
-        }   
+        }
 
         /// <summary>
         /// Check if MultiLineStringBuilder is only a key value pair
@@ -416,7 +416,7 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            bool valueWasFound =  false;
+            bool valueWasFound = false;
 
             for (int i = start; i < firstLine.Length; i++)
             {
@@ -430,23 +430,23 @@ namespace DotSerial.Yaml.Parser
                 if (valueWasFound)
                 {
                     throw new NotImplementedException();
-                }                
+                }
 
                 if (c == CommonConstants.Quote)
                 {
-                    i = firstLine.SkipStringValue(i);                        
+                    i = firstLine.SkipStringValue(i);
                     valueWasFound = true;
                 }
                 else
                 {
-                    i= firstLine.SkipTillStopChar(i, null);
+                    i = firstLine.SkipTillStopChar(i, null);
                     valueWasFound = true;
                 }
             }
 
             return valueWasFound;
-        } 
-                                
+        }
+
         /// <summary>
         /// Check is string builder is "Key": {}
         /// </summary>
@@ -458,7 +458,7 @@ namespace DotSerial.Yaml.Parser
 
             bool closedBracletFound = false;
 
-            for (int i = line.Length -1 ; i >= 0; i--)
+            for (int i = line.Length - 1; i >= 0; i--)
             {
                 char c = line[i];
 
@@ -500,10 +500,10 @@ namespace DotSerial.Yaml.Parser
         internal static bool IsEmptyList(StringBuilder line)
         {
             ArgumentNullException.ThrowIfNull(line);
-            
+
             bool closedBracletFound = false;
 
-            for (int i = line.Length -1 ; i >= 0; i--)
+            for (int i = line.Length - 1; i >= 0; i--)
             {
                 char c = line[i];
 
@@ -535,7 +535,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             return false;
-        }  
+        }
 
         /// <summary>
         /// Removes the yaml start and end symbols if there.
@@ -572,7 +572,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             return lines.Slice(startIndex, endIndex);
-        }       
+        }
 
         /// <summary>
         /// Gets the end index of an yaml object.
@@ -609,7 +609,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             return endIndex;
-        }          
+        }
 
         /// <summary>
         /// Extracts the key from a line
@@ -628,7 +628,7 @@ namespace DotSerial.Yaml.Parser
                 if (char.IsWhiteSpace(c))
                 {
                     continue;
-                }                 
+                }
 
                 if (c == CommonConstants.Quote)
                 {
@@ -643,7 +643,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             throw new NotImplementedException();
-        }     
+        }
 
         /// <summary>
         /// Check if line is a key line
@@ -655,7 +655,6 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             return line.EqualLastNoWhiteSpaceChar(YamlConstants.KeyValueSeperator);
-             
-        }                                                                          
+        }
     }
 }

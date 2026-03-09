@@ -5,7 +5,6 @@ namespace DotSerial.Utilities
 {
     internal static class StringBuilderMethods
     {
-        
         /// <summary>
         /// Check if a stringbuilder has start and end quotes
         /// </summary>
@@ -58,7 +57,7 @@ namespace DotSerial.Utilities
         /// <param name="startIndex">Startindex for comparissen</param>
         /// <returns>True, if equal</returns>
         internal static bool EqualsContent(this StringBuilder sb, StringBuilder sbToCheck, int startIndex = 0)
-        {            
+        {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(sbToCheck);
 
@@ -128,7 +127,7 @@ namespace DotSerial.Utilities
         /// <param name="sb">Stringbuilder</param>
         /// <returns>Stringbuilder</returns>
         internal static StringBuilder TrimEnd(this StringBuilder sb)
-        {            
+        {
             ArgumentNullException.ThrowIfNull(sb);
 
             if (sb.Length == 0)
@@ -149,7 +148,7 @@ namespace DotSerial.Utilities
             }
 
             return new StringBuilder(sb.ToString());
-        }            
+        }
 
         /// <summary>
         /// asdasd
@@ -189,7 +188,7 @@ namespace DotSerial.Utilities
 
                 // Check if first character matches
                 if (c == firstChar)
-                {   
+                {
                     // If only one char to match, return index
                     if (strLength == 1)
                     {
@@ -230,9 +229,9 @@ namespace DotSerial.Utilities
         internal static StringBuilder SubString(this StringBuilder input, int index, int length)
         {
             StringBuilder subString = new();
-            if (index + length - 1 >= input.Length || index < 0) 
+            if (index + length - 1 >= input.Length || index < 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(input)); 
+                throw new ArgumentOutOfRangeException(nameof(input));
             }
             int endIndex = index + length;
             for (int i = index; i < endIndex; i++)
@@ -332,9 +331,9 @@ namespace DotSerial.Utilities
                 if (char.ToLower(input[4]) != 'e')
                     return false;
             }
-            
+
             return true;
-        }        
+        }
 
         /// <summary>
         /// Check if Stringbuilder content equals "null".
@@ -358,7 +357,7 @@ namespace DotSerial.Utilities
                 return false;
             if (char.ToLower(input[3]) != CommonConstants.L)
                 return false;
-            
+
             return true;
         }
 
@@ -385,9 +384,9 @@ namespace DotSerial.Utilities
                 return false;
             if (char.ToLower(input[startIndex + 3]) != CommonConstants.L)
                 return false;
-            
+
             return true;
-        }        
+        }
 
         /// <summary>
         /// Check if the first non white space char equals the given char.
@@ -478,12 +477,11 @@ namespace DotSerial.Utilities
                     }
 
                     i += 3;
-                    
+
                     if (considerNull)
                     {
                         count++;
                     }
-                    
                 }
             }
 
@@ -500,7 +498,7 @@ namespace DotSerial.Utilities
         internal static int SkipTillStopChar(this StringBuilder sb, int startIndex, char? stopChar)
         {
             ArgumentNullException.ThrowIfNull(sb);
-            
+
             if (sb.IsNullOrWhiteSpace())
             {
                 throw new ArgumentException(sb.ToString());
@@ -526,7 +524,7 @@ namespace DotSerial.Utilities
             for (int i = startIndex; i < sb.Length; i++)
             {
                 var c = sb[i];
-                
+
                 if (isEscaped)
                 {
                     isEscaped = false;
@@ -547,7 +545,7 @@ namespace DotSerial.Utilities
             }
 
             return sb.Length - 1;
-        }        
+        }
 
         /// <summary>
         /// Skips values till a stop char is reached in a Stringbuilder.
@@ -559,7 +557,7 @@ namespace DotSerial.Utilities
         internal static int SkipTillStopChars(this StringBuilder sb, int startIndex, char[] stopChars)
         {
             ArgumentNullException.ThrowIfNull(sb);
-            
+
             if (sb.IsNullOrWhiteSpace())
             {
                 throw new ArgumentException(sb.ToString());
@@ -585,7 +583,7 @@ namespace DotSerial.Utilities
             for (int i = startIndex; i < sb.Length; i++)
             {
                 var c = sb[i];
-                
+
                 if (isEscaped)
                 {
                     isEscaped = false;
@@ -631,7 +629,7 @@ namespace DotSerial.Utilities
             if (sb[startIndex] != CommonConstants.Quote)
             {
                 throw new ArgumentException(sb.ToString());
-            }        
+            }
 
             bool isEscaped = false;
 
@@ -659,7 +657,7 @@ namespace DotSerial.Utilities
             }
 
             throw new ArgumentException("No closing quote found.");
-        }   
+        }
 
         /// <summary>
         /// Skips an enclosed value in a Stringbuilder.
@@ -686,7 +684,7 @@ namespace DotSerial.Utilities
             if (sb[startIndex] != openChar)
             {
                 throw new ArgumentException(sb.ToString());
-            }   
+            }
 
             bool isEscaped = false;
             int numOpen = 0;
@@ -716,7 +714,7 @@ namespace DotSerial.Utilities
                 else if (c == openChar)
                 {
                     numOpen++;
-                }                            
+                }
             }
 
             if (true == isEscaped)
@@ -725,7 +723,6 @@ namespace DotSerial.Utilities
             }
 
             throw new ArgumentException("No closing character found.");
-        }      
-
+        }
     }
 }

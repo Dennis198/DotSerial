@@ -1,7 +1,7 @@
-﻿using DotSerial.Common;
-using System.Collections;
+﻿using System.Collections;
 using System.Globalization;
 using System.Net;
+using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -10,7 +10,7 @@ namespace DotSerial.Utilities
     /// </summary>
     internal static class ConverterMethods
     {
-        /// <summary> 
+        /// <summary>
         /// Converts the serialzed list to object so "PropertyInfo.SetValue" can
         /// set the value properly
         /// </summary>
@@ -23,7 +23,7 @@ namespace DotSerial.Utilities
             {
                 return null;
             }
-            
+
             // Get Item type of list
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
@@ -70,23 +70,22 @@ namespace DotSerial.Utilities
                                 castedListResult.Add(itemResult);
                         }
                     }
-                    else if (TypeCheckMethods.IsList(itemType) ||
-                             TypeCheckMethods.IsArray(itemType))
+                    else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
                     {
                         object? itemResult;
                         if (castedList[i] is not List<object?> castedListItemObj)
                         {
-                             if (castedList[i] != null)
+                            if (castedList[i] != null)
                             {
                                 if (isArray)
                                     castedListResult[i] = castedList[i];
                                 else
                                     castedListResult.Add(castedList[i]);
                             }
-                            
+
                             continue;
                         }
-                        
+
                         itemResult = ConvertDeserializedList(castedListItemObj, itemType);
 
                         if (itemResult != null)
@@ -112,10 +111,12 @@ namespace DotSerial.Utilities
                             castedListResult.Add(enumObj);
 #pragma warning restore CS8604
                     }
-                    else if (TypeCheckMethods.IsClass(itemType) ||
-                             TypeCheckMethods.IsStruct(itemType) ||
-                             TypeCheckMethods.IsPrimitive(itemType) ||
-                             TypeCheckMethods.IsSpecialParsableObject(itemType))
+                    else if (
+                        TypeCheckMethods.IsClass(itemType)
+                        || TypeCheckMethods.IsStruct(itemType)
+                        || TypeCheckMethods.IsPrimitive(itemType)
+                        || TypeCheckMethods.IsSpecialParsableObject(itemType)
+                    )
                     {
                         if (isArray)
                             castedListResult[i] = castedList[i];
@@ -134,10 +135,9 @@ namespace DotSerial.Utilities
             {
                 throw new InvalidCastException();
             }
-
         }
 
-        /// <summary> 
+        /// <summary>
         /// Converts the serialzed dictionary to object so "PropertyInfo.SetValue" can
         /// set the value properly
         /// </summary>
@@ -151,7 +151,7 @@ namespace DotSerial.Utilities
                 return null;
             }
 
-            // Get Item type of dictionary            
+            // Get Item type of dictionary
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
                 // Check if type is supported
@@ -180,7 +180,7 @@ namespace DotSerial.Utilities
                     {
                         if (TypeCheckMethods.IsDictionary(valueType))
                         {
-                            object? itemResult = null;                            
+                            object? itemResult = null;
                             if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
                             {
                                 throw new InvalidCastException();
@@ -189,8 +189,7 @@ namespace DotSerial.Utilities
 
                             castedDicResult.Add(keyValuePair.Key, itemResult);
                         }
-                        else if (TypeCheckMethods.IsList(valueType) ||
-                                 TypeCheckMethods.IsArray(valueType))
+                        else if (TypeCheckMethods.IsList(valueType) || TypeCheckMethods.IsArray(valueType))
                         {
                             object? itemResult = null;
                             if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)
@@ -210,21 +209,30 @@ namespace DotSerial.Utilities
                             }
 
 #pragma warning disable CS8604
-                            castedDicResult.Add(keyValuePair.Key, ConvertEnumToObject(valueType, castedDic[keyValuePair.Key]));
+                            castedDicResult.Add(
+                                keyValuePair.Key,
+                                ConvertEnumToObject(valueType, castedDic[keyValuePair.Key])
+                            );
 #pragma warning restore CS8604
                         }
-                        else if (TypeCheckMethods.IsClass(valueType) ||
-                                 TypeCheckMethods.IsStruct(valueType) ||
-                                 TypeCheckMethods.IsPrimitive(valueType))
+                        else if (
+                            TypeCheckMethods.IsClass(valueType)
+                            || TypeCheckMethods.IsStruct(valueType)
+                            || TypeCheckMethods.IsPrimitive(valueType)
+                        )
                         {
-                            object? key = TypeCheckMethods.IsPrimitive(keyType) ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType) : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+                            object? key = TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
 #pragma warning disable CS8604
                             castedDicResult.Add(key, keyValuePair.Value);
 #pragma warning restore CS8604
                         }
                         else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
                         {
-                            object? key = TypeCheckMethods.IsPrimitive(keyType) ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType) : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+                            object? key = TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
 #pragma warning disable CS8604
                             castedDicResult.Add(key, keyValuePair.Value);
 #pragma warning restore CS8604
@@ -263,7 +271,7 @@ namespace DotSerial.Utilities
             {
                 return Enum.ToObject(type, enumObj);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }

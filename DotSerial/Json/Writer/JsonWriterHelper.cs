@@ -79,7 +79,7 @@ namespace DotSerial.Json.Writer
             sb.AppendLine();
 
             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-            
+
             key = key.EscapeChars(JsonConstants.CharsToEscape);
             sb.AppendFormat("\"{0}\": ", key);
 
@@ -96,7 +96,7 @@ namespace DotSerial.Json.Writer
                 }
                 sb.AppendFormat("{0},", value);
             }
-        } 
+        }
 
         /// <summary>
         /// Appends only the value without the key
@@ -125,9 +125,9 @@ namespace DotSerial.Json.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0},", value);                
-            }           
-        }  
+                sb.AppendFormat("{0},", value);
+            }
+        }
 
         /// <summary>
         /// Add empty Object
@@ -143,7 +143,7 @@ namespace DotSerial.Json.Writer
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("{},");            
+                sb.Append("{},");
             }
             else
             {
@@ -152,7 +152,7 @@ namespace DotSerial.Json.Writer
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\": {{}},", key);
             }
-        }        
+        }
 
         /// <summary>
         /// Add empty list
@@ -168,7 +168,7 @@ namespace DotSerial.Json.Writer
             {
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("[],");            
+                sb.Append("[],");
             }
             else
             {

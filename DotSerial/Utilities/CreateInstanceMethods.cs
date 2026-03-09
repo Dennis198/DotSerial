@@ -26,7 +26,7 @@ namespace DotSerial.Utilities
                 object? unTmp = CreateUninitializedObject(type);
                 return unTmp ?? throw new NullReferenceException();
             }
-            catch (Exception) 
+            catch (Exception)
             {
                 throw;
             }
@@ -67,7 +67,6 @@ namespace DotSerial.Utilities
         {
             try
             {
-
 #if NET9_0
                 var tmp = Array.CreateInstanceFromArrayType(type, count);
 #elif NET8_0

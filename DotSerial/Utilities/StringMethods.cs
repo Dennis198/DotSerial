@@ -9,14 +9,14 @@ namespace DotSerial.Utilities
     {
         /// <summary>
         /// Chars to replace in a xml string
-        /// </summary>    
-        private static readonly Dictionary<char, string> _xmlEscapeCharDic = new ()
+        /// </summary>
+        private static readonly Dictionary<char, string> _xmlEscapeCharDic = new()
         {
-            {'<', "&lt;"},
-            {'&', "&amp;"},
-            {'"', "&quot;"},
-            {'\'', "&apos;"},            
-            {'>', "&gt;"},            
+            { '<', "&lt;" },
+            { '&', "&amp;" },
+            { '"', "&quot;" },
+            { '\'', "&apos;" },
+            { '>', "&gt;" },
         };
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace DotSerial.Utilities
                 throw new NotSupportedException($"String don't have start and end quotes");
             }
 
-            return str[1..^1]; 
+            return str[1..^1];
         }
 
-#region  Extensions
+        #region  Extensions
 
         /// <summary>
         /// Check if a string contains a char from a char array
@@ -101,7 +101,7 @@ namespace DotSerial.Utilities
                 return false;
             if (char.ToLower(str[3]) != CommonConstants.L)
                 return false;
-            
+
             return true;
         }
 
@@ -120,7 +120,7 @@ namespace DotSerial.Utilities
             }
 
             return false;
-        }          
+        }
 
         /// <summary>
         /// Check if string equals "true"
@@ -144,10 +144,9 @@ namespace DotSerial.Utilities
                 return false;
             if (char.ToLower(str[3]) != CommonConstants.E)
                 return false;
-            
-            return true;
-        }        
 
+            return true;
+        }
 
         /// <summary>
         /// Check if string equals "false"
@@ -173,9 +172,9 @@ namespace DotSerial.Utilities
                 return false;
             if (char.ToLower(str[4]) != CommonConstants.E)
                 return false;
-            
+
             return true;
-        }          
+        }
 
         /// <summary>
         /// Check if a string has start and end quotes
@@ -263,7 +262,7 @@ namespace DotSerial.Utilities
             char[] tmp = new char[str.Length * 6];
             int index = 0;
 
-            for(int i = 0; i < str.Length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
 
@@ -300,7 +299,7 @@ namespace DotSerial.Utilities
             char[] tmp = new char[str.Length];
             int index = 0;
 
-            for(int i = 0; i < str.Length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
 
@@ -308,43 +307,53 @@ namespace DotSerial.Utilities
                 {
                     if (str[i + 1] == 'l' && str[i + 2] == 't' && str[i + 3] == ';')
                     {
-                        tmp[index++] = '<';   
-                        i+=3;
+                        tmp[index++] = '<';
+                        i += 3;
                     }
                     else if (str[i + 1] == 'g' && str[i + 2] == 't' && str[i + 3] == ';')
                     {
-                        tmp[index++] = '>'; 
-                        i+=3;  
+                        tmp[index++] = '>';
+                        i += 3;
                     }
                     else if (i + 4 < str.Length)
                     {
                         if (str[i + 1] == 'a' && str[i + 2] == 'm' && str[i + 3] == 'p' && str[i + 4] == ';')
                         {
-                            tmp[index++] = CommonConstants.AND;   
-                            i+=4;
+                            tmp[index++] = CommonConstants.AND;
+                            i += 4;
                         }
                         else if (i + 5 < str.Length)
                         {
-                            if (str[i + 1] == 'q' && str[i + 2] == 'u' && str[i + 3] == 'o' && str[i + 4] == 't' &&
-                                str[i + 5] == ';')
+                            if (
+                                str[i + 1] == 'q'
+                                && str[i + 2] == 'u'
+                                && str[i + 3] == 'o'
+                                && str[i + 4] == 't'
+                                && str[i + 5] == ';'
+                            )
                             {
-                                tmp[index++] = CommonConstants.Quote;  
-                                i+=5; 
+                                tmp[index++] = CommonConstants.Quote;
+                                i += 5;
                             }
-                            else if (str[i + 1] == 'a' && str[i + 2] == 'p' && str[i + 3] == 'o' && str[i + 4] == 's' &&
-                                    str[i + 5] == ';')
+                            else if (
+                                str[i + 1] == 'a'
+                                && str[i + 2] == 'p'
+                                && str[i + 3] == 'o'
+                                && str[i + 4] == 's'
+                                && str[i + 5] == ';'
+                            )
                             {
-                                tmp[index++] = '\'';   
-                                i+=5;
+                                tmp[index++] = '\'';
+                                i += 5;
                             }
                             else
                             {
-                                tmp[index++] = c;    
+                                tmp[index++] = c;
                             }
                         }
                         else
                         {
-                            tmp[index++] = c;    
+                            tmp[index++] = c;
                         }
                     }
                     else
@@ -358,7 +367,7 @@ namespace DotSerial.Utilities
                 }
             }
 
-            return new string(tmp, 0, index);             
+            return new string(tmp, 0, index);
         }
 
         /// <summary>
@@ -385,7 +394,7 @@ namespace DotSerial.Utilities
             char[] tmp = new char[str.Length * 2];
             int index = 0;
 
-            for(int i = 0; i < str.Length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
 
@@ -426,12 +435,12 @@ namespace DotSerial.Utilities
             char[] tmp = new char[str.Length];
             int index = 0;
 
-            for(int i = 0; i < str.Length; i++)
+            for (int i = 0; i < str.Length; i++)
             {
                 char c = str[i];
 
                 if (c == CommonConstants.Backslash && i + 1 < str.Length)
-                {                    
+                {
                     char escapedChar = str[i + 1];
                     if (charsToEscape.Contains(escapedChar))
                     {
@@ -451,7 +460,7 @@ namespace DotSerial.Utilities
                 }
             }
 
-            return new string(tmp, 0, index);            
+            return new string(tmp, 0, index);
         }
 
         /// <summary>
@@ -464,7 +473,6 @@ namespace DotSerial.Utilities
             return c == '\n' || c == '\r';
         }
 
-#endregion
-
+        #endregion
     }
 }

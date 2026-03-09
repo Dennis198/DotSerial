@@ -75,10 +75,7 @@ namespace DotSerial.Json
 
                 jsonDoc.Load(path);
 
-                var desObj = new DotSerialJson
-                {
-                    _document = jsonDoc
-                };
+                var desObj = new DotSerialJson { _document = jsonDoc };
 
                 var result = Deserialize<U>(desObj);
                 return result;
@@ -93,14 +90,11 @@ namespace DotSerial.Json
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSJsonException">Argument null.</exception>
         public static DotSerialJson Serialize(object? obj)
-        {        
+        {
             // Serialze Object
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Json);            
+            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, StategyType.Json);
 
-            var result = new DotSerialJson
-            {
-                _document = new JsonDocument()
-            };
+            var result = new DotSerialJson { _document = new JsonDocument() };
 
             result._document.RootNode = new DSJsonNode(rootNode);
 
@@ -143,7 +137,7 @@ namespace DotSerial.Json
             }
 
             return result;
-        }             
+        }
 
         /// <summary>
         /// Converts the serialized object to an string.

@@ -59,7 +59,7 @@ namespace DotSerial.Utilities
             {
                 throw new InvalidOperationException("String is not a valid boolean representation.");
             }
-        }    
+        }
 
         /// <summary>
         /// Converts primitive to string
@@ -107,6 +107,5 @@ namespace DotSerial.Utilities
 
             return strValue;
         }
-
     }
 }

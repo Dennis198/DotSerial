@@ -2,7 +2,7 @@ using System.Text;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
-{   
+{
     /// <summary>
     /// MulitLineStringBuilder contains multiple StringBuilder
     /// where each line is a StringBuilder.
@@ -11,6 +11,7 @@ namespace DotSerial.Utilities
     {
         /// <summary> Internal data </summary>
         private readonly List<StringBuilder>? _lines = null;
+
         /// <summary>
         /// Number of lines
         /// </summary>
@@ -18,7 +19,7 @@ namespace DotSerial.Utilities
 
         // Special case. (Currenly only needed in yaml/toon)
         internal bool IsOneLineObject = false;
-        
+
         /// <summary>
         /// Private constructor
         /// </summary>
@@ -39,7 +40,7 @@ namespace DotSerial.Utilities
 
             _lines = CreateLines(sb);
             TrimLines(_lines);
-        }    
+        }
 
         /// <summary>
         /// Creates a shallow copy of a range of lines.
@@ -64,7 +65,7 @@ namespace DotSerial.Utilities
                 throw new NotImplementedException();
             }
 
-            int length  = end - start + 1;
+            int length = end - start + 1;
             var subLines = _lines.Slice(start, length);
             return new MultiLineStringBuilder(subLines);
         }
@@ -78,9 +79,9 @@ namespace DotSerial.Utilities
             {
                 throw new NotImplementedException();
             }
-            
+
             _lines.Clear();
-        }   
+        }
 
         /// <summary>
         /// Get a specific line
@@ -144,7 +145,7 @@ namespace DotSerial.Utilities
             }
 
             return result;
-        }  
+        }
 
         /// <summary>
         /// Trims the lines by removing empty lines and trailing whitespace
@@ -160,13 +161,12 @@ namespace DotSerial.Utilities
                     lines.RemoveAt(i);
                 }
             }
-            
+
             // Remove trailing whitespace
             for (int i = 0; i < lines.Count; i++)
             {
                 lines[i] = lines[i].TrimEnd();
             }
-        }  
-
+        }
     }
 }

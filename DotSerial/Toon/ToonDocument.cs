@@ -29,7 +29,6 @@ namespace DotSerial.Toon
             {
                 throw;
             }
-
         }
 
         /// <inheritdoc/>
@@ -52,7 +51,7 @@ namespace DotSerial.Toon
             catch
             {
                 throw;
-            }          
+            }
         }
     }
 }
