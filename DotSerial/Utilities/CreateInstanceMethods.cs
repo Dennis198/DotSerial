@@ -67,7 +67,7 @@ namespace DotSerial.Utilities
         {
             try
             {
-#if NET9_0
+#if NET9_0 || NET10_0
                 var tmp = Array.CreateInstanceFromArrayType(type, count);
 #elif NET8_0
                 Type? itemType = GetTypeMethods.GetItemTypeOfArray(type);
