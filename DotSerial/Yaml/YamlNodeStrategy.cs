@@ -11,7 +11,6 @@ namespace DotSerial.Yaml
     /// </summary>
     internal class YamlNodeStrategy : INodeStrategy
     {
-
         /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, NodeType type)
         {

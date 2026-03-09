@@ -17,7 +17,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
             var primitiveClass = PrimitiveClass.Create();
             _nodePrimitve = DSJsonNode.ToNode(primitiveClass);
 
-            var listClass = ListClass.Create(50, 50);
+            var listClass = ListClass.Create(2, 50);
             _nodeList = DSJsonNode.ToNode(listClass);
 
             var dicClass = DictionaryClass.Create(50);

@@ -18,7 +18,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
             var nodePrimitive = DSYamlNode.ToNode(primitiveClass);
             _stringPrimitive = nodePrimitive.Stringify();
 
-            var listClass = ListClass.Create(50, 50);
+            var listClass = ListClass.Create(2, 50);
             var nodeList = DSYamlNode.ToNode(listClass);
             _stringList = nodeList.Stringify();
 

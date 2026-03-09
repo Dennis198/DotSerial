@@ -145,7 +145,6 @@ namespace DotSerial.Toon.Parser
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(StategyType.Toon, key, null, NodeType.ListNode);
                         
-
                         if (false == ToonParserHelper.IsEmptyList(value.GetLine(0)))
                         {
                             // Parse list node
@@ -212,7 +211,6 @@ namespace DotSerial.Toon.Parser
                                 // Create inner node
                                 var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Toon, key, null, NodeType.InnerNode);
                                 
-
                                 if (false == ToonParserHelper.IsEmptyObject(value))
                                 {
                                     // Parse inner node
@@ -227,7 +225,6 @@ namespace DotSerial.Toon.Parser
                                 // Create list node
                                 var listNode = _nodeFactory.CreateNodeFromString(StategyType.Toon, key, null, NodeType.ListNode);
                                 
-
                                 if (false == ToonParserHelper.IsEmptyList(value.GetLine(0)))
                                 {
                                     // Parse list node

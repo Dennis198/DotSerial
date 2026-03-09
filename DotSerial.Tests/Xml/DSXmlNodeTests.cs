@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using DotSerial.Xml;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -96,10 +74,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ExampleClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.FromString(jsonString);
+            var result = DSXmlNode.FromString(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -111,10 +89,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             double tmp = 1234.45;
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<double>(jsonString);
+            var result = DSXmlNode.ToObject<double>(xmlString);
 
             // Assert
             Assert.Equal(tmp, result);         
@@ -126,10 +104,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             string? tmp = null;
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<string>(jsonString);
+            var result = DSXmlNode.ToObject<string>(xmlString);
 
             // Assert
             Assert.Equal(tmp, result);         
@@ -141,10 +119,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             string? tmp = string.Empty;
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<string>(jsonString);
+            var result = DSXmlNode.ToObject<string>(xmlString);
 
             // Assert
             Assert.Equal(tmp, result);         
@@ -156,10 +134,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             string tmp = "{{}<><:;[[]-?!#!";
             var node = DSXmlNode.ToNode(tmp);
-            string toonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<string>(toonString);
+            var result = DSXmlNode.ToObject<string>(xmlString);
 
             // Assert
             Assert.Equal(tmp, result);         
@@ -171,10 +149,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<double[]>(jsonString);
+            var result = DSXmlNode.ToObject<double[]>(xmlString);
 
             // Assert
             Assert.NotEmpty(result);
@@ -191,10 +169,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             double[]? tmp = null;
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<double[]>(jsonString);
+            var result = DSXmlNode.ToObject<double[]>(xmlString);
 
             // Assert
             Assert.Null(result);           
@@ -206,10 +184,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             double[]? tmp = [];
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<double[]>(jsonString);
+            var result = DSXmlNode.ToObject<double[]>(xmlString);
 
             // Assert
             Assert.Empty(result);           
@@ -223,10 +201,10 @@ namespace DotSerial.Tests.Xml
             tmp.Add("test1", 1.1);
             tmp.Add("test2", 2.2);
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<Dictionary<string, double>?>(jsonString);
+            var result = DSXmlNode.ToObject<Dictionary<string, double>?>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -242,10 +220,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             Dictionary<string, double>? tmp = null;
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<Dictionary<string, double>?>(jsonString);
+            var result = DSXmlNode.ToObject<Dictionary<string, double>?>(xmlString);
 
             // Assert
             Assert.Null(result);              
@@ -257,10 +235,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             Dictionary<string, double> tmp = [];
             var node = DSXmlNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            string xmlString = node.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<Dictionary<string, double>>(jsonString);
+            var result = DSXmlNode.ToObject<Dictionary<string, double>>(xmlString);
 
             // Assert
             Assert.Empty(result);              
@@ -272,10 +250,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ExampleClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ExampleClass>(jsonString);
+            var result = DSXmlNode.ToObject<ExampleClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -288,10 +266,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = new EmptyClass();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<EmptyClass>(jsonString);
+            var result = DSXmlNode.ToObject<EmptyClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -303,10 +281,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ListFirstElementNull.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ListFirstElementNull>(jsonString);
+            var result = DSXmlNode.ToObject<ListFirstElementNull>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -319,10 +297,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = NoAttributeClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<NoAttributeClass>(jsonString);
+            var result = DSXmlNode.ToObject<NoAttributeClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -335,10 +313,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = AccessModifierClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<AccessModifierClass>(jsonString);
+            var result = DSXmlNode.ToObject<AccessModifierClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -351,10 +329,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = SimpleClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<SimpleClass>(jsonString);
+            var result = DSXmlNode.ToObject<SimpleClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -367,10 +345,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = NullClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<NullClass>(jsonString);
+            var result = DSXmlNode.ToObject<NullClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -383,10 +361,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = IEnumerableClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
             
             // Act
-            var result = DSXmlNode.ToObject<IEnumerableClass>(jsonString);
+            var result = DSXmlNode.ToObject<IEnumerableClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -399,10 +377,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = NestedClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<NestedClass>(jsonString);
+            var result = DSXmlNode.ToObject<NestedClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -415,10 +393,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = NestedNestedClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<NestedNestedClass>(jsonString);
+            var result = DSXmlNode.ToObject<NestedNestedClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -431,10 +409,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = PrimitiveClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<PrimitiveClass>(jsonString);
+            var result = DSXmlNode.ToObject<PrimitiveClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -447,10 +425,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = DictionaryClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<DictionaryClass>(jsonString);
+            var result = DSXmlNode.ToObject<DictionaryClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -463,10 +441,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = EnumClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<EnumClass>(jsonString);
+            var result = DSXmlNode.ToObject<EnumClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -479,10 +457,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = DateTimeClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<DateTimeClass>(jsonString);
+            var result = DSXmlNode.ToObject<DateTimeClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -495,10 +473,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = StructClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<StructClass>(jsonString);
+            var result = DSXmlNode.ToObject<StructClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -511,10 +489,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = RecordClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<RecordClass>(jsonString);
+            var result = DSXmlNode.ToObject<RecordClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -527,10 +505,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ParsableClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ParsableClass>(jsonString);
+            var result = DSXmlNode.ToObject<ParsableClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -543,10 +521,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = PathClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<PathClass>(jsonString);
+            var result = DSXmlNode.ToObject<PathClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -559,10 +537,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ClassWithoutParameterlessConstructor>(jsonString);
+            var result = DSXmlNode.ToObject<ClassWithoutParameterlessConstructor>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -575,10 +553,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ClassRecordNoParameterlessConstructor>(jsonString);
+            var result = DSXmlNode.ToObject<ClassRecordNoParameterlessConstructor>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -591,10 +569,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = PrimitiveClassIEnumarable.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<PrimitiveClassIEnumarable>(jsonString);
+            var result = DSXmlNode.ToObject<PrimitiveClassIEnumarable>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -607,10 +585,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = MultiDimClassIEnumarble.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<MultiDimClassIEnumarble>(jsonString);
+            var result = DSXmlNode.ToObject<MultiDimClassIEnumarble>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -623,10 +601,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = EmptyObjectClass.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<EmptyObjectClass>(toonString);
+            var result = DSXmlNode.ToObject<EmptyObjectClass>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -639,10 +617,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ClassWithOneList.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ClassWithOneList>(toonString);
+            var result = DSXmlNode.ToObject<ClassWithOneList>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -655,10 +633,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ClassWithOneDictionary.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ClassWithOneDictionary>(toonString);
+            var result = DSXmlNode.ToObject<ClassWithOneDictionary>(xmlString);
 
             // Assert
             Assert.NotNull(result);
@@ -671,10 +649,10 @@ namespace DotSerial.Tests.Xml
             // Arrange
             var example = ClassWithOnePrimitive.CreateTestDefault();
             var tmp = DSXmlNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var xmlString = tmp.Stringify();
 
             // Act
-            var result = DSXmlNode.ToObject<ClassWithOnePrimitive>(toonString);
+            var result = DSXmlNode.ToObject<ClassWithOnePrimitive>(xmlString);
 
             // Assert
             Assert.NotNull(result);

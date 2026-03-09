@@ -7,6 +7,9 @@ using DotSerial.Yaml;
 
 namespace DotSerial.Tree.Creation
 {
+    /// <summary>
+    /// Node factory (singleton)
+    /// </summary>
     internal sealed class NodeFactory
     {
         private static readonly Lazy<NodeFactory> _instance = new(() => new NodeFactory());

@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;

@@ -19,7 +19,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Tree
         {
             _primitiveClass = PrimitiveClass.Create();
 
-            _listClass = ListClass.Create(50, 50);
+            _listClass = ListClass.Create(2, 50);
 
             _dictionaryClass = DictionaryClass.Create(50);
         }

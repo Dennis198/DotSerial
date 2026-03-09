@@ -1,26 +1,4 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using DotSerial.Common;
+﻿using DotSerial.Common;
 using DotSerial.Json;
 
 namespace DotSerial.Tests.Json
@@ -33,11 +11,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var xmlDocument = DotSerialJson.Serialize(testDefault);
+            var jsonDocument = DotSerialJson.Serialize(testDefault);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialJson.SaveToFile(file.FileInfo.FullName, xmlDocument);
+            DotSerialJson.SaveToFile(file.FileInfo.FullName, jsonDocument);
         }
 
         [Fact]
@@ -83,8 +61,8 @@ namespace DotSerial.Tests.Json
             double tmp = 1234.45;
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<double>(jsonDocument);
 
             // Assert
             Assert.Equal(tmp, result); 
@@ -97,8 +75,8 @@ namespace DotSerial.Tests.Json
             string? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<string?>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<string?>(jsonDocument);
 
             // Assert
             Assert.Null(result); 
@@ -111,8 +89,8 @@ namespace DotSerial.Tests.Json
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double[]>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<double[]>(jsonDocument);
 
             // Assert
             Assert.NotEmpty(result);
@@ -130,8 +108,8 @@ namespace DotSerial.Tests.Json
             double[]? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double[]>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<double[]>(jsonDocument);
 
             // Assert
             Assert.Null(result);           
@@ -146,8 +124,8 @@ namespace DotSerial.Tests.Json
             tmp.Add("test2", 2.2);
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<Dictionary<string, double>>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<Dictionary<string, double>>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -164,8 +142,8 @@ namespace DotSerial.Tests.Json
             Dictionary<string, double>? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<Dictionary<string, double>?>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<Dictionary<string, double>?>(jsonDocument);
 
             // Assert
             Assert.Null(result);              
@@ -178,8 +156,8 @@ namespace DotSerial.Tests.Json
             var tmp = new EmptyClass();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<EmptyClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<EmptyClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -192,8 +170,8 @@ namespace DotSerial.Tests.Json
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<AccessModifierClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<AccessModifierClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -208,8 +186,8 @@ namespace DotSerial.Tests.Json
 
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<DictionaryClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<DictionaryClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -223,8 +201,8 @@ namespace DotSerial.Tests.Json
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<StructClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<StructClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -238,8 +216,8 @@ namespace DotSerial.Tests.Json
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<RecordClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<RecordClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -253,8 +231,8 @@ namespace DotSerial.Tests.Json
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ParsableClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<ParsableClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -268,8 +246,8 @@ namespace DotSerial.Tests.Json
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PathClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<PathClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -283,8 +261,8 @@ namespace DotSerial.Tests.Json
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<ClassWithoutParameterlessConstructor>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -298,8 +276,8 @@ namespace DotSerial.Tests.Json
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PrimitiveClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<PrimitiveClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -313,8 +291,8 @@ namespace DotSerial.Tests.Json
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NestedClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<NestedClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -327,8 +305,8 @@ namespace DotSerial.Tests.Json
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NestedNestedClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<NestedNestedClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -342,8 +320,8 @@ namespace DotSerial.Tests.Json
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<EnumClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<EnumClass>(jsonDocument);
 
 
             // Assert
@@ -358,8 +336,8 @@ namespace DotSerial.Tests.Json
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NoAttributeClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<NoAttributeClass>(jsonDocument);
 
             // Arrange
             Assert.NotNull(result);
@@ -373,8 +351,8 @@ namespace DotSerial.Tests.Json
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<MultiDimClassIEnumarble>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -388,8 +366,8 @@ namespace DotSerial.Tests.Json
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NullClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<NullClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -404,8 +382,8 @@ namespace DotSerial.Tests.Json
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<PrimitiveClassIEnumarable>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -423,8 +401,8 @@ namespace DotSerial.Tests.Json
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<DateTimeClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<DateTimeClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -438,8 +416,8 @@ namespace DotSerial.Tests.Json
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<IEnumerableClass>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<IEnumerableClass>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -456,8 +434,8 @@ namespace DotSerial.Tests.Json
             };
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<ClassRecordNoParameterlessConstructor>(jsonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -592,8 +570,8 @@ namespace DotSerial.Tests.Json
             object? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<object?>(xmlDocument);
+            var jsonDocument = DotSerialJson.Serialize(tmp);
+            var result = DotSerialJson.Deserialize<object?>(jsonDocument);
 
             // Assert
             Assert.Null(result);  
@@ -614,10 +592,10 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var xml = DotSerialJson.Serialize(tmp);
+            var json = DotSerialJson.Serialize(tmp);
 
             // Act
-            string result = xml.ToString();
+            string result = json.ToString();
 
             // Assert
             Assert.NotNull(result);
@@ -628,10 +606,10 @@ namespace DotSerial.Tests.Json
         public void ToString_NoContent()
         {
             // Arrange
-            var xml = new DotSerialJson();
+            var json = new DotSerialJson();
 
             // Act
-            string result = xml.ToString();
+            string result = json.ToString();
 
             // Assert
             Assert.NotNull(result);

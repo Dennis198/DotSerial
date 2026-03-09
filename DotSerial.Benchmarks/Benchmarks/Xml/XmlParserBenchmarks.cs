@@ -18,7 +18,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Xml
             var nodePrimitive = DSXmlNode.ToNode(primitiveClass);
             _stringPrimitive = nodePrimitive.Stringify();
 
-            var listClass = ListClass.Create(50, 50);
+            var listClass = ListClass.Create(2, 50);
             var nodeList = DSXmlNode.ToNode(listClass);
             _stringList = nodeList.Stringify();
 

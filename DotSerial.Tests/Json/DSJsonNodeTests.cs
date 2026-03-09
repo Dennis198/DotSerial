@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using DotSerial.Json;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -156,10 +134,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             string tmp = "{{}<><:;[[]-?!#!";
             var node = DSJsonNode.ToNode(tmp);
-            string toonString = node.Stringify();
+            string jsonString = node.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<string>(toonString);
+            var result = DSJsonNode.ToObject<string>(jsonString);
 
             // Assert
             Assert.Equal(tmp, result);         
@@ -623,10 +601,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = EmptyObjectClass.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var jsonString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<EmptyObjectClass>(toonString);
+            var result = DSJsonNode.ToObject<EmptyObjectClass>(jsonString);
 
             // Assert
             Assert.NotNull(result);
@@ -639,10 +617,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = ClassWithOneList.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var jsonString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOneList>(toonString);
+            var result = DSJsonNode.ToObject<ClassWithOneList>(jsonString);
 
             // Assert
             Assert.NotNull(result);
@@ -655,10 +633,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = ClassWithOneDictionary.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var jsonString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOneDictionary>(toonString);
+            var result = DSJsonNode.ToObject<ClassWithOneDictionary>(jsonString);
 
             // Assert
             Assert.NotNull(result);
@@ -671,10 +649,10 @@ namespace DotSerial.Tests.Json
             // Arrange
             var example = ClassWithOnePrimitive.CreateTestDefault();
             var tmp = DSJsonNode.ToNode(example);
-            var toonString = tmp.Stringify();
+            var jsonString = tmp.Stringify();
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOnePrimitive>(toonString);
+            var result = DSJsonNode.ToObject<ClassWithOnePrimitive>(jsonString);
 
             // Assert
             Assert.NotNull(result);

@@ -21,7 +21,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Tree
             var primitiveClass = PrimitiveClass.Create();
             _primitiveNode = SerializeObject.Serialize(primitiveClass, "0", StategyType.Json);
 
-            var listClass = ListClass.Create(50, 50);
+            var listClass = ListClass.Create(2, 50);
             _listNode = SerializeObject.Serialize(listClass, "0", StategyType.Json);
 
             var dictionaryClass = DictionaryClass.Create(50);

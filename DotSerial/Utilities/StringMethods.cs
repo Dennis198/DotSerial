@@ -1,10 +1,24 @@
-using System.Runtime.InteropServices;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Class is used to verious methods for strings.
+    /// </summary>
     internal static class StringMethods
     {
+        /// <summary>
+        /// Chars to replace in a xml string
+        /// </summary>    
+        private static readonly Dictionary<char, string> _xmlEscapeCharDic = new ()
+        {
+            {'<', "&lt;"},
+            {'&', "&amp;"},
+            {'"', "&quot;"},
+            {'\'', "&apos;"},            
+            {'>', "&gt;"},            
+        };
+
         /// <summary>
         /// Add quotes at the start end at the end of a string.
         /// </summary>
@@ -231,15 +245,11 @@ namespace DotSerial.Utilities
             }
         }
 
-        private static readonly Dictionary<char, string> _xmlEscapeCharDic = new ()
-        {
-            {'<', "&lt;"},
-            {'&', "&amp;"},
-            {'"', "&quot;"},
-            {'\'', "&apos;"},            
-            {'>', "&gt;"},            
-        };
-
+        /// <summary>
+        /// Replace chars '<', '>', '"', ''' for xml writung
+        /// </summary>
+        /// <param name="str">Xml string</param>
+        /// <returns>Valid xml string</returns>
         internal static string XmlEscape(this string str)
         {
             ArgumentNullException.ThrowIfNull(str);
@@ -273,6 +283,11 @@ namespace DotSerial.Utilities
             return new string(tmp, 0, index);
         }
 
+        /// <summary>
+        /// Reverse Replace chars '<', '>', '"', ''' for xml writung
+        /// </summary>
+        /// <param name="str">Xml string</param>
+        /// <returns>Original string</returns>
         internal static string XmlUnEscape(this string str)
         {
             ArgumentNullException.ThrowIfNull(str);
@@ -346,6 +361,12 @@ namespace DotSerial.Utilities
             return new string(tmp, 0, index);             
         }
 
+        /// <summary>
+        /// Escape chars in a string
+        /// </summary>
+        /// <param name="str">String</param>
+        /// <param name="charsToEscape">Chars to escape</param>
+        /// <returns>Escaped string</returns>
         internal static string EscapeChars(this string str, char[] charsToEscape)
         {
             ArgumentNullException.ThrowIfNull(str);
@@ -382,6 +403,12 @@ namespace DotSerial.Utilities
             return new string(tmp, 0, index);
         }
 
+        /// <summary>
+        /// Reverse escape chars in a string
+        /// </summary>
+        /// <param name="str">String</param>
+        /// <param name="charsToEscape">Chars to unescape</param>
+        /// <returns>Original string</returns>
         internal static string UnescapeString(this string str, char[] charsToEscape)
         {
             ArgumentNullException.ThrowIfNull(str);
@@ -425,6 +452,17 @@ namespace DotSerial.Utilities
             }
 
             return new string(tmp, 0, index);            
+        }
+
+        /// <summary>
+        /// Returns true if the char represents a new line symbol
+        /// </summary>
+        /// <param name="c">Char</param>
+        /// <returns>True, if char is new line</returns>
+        internal static bool IsNewLine(this char c)
+        {
+            ArgumentNullException.ThrowIfNull(c);
+            return c == '\n' || c == '\r';
         }
 
 #endregion

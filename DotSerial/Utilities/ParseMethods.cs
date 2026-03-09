@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
@@ -28,6 +6,9 @@ using DotSerial.Tree.Nodes;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Class is used to verious methods for parsing.
+    /// </summary>
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
@@ -91,6 +72,14 @@ namespace DotSerial.Utilities
             throw new DotSerialException("Parse: Escapable char is not escaped.");
         }      
 
+        /// <summary>
+        /// Append a string to a StringBuilder till a char is reached.
+        /// </summary>
+        /// <param name="sb">StrginBuilder to append</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="str">StringBuilder to check</param>
+        /// <param name="stopChar">Stop char</param>
+        /// <returns>StringBuilder with the appended chars</returns>
         internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char? stopChar)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -146,6 +135,14 @@ namespace DotSerial.Utilities
             return str.Length - 1;
         }        
 
+        /// <summary>
+        /// Append a string to a StringBuilder till a char is reached.
+        /// </summary>
+        /// <param name="sb">StrginBuilder to append</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="str">StringBuilder to check</param>
+        /// <param name="stopChars">Stop chars</param>
+        /// <returns>StringBuilder with the appended chars</returns>
         internal static int AppendTillStopChars(StringBuilder sb, int startIndex, StringBuilder str, char[]? stopChars)
         {
             ArgumentNullException.ThrowIfNull(sb);

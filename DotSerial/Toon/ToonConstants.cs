@@ -20,6 +20,9 @@ namespace DotSerial.Toon
         /// Chars which must be escaped
         /// </summary>
         internal readonly static char[] CharsToEscape = [CommonConstants.Quote, CommonConstants.Backslash];        
+        /// <summary>
+        /// Specials chars which must be quoted
+        /// </summary>
         internal static readonly char[] ToonSpecialChars = ['-', ':', ',', '[', ']', '{', '}', '\'', '"', '`'];
     }
 }
