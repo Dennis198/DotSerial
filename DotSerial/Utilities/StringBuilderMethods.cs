@@ -3,7 +3,7 @@ using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
-    internal static class Extensions
+    internal static class StringBuilderMethods
     {
         
         /// <summary>
@@ -275,6 +275,11 @@ namespace DotSerial.Utilities
             return false;
         }
 
+        /// <summary>
+        /// Check if stringbuilder content is a numeric value
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <returns>True if content is a numeric value</returns>
         internal static bool IsNumericValue(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
@@ -294,6 +299,11 @@ namespace DotSerial.Utilities
             }
         }
 
+        /// <summary>
+        /// Check if stringbuilder content is a boolean value
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <returns>True if content is a boolean value</returns>
         internal static bool EqualsBooleanString(this StringBuilder input)
         {
             ArgumentNullException.ThrowIfNull(input);
@@ -480,6 +490,13 @@ namespace DotSerial.Utilities
             return count;
         }
 
+        /// <summary>
+        /// Skips values till a stop char is reached in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex to check</param>
+        /// <param name="stopChar">Stop Char</param>
+        /// <returns>End index</returns>
         internal static int SkipTillStopChar(this StringBuilder sb, int startIndex, char? stopChar)
         {
             ArgumentNullException.ThrowIfNull(sb);
@@ -532,6 +549,13 @@ namespace DotSerial.Utilities
             return sb.Length - 1;
         }        
 
+        /// <summary>
+        /// Skips values till a stop char is reached in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex to check</param>
+        /// <param name="stopChar">Stop Chars</param>
+        /// <returns>End index</returns>
         internal static int SkipTillStopChars(this StringBuilder sb, int startIndex, char[] stopChars)
         {
             ArgumentNullException.ThrowIfNull(sb);

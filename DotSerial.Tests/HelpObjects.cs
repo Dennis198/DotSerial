@@ -245,7 +245,7 @@ namespace DotSerial.Tests
         [DotSerialName("3")]
         public SimpleClass?[]? ArrayWithNulls { get; set; }
         [DotSerialName("4")]
-        public List<SimpleClass>? ListWithNulls { get; set; }
+        public List<SimpleClass?>? ListWithNulls { get; set; }
         [DotSerialName("5")]
         public string? String { get; set; }
         [DotSerialName("6")]
@@ -259,7 +259,7 @@ namespace DotSerial.Tests
         [DotSerialName("10")]
         public string?[]? StringArrayWithNulls { get; set; }
         [DotSerialName("11")]
-        public List<string>? StringListWithNulls { get; set; }
+        public List<string?>? StringListWithNulls { get; set; }
         [DotSerialName("12")]
         public TestEnum[]? EnumArray { get; set; }
         [DotSerialName("13")]
@@ -2167,6 +2167,8 @@ namespace DotSerial.Tests
         public string[]? Array { get; set; } 
         [DotSerialName("{}<><:;[]-?!#!")]
         public Dictionary<string, string>? Dictionary { get; set; } 
+        // [DotSerialName("")]
+        // public string? StringEmpty { get; set; } 
 
         public static ClassSpecialCharsKeys CreateTestDefault()
         {
@@ -2190,7 +2192,8 @@ namespace DotSerial.Tests
                 KeyWithSpecialChars4 = 15,
                 KeyWithOnlyWhiteSpaces = 16,
                 Array = ["[{;,! \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
-                Dictionary = []
+                Dictionary = [],
+                // StringEmpty = ""
             };
 
             tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
@@ -2256,7 +2259,9 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }              
+            }      
+            // if (expected.StringEmpty != actual.StringEmpty)
+            //     return false;        
 
             return true;
         }
@@ -2283,7 +2288,8 @@ namespace DotSerial.Tests
         public string? SpecialChars4 { get; set; }
         public string? StringWithOnlyWhiteSpaces { get; set; }
         public string[]? Array { get; set; } 
-        public Dictionary<string, string>? Dictionary { get; set; } 
+        public Dictionary<string, string>? Dictionary { get; set; }
+        public string? StringEmpty { get; set; } 
 
         public static ClassSpecialCharsValue CreateTestDefault()
         {
@@ -2309,6 +2315,7 @@ namespace DotSerial.Tests
                 StringWithOnlyWhiteSpaces = "   ",
                 Array = ["[{;,!? \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
                 Dictionary = [],
+                StringEmpty = ""
             };
 
             tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
@@ -2378,7 +2385,9 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }         
+            }      
+            if (expected.StringEmpty != actual.StringEmpty)
+                return false;         
 
             return true;
         }

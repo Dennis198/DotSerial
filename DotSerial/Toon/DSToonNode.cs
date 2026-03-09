@@ -164,7 +164,7 @@ namespace DotSerial.Toon
             {
                 throw new DSToonException(ex.Message);
             }
-            catch (Exception ex)
+            catch
             {
                 throw;
             }              

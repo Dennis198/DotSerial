@@ -461,7 +461,6 @@ namespace DotSerial.Utilities
         /// <returns>True, if char is new line</returns>
         internal static bool IsNewLine(this char c)
         {
-            ArgumentNullException.ThrowIfNull(c);
             return c == '\n' || c == '\r';
         }
 

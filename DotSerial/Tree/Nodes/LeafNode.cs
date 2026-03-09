@@ -8,19 +8,14 @@ namespace DotSerial.Tree.Nodes
     /// </summary>
     /// <param name="key">Key of node</param>
     /// <param name="value">Value of node</param>
-    public class LeafNode(string key, string? value) : IDSNode
+    /// <param name="value">Truel, if value must be quoted</param>
+    public class LeafNode(string key, string? value, bool isQuoted) : IDSNode
     {
-        // TODO als  Primär machen!
-        internal LeafNode(string key, string? value, bool isQuoted) : this(key, value)
-        {
-            IsQuoted = isQuoted;
-        }
-
         /// <inheritdoc/>
         public string Key { get; private set; } = key;
         
         /// <inheritdoc/>
-        public bool IsQuoted { get; private set; } = false;
+        public bool IsQuoted { get; private set; } = isQuoted;
 
         /// <summary>
         /// Value of the leaf

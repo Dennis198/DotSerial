@@ -334,7 +334,7 @@ namespace DotSerial.Tests.Utilities
         public void IsList_Dictionary_False()
         {
             // Arrange
-            Dictionary<int, int> tmp = new();
+            Dictionary<int, int> tmp = [];
 
             // Act
             bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
@@ -347,7 +347,7 @@ namespace DotSerial.Tests.Utilities
         public void IsList_HashSet_False()
         {
             // Arrange
-            HashSet<int> tmp = new();
+            HashSet<int> tmp = [];
 
             // Act
             bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);

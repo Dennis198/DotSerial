@@ -287,7 +287,7 @@ namespace DotSerial.Tests.Tree.Serialize
             // Act
             var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NoAttributeClass));
-            if (result is NoAttributeClass castedResult)
+            if (result is NoAttributeClass)
             {
                 // Assert
                 Assert.NotNull(result);
