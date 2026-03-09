@@ -1,32 +1,14 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Class is used to verious methods for parsing.
+    /// </summary>
     internal static class ParseMethods
     {
         /// <summary>Node factory</summary>
@@ -59,16 +41,22 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(str.ToString());
             }
 
+            bool isEscaped = false;
             sb.Append(CommonConstants.Quote);
 
             for (int j = startIndex + 1; j < str.Length; j++)
             {
                 var c2 = str[j];
-                if (c2 == '\\')
+
+                if (isEscaped)
                 {
                     sb.Append(c2);
-                    sb.Append(str[j + 1]);
-                    j++;
+                    isEscaped = false;
+                }
+                else if (c2 == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c2);
                 }
                 else if (c2 == CommonConstants.Quote)
                 {
@@ -81,8 +69,134 @@ namespace DotSerial.Utilities
                 }
             }
 
-            return str.Length - 1;
+            throw new DotSerialException("Parse: Escapable char is not escaped.");
         }      
+
+        /// <summary>
+        /// Append a string to a StringBuilder till a char is reached.
+        /// </summary>
+        /// <param name="sb">StrginBuilder to append</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="str">StringBuilder to check</param>
+        /// <param name="stopChar">Stop char</param>
+        /// <returns>StringBuilder with the appended chars</returns>
+        internal static int AppendTillStopChar(StringBuilder sb, int startIndex, StringBuilder str, char? stopChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (null == stopChar)
+            {
+                sb.Append(str.SubString(startIndex, str.Length - startIndex));
+                return str.Length - 1;
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            bool isEscaped = false;
+            sb.Append(str[startIndex]);
+
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (c == stopChar)
+                {
+                    return i - 1;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
+            }
+
+            return str.Length - 1;
+        }        
+
+        /// <summary>
+        /// Append a string to a StringBuilder till a char is reached.
+        /// </summary>
+        /// <param name="sb">StrginBuilder to append</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="str">StringBuilder to check</param>
+        /// <param name="stopChars">Stop chars</param>
+        /// <returns>StringBuilder with the appended chars</returns>
+        internal static int AppendTillStopChars(StringBuilder sb, int startIndex, StringBuilder str, char[]? stopChars)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (str.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(str.ToString());
+            }
+
+            if (null == stopChars)
+            {
+                sb.Append(str.SubString(startIndex, str.Length - startIndex));
+                return str.Length - 1;
+            }
+
+            if (str.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            bool isEscaped = false;
+            sb.Append(str[startIndex]);
+
+            for (int i = startIndex + 1; i < str.Length; i++)
+            {
+                var c = str[i];
+                
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (stopChars.Contains(c))
+                {
+                    return i - 1;
+                }
+                else
+                {
+                    sb.Append(c);
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
+            }
+
+            return str.Length - 1;
+        }
 
         /// <summary>
         /// Appends an enclosed value from starting openChar to closing closeChar to
@@ -113,6 +227,7 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(str.ToString());
             }
 
+            bool isEscaped = false;
             sb.Append(openChar);
 
             int numOpen = 0;
@@ -121,7 +236,17 @@ namespace DotSerial.Utilities
             {
                 var c = str[i];
 
-                if (c == closeChar)
+                if (isEscaped)
+                {
+                    sb.Append(c);
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                    sb.Append(c);
+                }
+                else if (c == closeChar)
                 {
                     if (numOpen == 0)
                     {
@@ -143,6 +268,11 @@ namespace DotSerial.Utilities
                 {
                     sb.Append(c);
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Parse: Escapable char is not escaped.");
             }
 
             return str.Length - 1;
@@ -186,39 +316,80 @@ namespace DotSerial.Utilities
             }
 
             return sb;
-        }         
+        }       
         
         /// <summary>
         /// Parses primitive node without a key, e.g "3.14"
         /// </summary>
+        /// <param name="strategyType">Strategy type</param>
         /// <param name="sb">Stringbuilder</param>
         /// <param name="startIndex">StartIndex</param>
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
 
-        internal static IDSNode ParsePrimitiveNode(StringBuilder sb, int startIndex, string key)
+        internal static IDSNode ParsePrimitiveNode(StategyType strategyType, StringBuilder sb, int startIndex, string key, char[]? stopChars = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
-            if (sb.IsNullOrWhiteSpace() || sb.EqualsNullString())
+            if (sb.IsNullOrWhiteSpace())
             {
-                return _nodeFactory.CreateNode(key, null, NodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
             }
 
             StringBuilder sbPrim = new();
 
-            int i = AppendStringValue(sbPrim, startIndex, sb);
-            if (i != sb.Length -1)
+            if (sb.HasStartAndEndQuotes())
             {
-                throw new DotSerialException("Parse: Can't parse single value.");
+                int i = AppendStringValue(sbPrim, startIndex, sb);
+                if (i != sb.Length -1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
+            }
+            else
+            {                
+                int i = AppendTillStopChars(sbPrim, startIndex, sb, stopChars);
+                if (i != sb.Length -1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
             }
 
-            // Remove opening and closing quote
-            sbPrim.Remove(0, 1);
-            sbPrim.Remove(sbPrim.Length - 1, 1);
             string nodeValue = sbPrim.ToString();
             
-            return _nodeFactory.CreateNode(key, nodeValue, NodeType.Leaf);
-        }              
+            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
+        }  
+
+        /// <summary>
+        /// Returns the indentation level of a line
+        /// </summary>
+        /// <param name="lines">Stringbuilder</param>
+        /// <param name="indentationSize">IndentationSize</param>
+        /// <returns>indentation level of a line</returns>
+        internal static int LineLevel(StringBuilder line, int indentationSize)
+        {
+            ArgumentNullException.ThrowIfNull(line);
+
+            if (indentationSize < 1)
+            {
+                throw new DotSerialException("Parse: Indentation size must be at least 1.");
+            }
+
+            int level = 0;
+            for (int i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+                if (c == CommonConstants.WhiteSpace)
+                {
+                    level++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return level / indentationSize;
+        }                       
     }
 }

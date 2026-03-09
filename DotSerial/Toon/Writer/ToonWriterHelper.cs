@@ -1,12 +1,19 @@
 using System.Text;
 using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
 namespace DotSerial.Toon.Writer
 {
+    /// <summary>
+    /// Helper class with methode for writing toon.
+    /// </summary>
     internal static class ToonWriterHelper
     {
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;  
+        
         /// <summary>
         /// Converts a key : value pair to an toon string.
         /// </summary>
@@ -14,14 +21,16 @@ namespace DotSerial.Toon.Writer
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, string? prefix = null)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        /// <param name="prefix">Prefix for key</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             // Make sure key:value has its own line.
@@ -34,7 +43,13 @@ namespace DotSerial.Toon.Writer
                 sb.AppendFormat("{0}", prefix);
             }
 
-            sb.AppendFormat("\"{0}\": ", key);
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
+
+            sb.AppendFormat("{0}: ", key);
 
             if (null == value)
             {
@@ -42,7 +57,12 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
-                sb.AppendFormat("\"{0}\"", value);
+                value = value.EscapeChars(ToonConstants.CharsToEscape);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.AppendFormat("{0}", value);
             }
         }  
 
@@ -52,7 +72,9 @@ namespace DotSerial.Toon.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, string? prefix = null)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        /// <param name="prefix">Prefix</param>
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes, string? prefix = null)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -72,8 +94,13 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
-                sb.AppendFormat("\"{0}\"", value);
-            }            
+                value = value.EscapeChars(ToonConstants.CharsToEscape);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.AppendFormat("{0}", value);
+            }           
         }           
 
         /// <summary>
@@ -88,21 +115,26 @@ namespace DotSerial.Toon.Writer
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("\"{0}\":", key);
+                sb.AppendFormat("{0}:", key);
             }
             else
             {
-                sb.AppendFormat("{0}\"{1}\":", prefix, key);
+                sb.AppendFormat("{0}{1}:", prefix, key);
             }
         }    
 
@@ -121,14 +153,20 @@ namespace DotSerial.Toon.Writer
 
             string key = lNode.Key;
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
-                throw new NotImplementedException();
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
             key = addKey ? key : string.Empty;
 
             int count = lNode.GetChildren().Count;
+
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
+            if (key != string.Empty && _nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
@@ -136,14 +174,14 @@ namespace DotSerial.Toon.Writer
             if (string.IsNullOrWhiteSpace(prefix))
             {
                 if (addKey)
-                    sb.AppendFormat("\"{0}\"[{1}]", key, count);
+                    sb.AppendFormat("{0}[{1}]", key, count);
                 else
                     sb.AppendFormat("[{0}]", count);
             }
             else
             {
                 if (addKey)
-                    sb.AppendFormat("{0}\"{1}\"[{2}]", prefix, key, count);
+                    sb.AppendFormat("{0}{1}[{2}]", prefix, key, count);
                 else
                     sb.AppendFormat("{0}[{1}]", prefix, count);
 
@@ -186,7 +224,12 @@ namespace DotSerial.Toon.Writer
                     }
                     else
                     {
-                        sb.AppendFormat("\"{0}\"", value);
+                        value = value.EscapeChars(ToonConstants.CharsToEscape);
+                        if (chilChild.IsQuoted)
+                        {
+                            value = StringMethods.AddStartAndEndQuotes(value);
+                        }
+                        sb.AppendFormat("{0}", value);
                     }
 
                     sb.Append(CommonConstants.Comma);
@@ -219,7 +262,12 @@ namespace DotSerial.Toon.Writer
                 }
                 else
                 {
-                    sb.AppendFormat("\"{0}\"", val);
+                    val = val.EscapeChars(ToonConstants.CharsToEscape);
+                    if (child.IsQuoted)
+                    {
+                        val = StringMethods.AddStartAndEndQuotes(val);
+                    }
+                    sb.AppendFormat("{0}", val);
                 }               
 
                 sb.Append(CommonConstants.Comma);
@@ -275,7 +323,6 @@ namespace DotSerial.Toon.Writer
 
             foreach(var child in children)
             {
-
                 if (child is InnerNode)
                 {
                      var childChidlren = child.GetChildren();
@@ -314,7 +361,15 @@ namespace DotSerial.Toon.Writer
 
             for (int i = 0; i < keysTmp.Count; i++)
             {
-                keys += "\"" + keysTmp[i] + "\"" + ",";
+                keysTmp[i] = keysTmp[i].EscapeChars(ToonConstants.CharsToEscape);
+                if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, keysTmp[i]))
+                {
+                    keys += CommonConstants.Quote + keysTmp[i] + CommonConstants.Quote + CommonConstants.Comma;
+                }
+                else
+                {
+                    keys += keysTmp[i] + CommonConstants.Comma;
+                }
             }
 
             // Remove last ','
@@ -323,6 +378,6 @@ namespace DotSerial.Toon.Writer
             keys = string.Format("{{{0}}}", keys);
 
             return true;
-        }
+        }      
     }
 }

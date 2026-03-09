@@ -1,32 +1,55 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
-    internal static class Extensions
+    internal static class StringBuilderMethods
     {
+        
+        /// <summary>
+        /// Check if a stringbuilder has start and end quotes
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if the first and last char in a string is a quote.</returns>
+        internal static bool HasStartAndEndQuotes(this StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length < 2)
+            {
+                return false;
+            }
+
+            if (sb[0] == CommonConstants.Quote && sb[^1] == CommonConstants.Quote)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if a stringbuilder has leading or trailing whitespaces.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <returns>True, if string has leading or/and trailing whitespaces.</returns>
+        internal static bool HasLeadingOrTrailingWhitespaces(this StringBuilder sb)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+
+            if (sb.Length == 0)
+            {
+                return false;
+            }
+
+            if (char.IsWhiteSpace(sb[0]) || char.IsWhiteSpace(sb[^1]))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Check if the content of two Stringbuilders are equal.
         /// </summary>
@@ -235,6 +258,11 @@ namespace DotSerial.Utilities
                 return true;
             }
 
+            if (input.Length > 1)
+            {
+                return false;
+            }
+
             for (int i = 0; i < input.Length; i++)
             {
                 char c = input[i];
@@ -246,6 +274,67 @@ namespace DotSerial.Utilities
 
             return false;
         }
+
+        /// <summary>
+        /// Check if stringbuilder content is a numeric value
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <returns>True if content is a numeric value</returns>
+        internal static bool IsNumericValue(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length == 0)
+            {
+                return false;
+            }
+
+            if (double.TryParse(input.ToString(), out _))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Check if stringbuilder content is a boolean value
+        /// </summary>
+        /// <param name="input">StringBuilder</param>
+        /// <returns>True if content is a boolean value</returns>
+        internal static bool EqualsBooleanString(this StringBuilder input)
+        {
+            ArgumentNullException.ThrowIfNull(input);
+
+            if (input.Length == 4)
+            {
+                if (char.ToLower(input[0]) != 't')
+                    return false;
+                if (char.ToLower(input[1]) != 'r')
+                    return false;
+                if (char.ToLower(input[2]) != 'u')
+                    return false;
+                if (char.ToLower(input[3]) != 'e')
+                    return false;
+            }
+            else
+            {
+                if (char.ToLower(input[0]) != 'f')
+                    return false;
+                if (char.ToLower(input[1]) != 'a')
+                    return false;
+                if (char.ToLower(input[2]) != 'l')
+                    return false;
+                if (char.ToLower(input[3]) != 's')
+                    return false;
+                if (char.ToLower(input[4]) != 'e')
+                    return false;
+            }
+            
+            return true;
+        }        
 
         /// <summary>
         /// Check if Stringbuilder content equals "null".
@@ -402,6 +491,124 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Skips values till a stop char is reached in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex to check</param>
+        /// <param name="stopChar">Stop Char</param>
+        /// <returns>End index</returns>
+        internal static int SkipTillStopChar(this StringBuilder sb, int startIndex, char? stopChar)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (null == stopChar)
+            {
+                return sb.Length - 1;
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb[startIndex] == stopChar)
+            {
+                throw new NotImplementedException();
+            }
+
+            bool isEscaped = false;
+
+            for (int i = startIndex; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == stopChar)
+                {
+                    return i - 1;
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
+            }
+
+            return sb.Length - 1;
+        }        
+
+        /// <summary>
+        /// Skips values till a stop char is reached in a Stringbuilder.
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="startIndex">Startindex to check</param>
+        /// <param name="stopChar">Stop Chars</param>
+        /// <returns>End index</returns>
+        internal static int SkipTillStopChars(this StringBuilder sb, int startIndex, char[] stopChars)
+        {
+            ArgumentNullException.ThrowIfNull(sb);
+            
+            if (sb.IsNullOrWhiteSpace())
+            {
+                throw new ArgumentException(sb.ToString());
+            }
+
+            if (stopChars.Contains(sb[startIndex]))
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (sb.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (stopChars.Contains(sb[startIndex]))
+            {
+                throw new NotImplementedException();
+            }
+
+            bool isEscaped = false;
+
+            for (int i = startIndex; i < sb.Length; i++)
+            {
+                var c = sb[i];
+                
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (stopChars.Contains(c))
+                {
+                    return i - 1;
+                }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
+            }
+
+            return sb.Length - 1;
+        }
+
+        /// <summary>
         /// Skips a string value in a Stringbuilder.
         /// </summary>
         /// <param name="sb">StringBuilder</param>
@@ -426,17 +633,29 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(sb.ToString());
             }        
 
+            bool isEscaped = false;
+
             for (int j = startIndex + 1; j < sb.Length; j++)
             {
                 var c2 = sb[j];
-                if (c2 == '\\')
+
+                if (isEscaped)
                 {
-                    j++;
+                    isEscaped = false;
+                }
+                else if (c2 == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
                 }
                 else if (c2 == CommonConstants.Quote)
                 {
                     return j;
                 }
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             throw new ArgumentException("No closing quote found.");
@@ -469,12 +688,21 @@ namespace DotSerial.Utilities
                 throw new ArgumentException(sb.ToString());
             }   
 
+            bool isEscaped = false;
             int numOpen = 0;
 
             for (int i = startIndex + 1; i < sb.Length; i++)
             {
                 var c = sb[i];
-                if (c == closeChar)
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == closeChar)
                 {
                     if (numOpen == 0)
                     {
@@ -488,7 +716,12 @@ namespace DotSerial.Utilities
                 else if (c == openChar)
                 {
                     numOpen++;
-                }
+                }                            
+            }
+
+            if (true == isEscaped)
+            {
+                throw new DotSerialException("Escapable char is not escaped.");
             }
 
             throw new ArgumentException("No closing character found.");

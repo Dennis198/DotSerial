@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
@@ -129,7 +107,7 @@ namespace DotSerial.Xml.Parser
             var startAndEnd = FindIndexEndOfXmlTag(sb, start, tagKeyPair.Tag);
 
             // Extract value
-            int len = (startAndEnd.start - 1) - (start + 1) + 1;
+            int len = startAndEnd.start - 1 - (start + 1) + 1;
             value = sb.SubString(start + 1, len);
 
             return startAndEnd.end;
@@ -167,6 +145,11 @@ namespace DotSerial.Xml.Parser
             for (int i = indexStartSearch; i < sb.Length; i++)
             {
                 char c = sb[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
 
                 // Skip quoted values
                 if (c == CommonConstants.Quote)
@@ -228,6 +211,7 @@ namespace DotSerial.Xml.Parser
                         i = start;
                     }
                 }
+
             }
 
             if (-1 == startIndex || -1 == endIndex)
@@ -266,6 +250,10 @@ namespace DotSerial.Xml.Parser
                 else if (c == XmlConstants.XmlTagOpening)
                 {
                     i = ParseMethods.AppendEnclosingValue(sb, i, strAsStringBuilder, XmlConstants.XmlTagOpening, XmlConstants.XmlTagClosing);
+                }
+                else
+                {
+                    i = ParseMethods.AppendTillStopChar(sb, i, strAsStringBuilder, XmlConstants.XmlTagClosing);
                 }
             }
 
@@ -412,9 +400,6 @@ namespace DotSerial.Xml.Parser
                 else if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, indexKey, sb);
-                    // Remove opening and closing quote
-                    keyBuilder.Remove(0, 1);
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
                     break;
                 }
                 else

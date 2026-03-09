@@ -1,28 +1,7 @@
-#region License
-//Copyright (c) 2026 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -41,9 +20,8 @@ namespace DotSerial.Xml.Parser
         {
             // Remove xml declaration
             str = str.Replace(XmlConstants.XmlDeclaration, string.Empty);
-
-            // Remove not needed whitespaces
-            StringBuilder sb = XmlParserHelper.RemoveWhiteSpaceXmlString(str);
+            
+            StringBuilder sb = new(str);
 
             var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
 
@@ -59,11 +37,11 @@ namespace DotSerial.Xml.Parser
 
             if (rootTagKeyPair.IsXmlObject())
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, CommonConstants.MainObjectKey, null, NodeType.InnerNode);                
             }
             else if (rootTagKeyPair.IsXmlList())
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
+                rootNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, CommonConstants.MainObjectKey, null, NodeType.ListNode);
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
@@ -72,7 +50,7 @@ namespace DotSerial.Xml.Parser
                     throw new DSXmlException("Parse: String is not a xml object.");
                 }
 
-                rootNode = ParseMethods.ParsePrimitiveNode(rootValue, 0, CommonConstants.MainObjectKey);
+                rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml,rootValue, 0, CommonConstants.MainObjectKey);
                 return new DSXmlNode(rootNode);
             }
             else
@@ -145,7 +123,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -159,7 +137,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -176,7 +154,7 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
                         node.AddChild(childNode);
                     }
                     else
@@ -210,7 +188,7 @@ namespace DotSerial.Xml.Parser
                     if (keyValuepair.Key.IsXmlObject())
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.InnerNode);
 
                         if (null != strValue)
                         {
@@ -224,7 +202,7 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
                         if (null != strValue)
                         {
@@ -241,7 +219,7 @@ namespace DotSerial.Xml.Parser
                         {
                             throw new DSXmlException("Parse: String is not a xml object.");
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(strValue, 0, key);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
                         node.AddChild(childNode);
                     }
                     else

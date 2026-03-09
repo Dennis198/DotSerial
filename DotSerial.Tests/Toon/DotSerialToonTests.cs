@@ -10,11 +10,11 @@ namespace DotSerial.Tests.Toon
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var xmlDocument = DotSerialToon.Serialize(testDefault);
+            var toonDocument = DotSerialToon.Serialize(testDefault);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialToon.SaveToFile(file.FileInfo.FullName, xmlDocument);
+            DotSerialToon.SaveToFile(file.FileInfo.FullName, toonDocument);
         }
 
         [Fact]
@@ -60,8 +60,8 @@ namespace DotSerial.Tests.Toon
             double tmp = 1234.45;
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<double>(toonDocument);
 
             // Assert
             Assert.Equal(tmp, result); 
@@ -74,8 +74,8 @@ namespace DotSerial.Tests.Toon
             string? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<string?>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<string?>(toonDocument);
 
             // Assert
             Assert.Null(result); 
@@ -88,8 +88,8 @@ namespace DotSerial.Tests.Toon
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double[]>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<double[]>(toonDocument);
 
             // Assert
             Assert.NotEmpty(result);
@@ -107,8 +107,8 @@ namespace DotSerial.Tests.Toon
             double[]? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double[]>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<double[]>(toonDocument);
 
             // Assert
             Assert.Null(result);           
@@ -123,8 +123,8 @@ namespace DotSerial.Tests.Toon
             tmp.Add("test2", 2.2);
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<Dictionary<string, double>>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<Dictionary<string, double>>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -141,8 +141,8 @@ namespace DotSerial.Tests.Toon
             Dictionary<string, double>? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<Dictionary<string, double>?>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<Dictionary<string, double>?>(toonDocument);
 
             // Assert
             Assert.Null(result);              
@@ -155,8 +155,8 @@ namespace DotSerial.Tests.Toon
             var tmp = new EmptyClass();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<EmptyClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<EmptyClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -169,8 +169,8 @@ namespace DotSerial.Tests.Toon
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<AccessModifierClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<AccessModifierClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -185,8 +185,8 @@ namespace DotSerial.Tests.Toon
 
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<DictionaryClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<DictionaryClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -200,8 +200,8 @@ namespace DotSerial.Tests.Toon
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<StructClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<StructClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -215,8 +215,8 @@ namespace DotSerial.Tests.Toon
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<RecordClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<RecordClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -230,8 +230,8 @@ namespace DotSerial.Tests.Toon
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ParsableClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<ParsableClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -245,8 +245,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PathClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<PathClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -260,8 +260,8 @@ namespace DotSerial.Tests.Toon
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<ClassWithoutParameterlessConstructor>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -275,8 +275,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PrimitiveClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<PrimitiveClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -290,8 +290,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NestedClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<NestedClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -304,8 +304,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NestedNestedClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<NestedNestedClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -319,8 +319,8 @@ namespace DotSerial.Tests.Toon
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<EnumClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<EnumClass>(toonDocument);
 
 
             // Assert
@@ -335,8 +335,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NoAttributeClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<NoAttributeClass>(toonDocument);
 
             // Arrange
             Assert.NotNull(result);
@@ -350,8 +350,8 @@ namespace DotSerial.Tests.Toon
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<MultiDimClassIEnumarble>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -365,8 +365,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NullClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<NullClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -381,8 +381,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<PrimitiveClassIEnumarable>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -400,8 +400,8 @@ namespace DotSerial.Tests.Toon
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<DateTimeClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<DateTimeClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -415,8 +415,8 @@ namespace DotSerial.Tests.Toon
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<IEnumerableClass>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<IEnumerableClass>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -433,8 +433,8 @@ namespace DotSerial.Tests.Toon
             };
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<ClassRecordNoParameterlessConstructor>(toonDocument);
 
             // Assert
             Assert.NotNull(result);
@@ -569,8 +569,8 @@ namespace DotSerial.Tests.Toon
             object? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<object?>(xmlDocument);
+            var toonDocument = DotSerialToon.Serialize(tmp);
+            var result = DotSerialToon.Deserialize<object?>(toonDocument);
 
             // Assert
             Assert.Null(result);  
@@ -591,10 +591,10 @@ namespace DotSerial.Tests.Toon
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var xml = DotSerialToon.Serialize(tmp);
+            var toon = DotSerialToon.Serialize(tmp);
 
             // Act
-            string result = xml.ToString();
+            string result = toon.ToString();
 
             // Assert
             Assert.NotNull(result);
@@ -605,10 +605,10 @@ namespace DotSerial.Tests.Toon
         public void ToString_NoContent()
         {
             // Arrange
-            var xml = new DotSerialToon();
+            var toon = new DotSerialToon();
 
             // Act
-            string result = xml.ToString();
+            string result = toon.ToString();
 
             // Assert
             Assert.NotNull(result);

@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2026 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
@@ -42,13 +20,13 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new Dictionary<string, MultiLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(0), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -100,13 +78,13 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new List<MultiLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(0), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -139,37 +117,57 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
-            bool keyWasFound = false;
 
+            int start = -1;
             for (int i = 0; i < line.Length; i++)
             {
-                var c = line[i];
+                char c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                        // Remove ending quote
-                        keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                        // Remove starting quote
-                        keyBuilder.Remove(0, 1);
-                        
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipStringValue(i);
-                        keyWasFound = true;
-                    }
+                    i = line.SkipStringValue(i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == YamlConstants.KeyValueSeperator)
                 {
-                    if (false == line.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
+                    start = i;
+                }
+                else
+                {
+                    i = line.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                }
+            }
 
-                    return null;
+            if (start == -1)
+            {
+                throw new NotImplementedException();
+            }
+
+            // Skip seperator
+            start++;
+
+            for (int i = start; i < line.Length; i++)
+            {
+                var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                   _ = ParseMethods.AppendStringValue(keyBuilder, i, line);                    
+                    return keyBuilder.ToString();
+                }
+                else
+                {
+                   _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
+                   return keyBuilder.ToString();
                 }
             }
 
@@ -185,7 +183,7 @@ namespace DotSerial.Yaml.Parser
         private static void RemoveListItemIndicator(MultiLineStringBuilder lines, int startIndex, int endIndex)
         {
             var startLine = lines.GetLine(startIndex);
-            int index = LineLevel(startLine) * YamlConstants.IndentationSize;
+            int index = ParseMethods.LineLevel(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
 
             if (startLine[index] != YamlConstants.ListItemIndicator)
             {
@@ -299,6 +297,11 @@ namespace DotSerial.Yaml.Parser
 
             var firstLine = lines.GetLine(0);
 
+            if (IsEmptyList(firstLine) || IsEmptyObject(firstLine))
+            {
+                return false;
+            }             
+
             // "null"
             if (firstLine.EqualsNullString())
             {
@@ -311,16 +314,46 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            if (1 == firstLine.CountQuotedValues())
+            bool seperatorFound = false;
+            bool keyFound = false;
+
+            for (int i = 0; i < firstLine.Length; i++)
             {
-                return true;
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (true == keyFound && c == YamlConstants.KeyValueSeperator)
+                {
+                    seperatorFound = true;
+                    continue;
+                }
+
+                if (seperatorFound)
+                {
+                    return false;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);
+                    keyFound = true;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                    keyFound = true;
+                }
             }
 
-            return false;
+            return true;
         }   
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a key only a key value pair
+        /// Check if MultiLineStringBuilder is only a key value pair
         /// </summary>
         /// <param name="lines">MultiLineStringBuilder</param>
         /// <returns>True, if yaml key value pair</returns>
@@ -338,6 +371,11 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
+            if (IsEmptyObject(lines.GetLine(0)))
+            {
+                return false;
+            }
+
             if (IsYamlList(lines))
             {
                 return false;
@@ -349,47 +387,64 @@ namespace DotSerial.Yaml.Parser
             }
 
             var firstLine = lines.GetLine(0);
-            bool keyWasFound = false;
-            bool valueWasFound =  false;
-
+            int start = -1;
             for (int i = 0; i < firstLine.Length; i++)
             {
-                var c = firstLine[i];
-                
-                if (false == char.IsWhiteSpace(c))
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
                 {
-                    if (keyWasFound && valueWasFound)
-                    {
-                        throw new NotImplementedException();
-                    }
+                    continue;
                 }
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipStringValue(i);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipStringValue(i);   
-                        keyWasFound = true;
-                    }
+                    i = firstLine.SkipStringValue(i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == YamlConstants.KeyValueSeperator)
                 {
-                    if (false == firstLine.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
+                    start = i;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, YamlConstants.KeyValueSeperator);
+                }
+            }
 
-                    i += 3;
+            if (start == -1)
+            {
+                return false;
+            }
+
+            bool valueWasFound =  false;
+
+            for (int i = start; i < firstLine.Length; i++)
+            {
+                var c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (valueWasFound)
+                {
+                    throw new NotImplementedException();
+                }                
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);                        
+                    valueWasFound = true;
+                }
+                else
+                {
+                    i= firstLine.SkipTillStopChar(i, null);
                     valueWasFound = true;
                 }
             }
 
-            return keyWasFound && valueWasFound;
+            return valueWasFound;
         } 
                                 
         /// <summary>
@@ -456,7 +511,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     continue;
                 }
-                else if (c == ']')
+                else if (c == CommonConstants.BracketsEnd)
                 {
                     if (true == closedBracletFound)
                     {
@@ -464,7 +519,7 @@ namespace DotSerial.Yaml.Parser
                     }
                     closedBracletFound = true;
                 }
-                else if (c == '[')
+                else if (c == CommonConstants.BracketsStart)
                 {
                     if (false == closedBracletFound)
                     {
@@ -535,12 +590,12 @@ namespace DotSerial.Yaml.Parser
             }
 
             int endIndex = -1;
-            int objLevel = LineLevel(lines.GetLine(startIndex));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(startIndex), YamlConstants.IndentationSize);
 
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = LineLevel(lines.GetLine(i));
+                int currLevel = ParseMethods.LineLevel(lines.GetLine(i), YamlConstants.IndentationSize);
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;
@@ -569,45 +624,26 @@ namespace DotSerial.Yaml.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }                 
+
                 if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                    // Remove ending quote
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                     // Remove starting quote
-                    keyBuilder.Remove(0, 1);
+                    return keyBuilder.ToString();
+                }
+                else
+                {
+                    _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, YamlConstants.KeyValueSeperator);
                     return keyBuilder.ToString();
                 }
             }
 
             throw new NotImplementedException();
         }     
-
-        /// <summary>
-        /// Returns the indentation level of a line
-        /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
-        /// <returns>indentation level of a line</returns>
-        private static int LineLevel(StringBuilder line)
-        {
-            ArgumentNullException.ThrowIfNull(line);
-
-            int level = 0;
-            for (int i = 0; i < line.Length; i++)
-            {
-                var c = line[i];
-                if (c == CommonConstants.WhiteSpace)
-                {
-                    level++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return level / YamlConstants.IndentationSize;
-        }  
 
         /// <summary>
         /// Check if line is a key line

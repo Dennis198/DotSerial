@@ -1,26 +1,5 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using DotSerial.Common;
+﻿using DotSerial.Common;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Deserialize;
 using DotSerial.Tree.Serialize;
 
@@ -35,9 +14,9 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = new EmptyClass();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(EmptyClass));
-            if (result is EmptyClass castedResult)
+            if (result is EmptyClass)
             {
                 // Assert
                 Assert.NotNull(result);
@@ -71,7 +50,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(DictionaryClass));
             if (result is DictionaryClass castedResult)
             {
@@ -92,7 +71,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(StructClass));
             if (result is StructClass castedResult)
             {
@@ -113,7 +92,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(RecordClass));
             if (result is RecordClass castedResult)
             {
@@ -134,7 +113,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ParsableClass));
             if (result is ParsableClass castedResult)
             {
@@ -155,7 +134,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PathClass));
             if (result is PathClass castedResult)
             {
@@ -176,7 +155,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassWithoutParameterlessConstructor));
             if (result is ClassWithoutParameterlessConstructor castedResult)
             {
@@ -197,7 +176,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClass));
             if (result is PrimitiveClass castedResult)
             {
@@ -218,7 +197,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NestedClass));
             if (result is NestedClass castedResult)
             {
@@ -239,7 +218,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NestedNestedClass));
             if (result is NestedNestedClass castedResult)
             {
@@ -260,7 +239,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(EnumClass));
             if (result is EnumClass castedResult)
             {
@@ -285,7 +264,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(DateTimeClass));
             if (result is DateTimeClass castedResult)
             {
@@ -306,9 +285,9 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NoAttributeClass));
-            if (result is NoAttributeClass castedResult)
+            if (result is NoAttributeClass)
             {
                 // Assert
                 Assert.NotNull(result);
@@ -327,7 +306,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(MultiDimClassIEnumarble));
             if (result is MultiDimClassIEnumarble castedResult)
             {
@@ -348,7 +327,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(NullClass));
             if (result is NullClass castedResult)
             {
@@ -369,7 +348,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(PrimitiveClassIEnumarable));
             if (result is PrimitiveClassIEnumarable castedResult)
             {
@@ -390,7 +369,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(IEnumerableClass));
             if (result is IEnumerableClass castedResult)
             {
@@ -411,7 +390,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = ClassRecordNoParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var node = SerializeObject.Serialize(tmp, "0");
+            var node = SerializeObject.Serialize(tmp, "0", StategyType.Json);
             var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassRecordNoParameterlessConstructor));
             if (result is ClassRecordNoParameterlessConstructor castedResult)
             {
@@ -433,7 +412,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -443,7 +422,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -453,7 +432,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -466,7 +445,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -479,7 +458,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -492,7 +471,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -505,7 +484,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -518,7 +497,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -531,7 +510,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -544,7 +523,7 @@ namespace DotSerial.Tests.Tree.Serialize
             };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
         [Fact]
@@ -554,7 +533,7 @@ namespace DotSerial.Tests.Tree.Serialize
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0"));
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", StategyType.Json));
         }
 
     }

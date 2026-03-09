@@ -1,17 +1,18 @@
 using DotSerial.Toon;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Toon
 {
     public class DSToonNodeTests
     {
-        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;               
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;           
 
         [Fact]
         public void Create()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(StategyType.Toon, "key", "value", NodeType.Leaf);
 
             // Act
             var result = new DSToonNode(tmp);
@@ -26,8 +27,8 @@ namespace DotSerial.Tests.Toon
         public void GetChild()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode("child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode("key", null, NodeType.InnerNode);
+            var tmp = _nodeFactory.CreateNode(StategyType.Toon, "child", "value", NodeType.Leaf);
+            var tmp2 = _nodeFactory.CreateNode(StategyType.Toon, "key", null, NodeType.InnerNode);
             tmp2.AddChild(tmp);
             var resultNode = new DSToonNode(tmp2);
 
@@ -125,7 +126,22 @@ namespace DotSerial.Tests.Toon
 
             // Assert
             Assert.Equal(tmp, result);         
-        }               
+        }      
+
+        [Fact]
+        public void PrimitiveSpecialChar()
+        {
+            // Arrange
+            string tmp = "{{}<><:;[[]-?!#!";
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<string>(toonString);
+
+            // Assert
+            Assert.Equal(tmp, result);         
+        }                 
 
         [Fact]
         public void List()
@@ -641,6 +657,38 @@ namespace DotSerial.Tests.Toon
             // Assert
             Assert.NotNull(result);
             Assert.True(example.AssertTest(result));
-        }           
+        }       
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsKeys()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsKeys.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassSpecialCharsKeys>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }   
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsValue()
+        {   
+            // Arrange
+            var example = ClassSpecialCharsValue.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassSpecialCharsValue>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }                  
     }
 }

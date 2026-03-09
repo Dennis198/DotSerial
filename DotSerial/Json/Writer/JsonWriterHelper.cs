@@ -1,25 +1,3 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree.Nodes;
@@ -47,6 +25,8 @@ namespace DotSerial.Json.Writer
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
+
+            key = key.EscapeChars(JsonConstants.CharsToEscape);
 
             sb.AppendLine();
             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
@@ -84,12 +64,13 @@ namespace DotSerial.Json.Writer
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes)
         {
             ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
@@ -98,18 +79,22 @@ namespace DotSerial.Json.Writer
             sb.AppendLine();
 
             WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+            
+            key = key.EscapeChars(JsonConstants.CharsToEscape);
+            sb.AppendFormat("\"{0}\": ", key);
 
             if (null == value)
             {
-                sb.AppendFormat("\"{0}\": null,", key);
-            }
-            else if (value == string.Empty)
-            {
-                sb.AppendFormat("\"{0}\": \"\",", key);
+                sb.AppendFormat("null,", key);
             }
             else
             {
-                sb.AppendFormat("\"{0}\": \"{1}\",", key, value);
+                value = value.EscapeChars(JsonConstants.CharsToEscape);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.AppendFormat("{0},", value);
             }
         } 
 
@@ -119,7 +104,8 @@ namespace DotSerial.Json.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level)
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes)
         {
             ArgumentNullException.ThrowIfNull(sb);
 
@@ -132,14 +118,15 @@ namespace DotSerial.Json.Writer
             {
                 sb.Append("null,");
             }
-            else if (value == string.Empty)
-            {
-                sb.Append("\"\",");
-            }
             else
             {
-                sb.AppendFormat("\"{0}\",", value);
-            }
+                value = value.EscapeChars(JsonConstants.CharsToEscape);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.AppendFormat("{0},", value);                
+            }           
         }  
 
         /// <summary>
@@ -160,6 +147,7 @@ namespace DotSerial.Json.Writer
             }
             else
             {
+                key = key.EscapeChars(JsonConstants.CharsToEscape);
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\": {{}},", key);
@@ -184,6 +172,7 @@ namespace DotSerial.Json.Writer
             }
             else
             {
+                key = key.EscapeChars(JsonConstants.CharsToEscape);
                 sb.AppendLine();
                 WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
                 sb.AppendFormat("\"{0}\": [],", key);
@@ -204,7 +193,8 @@ namespace DotSerial.Json.Writer
             if (options.AddKey)
             {
                 // Add Key
-                sb.AppendFormat("\"{0}\": ", node.Key);
+                string key = node.Key.EscapeChars(JsonConstants.CharsToEscape);
+                sb.AppendFormat("\"{0}\": ", key);
                 sb.Append(JsonConstants.ListStart);
             }
             else
@@ -218,6 +208,7 @@ namespace DotSerial.Json.Writer
             foreach (var child in children)
             {
                 string? val = child.GetValue();
+                bool needQuotes = child.IsQuoted;
 
                 if (null == val)
                 {
@@ -225,9 +216,17 @@ namespace DotSerial.Json.Writer
                 }
                 else
                 {
-                    sb.Append(CommonConstants.Quote);
-                    sb.Append(val);
-                    sb.Append(CommonConstants.Quote);
+                    val = val.EscapeChars(JsonConstants.CharsToEscape);
+                    if (needQuotes)
+                    {
+                        sb.Append(CommonConstants.Quote);
+                        sb.Append(val);
+                        sb.Append(CommonConstants.Quote);
+                    }
+                    else
+                    {
+                        sb.Append(val);
+                    }
                 }
 
                 sb.Append(CommonConstants.CommaAndWhiteSpace);

@@ -17,7 +17,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
             var primitiveClass = PrimitiveClass.Create();
             _nodePrimitve = DSToonNode.ToNode(primitiveClass);
 
-            var listClass = ListClass.Create(50, 50);
+            var listClass = ListClass.Create(2, 50);
             _nodeList = DSToonNode.ToNode(listClass);
 
             var dicClass = DictionaryClass.Create(50);

@@ -1,26 +1,4 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using System.Collections;
+﻿using System.Collections;
 using System.Globalization;
 using System.Net;
 
@@ -32,7 +10,6 @@ namespace DotSerial.Utilities
     /// </summary>
     internal static class TypeCheckMethods
     {
-
         /// <summary>
         /// Check if Type is supprted for serialization and deserialization.
         /// </summary>
@@ -67,6 +44,29 @@ namespace DotSerial.Utilities
 
             return false;
         }
+
+        /// <summary>
+        /// Determines if a type is a numeric type.
+        /// </summary>
+        /// <param name="type">Type</param>
+        /// <returns>True, if the type is a numeric type</returns>
+        internal static bool IsNumericType(Type type)
+        {
+            return type == typeof(byte) || type == typeof(byte?) ||
+                   type == typeof(sbyte) || type == typeof(sbyte?) ||
+                   type == typeof(int) || type == typeof(int?) ||
+                   type == typeof(uint) || type == typeof(uint?) ||
+                   type == typeof(nint) || type == typeof(nint?) ||
+                   type == typeof(nuint) || type == typeof(nuint?) ||
+                   type == typeof(long) || type == typeof(long?) ||
+                   type == typeof(ulong) || type == typeof(ulong?) ||
+                   type == typeof(short) || type == typeof(short?) ||
+                   type == typeof(ushort) || type == typeof(ushort?) ||
+                   type == typeof(float) || type == typeof(float?) ||
+                   type == typeof(double) || type == typeof(double?) ||
+                   type == typeof(decimal) || type == typeof(decimal?) ||
+                   type.IsEnum;
+        }        
 
         /// <summary>
         /// Returns true, if Type is a primitive

@@ -1,6 +1,7 @@
 using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -11,6 +12,7 @@ namespace DotSerial.Toon.Parser
     /// </summary>
     internal static  class ToonParserHelper
     {
+
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
@@ -24,13 +26,13 @@ namespace DotSerial.Toon.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new Dictionary<string, ToonMulitLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(0), ToonConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                int currLevel = ParseMethods.LineLevel(line, ToonConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -48,7 +50,7 @@ namespace DotSerial.Toon.Parser
 
                     int sIndex = i + 1;
                     int eIndex;
-                    if (sIndex>= lines.Count || currLevel >= LineLevel(lines.GetLine(sIndex)))
+                    if (sIndex>= lines.Count || currLevel >= ParseMethods.LineLevel(lines.GetLine(sIndex), ToonConstants.IndentationSize))
                     {
                         sIndex = i;
                         eIndex = i;
@@ -141,6 +143,10 @@ namespace DotSerial.Toon.Parser
             for(int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
+                if (char.IsWhiteSpace(c) || c == CommonConstants.Comma)
+                {
+                    continue;
+                }
 
                 if (c == CommonConstants.Quote)
                 {
@@ -148,10 +154,6 @@ namespace DotSerial.Toon.Parser
                     {
                         StringBuilder tmp = new();
                         i = ParseMethods.AppendStringValue(tmp, i, line);
-                        // Remove ending quote
-                        tmp.Remove(tmp.Length - 1, 1);
-                        // Remove starting quote
-                        tmp.Remove(0, 1);
 
                         result.Add(tmp.ToString());
                     }
@@ -160,23 +162,26 @@ namespace DotSerial.Toon.Parser
                         i = line.SkipStringValue(i);
                     }
                 }
-                else if (seperatorFound && c == CommonConstants.N)
-                {
-                    if (false == line.EqualsNullString(i))
-                    {
-                        throw new DSToonException("Invalid toon");
-                    }
-
-                    i += 3;
-                    result.Add(null);
-                }
                 else if (c == ToonConstants.KeyValueSeperator)
                 {
-                      if (seperatorFound)
+                    if (seperatorFound)
                     {
                         throw new DSToonException("Invalid toon");
                     }
                     seperatorFound = true;
+                }
+                else
+                {
+                    if (seperatorFound)
+                    {
+                        StringBuilder sb2 = new();
+                        i = ParseMethods.AppendTillStopChars(sb2, i, line, [CommonConstants.Comma]);
+                        result.Add(sb2.ToString());
+                    }
+                    else
+                    {
+                        i = line.SkipTillStopChars(i, [CommonConstants.Comma, ToonConstants.KeyValueSeperator]);
+                    }
                 }
             }
 
@@ -193,39 +198,58 @@ namespace DotSerial.Toon.Parser
             ArgumentNullException.ThrowIfNull(line);
 
             StringBuilder keyBuilder = new();
-            bool keyWasFound = false;
-
+            int start = -1;
             for (int i = 0; i < line.Length; i++)
             {
-                var c = line[i];
+                char c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                        // Remove ending quote
-                        keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                        // Remove starting quote
-                        keyBuilder.Remove(0, 1);
-                        
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipStringValue(i);
-                        keyWasFound = true;
-                    }
+                    i = line.SkipStringValue(i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == ToonConstants.KeyValueSeperator)
                 {
-                    if (false == line.EqualsNullString(i))
-                    {
-                        throw new DSToonException("Invalid toon");
-                    }
-                    
-                    return null;
+                    start = i;
+                }
+                else
+                {
+                    i = line.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
                 }
             }
+
+            if (start == -1)
+            {
+                throw new NotImplementedException();
+            }
+
+            // Skip seperator
+            start++;
+
+            for (int i = start; i < line.Length; i++)
+            {
+                var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                   _ = ParseMethods.AppendStringValue(keyBuilder, i, line);                    
+                    return keyBuilder.ToString();
+                }
+                else
+                {
+                   _ = ParseMethods.AppendTillStopChar(keyBuilder, i, line, null);
+                   return keyBuilder.ToString();
+                }
+            }            
 
             throw new NotImplementedException();
         }    
@@ -240,13 +264,13 @@ namespace DotSerial.Toon.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new List<ToonMulitLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(0), ToonConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                int currLevel = ParseMethods.LineLevel(line, ToonConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -259,7 +283,7 @@ namespace DotSerial.Toon.Parser
                     {
                         int sIndex = i + 1;
                         int eIndex;
-                        if (sIndex>= lines.Count || currLevel >= LineLevel(lines.GetLine(sIndex)))
+                        if (sIndex>= lines.Count || currLevel >= ParseMethods.LineLevel(lines.GetLine(sIndex), ToonConstants.IndentationSize))
                         {
                             sIndex = i;
                             eIndex = i;
@@ -286,8 +310,7 @@ namespace DotSerial.Toon.Parser
                 }
                 else if (line.EqualFirstNoWhiteSpaceChar(CommonConstants.Minus))
                 {
-                    // Has no list cound, => Must be an objject
-
+                    // Has no list count, => Must be an object
 
                     int endIndex = GetEndIndexOfToonObject(lines, i);
                     var helpObj = lines.Slice(i, endIndex);
@@ -318,7 +341,7 @@ namespace DotSerial.Toon.Parser
         private static void RemoveListItemIndicator(ToonMulitLineStringBuilder lines)
         {
             var startLine = lines.GetLine(0);
-            int index = LineLevel(startLine) * ToonConstants.IndentationSize;
+            int index = ParseMethods.LineLevel(startLine, ToonConstants.IndentationSize) * ToonConstants.IndentationSize;
 
             if (startLine[index] != ToonConstants.ListItemIndicator)
             {
@@ -358,47 +381,59 @@ namespace DotSerial.Toon.Parser
             }
 
             var firstLine = lines.GetLine(0);
-            bool keyWasFound = false;
-            bool valueWasFound =  false;
-
+            int start = -1;
             for (int i = 0; i < firstLine.Length; i++)
             {
-                var c = firstLine[i];
-                
-                if (false == char.IsWhiteSpace(c))
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
                 {
-                    if (keyWasFound && valueWasFound)
-                    {
-                        throw new NotImplementedException();
-                    }
+                    continue;
                 }
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipStringValue(i);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipStringValue(i);   
-                        keyWasFound = true;
-                    }
+                    i = firstLine.SkipStringValue(i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == ToonConstants.KeyValueSeperator)
                 {
-                    if (false == firstLine.EqualsNullString(i))
-                    {
-                        throw new DSToonException("Invalid toon");
-                    }
-
-                    i += 3;
-                    valueWasFound = true;
+                    start = i;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
                 }
             }
 
-            return keyWasFound && valueWasFound;
+            bool valueWasFound =  false;
+
+            for (int i = start; i < firstLine.Length; i++)
+            {
+                var c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (valueWasFound)
+                {
+                    throw new NotImplementedException();
+                }                
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);                        
+                    valueWasFound = true;
+                }
+                else
+                {
+                    i= firstLine.SkipTillStopChar(i, null);
+                    valueWasFound = true;
+                }
+            }            
+
+            return valueWasFound;
         }        
 
         /// <summary>
@@ -452,7 +487,7 @@ namespace DotSerial.Toon.Parser
 
             for (int i = 0; i < count; i++)
             {
-                var listNode = _nodeFactory.CreateNode(i.ToString(), lItems[i], NodeType.Leaf);
+                var listNode = _nodeFactory.CreateNodeFromString(StategyType.Toon, i.ToString(), lItems[i], NodeType.Leaf);
                 node.AddChild(listNode);
             }
         }
@@ -485,12 +520,42 @@ namespace DotSerial.Toon.Parser
                 return false;
             }            
 
-            if (1 == firstLine.CountQuotedValues())
+            bool seperatorFound = false;
+            bool keyFound = false;
+
+            for (int i = 0; i < firstLine.Length; i++)
             {
-                return true;
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (true == keyFound && c == ToonConstants.KeyValueSeperator)
+                {
+                    seperatorFound = true;
+                    continue;
+                }
+
+                if (seperatorFound)
+                {
+                    return false;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = firstLine.SkipStringValue(i);
+                    keyFound = true;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChar(i, ToonConstants.KeyValueSeperator);
+                    keyFound = true;
+                }
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -567,7 +632,7 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines.GetLine(i);
-                var child = _nodeFactory.CreateNode((i).ToString(), null, NodeType.InnerNode);
+                var child = _nodeFactory.CreateNodeFromString(StategyType.Toon, i.ToString(), null, NodeType.InnerNode);
                 var values = ParseCommaSeperateValues(line, 0);
 
                 if (keys.Count != values.Count)
@@ -579,7 +644,7 @@ namespace DotSerial.Toon.Parser
                 {
                     string key = keys[j];
                     string value = values[j];
-                    var childChild = _nodeFactory.CreateNode(key, value, NodeType.Leaf);
+                    var childChild = _nodeFactory.CreateNodeFromString(StategyType.Toon, key, value, NodeType.Leaf);
                     child.AddChild(childChild);
                 }
 
@@ -602,14 +667,21 @@ namespace DotSerial.Toon.Parser
             {
                 char c = sb[i];
 
+                if (char.IsWhiteSpace(c) || c == CommonConstants.Comma)
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
                     StringBuilder tmp = new();
                     i = ParseMethods.AppendStringValue(tmp, i, sb);
-                    // Remove ending quote
-                    tmp.Remove(tmp.Length - 1, 1);
-                    // Remove starting quote
-                    tmp.Remove(0, 1);
+                    result.Add(tmp.ToString());
+                }
+                else
+                {
+                    StringBuilder tmp = new();
+                    i = ParseMethods.AppendTillStopChar(tmp, i, sb, CommonConstants.Comma);
                     result.Add(tmp.ToString());
                 }
             }
@@ -633,7 +705,7 @@ namespace DotSerial.Toon.Parser
 
             var firstLine = new StringBuilder(lines.KeyLine);
 
-            int start = firstLine.IndexOf("{", 0);
+            int start = firstLine.IndexOf(CommonConstants.BracesStart.ToString(), 0);
 
             if (start == -1 || firstLine[start] != CommonConstants.BracesStart)
             {
@@ -642,11 +714,16 @@ namespace DotSerial.Toon.Parser
 
             List<string> result = [];
 
-            for (int i = start; i < firstLine.Length; i++)
+            for (int i = start + 1; i < firstLine.Length; i++)
             {   
                 char c = firstLine[i];
 
-                if (c == ToonConstants.KeyValueSeperator)
+                if (char.IsWhiteSpace(c) || c == CommonConstants.Comma)
+                {
+                    continue;
+                }
+
+                if (c == ToonConstants.KeyValueSeperator || c == CommonConstants.BracesEnd)
                 {
                     break;
                 }
@@ -654,11 +731,14 @@ namespace DotSerial.Toon.Parser
                 {
                     StringBuilder tmp = new();
                     i = ParseMethods.AppendStringValue(tmp, i, firstLine);
-                    // Remove ending quote
-                    tmp.Remove(tmp.Length - 1, 1);
-                    // Remove starting quote
-                    tmp.Remove(0, 1);
                     result.Add(tmp.ToString());
+                }
+                else
+                {
+                    StringBuilder tmp = new();
+                    i = ParseMethods.AppendTillStopChars(tmp, i, firstLine, [CommonConstants.Comma, CommonConstants.BracesStart, CommonConstants.BracesEnd]);
+                    result.Add(tmp.ToString());
+
                 }
             }
 
@@ -692,7 +772,7 @@ namespace DotSerial.Toon.Parser
             {
                 char c = firstLine[i];
 
-                if(char.IsWhiteSpace(c))
+                if(char.IsWhiteSpace(c) || c == CommonConstants.Comma)
                 {
                     continue;
                 }
@@ -720,6 +800,10 @@ namespace DotSerial.Toon.Parser
                         throw new NotImplementedException();
                     }
                     endSchemaFound = true;
+                }
+                else
+                {
+                    i = firstLine.SkipTillStopChars(i, [CommonConstants.Comma, CommonConstants.BracesStart, CommonConstants.BracesEnd]);
                 }
             }
 
@@ -792,13 +876,23 @@ namespace DotSerial.Toon.Parser
                     {
                         countAsString += c;
                     }
+                    else
+                    {
+                        i = line.SkipTillStopChars(i, [ToonConstants.KeyValueSeperator, CommonConstants.BracketsStart]);
+                    }
                 }    
+                else if (c == ToonConstants.KeyValueSeperator)
+                {
+                    break;
+                }
                 else
                 {
                     if (true == countIndicatorStartFound)
                     {
                         throw new NotImplementedException();
                     }
+
+                    i = line.SkipTillStopChars(i, [ToonConstants.KeyValueSeperator, CommonConstants.BracketsStart]);
                 }            
             }
 
@@ -886,35 +980,8 @@ namespace DotSerial.Toon.Parser
         {
             ArgumentNullException.ThrowIfNull(line);
 
-            return line.EqualLastNoWhiteSpaceChar(ToonConstants.KeyValueSeperator);
-             
-        }       
-
-        /// <summary>
-        /// Returns the indentation level of a line
-        /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
-        /// <returns>indentation level of a line</returns>
-        private static int LineLevel(StringBuilder line)
-        {
-            ArgumentNullException.ThrowIfNull(line);
-
-            int level = 0;
-            for (int i = 0; i < line.Length; i++)
-            {
-                var c = line[i];
-                if (c == CommonConstants.WhiteSpace)
-                {
-                    level++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            return level / ToonConstants.IndentationSize;
-        }             
+            return line.EqualLastNoWhiteSpaceChar(ToonConstants.KeyValueSeperator);             
+        }                   
 
         /// <summary>
         /// Extracts the key from a line
@@ -929,18 +996,25 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
                     _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                    // Remove ending quote
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                     // Remove starting quote
-                    keyBuilder.Remove(0, 1);
                     return keyBuilder.ToString();
                 }
                 else if (c == CommonConstants.BracketsStart)
                 {
                     return null;
+                }
+                else
+                {
+                    _ = ParseMethods.AppendTillStopChars(keyBuilder, i, line, [ToonConstants.KeyValueSeperator, CommonConstants.BracketsStart]);
+                    return keyBuilder.ToString();
                 }
             }
 
@@ -963,12 +1037,12 @@ namespace DotSerial.Toon.Parser
             }
 
             int endIndex = -1;
-            int objLevel = LineLevel(lines.GetLine(startIndex));
+            int objLevel = ParseMethods.LineLevel(lines.GetLine(startIndex), ToonConstants.IndentationSize);
 
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = LineLevel(lines.GetLine(i));
+                int currLevel = ParseMethods.LineLevel(lines.GetLine(i), ToonConstants.IndentationSize);
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;
