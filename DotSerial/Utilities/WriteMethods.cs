@@ -25,5 +25,15 @@ namespace DotSerial.Utilities
 
             sb.Append(CommonConstants.WhiteSpace, count * size);
         }
+
+        internal static void AddIndentation2(ref DotSerialStringBuilder sb, int count, int size)
+        {
+            if (count < 0)
+            {
+                throw new ArgumentException(count.ToString());
+            }
+
+            sb.Append(CommonConstants.WhiteSpace, count * size);
+        }
     }
 }

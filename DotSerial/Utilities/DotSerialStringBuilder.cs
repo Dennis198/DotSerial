@@ -1,4 +1,7 @@
 using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.Marshalling;
+using System.Threading.Channels;
 
 namespace DotSerial.Utilities
 {
@@ -21,7 +24,7 @@ namespace DotSerial.Utilities
         /// Constructor
         /// </summary>
         /// <param name="initCapacity">Initial capacity of builder</param>
-        public DotSerialStringBuilder(int initCapacity = 1024)
+        public DotSerialStringBuilder(int initCapacity = 8192)
         {
             _buffer = ArrayPool<char>.Shared.Rent(initCapacity);
             _position = 0;
@@ -150,6 +153,18 @@ namespace DotSerial.Utilities
             return _buffer.AsSpan()[.._position].LastIndexOf(value);
         }
 
+        public readonly char[] ToArray()
+        {
+            if (_position == 0)
+            {
+                return [];
+            }
+
+            char[] result = new char[_position];
+            _buffer.AsSpan()[.._position].CopyTo(result);
+            return result;
+        }
+
         /// <summary>
         /// Converts the builder to a string.
         /// </summary>
@@ -211,6 +226,43 @@ namespace DotSerial.Utilities
             EnsureCapacity(_position + value.Length);
             value.CopyTo(_buffer.AsSpan(_position));
             _position += value.Length;
+        }
+
+        /// <summary>
+        /// Append char
+        /// </summary>
+        /// <param name="value">Char to append</param>
+        public void Append(char value)
+        {
+            EnsureCapacity(_position + 1);
+            _position++;
+            this[^1] = value;
+        }
+
+        /// <summary>
+        /// Appends a specified number of copies of the string representation of a Unicode character to this instance.
+        /// </summary>
+        /// <param name="value">Test to append</param>
+        /// <param name="repeatCount">Specific count</param>
+        public void Append(ReadOnlySpan<char> value, int repeatCount)
+        {
+            for (int i = 0; i < repeatCount; i++)
+            {
+                Append(value);
+            }
+        }
+
+        /// <summary>
+        /// Appends a specified number of copies of the char.
+        /// </summary>
+        /// <param name="value">Test to append</param>
+        /// <param name="repeatCount">Specific count</param>
+        public void Append(char value, int repeatCount)
+        {
+            for (int i = 0; i < repeatCount; i++)
+            {
+                Append(value);
+            }
         }
 
         /// <summary>
@@ -305,6 +357,36 @@ namespace DotSerial.Utilities
             value.CopyTo(_buffer.AsSpan(index));
 
             _position += value.Length;
+        }
+
+        public void Remove(int startIndex, int length)
+        {
+            if (startIndex < 0 || length < 0 || (uint)startIndex + (uint)length > _position)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            if (length == 0)
+                return;
+
+            int remainingSourceIndex = startIndex + length;
+            int remainingCount = _position + remainingSourceIndex;
+
+            if (remainingCount > 0)
+            {
+                ReadOnlySpan<char> tail = _buffer.AsSpan(remainingSourceIndex, remainingCount);
+                tail.CopyTo(_buffer.AsSpan(startIndex));
+            }
+
+            _position -= length;
+        }
+
+        public void Truncate(int newLength)
+        {
+            if ((uint)newLength < (uint)_position)
+            {
+                _position = newLength;
+            }
         }
 
         /// <summary>
