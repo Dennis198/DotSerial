@@ -1,22 +1,211 @@
 using System.Buffers;
-using System.Runtime.InteropServices.Marshalling;
-using System.Security;
-using System.Threading.Channels;
-using System.Xml.Schema;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Custom StringBuilder
+    /// </summary>
     public ref struct DotSerialStringBuilder
     {
-        private char[] _buffer;
+        /// <summary>
+        /// Interner buffer
+        /// </summary>
+        private char[]? _buffer;
+
+        /// <summary>
+        /// Current position in the buffer
+        /// </summary>
         private int _position;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="initCapacity">Initial capacity of builder</param>
         public DotSerialStringBuilder(int initCapacity = 1024)
         {
             _buffer = ArrayPool<char>.Shared.Rent(initCapacity);
             _position = 0;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="value">String</param>
+        public DotSerialStringBuilder(string? value)
+        {
+            if (value == null)
+            {
+                _buffer = ArrayPool<char>.Shared.Rent(1024);
+                _position = 0;
+                return;
+            }
+
+            _buffer = ArrayPool<char>.Shared.Rent(value.Length);
+
+            value.AsSpan().CopyTo(_buffer);
+
+            _position = value.Length;
+        }
+
+        /// <summary>
+        /// Length of the builder
+        /// </summary>
+        public readonly int Length => _position;
+
+        /// <summary>
+        /// Get range
+        /// </summary>
+        public readonly ReadOnlySpan<char> this[Range range]
+        {
+            get
+            {
+                var (offset, length) = range.GetOffsetAndLength(_position);
+
+                return _buffer.AsSpan(offset, length);
+            }
+        }
+
+        /// <summary>
+        /// Get/Set value at position index
+        /// </summary>
+        public readonly char this[int index]
+        {
+            get
+            {
+                if (null == _buffer)
+                {
+                    throw new NullReferenceException($"{_buffer} is null");
+                }
+
+                if ((uint)index >= (uint)_position)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+
+                return _buffer[index];
+            }
+            set
+            {
+                if (null == _buffer)
+                {
+                    throw new NullReferenceException($"{_buffer} is null");
+                }
+
+                if ((uint)index >= (uint)_position)
+                {
+                    throw new IndexOutOfRangeException();
+                }
+                _buffer[index] = value;
+            }
+        }
+
+        /// <summary>
+        /// Convert to span.
+        /// </summary>
+        /// <returns>ReadOnlySpan<char></returns>
+        public readonly ReadOnlySpan<char> AsSpan()
+        {
+            return _buffer.AsSpan(0, _position);
+        }
+
+        /// <summary>
+        /// Check if a given value exists inside the buffer
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="comparison"></param>
+        /// <returns></returns>
+        public readonly bool Contains(ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        {
+            return IndexOf(value, comparison) >= 0;
+        }
+
+        /// <summary>
+        /// Search for a specific value and give the index of its first occurence
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <returns>Position in buffer</returns>
+        public readonly int IndexOf(char value)
+        {
+            return _buffer.AsSpan()[.._position].IndexOf(value);
+        }
+
+        /// <summary>
+        /// Search for a specific value and give the index of its first occurence
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <param name="comparison">Comparison</param>
+        /// <returns>Position in buffer</returns>
+        public readonly int IndexOf(ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
+        {
+            return MemoryExtensions.IndexOf(_buffer.AsSpan()[.._position], value, comparison);
+        }
+
+        /// <summary>
+        /// Search for a specific value and give the index of its last occurence
+        /// </summary>
+        /// <param name="value">Value</param>
+        /// <returns>Position in buffer</returns>
+        public readonly int LastIndexOf(char value)
+        {
+            return _buffer.AsSpan()[.._position].LastIndexOf(value);
+        }
+
+        /// <summary>
+        /// Converts the builder to a string.
+        /// </summary>
+        /// <returns>String</returns>
+        public override readonly string ToString()
+        {
+            if (null == _buffer)
+            {
+                throw new NullReferenceException($"{_buffer} is null");
+            }
+            return new string(_buffer, 0, _position);
+        }
+
+        /// <summary>
+        /// Converts the builder to a string.
+        /// </summary>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="length">length</param>
+        /// <returns>String</returns>
+        public readonly string ToString(int startIndex, int length)
+        {
+            if (null == _buffer)
+            {
+                throw new NullReferenceException($"{_buffer} is null");
+            }
+
+            if ((uint)startIndex + (uint)length > (uint)_position)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            return new string(_buffer.AsSpan().Slice(startIndex, length));
+        }
+
+        /// <summary>
+        /// Write content to another span.
+        /// </summary>
+        /// <param name="destination">Desitination span</param>
+        /// <param name="charsWritten">Chars written</param>
+        /// <returns>True, if successfull</returns>
+        public readonly bool TryWriteTo(Span<char> destination, out int charsWritten)
+        {
+            if (_buffer.AsSpan(0, _position).TryCopyTo(destination))
+            {
+                charsWritten = _position;
+                return true;
+            }
+
+            charsWritten = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Append text
+        /// </summary>
+        /// <param name="value">Text to append</param>
         public void Append(ReadOnlySpan<char> value)
         {
             EnsureCapacity(_position + value.Length);
@@ -24,6 +213,13 @@ namespace DotSerial.Utilities
             _position += value.Length;
         }
 
+        /// <summary>
+        /// Append format text
+        /// </summary>
+        /// <param name="value">Text to append</param>
+        /// <param name="format">Format</param>
+        /// <param name="provider">IFormatProvider</param>
+        /// <typeparam name="T"></typeparam>
         public void AppendFormat<T>(T value, ReadOnlySpan<char> format = default, IFormatProvider? provider = null)
             where T : ISpanFormattable
         {
@@ -44,8 +240,15 @@ namespace DotSerial.Utilities
             }
         }
 
-        public void AppendLine() => AppendLine(ReadOnlySpan<char>.Empty);
+        /// <summary>
+        /// Appends a new line
+        /// </summary>
+        public void AppendLine() => AppendLine([]);
 
+        /// <summary>
+        /// Appends a new line and adds the value afterwards.
+        /// </summary>
+        /// <param name="value">Test to append</param>
         public void AppendLine(ReadOnlySpan<char> value)
         {
             int totalLength = value.Length + Environment.NewLine.Length;
@@ -58,11 +261,9 @@ namespace DotSerial.Utilities
             _position += Environment.NewLine.Length;
         }
 
-        public ReadOnlySpan<char> AsSpan()
-        {
-            return _buffer.AsSpan(0, _position);
-        }
-
+        /// <summary>
+        /// Clears the internal buffer
+        /// </summary>
         public void Clear()
         {
             _position = 0;
@@ -80,6 +281,11 @@ namespace DotSerial.Utilities
             }
         }
 
+        /// <summary>
+        /// Insert text at position
+        /// </summary>
+        /// <param name="index">Position</param>
+        /// <param name="value">Text to insert</param>
         public void Insert(int index, ReadOnlySpan<char> value)
         {
             if ((uint)index > (uint)_position)
@@ -101,25 +307,17 @@ namespace DotSerial.Utilities
             _position += value.Length;
         }
 
-        public override string ToString()
-        {
-            return new string(_buffer, 0, _position);
-        }
-
-        public bool TryWriteTo(Span<char> destination, out int charsWritten)
-        {
-            if (_buffer.AsSpan(0, _position).TryCopyTo(destination))
-            {
-                charsWritten = _position;
-                return true;
-            }
-
-            charsWritten = 0;
-            return false;
-        }
-
+        /// <summary>
+        /// Escures that the capacity is enough
+        /// </summary>
+        /// <param name="requiredCapacity">Required capacity</param>
         private void EnsureCapacity(int requiredCapacity)
         {
+            if (null == _buffer)
+            {
+                throw new NullReferenceException($"{_buffer} is null");
+            }
+
             if (requiredCapacity > _buffer.Length)
             {
                 int newSize = Math.Max(_buffer.Length * 2, requiredCapacity);
