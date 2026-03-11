@@ -25,100 +25,10 @@ namespace DotSerial.Xml
         }
 
         /// <inheritdoc/>
-        public string Key => _node.Key;
-
-        /// <inheritdoc/>
         public bool HasChildren => _node.HasChildren();
 
-        /// <summary>
-        /// Returns the internal node
-        /// </summary>
-        /// <returns>IDSNode</returns>
-        internal IDSNode GetInternalData()
-        {
-            return _node;
-        }
-
-        /// <summary>
-        /// Returns the child with the given key, otherwise null.
-        /// </summary>
-        /// <param name="key">Key of child</param>
-        /// <returns>Child node</returns>
-        public DSXmlNode? GetChild(string key)
-        {
-            ArgumentNullException.ThrowIfNull(key);
-
-            var child = _node.GetChild(key);
-            return new DSXmlNode(child);
-        }
-
         /// <inheritdoc/>
-        public List<DSXmlNode>? GetChildren()
-        {
-            if (false == HasChildren)
-                return null;
-
-            var children = new List<DSXmlNode>();
-            var tmp = _node.GetChildren();
-            foreach (var c in tmp)
-            {
-                children.Add(new DSXmlNode(c));
-            }
-
-            return children;
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSXmlException">DotSerial Exception.</exception>
-        public static DSXmlNode ToNode(object? obj, string? key = null)
-        {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
-
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Xml);
-
-                return new DSXmlNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSXmlException">DotSerial Exception.</exception>
-        public string Stringify()
-        {
-            if (null == _node)
-            {
-                throw new DSXmlException($"{_node} can't be null.");
-            }
-
-            try
-            {
-                // Convert
-                string xmlString = XmlWriterVisitor.Write(this);
-
-                return xmlString;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSXmlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        public string Key => _node.Key;
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -135,6 +45,31 @@ namespace DotSerial.Xml
                 var root = XmlParserVisitor.Parse(str);
 
                 return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSXmlException">DotSerial Exception.</exception>
+        public static DSXmlNode ToNode(object? obj, string? key = null)
+        {
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Xml);
+
+                return new DSXmlNode(rootNode);
             }
             catch (DotSerialException ex)
             {
@@ -171,6 +106,71 @@ namespace DotSerial.Xml
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Returns the child with the given key, otherwise null.
+        /// </summary>
+        /// <param name="key">Key of child</param>
+        /// <returns>Child node</returns>
+        public DSXmlNode? GetChild(string key)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            var child = _node.GetChild(key);
+            return new DSXmlNode(child);
+        }
+
+        /// <inheritdoc/>
+        public List<DSXmlNode>? GetChildren()
+        {
+            if (false == HasChildren)
+                return null;
+
+            var children = new List<DSXmlNode>();
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
+            {
+                children.Add(new DSXmlNode(c));
+            }
+
+            return children;
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSXmlException">DotSerial Exception.</exception>
+        public string Stringify()
+        {
+            if (null == _node)
+            {
+                throw new DSXmlException($"{_node} can't be null.");
+            }
+
+            try
+            {
+                // Convert
+                var xmlString = XmlWriterVisitor.Write(this);
+
+                return new string(xmlString);
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSXmlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
+        {
+            return _node;
         }
     }
 }
