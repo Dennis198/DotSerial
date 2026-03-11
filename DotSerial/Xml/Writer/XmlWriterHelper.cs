@@ -18,13 +18,13 @@ namespace DotSerial.Xml.Writer
             if (key == null)
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
                 AddEmptyTag(ref sb, XmlConstants.XmlListProp);
             }
             else
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
                 AddEmptyTag(ref sb, XmlConstants.XmlListProp, key);
             }
         }
@@ -40,13 +40,13 @@ namespace DotSerial.Xml.Writer
             if (key == null)
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
                 AddEmptyTag(ref sb, XmlConstants.XmlInnerNodeProp);
             }
             else
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
                 AddEmptyTag(ref sb, XmlConstants.XmlInnerNodeProp, key);
             }
         }
@@ -77,7 +77,7 @@ namespace DotSerial.Xml.Writer
             // Maku sure that key/value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
 
             AddStartTag(ref sb, XmlConstants.XmlLeafProp, key);
 
@@ -103,7 +103,7 @@ namespace DotSerial.Xml.Writer
         internal static void AddListEnd(ref DotSerialStringBuilder sb, int level)
         {
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
             AddEndTag(ref sb, XmlConstants.XmlListProp);
         }
 
@@ -123,7 +123,7 @@ namespace DotSerial.Xml.Writer
             }
 
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
             AddStartTag(ref sb, XmlConstants.XmlListProp, key);
         }
 
@@ -136,7 +136,7 @@ namespace DotSerial.Xml.Writer
         internal static void AddObjectEnd(ref DotSerialStringBuilder sb, int level)
         {
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
             AddEndTag(ref sb, XmlConstants.XmlInnerNodeProp);
         }
 
@@ -156,7 +156,7 @@ namespace DotSerial.Xml.Writer
             }
 
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
             AddStartTag(ref sb, XmlConstants.XmlInnerNodeProp, key);
         }
 

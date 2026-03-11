@@ -11,22 +11,10 @@ namespace DotSerial.Utilities
         /// <summary>
         /// Adds identation
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="count">Count of intdentaion</param>
         /// <param name="size">Size of one intdentaion</param>
-        internal static void AddIndentation(StringBuilder sb, int count, int size)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (count < 0)
-            {
-                throw new ArgumentException(count.ToString());
-            }
-
-            sb.Append(CommonConstants.WhiteSpace, count * size);
-        }
-
-        internal static void AddIndentation2(ref DotSerialStringBuilder sb, int count, int size)
+        internal static void AddIndentation(ref DotSerialStringBuilder sb, int count, int size)
         {
             if (count < 0)
             {

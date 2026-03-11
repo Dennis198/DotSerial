@@ -25,97 +25,10 @@ namespace DotSerial.Yaml
         }
 
         /// <inheritdoc/>
-        public string Key => _node.Key;
-
-        /// <inheritdoc/>
         public bool HasChildren => _node.HasChildren();
 
-        /// <summary>
-        /// Returns the internal node
-        /// </summary>
-        /// <returns>IDSNode</returns>
-        internal IDSNode GetInternalData()
-        {
-            return _node;
-        }
-
         /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        public DSYamlNode? GetChild(string key)
-        {
-            ArgumentNullException.ThrowIfNull(key);
-
-            var child = _node.GetChild(key);
-            return new DSYamlNode(child);
-        }
-
-        /// <inheritdoc/>
-        public List<DSYamlNode>? GetChildren()
-        {
-            if (false == HasChildren)
-                return null;
-
-            var children = new List<DSYamlNode>();
-            var tmp = _node.GetChildren();
-            foreach (var c in tmp)
-            {
-                children.Add(new DSYamlNode(c));
-            }
-
-            return children;
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
-        public static DSYamlNode ToNode(object? obj, string? key = null)
-        {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
-
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Yaml);
-
-                return new DSYamlNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSYamlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
-        public string Stringify()
-        {
-            try
-            {
-                if (null == _node)
-                {
-                    throw new DSYamlException($"{_node} can't be null.");
-                }
-
-                // Convert
-                string yamlString = YamlWriterVisitor.Write(this);
-
-                return yamlString;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSYamlException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        public string Key => _node.Key;
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -132,6 +45,31 @@ namespace DotSerial.Yaml
                 var root = YamlParserVisitor.Parse(str);
 
                 return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSYamlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public static DSYamlNode ToNode(object? obj, string? key = null)
+        {
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Yaml);
+
+                return new DSYamlNode(rootNode);
             }
             catch (DotSerialException ex)
             {
@@ -168,6 +106,68 @@ namespace DotSerial.Yaml
             {
                 throw;
             }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        public DSYamlNode? GetChild(string key)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            var child = _node.GetChild(key);
+            return new DSYamlNode(child);
+        }
+
+        /// <inheritdoc/>
+        public List<DSYamlNode>? GetChildren()
+        {
+            if (false == HasChildren)
+                return null;
+
+            var children = new List<DSYamlNode>();
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
+            {
+                children.Add(new DSYamlNode(c));
+            }
+
+            return children;
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSYamlException">DotSerial Exception.</exception>
+        public string Stringify()
+        {
+            try
+            {
+                if (null == _node)
+                {
+                    throw new DSYamlException($"{_node} can't be null.");
+                }
+
+                // Convert
+                var yamlString = YamlWriterVisitor.Write(this);
+
+                return new string(yamlString); // TODO
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSYamlException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
+        {
+            return _node;
         }
     }
 }

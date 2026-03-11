@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -21,9 +20,8 @@ namespace DotSerial.Yaml.Writer
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddObjectStart(StringBuilder sb, string key, int level, string? prefix)
+        internal static void AddObjectStart(ref DotSerialStringBuilder sb, string key, int level, string? prefix)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
             if (string.IsNullOrWhiteSpace(key))
@@ -34,7 +32,7 @@ namespace DotSerial.Yaml.Writer
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
             key = key.EscapeChars(YamlConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
             {
@@ -43,11 +41,11 @@ namespace DotSerial.Yaml.Writer
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
-                sb.AppendFormat("{0}:", key);
+                sb.Append($"{key}:");
             }
             else
             {
-                sb.AppendFormat("{0}{1}:", prefix, key);
+                sb.Append($"{prefix}{key}:");
             }
         }
 
@@ -61,7 +59,7 @@ namespace DotSerial.Yaml.Writer
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Key-Prefix</param>
         internal static void AddKeyValuePair(
-            StringBuilder sb,
+            ref DotSerialStringBuilder sb,
             string key,
             string? value,
             int level,
@@ -69,7 +67,6 @@ namespace DotSerial.Yaml.Writer
             string? prefix = null
         )
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
             if (null == key || key.Length == 0)
@@ -80,11 +77,11 @@ namespace DotSerial.Yaml.Writer
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
 
             if (null != prefix)
             {
-                sb.AppendFormat("{0}", prefix);
+                sb.Append($"{prefix}");
             }
 
             key = key.EscapeChars(YamlConstants.CharsToEscape);
@@ -95,7 +92,7 @@ namespace DotSerial.Yaml.Writer
 
             if (null == value)
             {
-                sb.AppendFormat("{0}: null", key);
+                sb.Append($"{key}: null");
             }
             else
             {
@@ -104,7 +101,7 @@ namespace DotSerial.Yaml.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0}: {1}", key, value);
+                sb.Append($"{key}: {value}");
             }
         }
 
@@ -114,9 +111,13 @@ namespace DotSerial.Yaml.Writer
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Indentation level</param>
-        internal static void AddPrimitiveList(StringBuilder sb, ListNode node, int level, YamlWriterOptions options)
+        internal static void AddPrimitiveList(
+            ref DotSerialStringBuilder sb,
+            ListNode node,
+            int level,
+            YamlWriterOptions options
+        )
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             sb.AppendLine();
@@ -124,7 +125,7 @@ namespace DotSerial.Yaml.Writer
 
             if (!string.IsNullOrWhiteSpace(options.GetPrefix()))
             {
-                WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
                 sb.Append(options.GetPrefix());
                 level += options.NumberOfPrefix;
                 skipFirstIndentation = true;
@@ -143,13 +144,13 @@ namespace DotSerial.Yaml.Writer
 
                     if (!skipFirstIndentation)
                     {
-                        WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+                        WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
                     }
                     skipFirstIndentation = false;
 
                     if (null == val)
                     {
-                        sb.AppendFormat("- {0}", CommonConstants.Null);
+                        sb.Append($"- {CommonConstants.Null}");
                     }
                     else
                     {
@@ -158,7 +159,7 @@ namespace DotSerial.Yaml.Writer
                         {
                             val = StringMethods.AddStartAndEndQuotes(val);
                         }
-                        sb.AppendFormat("- {0}", val);
+                        sb.Append($"- {val}");
                     }
 
                     sb.AppendLine();
@@ -170,7 +171,7 @@ namespace DotSerial.Yaml.Writer
             }
 
             // Remove last New Line
-            sb.Remove(sb.Length - 1, 1);
+            sb.Truncate(sb.Length - 1);
         }
 
         /// <summary>
@@ -180,19 +181,17 @@ namespace DotSerial.Yaml.Writer
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddEmptyObject(StringBuilder sb, string? key, int level, string? prefix)
+        internal static void AddEmptyObject(ref DotSerialStringBuilder sb, string? key, int level, string? prefix)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             if (false == string.IsNullOrWhiteSpace(key))
             {
-                AddObjectStart(sb, key, level, prefix);
+                AddObjectStart(ref sb, key, level, prefix);
                 sb.Append(" {}");
             }
             else
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
                 sb.Append("{}");
             }
         }
@@ -204,19 +203,17 @@ namespace DotSerial.Yaml.Writer
         /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="prefix">Key-Prefix</param>
-        internal static void AddEmptyList(StringBuilder sb, string? key, int level, string? prefix)
+        internal static void AddEmptyList(ref DotSerialStringBuilder sb, string? key, int level, string? prefix)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             if (false == string.IsNullOrWhiteSpace(key))
             {
-                AddObjectStart(sb, key, level, prefix);
+                AddObjectStart(ref sb, key, level, prefix);
                 sb.Append(" []");
             }
             else
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
                 sb.Append("[]");
             }
         }
@@ -230,23 +227,21 @@ namespace DotSerial.Yaml.Writer
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Prefix</param>
         internal static void AddOnlyValue(
-            StringBuilder sb,
+            ref DotSerialStringBuilder sb,
             string? value,
             int level,
             bool needQuotes,
             string? prefix = null
         )
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             // Maku sure that Value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, YamlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
 
             if (null != prefix)
             {
-                sb.AppendFormat("{0}", prefix);
+                sb.Append($"{prefix}");
             }
 
             if (null == value)
@@ -260,7 +255,7 @@ namespace DotSerial.Yaml.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0}", value);
+                sb.Append($"{value}");
             }
         }
     }

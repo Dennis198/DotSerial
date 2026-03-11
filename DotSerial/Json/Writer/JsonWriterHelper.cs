@@ -20,14 +20,14 @@ namespace DotSerial.Json.Writer
             if (string.IsNullOrWhiteSpace(key))
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
                 sb.Append("[],");
             }
             else
             {
                 key = key.EscapeChars(JsonConstants.CharsToEscape);
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
                 sb.Append($"\"{key}\": [],");
             }
         }
@@ -43,14 +43,14 @@ namespace DotSerial.Json.Writer
             if (string.IsNullOrWhiteSpace(key))
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
                 sb.Append("{},");
             }
             else
             {
                 key = key.EscapeChars(JsonConstants.CharsToEscape);
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
                 sb.Append($"\"{key}\": {{}},");
             }
         }
@@ -81,7 +81,7 @@ namespace DotSerial.Json.Writer
             // Maku sure that key/value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
 
             key = key.EscapeChars(JsonConstants.CharsToEscape);
             sb.Append($"\"{key}\": ");
@@ -110,7 +110,7 @@ namespace DotSerial.Json.Writer
         internal static void AddObjectEnd(ref DotSerialStringBuilder sb, int level, bool isLastObject = false)
         {
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
 
             if (isLastObject)
             {
@@ -141,7 +141,7 @@ namespace DotSerial.Json.Writer
             key = key.EscapeChars(JsonConstants.CharsToEscape);
 
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
             sb.Append($"\"{key}\": {{");
         }
 
@@ -157,7 +157,7 @@ namespace DotSerial.Json.Writer
             // Maku sure that Value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, JsonConstants.IndentationSize);
 
             if (null == value)
             {

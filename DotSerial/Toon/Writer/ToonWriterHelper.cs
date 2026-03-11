@@ -30,7 +30,7 @@ namespace DotSerial.Toon.Writer
             else
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
             }
         }
 
@@ -62,7 +62,7 @@ namespace DotSerial.Toon.Writer
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
             if (null != prefix)
             {
@@ -128,7 +128,7 @@ namespace DotSerial.Toon.Writer
             }
 
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
@@ -170,7 +170,7 @@ namespace DotSerial.Toon.Writer
             }
 
             sb.AppendLine();
-            WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
             key = key.EscapeChars(ToonConstants.CharsToEscape);
             if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
             {
@@ -206,7 +206,7 @@ namespace DotSerial.Toon.Writer
             // Maku sure that Value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
             if (null != prefix)
             {
@@ -280,7 +280,7 @@ namespace DotSerial.Toon.Writer
             foreach (var child in children)
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation2(ref sb, level, ToonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
                 var childChidlren = child.GetChildren();
                 foreach (var chilChild in childChidlren)
