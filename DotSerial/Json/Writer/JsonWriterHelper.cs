@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
@@ -11,26 +10,95 @@ namespace DotSerial.Json.Writer
     internal static class JsonWriterHelper
     {
         /// <summary>
-        /// Helper methode to add object start symbol and to json
+        /// Add empty list
         /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
-        /// <param name="level">Indentation level</param>
-        internal static void AddObjectStart(StringBuilder sb, string key, int level)
+        /// <param name="sb"Stringbuilder></param>
+        /// <param name="level">Level</param>
+        /// <param name="Key">Key</param>
+        internal static void AddEmptyList(ref DotSerialStringBuilder sb, int level, string? key = null)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                sb.Append("[],");
+            }
+            else
+            {
+                key = key.EscapeChars(JsonConstants.CharsToEscape);
+                sb.AppendLine();
+                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                sb.Append($"\"{key}\": [],");
+            }
+        }
+
+        /// <summary>
+        /// Add empty Object
+        /// </summary>
+        /// <param name="sb"Stringbuilder></param>
+        /// <param name="level">Level</param>
+        /// <param name="Key">Key</param>
+        internal static void AddEmptyObject(ref DotSerialStringBuilder sb, int level, string? key = null)
+        {
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                sb.Append("{},");
+            }
+            else
+            {
+                key = key.EscapeChars(JsonConstants.CharsToEscape);
+                sb.AppendLine();
+                WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+                sb.Append($"\"{key}\": {{}},");
+            }
+        }
+
+        /// <summary>
+        /// Add a key value pair
+        /// </summary>
+        /// <param name="sb">Stringbuilder</param>
+        /// <param name="key">Key</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Level</param>
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        internal static void AddKeyValuePair(
+            ref DotSerialStringBuilder sb,
+            string key,
+            string? value,
+            int level,
+            bool needQuotes
+        )
+        {
             ArgumentNullException.ThrowIfNull(key);
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (null == key || key.Length == 0)
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
-            key = key.EscapeChars(JsonConstants.CharsToEscape);
-
+            // Maku sure that key/value pair is in new line
             sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-            sb.AppendFormat("\"{0}\": {{", key);
+
+            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+
+            key = key.EscapeChars(JsonConstants.CharsToEscape);
+            sb.Append($"\"{key}\": ");
+
+            if (null == value)
+            {
+                sb.Append("null,");
+            }
+            else
+            {
+                value = value.EscapeChars(JsonConstants.CharsToEscape);
+                if (needQuotes)
+                {
+                    value = StringMethods.AddStartAndEndQuotes(value);
+                }
+                sb.Append($"{value},");
+            }
         }
 
         /// <summary>
@@ -39,12 +107,10 @@ namespace DotSerial.Json.Writer
         /// <param name="sb">Strinbuilder</param>
         /// <param name="level">Indentation level</param>
         /// <param name="isLastObject">True, if object is last object</param>
-        internal static void AddObjectEnd(StringBuilder sb, int level, bool isLastObject = false)
+        internal static void AddObjectEnd(ref DotSerialStringBuilder sb, int level, bool isLastObject = false)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
 
             if (isLastObject)
             {
@@ -58,44 +124,25 @@ namespace DotSerial.Json.Writer
         }
 
         /// <summary>
-        /// Add a key value pair
+        /// Helper methode to add object start symbol and to json
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <param name="key">Key</param>
-        /// <param name="value">Value</param>
-        /// <param name="level">Level</param>
-        /// <param name="needQuotes">True, if value needs quotes</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes)
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        internal static void AddObjectStart(ref DotSerialStringBuilder sb, string key, int level)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
-            if (null == key || key.Length == 0)
+            if (string.IsNullOrWhiteSpace(key))
             {
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
 
-            // Maku sure that key/value pair is in new line
-            sb.AppendLine();
-
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-
             key = key.EscapeChars(JsonConstants.CharsToEscape);
-            sb.AppendFormat("\"{0}\": ", key);
 
-            if (null == value)
-            {
-                sb.AppendFormat("null,", key);
-            }
-            else
-            {
-                value = value.EscapeChars(JsonConstants.CharsToEscape);
-                if (needQuotes)
-                {
-                    value = StringMethods.AddStartAndEndQuotes(value);
-                }
-                sb.AppendFormat("{0},", value);
-            }
+            sb.AppendLine();
+            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
+            sb.Append($"\"{key}\": {{");
         }
 
         /// <summary>
@@ -105,14 +152,12 @@ namespace DotSerial.Json.Writer
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
-        internal static void AddOnlyValue(StringBuilder sb, string? value, int level, bool needQuotes)
+        internal static void AddOnlyValue(ref DotSerialStringBuilder sb, string? value, int level, bool needQuotes)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             // Maku sure that Value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
+            WriteMethods.AddIndentation2(ref sb, level, JsonConstants.IndentationSize);
 
             if (null == value)
             {
@@ -125,57 +170,7 @@ namespace DotSerial.Json.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0},", value);
-            }
-        }
-
-        /// <summary>
-        /// Add empty Object
-        /// </summary>
-        /// <param name="sb"Stringbuilder></param>
-        /// <param name="level">Level</param>
-        /// <param name="Key">Key</param>
-        internal static void AddEmptyObject(StringBuilder sb, int level, string? key = null)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("{},");
-            }
-            else
-            {
-                key = key.EscapeChars(JsonConstants.CharsToEscape);
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.AppendFormat("\"{0}\": {{}},", key);
-            }
-        }
-
-        /// <summary>
-        /// Add empty list
-        /// </summary>
-        /// <param name="sb"Stringbuilder></param>
-        /// <param name="level">Level</param>
-        /// <param name="Key">Key</param>
-        internal static void AddEmptyList(StringBuilder sb, int level, string? key = null)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.Append("[],");
-            }
-            else
-            {
-                key = key.EscapeChars(JsonConstants.CharsToEscape);
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, JsonConstants.IndentationSize);
-                sb.AppendFormat("\"{0}\": [],", key);
+                sb.Append($"{value},");
             }
         }
 
@@ -185,16 +180,15 @@ namespace DotSerial.Json.Writer
         /// <param name="sb">Stringbuilder</param>
         /// <param name="node">ListNode</param>
         /// <param name="options">Options</param>
-        internal static void AddPrimitiveList(StringBuilder sb, ListNode node, JsonWriterOptions options)
+        internal static void AddPrimitiveList(ref DotSerialStringBuilder sb, ListNode node, JsonWriterOptions options)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             if (options.AddKey)
             {
                 // Add Key
                 string key = node.Key.EscapeChars(JsonConstants.CharsToEscape);
-                sb.AppendFormat("\"{0}\": ", key);
+                sb.Append($"\"{key}\": ");
                 sb.Append(JsonConstants.ListStart);
             }
             else
@@ -233,7 +227,7 @@ namespace DotSerial.Json.Writer
             }
 
             // Remove last ", "
-            sb.Remove(sb.Length - 2, 2);
+            sb.Truncate(sb.Length - 2);
 
             sb.Append(JsonConstants.ListEnd);
             sb.Append(CommonConstants.Comma);

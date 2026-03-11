@@ -103,9 +103,9 @@ namespace DotSerial.Json
             try
             {
                 // Convert
-                string jsonString = JsonWriterVisitor.Write(this);
+                var jsonString = JsonWriterVisitor.Write(this);
 
-                return jsonString;
+                return new string(jsonString);
             }
             catch (DotSerialException ex)
             {
