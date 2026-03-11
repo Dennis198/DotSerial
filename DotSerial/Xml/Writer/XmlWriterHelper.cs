@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Utilities;
 
 namespace DotSerial.Xml.Writer
@@ -9,6 +8,50 @@ namespace DotSerial.Xml.Writer
     internal static class XmlWriterHelper
     {
         /// <summary>
+        /// Add an empty list
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="isLastObject">True, if object is last object</param>
+        internal static void AddEmptyList(ref DotSerialStringBuilder sb, int level, string? key = null)
+        {
+            if (key == null)
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(ref sb, XmlConstants.XmlListProp);
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(ref sb, XmlConstants.XmlListProp, key);
+            }
+        }
+
+        /// <summary>
+        /// Add an empty object
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="isLastObject">True, if object is last object</param>
+        internal static void AddEmptyObject(ref DotSerialStringBuilder sb, int level, string? key = null)
+        {
+            if (key == null)
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(ref sb, XmlConstants.XmlInnerNodeProp);
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+                AddEmptyTag(ref sb, XmlConstants.XmlInnerNodeProp, key);
+            }
+        }
+
+        /// <summary>
         /// Helper methode to add key value pair to xml
         /// </summary>
         /// <param name="sb">Strinbuilder</param>
@@ -16,9 +59,14 @@ namespace DotSerial.Xml.Writer
         /// <param name="value">Value of object</param>
         /// <param name="level">Indentation level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
-        internal static void AddKeyValuePair(StringBuilder sb, string key, string? value, int level, bool needQuotes)
+        internal static void AddKeyValuePair(
+            ref DotSerialStringBuilder sb,
+            string key,
+            string? value,
+            int level,
+            bool needQuotes
+        )
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
             if (null == key || key.Length == 0)
@@ -29,9 +77,9 @@ namespace DotSerial.Xml.Writer
             // Maku sure that key/value pair is in new line
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
 
-            AddStartTag(sb, XmlConstants.XmlLeafProp, key);
+            AddStartTag(ref sb, XmlConstants.XmlLeafProp, key);
 
             if (null != value)
             {
@@ -40,91 +88,10 @@ namespace DotSerial.Xml.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0}", value);
+                sb.Append($"{value}");
             }
 
-            AddEndTag(sb, XmlConstants.XmlLeafProp);
-        }
-
-        /// <summary>
-        /// Helper methode to add object start symbol and to xml
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
-        /// <param name="level">Indentation level</param>
-        internal static void AddObjectStart(StringBuilder sb, string key, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
-
-            if (null == key || key.Length == 0)
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
-            }
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddStartTag(sb, XmlConstants.XmlInnerNodeProp, key);
-        }
-
-        /// <summary>
-        /// Helper methode to add object end symbol and to xml
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="level">Indentation level</param>
-        /// <param name="isLastObject">True, if object is last object</param>
-        internal static void AddObjectEnd(StringBuilder sb, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddEndTag(sb, XmlConstants.XmlInnerNodeProp);
-        }
-
-        /// <summary>
-        /// Add an empty object
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="level">Indentation level</param>
-        /// <param name="isLastObject">True, if object is last object</param>
-        internal static void AddEmptyObject(StringBuilder sb, int level, string? key = null)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (key == null)
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.XmlInnerNodeProp);
-            }
-            else
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.XmlInnerNodeProp, key);
-            }
-        }
-
-        /// <summary>
-        /// Helper methode to add list start symbol and to xml
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
-        /// <param name="level">Indentation level</param>
-        internal static void AddListStart(StringBuilder sb, string key, int level)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
-
-            if (null == key || key.Length == 0)
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
-            }
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddStartTag(sb, XmlConstants.XmlListProp, key);
+            AddEndTag(ref sb, XmlConstants.XmlLeafProp);
         }
 
         /// <summary>
@@ -133,72 +100,64 @@ namespace DotSerial.Xml.Writer
         /// <param name="sb">Strinbuilder</param>
         /// <param name="level">Indentation level</param>
         /// <param name="isLastObject">True, if object is last object</param>
-        internal static void AddListEnd(StringBuilder sb, int level)
+        internal static void AddListEnd(ref DotSerialStringBuilder sb, int level)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-            AddEndTag(sb, XmlConstants.XmlListProp);
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+            AddEndTag(ref sb, XmlConstants.XmlListProp);
         }
 
         /// <summary>
-        /// Add an empty list
+        /// Helper methode to add list start symbol and to xml
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        internal static void AddListStart(ref DotSerialStringBuilder sb, string key, int level)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (null == key || key.Length == 0)
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+            }
+
+            sb.AppendLine();
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+            AddStartTag(ref sb, XmlConstants.XmlListProp, key);
+        }
+
+        /// <summary>
+        /// Helper methode to add object end symbol and to xml
         /// </summary>
         /// <param name="sb">Strinbuilder</param>
         /// <param name="level">Indentation level</param>
         /// <param name="isLastObject">True, if object is last object</param>
-        internal static void AddEmptyList(StringBuilder sb, int level, string? key = null)
+        internal static void AddObjectEnd(ref DotSerialStringBuilder sb, int level)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (key == null)
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.XmlListProp);
-            }
-            else
-            {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, XmlConstants.IndentationSize);
-                AddEmptyTag(sb, XmlConstants.XmlListProp, key);
-            }
+            sb.AppendLine();
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+            AddEndTag(ref sb, XmlConstants.XmlInnerNodeProp);
         }
 
         /// <summary>
-        /// Add start tag
+        /// Helper methode to add object start symbol and to xml
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
-        /// <param name="tag">Tag of xml</param>
-        /// <param name="name">Key attribute</param>
-        private static void AddStartTag(StringBuilder sb, string tag, string? name)
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        internal static void AddObjectStart(ref DotSerialStringBuilder sb, string key, int level)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(tag);
+            ArgumentNullException.ThrowIfNull(key);
 
-            if (name == null)
+            if (null == key || key.Length == 0)
             {
-                sb.AppendFormat("<{0}>", tag);
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
             }
-            else
-            {
-                name = name.XmlEscape();
-                sb.AppendFormat("<{0} {1}=\"{2}\">", tag, XmlConstants.XmlAttributeKey, name);
-            }
-        }
 
-        /// <summary>
-        /// Add end tag
-        /// </summary>
-        /// <param name="sb">StringBuilder</param>
-        /// <param name="tag">Tag of xml</param>
-        private static void AddEndTag(StringBuilder sb, string tag)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(tag);
-
-            sb.AppendFormat("</{0}>", tag);
+            sb.AppendLine();
+            WriteMethods.AddIndentation(ref sb, level, XmlConstants.IndentationSize);
+            AddStartTag(ref sb, XmlConstants.XmlInnerNodeProp, key);
         }
 
         /// <summary>
@@ -207,20 +166,52 @@ namespace DotSerial.Xml.Writer
         /// <param name="sb">StringBuilder</param>
         /// <param name="tag">Tag of xml</param>
         /// <param name="name">Key attribute</param>
-        private static void AddEmptyTag(StringBuilder sb, string tag, string? name = null)
+        private static void AddEmptyTag(ref DotSerialStringBuilder sb, string tag, string? name = null)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(tag);
             ArgumentNullException.ThrowIfNull(name);
 
             if (name == null)
             {
-                sb.AppendFormat("<{0} />", tag);
+                sb.Append($"<{tag} />");
             }
             else
             {
                 name = name.XmlEscape();
-                sb.AppendFormat("<{0} {1}=\"{2}\"/>", tag, XmlConstants.XmlAttributeKey, name);
+                sb.Append($"<{tag} {XmlConstants.XmlAttributeKey}=\"{name}\"/>");
+            }
+        }
+
+        /// <summary>
+        /// Add end tag
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="tag">Tag of xml</param>
+        private static void AddEndTag(ref DotSerialStringBuilder sb, string tag)
+        {
+            ArgumentNullException.ThrowIfNull(tag);
+
+            sb.Append($"</{tag}>");
+        }
+
+        /// <summary>
+        /// Add start tag
+        /// </summary>
+        /// <param name="sb">StringBuilder</param>
+        /// <param name="tag">Tag of xml</param>
+        /// <param name="name">Key attribute</param>
+        private static void AddStartTag(ref DotSerialStringBuilder sb, string tag, string? name)
+        {
+            ArgumentNullException.ThrowIfNull(tag);
+
+            if (name == null)
+            {
+                sb.Append($"<{tag}>");
+            }
+            else
+            {
+                name = name.XmlEscape();
+                sb.Append($"<{tag} {XmlConstants.XmlAttributeKey}=\"{name}\">");
             }
         }
     }

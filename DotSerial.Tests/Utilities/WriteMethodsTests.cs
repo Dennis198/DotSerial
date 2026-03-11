@@ -1,4 +1,4 @@
-using System.Text;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tests.Utilities
 {
@@ -12,14 +12,20 @@ namespace DotSerial.Tests.Utilities
         public void AddIndentation(string str, int count)
         {
             // Arrange
-            StringBuilder sb = new();
+            DotSerialStringBuilder sb2 = new(128);
+            try
+            {
+                // Act
+                WriteMethods.AddIndentation(ref sb2, count, 4);
+                sb2.Append(str);
 
-            // Act
-            DotSerial.Utilities.WriteMethods.AddIndentation(sb, count, 4);
-            sb.Append(str);
-
-            // Assert
-            Assert.Equal(new string(' ', count * 4) + str, sb.ToString());
+                // Assert
+                Assert.Equal(new string(' ', count * 4) + str, sb2.ToString());
+            }
+            finally
+            {
+                sb2.Dispose();
+            }
         }
     }
 }

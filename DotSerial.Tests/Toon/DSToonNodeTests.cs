@@ -24,48 +24,54 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void GetChild()
+        public void Dictionary()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode(StategyType.Toon, "child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode(StategyType.Toon, "key", null, NodeType.InnerNode);
-            tmp2.AddChild(tmp);
-            var resultNode = new DSToonNode(tmp2);
+            Dictionary<string, double> tmp = [];
+            tmp.Add("test1", 1.1);
+            tmp.Add("test2", 2.2);
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
 
             // Act
-            var result = resultNode.GetChild("child");
+            var result = DSToonNode.ToObject<Dictionary<string, double>?>(toonString);
 
             // Assert
             Assert.NotNull(result);
-            Assert.Equal("child", result.Key);
-            Assert.False(result.HasChildren);
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Count, result.Count);
+            Assert.Equal(tmp["test1"], result["test1"]);
+            Assert.Equal(tmp["test2"], result["test2"]);
         }
 
         [Fact]
-        public void ToNode()
+        public void Dictionary_Empty()
         {
             // Arrange
-            var example = ExampleClass.CreateTestDefault();
+            Dictionary<string, double> tmp = [];
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
 
             // Act
-            var result = DSToonNode.ToNode(example);
+            var result = DSToonNode.ToObject<Dictionary<string, double>>(toonString);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.Empty(result);
         }
 
         [Fact]
-        public void Stringify()
+        public void Dictionary_Null()
         {
             // Arrange
-            var example = ExampleClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
+            Dictionary<string, double>? tmp = null;
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
 
             // Act
-            var result = tmp.Stringify();
+            var result = DSToonNode.ToObject<Dictionary<string, double>?>(toonString);
 
             // Assert
-            Assert.NotNull(result);
+            Assert.Null(result);
         }
 
         [Fact]
@@ -84,6 +90,74 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
+        public void GetChild()
+        {
+            // Arrange
+            var tmp = _nodeFactory.CreateNode(StategyType.Toon, "child", "value", NodeType.Leaf);
+            var tmp2 = _nodeFactory.CreateNode(StategyType.Toon, "key", null, NodeType.InnerNode);
+            tmp2.AddChild(tmp);
+            var resultNode = new DSToonNode(tmp2);
+
+            // Act
+            var result = resultNode.GetChild("child");
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.Equal("child", result.Key);
+            Assert.False(result.HasChildren);
+        }
+
+        [Fact]
+        public void List()
+        {
+            // Arrange
+            double[] tmp = [1.1, 2.2, 3.3, 4.4];
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<double[]>(toonString);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Length, result.Length);
+            Assert.Equal(tmp[0], result[0]);
+            Assert.Equal(tmp[1], result[1]);
+            Assert.Equal(tmp[2], result[2]);
+            Assert.Equal(tmp[3], result[3]);
+        }
+
+        [Fact]
+        public void List_Empty()
+        {
+            // Arrange
+            double[]? tmp = [];
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<double[]>(toonString);
+
+            // Assert
+            Assert.Empty(result);
+        }
+
+        [Fact]
+        public void List_Null()
+        {
+            // Arrange
+            double[]? tmp = null;
+            var node = DSToonNode.ToNode(tmp);
+            string toonString = node.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<double[]>(toonString);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
         public void Primitive()
         {
             // Arrange
@@ -99,10 +173,10 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void Primitive_Null()
+        public void PrimitiveSpecialChar()
         {
             // Arrange
-            string? tmp = null;
+            string tmp = "{{}<><:;[[]-?!#!";
             var node = DSToonNode.ToNode(tmp);
             string toonString = node.Stringify();
 
@@ -129,10 +203,10 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void PrimitiveSpecialChar()
+        public void Primitive_Null()
         {
             // Arrange
-            string tmp = "{{}<><:;[[]-?!#!";
+            string? tmp = null;
             var node = DSToonNode.ToNode(tmp);
             string toonString = node.Stringify();
 
@@ -144,116 +218,186 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void List()
-        {
-            // Arrange
-            double[] tmp = [1.1, 2.2, 3.3, 4.4];
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<double[]>(toonString);
-
-            // Assert
-            Assert.NotEmpty(result);
-            Assert.Equal(tmp.Length, result.Length);
-            Assert.Equal(tmp[0], result[0]);
-            Assert.Equal(tmp[1], result[1]);
-            Assert.Equal(tmp[2], result[2]);
-            Assert.Equal(tmp[3], result[3]);
-        }
-
-        [Fact]
-        public void List_Null()
-        {
-            // Arrange
-            double[]? tmp = null;
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<double[]>(toonString);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void List_Empty()
-        {
-            // Arrange
-            double[]? tmp = [];
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<double[]>(toonString);
-
-            // Assert
-            Assert.Empty(result);
-        }
-
-        [Fact]
-        public void Dictionary()
-        {
-            // Arrange
-            Dictionary<string, double> tmp = [];
-            tmp.Add("test1", 1.1);
-            tmp.Add("test2", 2.2);
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<Dictionary<string, double>?>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.NotEmpty(result);
-            Assert.Equal(tmp.Count, result.Count);
-            Assert.Equal(tmp["test1"], result["test1"]);
-            Assert.Equal(tmp["test2"], result["test2"]);
-        }
-
-        [Fact]
-        public void Dictionary_Null()
-        {
-            // Arrange
-            Dictionary<string, double>? tmp = null;
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<Dictionary<string, double>?>(toonString);
-
-            // Assert
-            Assert.Null(result);
-        }
-
-        [Fact]
-        public void Dictionary_Empty()
-        {
-            // Arrange
-            Dictionary<string, double> tmp = [];
-            var node = DSToonNode.ToNode(tmp);
-            string toonString = node.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<Dictionary<string, double>>(toonString);
-
-            // Assert
-            Assert.Empty(result);
-        }
-
-        [Fact]
-        public void ToObject_ExampleClass()
+        public void Stringify()
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
+
+            // Act
+            var result = tmp.Stringify();
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void ToNode()
+        {
+            // Arrange
+            var example = ExampleClass.CreateTestDefault();
+
+            // Act
+            var result = DSToonNode.ToNode(example);
+
+            // Assert
+            Assert.NotNull(result);
+        }
+
+        [Fact]
+        public void ToObject_AccessModifierClass()
+        {
+            // Arrange
+            var example = AccessModifierClass.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<ExampleClass>(toonString);
+            var result = DSToonNode.ToObject<AccessModifierClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassRecordNoParameterlessConstructor()
+        {
+            // Arrange
+            var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassRecordNoParameterlessConstructor>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsKeys()
+        {
+            // Arrange
+            var example = ClassSpecialCharsKeys.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassSpecialCharsKeys>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassSpecialCharsValue()
+        {
+            // Arrange
+            var example = ClassSpecialCharsValue.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var resultString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassSpecialCharsValue>(resultString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassWithOneDictionary()
+        {
+            // Arrange
+            var example = ClassWithOneDictionary.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassWithOneDictionary>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassWithOneList()
+        {
+            // Arrange
+            var example = ClassWithOneList.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassWithOneList>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassWithOnePrimitive()
+        {
+            // Arrange
+            var example = ClassWithOnePrimitive.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassWithOnePrimitive>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ClassWithoutParameterlessConstructor()
+        {
+            // Arrange
+            var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ClassWithoutParameterlessConstructor>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_DateTimeClass()
+        {
+            // Arrange
+            var example = DateTimeClass.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<DateTimeClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_DictionaryClass()
+        {
+            // Arrange
+            var example = DictionaryClass.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<DictionaryClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -276,15 +420,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_ListFirstElementNull()
+        public void ToObject_EmptyObjectClass()
         {
             // Arrange
-            var example = ListFirstElementNull.CreateTestDefault();
+            var example = EmptyObjectClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<ListFirstElementNull>(toonString);
+            var result = DSToonNode.ToObject<EmptyObjectClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -292,15 +436,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_NoAttributeClass()
+        public void ToObject_EnumClass()
         {
             // Arrange
-            var example = NoAttributeClass.CreateTestDefault();
+            var example = EnumClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<NoAttributeClass>(toonString);
+            var result = DSToonNode.ToObject<EnumClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -308,47 +452,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_AccessModifierClass()
+        public void ToObject_ExampleClass()
         {
             // Arrange
-            var example = AccessModifierClass.CreateTestDefault();
+            var example = ExampleClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<AccessModifierClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_SimpleClass()
-        {
-            // Arrange
-            var example = SimpleClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<SimpleClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_NullClass()
-        {
-            // Arrange
-            var example = NullClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<NullClass>(toonString);
+            var result = DSToonNode.ToObject<ExampleClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -365,6 +477,38 @@ namespace DotSerial.Tests.Toon
 
             // Act
             var result = DSToonNode.ToObject<IEnumerableClass>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_ListFirstElementNull()
+        {
+            // Arrange
+            var example = ListFirstElementNull.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<ListFirstElementNull>(toonString);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(example.AssertTest(result));
+        }
+
+        [Fact]
+        public void ToObject_MultiDimClassIEnumarble()
+        {
+            // Arrange
+            var example = MultiDimClassIEnumarble.CreateTestDefault();
+            var tmp = DSToonNode.ToNode(example);
+            var toonString = tmp.Stringify();
+
+            // Act
+            var result = DSToonNode.ToObject<MultiDimClassIEnumarble>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -404,15 +548,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_PrimitiveClass()
+        public void ToObject_NoAttributeClass()
         {
             // Arrange
-            var example = PrimitiveClass.CreateTestDefault();
+            var example = NoAttributeClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<PrimitiveClass>(toonString);
+            var result = DSToonNode.ToObject<NoAttributeClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -420,79 +564,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_DictionaryClass()
+        public void ToObject_NullClass()
         {
             // Arrange
-            var example = DictionaryClass.CreateTestDefault();
+            var example = NullClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<DictionaryClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_EnumClass()
-        {
-            // Arrange
-            var example = EnumClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<EnumClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_DateTimeClass()
-        {
-            // Arrange
-            var example = DateTimeClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<DateTimeClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_StructClass()
-        {
-            // Arrange
-            var example = StructClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<StructClass>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_RecordClass()
-        {
-            // Arrange
-            var example = RecordClass.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<RecordClass>(toonString);
+            var result = DSToonNode.ToObject<NullClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -532,31 +612,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_ClassWithoutParameterlessConstructor()
+        public void ToObject_PrimitiveClass()
         {
             // Arrange
-            var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
+            var example = PrimitiveClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<ClassWithoutParameterlessConstructor>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_ClassRecordNoParameterlessConstructor()
-        {
-            // Arrange
-            var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<ClassRecordNoParameterlessConstructor>(toonString);
+            var result = DSToonNode.ToObject<PrimitiveClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -580,15 +644,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_MultiDimClassIEnumarble()
+        public void ToObject_RecordClass()
         {
             // Arrange
-            var example = MultiDimClassIEnumarble.CreateTestDefault();
+            var example = RecordClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<MultiDimClassIEnumarble>(toonString);
+            var result = DSToonNode.ToObject<RecordClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -596,15 +660,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_EmptyObjectClass()
+        public void ToObject_SimpleClass()
         {
             // Arrange
-            var example = EmptyObjectClass.CreateTestDefault();
+            var example = SimpleClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<EmptyObjectClass>(toonString);
+            var result = DSToonNode.ToObject<SimpleClass>(toonString);
 
             // Assert
             Assert.NotNull(result);
@@ -612,79 +676,15 @@ namespace DotSerial.Tests.Toon
         }
 
         [Fact]
-        public void ToObject_ClassWithOneList()
+        public void ToObject_StructClass()
         {
             // Arrange
-            var example = ClassWithOneList.CreateTestDefault();
+            var example = StructClass.CreateTestDefault();
             var tmp = DSToonNode.ToNode(example);
             var toonString = tmp.Stringify();
 
             // Act
-            var result = DSToonNode.ToObject<ClassWithOneList>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_ClassWithOneDictionary()
-        {
-            // Arrange
-            var example = ClassWithOneDictionary.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<ClassWithOneDictionary>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_ClassWithOnePrimitive()
-        {
-            // Arrange
-            var example = ClassWithOnePrimitive.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var toonString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<ClassWithOnePrimitive>(toonString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_ClassSpecialCharsKeys()
-        {
-            // Arrange
-            var example = ClassSpecialCharsKeys.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var resultString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<ClassSpecialCharsKeys>(resultString);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(example.AssertTest(result));
-        }
-
-        [Fact]
-        public void ToObject_ClassSpecialCharsValue()
-        {
-            // Arrange
-            var example = ClassSpecialCharsValue.CreateTestDefault();
-            var tmp = DSToonNode.ToNode(example);
-            var resultString = tmp.Stringify();
-
-            // Act
-            var result = DSToonNode.ToObject<ClassSpecialCharsValue>(resultString);
+            var result = DSToonNode.ToObject<StructClass>(toonString);
 
             // Assert
             Assert.NotNull(result);

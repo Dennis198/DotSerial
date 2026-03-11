@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -10,82 +9,62 @@ namespace DotSerial.Toon.Writer
     internal class ToonWriterVisitor : IToonNodeWriterVisitor
     {
         /// <inheritdoc/>
-        public static string Write(DSToonNode node)
+        public static ReadOnlySpan<char> Write(DSToonNode node)
         {
             ArgumentNullException.ThrowIfNull(node);
 
-            StringBuilder sb = new();
+            char[]? result = null;
 
-            var internalNode = node.GetInternalData();
-            WriterAccept(internalNode, new ToonWriterVisitor(), sb, new ToonWriterOptions(0, false));
+            DotSerialStringBuilder dtSB = new(8192);
+            try
+            {
+                var internalNode = node.GetInternalData();
+                WriterAccept(internalNode, new ToonWriterVisitor(), ref dtSB, new ToonWriterOptions(0, false));
+                result = dtSB.ToArray();
+            }
+            finally
+            {
+                dtSB.Dispose();
+            }
 
-            // Trim start and ending
-            sb = sb.TrimStartAndEnd();
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Writer for Toon
-        /// </summary>
-        /// <param name="node">IDSNode</param>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="sb">Stringbuild</param>
-        /// <param name="options">Additional options</param>
-        private static void WriterAccept(
-            IDSNode node,
-            ToonWriterVisitor visitor,
-            StringBuilder sb,
-            ToonWriterOptions options
-        )
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, sb, options);
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, sb, options);
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, sb, options);
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, sb, options);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            return result.AsSpan();
         }
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, ToonWriterOptions options)
+        public void VisitDictionaryNode(DictionaryNode node, ref DotSerialStringBuilder sb, ToonWriterOptions options)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             int level = options.Level;
-            string? value = node.GetValue();
-            string? prefix = options.GetPrefix();
 
-            if (options.AddKey)
+            if (node.HasChildren())
             {
-                string key = node.Key;
-                ToonWriterHelper.AddKeyValuePair(sb, key, value, level, node.IsQuoted, prefix);
+                var children = node.GetChildren();
+
+                if (options.AddKey)
+                {
+                    ToonWriterHelper.AddObjectStart(ref sb, node.Key, level, options.GetPrefix());
+                    level++;
+                }
+
+                foreach (var child in children)
+                {
+                    WriterAccept(child, this, ref sb, new ToonWriterOptions(level, true));
+                }
             }
             else
             {
-                ToonWriterHelper.AddOnlyValue(sb, value, level, node.IsQuoted, prefix);
+                if (options.AddKey)
+                {
+                    // Empty node
+                    ToonWriterHelper.AddEmptyObject(ref sb, node.Key, level, options.GetPrefix());
+                }
             }
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, ToonWriterOptions options)
+        public void VisitInnerNode(InnerNode node, ref DotSerialStringBuilder sb, ToonWriterOptions options)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             int level = options.Level;
@@ -94,7 +73,7 @@ namespace DotSerial.Toon.Writer
             {
                 if (options.AddKey)
                 {
-                    ToonWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
+                    ToonWriterHelper.AddObjectStart(ref sb, node.Key, level, options.GetPrefix());
                     level++;
                 }
 
@@ -102,7 +81,7 @@ namespace DotSerial.Toon.Writer
 
                 foreach (var child in children)
                 {
-                    WriterAccept(child, this, sb, new ToonWriterOptions(level, true, options.NumberOfPrefix));
+                    WriterAccept(child, this, ref sb, new ToonWriterOptions(level, true, options.NumberOfPrefix));
 
                     if (child is LeafNode)
                     {
@@ -118,15 +97,34 @@ namespace DotSerial.Toon.Writer
                 // Empty node
                 if (options.AddKey)
                 {
-                    ToonWriterHelper.AddEmptyObject(sb, node.Key.ToString(), level, options.GetPrefix());
+                    ToonWriterHelper.AddEmptyObject(ref sb, node.Key.ToString(), level, options.GetPrefix());
                 }
             }
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, StringBuilder sb, ToonWriterOptions options)
+        public void VisitLeafNode(LeafNode node, ref DotSerialStringBuilder sb, ToonWriterOptions options)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
+
+            int level = options.Level;
+            string? value = node.GetValue();
+            string? prefix = options.GetPrefix();
+
+            if (options.AddKey)
+            {
+                string key = node.Key;
+                ToonWriterHelper.AddKeyValuePair(ref sb, key, value, level, node.IsQuoted, prefix);
+            }
+            else
+            {
+                ToonWriterHelper.AddOnlyValue(ref sb, value, level, node.IsQuoted, prefix);
+            }
+        }
+
+        /// <inheritdoc/>
+        public void VisitListNode(ListNode node, ref DotSerialStringBuilder sb, ToonWriterOptions options)
+        {
             ArgumentNullException.ThrowIfNull(node);
 
             int level = options.Level;
@@ -137,72 +135,73 @@ namespace DotSerial.Toon.Writer
                 {
                     var children = node.GetChildren();
 
-                    ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
+                    ToonWriterHelper.AddListStart(ref sb, node, level, options.AddKey, options.GetPrefix());
                     level++;
 
                     if (ToonWriterHelper.UseToonSchema(node, out _))
                     {
-                        ToonWriterHelper.AddSchemaList(sb, node, level);
+                        ToonWriterHelper.AddSchemaList(ref sb, node, level);
                     }
                     else
                     {
                         foreach (var child in children)
                         {
-                            StringBuilder sbChild = new();
                             WriterAccept(
                                 child,
                                 this,
-                                sbChild,
+                                ref sb,
                                 new ToonWriterOptions(level, false, options.NumberOfPrefix + 1)
                             );
-                            sb.Append(sbChild);
                         }
                     }
                 }
                 else
                 {
-                    ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
+                    ToonWriterHelper.AddListStart(ref sb, node, level, options.AddKey, options.GetPrefix());
                     // List to Toon
-                    ToonWriterHelper.AddPrimitiveList(sb, node);
+                    ToonWriterHelper.AddPrimitiveList(ref sb, node);
                 }
             }
             else
             {
                 // Empty list
-                ToonWriterHelper.AddListStart(sb, node, level, options.AddKey, options.GetPrefix());
+                ToonWriterHelper.AddListStart(ref sb, node, level, options.AddKey, options.GetPrefix());
             }
         }
 
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, ToonWriterOptions options)
+        /// <summary>
+        /// Writer for Toon
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
+        /// <param name="options">Additional options</param>
+        private static void WriterAccept(
+            IDSNode node,
+            ToonWriterVisitor visitor,
+            ref DotSerialStringBuilder sb,
+            ToonWriterOptions options
+        )
         {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(node);
-
-            int level = options.Level;
-
-            if (node.HasChildren())
+            if (node is LeafNode leafNode)
             {
-                var children = node.GetChildren();
-
-                if (options.AddKey)
-                {
-                    ToonWriterHelper.AddObjectStart(sb, node.Key, level, options.GetPrefix());
-                    level++;
-                }
-
-                foreach (var child in children)
-                {
-                    WriterAccept(child, this, sb, new ToonWriterOptions(level, true));
-                }
+                visitor.VisitLeafNode(leafNode, ref sb, options);
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, ref sb, options);
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, ref sb, options);
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, ref sb, options);
             }
             else
             {
-                if (options.AddKey)
-                {
-                    // Empty node
-                    ToonWriterHelper.AddEmptyObject(sb, node.Key, level, options.GetPrefix());
-                }
+                throw new NotImplementedException();
             }
         }
     }

@@ -15,16 +15,36 @@ namespace DotSerial.Toon.Writer
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <summary>
+        /// Add empty Object
+        /// </summary>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
+        /// <param name="level">Indentation level</param>
+        /// <param name="prefix">Key-Prefix</param>
+        internal static void AddEmptyObject(ref DotSerialStringBuilder sb, string? key, int level, string? prefix)
+        {
+            if (false == string.IsNullOrWhiteSpace(key))
+            {
+                AddObjectStart(ref sb, key, level, prefix);
+            }
+            else
+            {
+                sb.AppendLine();
+                WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
+            }
+        }
+
+        /// <summary>
         /// Converts a key : value pair to an toon string.
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
         /// <param name="prefix">Prefix for key</param>
         internal static void AddKeyValuePair(
-            StringBuilder sb,
+            ref DotSerialStringBuilder sb,
             string key,
             string? value,
             int level,
@@ -32,7 +52,6 @@ namespace DotSerial.Toon.Writer
             string? prefix = null
         )
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(key);
 
             if (null == key || key.Length == 0)
@@ -43,11 +62,11 @@ namespace DotSerial.Toon.Writer
             // Make sure key:value has its own line.
             sb.AppendLine();
 
-            WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
             if (null != prefix)
             {
-                sb.AppendFormat("{0}", prefix);
+                sb.Append($"{prefix}");
             }
 
             key = key.EscapeChars(ToonConstants.CharsToEscape);
@@ -56,7 +75,7 @@ namespace DotSerial.Toon.Writer
                 key = StringMethods.AddStartAndEndQuotes(key);
             }
 
-            sb.AppendFormat("{0}: ", key);
+            sb.Append($"{key}: ");
 
             if (null == value)
             {
@@ -69,99 +88,26 @@ namespace DotSerial.Toon.Writer
                 {
                     value = StringMethods.AddStartAndEndQuotes(value);
                 }
-                sb.AppendFormat("{0}", value);
-            }
-        }
-
-        /// <summary>
-        /// Appends only the value without the key
-        /// </summary>
-        /// <param name="sb">StringBuilder</param>
-        /// <param name="value">Value</param>
-        /// <param name="level">Level</param>
-        /// <param name="needQuotes">True, if value needs quotes</param>
-        /// <param name="prefix">Prefix</param>
-        internal static void AddOnlyValue(
-            StringBuilder sb,
-            string? value,
-            int level,
-            bool needQuotes,
-            string? prefix = null
-        )
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            // Maku sure that Value pair is in new line
-            sb.AppendLine();
-
-            WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
-
-            if (null != prefix)
-            {
-                sb.AppendFormat("{0}", prefix);
-            }
-
-            if (null == value)
-            {
-                sb.Append(CommonConstants.Null);
-            }
-            else
-            {
-                value = value.EscapeChars(ToonConstants.CharsToEscape);
-                if (needQuotes)
-                {
-                    value = StringMethods.AddStartAndEndQuotes(value);
-                }
-                sb.AppendFormat("{0}", value);
-            }
-        }
-
-        /// <summary>
-        /// Helper methode to add object start to toon
-        /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
-        /// <param name="level">Indentation level</param>
-        /// <param name="prefix">Prefix</param>
-        internal static void AddObjectStart(StringBuilder sb, string key, int level, string? prefix)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(key);
-
-            if (null == key || key.Length == 0)
-            {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
-            }
-
-            sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
-            key = key.EscapeChars(ToonConstants.CharsToEscape);
-            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
-            {
-                key = StringMethods.AddStartAndEndQuotes(key);
-            }
-
-            if (string.IsNullOrWhiteSpace(prefix))
-            {
-                sb.AppendFormat("{0}:", key);
-            }
-            else
-            {
-                sb.AppendFormat("{0}{1}:", prefix, key);
+                sb.Append($"{value}");
             }
         }
 
         /// <summary>
         /// Helper methode to add list start to toon
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="lNode">List node</param>
         /// <param name="level">Indentation level</param>
         /// <param name="addKey">True, to add key</param>
         /// <param name="prefix">Prefix</param>
-        internal static void AddListStart(StringBuilder sb, ListNode lNode, int level, bool addKey, string? prefix)
+        internal static void AddListStart(
+            ref DotSerialStringBuilder sb,
+            ListNode lNode,
+            int level,
+            bool addKey,
+            string? prefix
+        )
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(lNode);
 
             string key = lNode.Key;
@@ -182,21 +128,21 @@ namespace DotSerial.Toon.Writer
             }
 
             sb.AppendLine();
-            WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
 
             if (string.IsNullOrWhiteSpace(prefix))
             {
                 if (addKey)
-                    sb.AppendFormat("{0}[{1}]", key, count);
+                    sb.Append($"{key}[{count}]");
                 else
-                    sb.AppendFormat("[{0}]", count);
+                    sb.Append($"[{count}]");
             }
             else
             {
                 if (addKey)
-                    sb.AppendFormat("{0}{1}[{2}]", prefix, key, count);
+                    sb.Append($"{prefix}{key}[{count}]");
                 else
-                    sb.AppendFormat("{0}[{1}]", prefix, count);
+                    sb.Append($"{prefix}[{count}]");
             }
 
             if (UseToonSchema(lNode, out string? schema))
@@ -208,47 +154,77 @@ namespace DotSerial.Toon.Writer
         }
 
         /// <summary>
-        /// Helper method to add a list with Toon Schema
+        /// Helper methode to add object start to toon
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
-        /// <param name="node">ListNode</param>
+        /// <param name="sb">Strinbuilder</param>
+        /// <param name="key">Key of object</param>
         /// <param name="level">Indentation level</param>
-        internal static void AddSchemaList(StringBuilder sb, ListNode node, int level)
+        /// <param name="prefix">Prefix</param>
+        internal static void AddObjectStart(ref DotSerialStringBuilder sb, string key, int level, string? prefix)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(key);
 
-            // Get all children of node
-            var children = node.GetChildren();
-
-            foreach (var child in children)
+            if (null == key || key.Length == 0)
             {
-                sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+            }
 
-                var childChidlren = child.GetChildren();
-                foreach (var chilChild in childChidlren)
+            sb.AppendLine();
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
+            key = key.EscapeChars(ToonConstants.CharsToEscape);
+            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            {
+                key = StringMethods.AddStartAndEndQuotes(key);
+            }
+
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                sb.Append($"{key}:");
+            }
+            else
+            {
+                sb.Append($"{prefix}{key}:");
+            }
+        }
+
+        /// <summary>
+        /// Appends only the value without the key
+        /// </summary>
+        /// <param name="sb">DotSerialStringBuilder</param>
+        /// <param name="value">Value</param>
+        /// <param name="level">Level</param>
+        /// <param name="needQuotes">True, if value needs quotes</param>
+        /// <param name="prefix">Prefix</param>
+        internal static void AddOnlyValue(
+            ref DotSerialStringBuilder sb,
+            string? value,
+            int level,
+            bool needQuotes,
+            string? prefix = null
+        )
+        {
+            // Maku sure that Value pair is in new line
+            sb.AppendLine();
+
+            WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
+
+            if (null != prefix)
+            {
+                sb.Append($"{prefix}");
+            }
+
+            if (null == value)
+            {
+                sb.Append(CommonConstants.Null);
+            }
+            else
+            {
+                value = value.EscapeChars(ToonConstants.CharsToEscape);
+                if (needQuotes)
                 {
-                    string? value = chilChild.GetValue();
-                    if (null == value)
-                    {
-                        sb.Append(CommonConstants.Null);
-                    }
-                    else
-                    {
-                        value = value.EscapeChars(ToonConstants.CharsToEscape);
-                        if (chilChild.IsQuoted)
-                        {
-                            value = StringMethods.AddStartAndEndQuotes(value);
-                        }
-                        sb.AppendFormat("{0}", value);
-                    }
-
-                    sb.Append(CommonConstants.Comma);
+                    value = StringMethods.AddStartAndEndQuotes(value);
                 }
-
-                // Remove last ","
-                sb.Remove(sb.Length - 1, 1);
+                sb.Append($"{value}");
             }
         }
 
@@ -257,9 +233,8 @@ namespace DotSerial.Toon.Writer
         /// </summary>
         /// <param name="sb">StinrgBuilder</param>
         /// <param name="node">ListNode</param>
-        internal static void AddPrimitiveList(StringBuilder sb, ListNode node)
+        internal static void AddPrimitiveList(ref DotSerialStringBuilder sb, ListNode node)
         {
-            ArgumentNullException.ThrowIfNull(sb);
             ArgumentNullException.ThrowIfNull(node);
 
             // Get all children of node
@@ -279,35 +254,58 @@ namespace DotSerial.Toon.Writer
                     {
                         val = StringMethods.AddStartAndEndQuotes(val);
                     }
-                    sb.AppendFormat("{0}", val);
+                    sb.Append($"{val}");
                 }
 
                 sb.Append(CommonConstants.Comma);
             }
 
             // Remove last ","
-            sb.Remove(sb.Length - 1, 1);
+            sb.Truncate(sb.Length - 1);
         }
 
         /// <summary>
-        /// Add empty Object
+        /// Helper method to add a list with Toon Schema
         /// </summary>
-        /// <param name="sb">Strinbuilder</param>
-        /// <param name="key">Key of object</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
+        /// <param name="node">ListNode</param>
         /// <param name="level">Indentation level</param>
-        /// <param name="prefix">Key-Prefix</param>
-        internal static void AddEmptyObject(StringBuilder sb, string? key, int level, string? prefix)
+        internal static void AddSchemaList(ref DotSerialStringBuilder sb, ListNode node, int level)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            ArgumentNullException.ThrowIfNull(node);
 
-            if (false == string.IsNullOrWhiteSpace(key))
-            {
-                AddObjectStart(sb, key, level, prefix);
-            }
-            else
+            // Get all children of node
+            var children = node.GetChildren();
+
+            foreach (var child in children)
             {
                 sb.AppendLine();
-                WriteMethods.AddIndentation(sb, level, ToonConstants.IndentationSize);
+                WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
+
+                var childChidlren = child.GetChildren();
+                foreach (var chilChild in childChidlren)
+                {
+                    string? value = chilChild.GetValue();
+                    if (null == value)
+                    {
+                        sb.Append(CommonConstants.Null);
+                    }
+                    else
+                    {
+                        value = value.EscapeChars(ToonConstants.CharsToEscape);
+                        if (chilChild.IsQuoted)
+                        {
+                            value = StringMethods.AddStartAndEndQuotes(value);
+                        }
+
+                        sb.Append($"{value}");
+                    }
+
+                    sb.Append(CommonConstants.Comma);
+                }
+
+                // Remove last ","
+                sb.Truncate(sb.Length - 1);
             }
         }
 

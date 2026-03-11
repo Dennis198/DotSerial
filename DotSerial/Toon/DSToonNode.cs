@@ -25,18 +25,87 @@ namespace DotSerial.Toon
         }
 
         /// <inheritdoc/>
+        public bool HasChildren => _node.HasChildren();
+
+        /// <inheritdoc/>
         public string Key => _node.Key;
 
         /// <inheritdoc/>
-        public bool HasChildren => _node.HasChildren();
-
-        /// <summary>
-        /// Returns the internal node
-        /// </summary>
-        /// <returns>IDSNode</returns>
-        internal IDSNode GetInternalData()
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSToonException">DotSerial Exception.</exception>
+        public static DSToonNode FromString(string str)
         {
-            return _node;
+            try
+            {
+                if (null == str)
+                {
+                    throw new DSToonException($"{str} can't be null.");
+                }
+
+                var root = ToonParserVisitor.Parse(str);
+
+                return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSToonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSToonException">DotSerial Exception.</exception>
+        public static DSToonNode ToNode(object? obj, string? key = null)
+        {
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Toon);
+
+                return new DSToonNode(rootNode);
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSToonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSToonException">DotSerial Exception.</exception>
+        public static U ToObject<U>(string str)
+        {
+            try
+            {
+                if (null == str)
+                {
+                    throw new DSToonException($"{str} can't be null.");
+                }
+
+                // Parse json string to node
+                DSToonNode dsNode = FromString(str);
+
+                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSToonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
@@ -68,31 +137,6 @@ namespace DotSerial.Toon
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSToonException">DotSerial Exception.</exception>
-        public static DSToonNode ToNode(object? obj, string? key = null)
-        {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
-
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Toon);
-
-                return new DSToonNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSToonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSToonException">DotSerial Exception.</exception>
         public string Stringify()
         {
             if (null == _node)
@@ -103,9 +147,9 @@ namespace DotSerial.Toon
             try
             {
                 // Convert
-                string str = ToonWriterVisitor.Write(this);
+                var str = ToonWriterVisitor.Write(this);
 
-                return str;
+                return new string(str); // TODO
             }
             catch (DotSerialException ex)
             {
@@ -117,57 +161,13 @@ namespace DotSerial.Toon
             }
         }
 
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSToonException">DotSerial Exception.</exception>
-        public static DSToonNode FromString(string str)
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
         {
-            try
-            {
-                if (null == str)
-                {
-                    throw new DSToonException($"{str} can't be null.");
-                }
-
-                var root = ToonParserVisitor.Parse(str);
-
-                return root;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSToonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
-        {
-            try
-            {
-                if (null == str)
-                {
-                    throw new DSToonException($"{str} can't be null.");
-                }
-
-                // Parse json string to node
-                DSToonNode dsNode = FromString(str);
-
-                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSToonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
+            return _node;
         }
     }
 }
