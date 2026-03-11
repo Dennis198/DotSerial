@@ -1,7 +1,4 @@
 using System.Buffers;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.Marshalling;
-using System.Threading.Channels;
 
 namespace DotSerial.Utilities
 {
@@ -153,6 +150,10 @@ namespace DotSerial.Utilities
             return _buffer.AsSpan()[.._position].LastIndexOf(value);
         }
 
+        /// <summary>
+        /// Converts the builder to an char array
+        /// </summary>
+        /// <returns></returns>
         public readonly char[] ToArray()
         {
             if (_position == 0)
@@ -359,6 +360,11 @@ namespace DotSerial.Utilities
             _position += value.Length;
         }
 
+        /// <summary>
+        /// Removes at startIndex till length from the builder
+        /// </summary>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="length">Length to remove</param>
         public void Remove(int startIndex, int length)
         {
             if (startIndex < 0 || length < 0 || (uint)startIndex + (uint)length > _position)
@@ -381,6 +387,10 @@ namespace DotSerial.Utilities
             _position -= length;
         }
 
+        /// <summary>
+        /// Truncates the builder to the given length
+        /// </summary>
+        /// <param name="newLength">New length</param>
         public void Truncate(int newLength)
         {
             if ((uint)newLength < (uint)_position)
