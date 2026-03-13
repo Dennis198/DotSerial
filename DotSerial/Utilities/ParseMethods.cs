@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.Channels;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -367,6 +368,47 @@ namespace DotSerial.Utilities
             }
 
             string nodeValue = sbPrim.ToString();
+
+            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
+        }
+
+        internal static IDSNode ParsePrimitiveNode2(
+            StategyType strategyType,
+            ReadOnlySpan<char> sb,
+            int startIndex,
+            string key,
+            char[]? stopChars = null
+        )
+        {
+            if (ReadOnlySpanMethods.IsNullOrWhiteSpace(sb))
+            {
+                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
+            }
+
+            string? nodeValue;
+            int end;
+
+            if (ReadOnlySpanMethods.HasStartAndEndQuotes(sb))
+            {
+                end = ReadOnlySpanMethods.SkipQuotedValue(sb, startIndex);
+                if (end != sb.Length - 1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
+
+                nodeValue = sb.Slice(startIndex, end - startIndex + 1).ToString();
+            }
+            else
+            {
+                end = ReadOnlySpanMethods.SkipTillStopChars(sb, startIndex, stopChars);
+                if (end != sb.Length - 1)
+                {
+                    throw new DotSerialException("Parse: Can't parse single value.");
+                }
+                // nodeValue = sb[startIndex..end].ToString();
+            }
+
+            nodeValue = sb.Slice(startIndex, end - startIndex + 1).ToString();
 
             return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
         }

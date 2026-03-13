@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
 
@@ -12,20 +11,18 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Extracts key value pairs from json object
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <returns>Dictionary<string, string></returns>
-        internal static Dictionary<string, StringBuilder?> ExtractKeyValuePairsFromJsonObject(StringBuilder sb)
+        /// <param name="content">String content</param>
+        /// <returns>List of ParseBookmarks</returns>
+        internal static List<ParserBookmark> ExtractKeyValuePairsFromJsonObject(ReadOnlySpan<char> content)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            var result = new Dictionary<string, StringBuilder?>();
+            var result = new List<ParserBookmark>();
             bool startObjectSymbolFound = false;
             bool keyFound = false;
             string foundKey = string.Empty;
 
-            for (int i = 0; i < sb.Length; i++)
+            for (int i = 0; i < content.Length; i++)
             {
-                char c = sb[i];
+                char c = content[i];
 
                 if (c == JsonConstants.ObjectStart && false == startObjectSymbolFound)
                 {
@@ -49,14 +46,11 @@ namespace DotSerial.Json.Parser
                     // Quote is opening
                     keyFound = true;
 
-                    StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    // Save key
-                    foundKey = sb2.ToString();
+                    foundKey = content.Slice(i, j - i + 1).ToString();
 
-                    // Add key
-                    result.Add(foundKey, null);
+                    i = j;
                 }
                 // Check if opening quote for the value is found (primitive)
                 else if (c == CommonConstants.Quote && keyFound == true)
@@ -64,19 +58,13 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    if (false == result.ContainsKey(foundKey))
-                    {
-                        throw new DSJsonException("Key not found.");
-                    }
+                    var tmp = new ParserBookmark(i, j + 1, foundKey);
+                    result.Add(tmp);
 
-                    // Add key
-                    result[foundKey] = sb2;
-
-                    // Reset found key
                     foundKey = string.Empty;
+                    i = j;
                 }
                 // Check if opening symbol for the value is found (json object)
                 else if (c == JsonConstants.ObjectStart && keyFound == true)
@@ -84,20 +72,12 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    if (false == result.ContainsKey(foundKey))
-                    {
-                        throw new DSJsonException("Key not found.");
-                    }
+                    int j = ExtractJsonObject(content, i);
 
-                    // Extract value
-                    int j = ExtractJsonObject(sb, i, out StringBuilder tmp);
+                    var tmp = new ParserBookmark(i, j, foundKey);
+                    result.Add(tmp);
 
-                    result[foundKey] = tmp;
-
-                    // Reset found key
                     foundKey = string.Empty;
-
-                    // Update index
                     i = j;
                 }
                 // Check if opening symbol for the value is found (json list)
@@ -106,48 +86,35 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    if (false == result.ContainsKey(foundKey))
-                    {
-                        throw new DSJsonException("Key not found.");
-                    }
+                    int j = ExtractJsonList(content, i);
 
-                    // Extract value
-                    int j = ExtractJsonList(sb, i, out StringBuilder tmp);
+                    var tmp = new ParserBookmark(i, j, foundKey);
+                    result.Add(tmp);
 
-                    // Add object to result
-                    result[foundKey] = tmp;
-
-                    // Reset found key
                     foundKey = string.Empty;
-
-                    // Update index
                     i = j;
                 }
                 else if (keyFound == true)
                 {
-                    // value is found => null
                     keyFound = false;
 
-                    if (true == sb.EqualsNullString(i))
+                    if (true == ReadOnlySpanMethods.EqualsNullString(content, i))
                     {
+                        var tmp = new ParserBookmark(i, -1, foundKey);
+                        result.Add(tmp);
+
+                        foundKey = string.Empty;
                         i += 3;
-                        result[foundKey] = null;
                     }
                     else
                     {
-                        StringBuilder sb2 = new();
-                        i = ParseMethods.AppendTillStopChars(sb2, i, sb, JsonConstants.ParseStopChars);
+                        int j = ReadOnlySpanMethods.SkipTillStopChars(content, i, JsonConstants.ParseStopChars, true);
 
-                        if (false == result.ContainsKey(foundKey))
-                        {
-                            throw new DSJsonException("Key not found.");
-                        }
+                        var tmp = new ParserBookmark(i, j, foundKey);
+                        result.Add(tmp);
 
-                        // Add key
-                        result[foundKey] = sb2;
-
-                        // Reset found key
                         foundKey = string.Empty;
+                        i = j;
                     }
                 }
             }
@@ -158,17 +125,15 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Extracts object list from json string
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
-        /// <returns>List<string></returns>
-        internal static List<StringBuilder?> ExtractObjectList(StringBuilder sb)
+        /// <param name="content">String content</param>
+        /// <returns>List of ParserBookmark</returns>
+        internal static List<ParserBookmark> ExtractObjectList(ReadOnlySpan<char> content)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            var list = new List<ParserBookmark>();
 
-            var list = new List<StringBuilder?>();
-
-            for (int i = 1; i < sb.Length - 1; i++)
+            for (int i = 1; i < content.Length - 1; i++)
             {
-                char c = sb[i];
+                char c = content[i];
 
                 if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
                 {
@@ -177,50 +142,44 @@ namespace DotSerial.Json.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    int j = sb.SkipStringValue(i);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    // Add key
-                    int len = j - i + 1;
-                    var tmp = sb.SubString(i, len);
-
-                    // Add object to result
+                    var tmp = new ParserBookmark(i, j + 1);
                     list.Add(tmp);
 
                     i = j;
                 }
                 else if (c == JsonConstants.ListStart)
                 {
-                    // Extract value
-                    int j = ExtractJsonList(sb, i, out StringBuilder tmp);
+                    int j = ExtractJsonList(content, i);
 
-                    // Add object to result
-                    list.Add(tmp);
+                    if (false == IsEmptyList(content, i, j))
+                    {
+                        var tmp = new ParserBookmark(i, j);
+                        list.Add(tmp);
+                    }
 
                     i = j;
                 }
-                // Check if opening symbol is found
                 else if (c == JsonConstants.ObjectStart)
                 {
-                    // Extract object
-                    int j = ExtractJsonObject(sb, i, out StringBuilder tmp);
+                    int j = ExtractJsonObject(content, i);
 
-                    // Add object to result
-                    list.Add(tmp);
+                    if (false == IsEmptyObject(content, i, j))
+                    {
+                        var tmp = new ParserBookmark(i, j);
+                        list.Add(tmp);
+                    }
 
-                    // Update index
                     i = j;
                 }
                 else
                 {
-                    int j = sb.SkipTillStopChars(i, JsonConstants.ParseStopChars);
+                    int j = ReadOnlySpanMethods.SkipTillStopChars(content, i, JsonConstants.ParseStopChars);
 
-                    // Add key
-                    int len = j - i + 1;
-                    var tmp = sb.SubString(i, len);
-
-                    // Add object to result
+                    var tmp = new ParserBookmark(i, j);
                     list.Add(tmp);
-                    // Update index
+
                     i = j;
                 }
             }
@@ -229,128 +188,57 @@ namespace DotSerial.Json.Parser
         }
 
         /// <summary>
-        /// Check if string is a json object.
-        /// </summary>
-        /// <param name="str">String</param>
-        /// <returns>True, if is a object</returns>
-        internal static bool IsStringJsonObject(StringBuilder sb)
-        {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            // // Check if first element is '{'
-            bool startFound = sb.EqualFirstNoWhiteSpaceChar(JsonConstants.ObjectStart);
-            // // Check if last element is '}'
-            bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ObjectEnd);
-
-            return startFound && endFound;
-        }
-
-        /// <summary>
         /// Check if string is a json list.
         /// </summary>
-        /// <param name="sb">StrginBuilder</param>
+        /// <param name="content">String content</param>
         /// <returns>True, if is a list</returns>
-        internal static bool IsStringJsonList(StringBuilder sb)
+        internal static bool IsStringJsonList(ReadOnlySpan<char> content)
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
             // // Check if first element is '['
-            bool startFound = sb.EqualFirstNoWhiteSpaceChar(JsonConstants.ListStart);
+            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(content, JsonConstants.ListStart);
             // // Check if last element is ']'
-            bool endFound = sb.EqualLastNoWhiteSpaceChar(JsonConstants.ListEnd);
+            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(content, JsonConstants.ListEnd);
 
             return startFound && endFound;
         }
 
         /// <summary>
-        /// Extracts a json object
+        /// Check if string is a json object.
         /// </summary>
-        /// <param name="sb">Strginbuilder</param>
-        /// <param name="startIndex">Index of the opeing symbol</param>
-        /// <returns>Index of end symbol</returns>
-        private static int ExtractJsonObject(StringBuilder sb, int startIndex, out StringBuilder objContent)
+        /// <param name="content">String content</param>
+        /// <returns>True, if is a object</returns>
+        internal static bool IsStringJsonObject(ReadOnlySpan<char> content)
         {
-            ArgumentNullException.ThrowIfNull(sb);
+            // // Check if first element is '{'
+            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(content, JsonConstants.ObjectStart);
+            // // Check if last element is '}'
+            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(content, JsonConstants.ObjectEnd);
 
-            if (sb.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
-
-            if (sb[startIndex] != JsonConstants.ObjectStart)
-            {
-                throw new DSJsonException("Invalid json.");
-            }
-
-            objContent = new StringBuilder();
-            objContent.Append(JsonConstants.ObjectStart);
-            int i;
-            for (i = startIndex + 1; i < sb.Length; i++)
-            {
-                char c = sb[i];
-
-                if (char.IsWhiteSpace(c))
-                {
-                    continue;
-                }
-
-                if (c == CommonConstants.Quote)
-                {
-                    StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb);
-
-                    objContent.Append(sb2);
-                }
-                else if (c == JsonConstants.ListStart)
-                {
-                    i = ExtractJsonList(sb, i, out StringBuilder sb2);
-
-                    objContent.Append(sb2);
-                }
-                else if (c == JsonConstants.ObjectStart)
-                {
-                    i = ExtractJsonObject(sb, i, out StringBuilder sb2);
-
-                    objContent.Append(sb2);
-                }
-                else if (c == JsonConstants.ObjectEnd)
-                {
-                    objContent.Append(c);
-                    break;
-                }
-                else
-                {
-                    objContent.Append(c);
-                }
-            }
-
-            return i;
+            return startFound && endFound;
         }
 
         /// <summary>
         /// Extracts a json list
         /// </summary>
-        /// <param name="sb">StingBuilder</param>
+        /// <param name="content">String content</param>
         /// <param name="startIndex">Index of the opeing symbol</param>
         /// <returns>Index of end symbol</returns>
-        private static int ExtractJsonList(StringBuilder sb, int startIndex, out StringBuilder listContent)
+        private static int ExtractJsonList(ReadOnlySpan<char> content, int startIndex)
         {
-            if (sb.Length < startIndex)
+            if (content.Length < startIndex)
             {
                 throw new IndexOutOfRangeException();
             }
 
-            if (sb[startIndex] != JsonConstants.ListStart)
+            if (content[startIndex] != JsonConstants.ListStart)
             {
                 throw new DSJsonException("Invalid json.");
             }
 
-            listContent = new StringBuilder();
-            listContent.Append(JsonConstants.ListStart);
             int i;
-            for (i = startIndex + 1; i < sb.Length; i++)
+            for (i = startIndex + 1; i < content.Length; i++)
             {
-                char c = sb[i];
+                char c = content[i];
 
                 if (char.IsWhiteSpace(c))
                 {
@@ -359,35 +247,128 @@ namespace DotSerial.Json.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    StringBuilder sb2 = new();
-                    i = ParseMethods.AppendStringValue(sb2, i, sb);
-
-                    listContent.Append(sb2);
+                    i = ReadOnlySpanMethods.SkipQuotedValue(content, i);
                 }
                 else if (c == JsonConstants.ListStart)
                 {
-                    i = ExtractJsonList(sb, i, out StringBuilder sb2);
-
-                    listContent.Append(sb2);
+                    i = ExtractJsonList(content, i);
                 }
                 else if (c == JsonConstants.ObjectStart)
                 {
-                    i = ExtractJsonObject(sb, i, out StringBuilder sb2);
-
-                    listContent.Append(sb2);
+                    i = ExtractJsonObject(content, i);
                 }
                 else if (c == JsonConstants.ListEnd)
                 {
-                    listContent.Append(c);
+                    i++;
                     break;
-                }
-                else
-                {
-                    listContent.Append(c);
                 }
             }
 
             return i;
+        }
+
+        /// <summary>
+        /// Extracts a json object
+        /// </summary>
+        /// <param name="content">String content</param>
+        /// <param name="startIndex">Index of the opeing symbol</param>
+        /// <returns>Index of end symbol</returns>
+        private static int ExtractJsonObject(ReadOnlySpan<char> content, int startIndex)
+        {
+            if (content.Length < startIndex)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (content[startIndex] != JsonConstants.ObjectStart)
+            {
+                throw new DSJsonException("Invalid json.");
+            }
+
+            int i;
+            for (i = startIndex + 1; i < content.Length; i++)
+            {
+                char c = content[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                }
+                else if (c == JsonConstants.ListStart)
+                {
+                    i = ExtractJsonList(content, i);
+                }
+                else if (c == JsonConstants.ObjectStart)
+                {
+                    i = ExtractJsonObject(content, i);
+                }
+                else if (c == JsonConstants.ObjectEnd)
+                {
+                    i++;
+                    break;
+                }
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Check if content is empty list
+        /// </summary>
+        /// <param name="content">String content</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>True, if content is empty list</returns>
+        private static bool IsEmptyList(ReadOnlySpan<char> content, int startIndex, int endIndex)
+        {
+            if (content[startIndex] != JsonConstants.ListStart && content[endIndex] != JsonConstants.ListEnd)
+            {
+                throw new DSJsonException("Invalid json.");
+            }
+
+            for (int i = startIndex + 1; i < content.Length - 1; i++)
+            {
+                char c = content[i];
+
+                if (false == char.IsWhiteSpace(c))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Check if content is empty object
+        /// </summary>
+        /// <param name="content">String content</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="endIndex">End index</param>
+        /// <returns>True, if content is empty object</returns>
+        private static bool IsEmptyObject(ReadOnlySpan<char> content, int startIndex, int endIndex)
+        {
+            if (content[startIndex] != JsonConstants.ObjectStart && content[endIndex] != JsonConstants.ObjectEnd)
+            {
+                throw new DSJsonException("Invalid json.");
+            }
+
+            for (int i = startIndex + 1; i < content.Length - 1; i++)
+            {
+                char c = content[i];
+
+                if (false == char.IsWhiteSpace(c))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

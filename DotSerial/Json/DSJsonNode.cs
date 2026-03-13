@@ -25,97 +25,10 @@ namespace DotSerial.Json
         }
 
         /// <inheritdoc/>
-        public string Key => _node.Key;
-
-        /// <inheritdoc/>
         public bool HasChildren => _node.HasChildren();
 
-        /// <summary>
-        /// Returns the internal node
-        /// </summary>
-        /// <returns>IDSNode</returns>
-        internal IDSNode GetInternalData()
-        {
-            return _node;
-        }
-
         /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        public DSJsonNode? GetChild(string key)
-        {
-            ArgumentNullException.ThrowIfNull(key);
-
-            var child = _node.GetChild(key);
-            return new DSJsonNode(child);
-        }
-
-        /// <inheritdoc/>
-        public List<DSJsonNode>? GetChildren()
-        {
-            if (false == HasChildren)
-                return null;
-
-            var children = new List<DSJsonNode>();
-            var tmp = _node.GetChildren();
-            foreach (var c in tmp)
-            {
-                children.Add(new DSJsonNode(c));
-            }
-
-            return children;
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static DSJsonNode ToNode(object? obj, string? key = null)
-        {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
-
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
-
-                return new DSJsonNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public string Stringify()
-        {
-            if (null == _node)
-            {
-                throw new DSJsonException($"{_node} can't be null.");
-            }
-
-            try
-            {
-                // Convert
-                var jsonString = JsonWriterVisitor.Write(this);
-
-                return new string(jsonString);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
+        public string Key => _node.Key;
 
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
@@ -132,6 +45,31 @@ namespace DotSerial.Json
                 var root = JsonParserVisitor.Parse(str);
 
                 return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static DSJsonNode ToNode(object? obj, string? key = null)
+        {
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
+
+                return new DSJsonNode(rootNode);
             }
             catch (DotSerialException ex)
             {
@@ -168,6 +106,68 @@ namespace DotSerial.Json
             {
                 throw;
             }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        public DSJsonNode? GetChild(string key)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            var child = _node.GetChild(key);
+            return new DSJsonNode(child);
+        }
+
+        /// <inheritdoc/>
+        public List<DSJsonNode>? GetChildren()
+        {
+            if (false == HasChildren)
+                return null;
+
+            var children = new List<DSJsonNode>();
+            var tmp = _node.GetChildren();
+            foreach (var c in tmp)
+            {
+                children.Add(new DSJsonNode(c));
+            }
+
+            return children;
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public string Stringify()
+        {
+            if (null == _node)
+            {
+                throw new DSJsonException($"{_node} can't be null.");
+            }
+
+            try
+            {
+                // Convert
+                var jsonString = JsonWriterVisitor.Write(this);
+
+                return new string(jsonString);
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
+        {
+            return _node;
         }
     }
 }
