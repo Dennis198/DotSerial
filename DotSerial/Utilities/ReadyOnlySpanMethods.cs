@@ -5,38 +5,58 @@ namespace DotSerial.Utilities
 {
     internal static class ReadOnlySpanMethods
     {
-        public static ReadOnlySpan<char> RemoveWhitespacesOutsideQuotes(
-            ReadOnlySpan<char> input,
-            Span<char> destination,
-            out int length
-        )
+        // public static ReadOnlySpan<char> RemoveWhitespacesOutsideQuotes(
+        //     ReadOnlySpan<char> input,
+        //     Span<char> destination,
+        //     out int length
+        // )
+        // {
+        //     int destIndex = 0;
+        //     bool inQuotes = false;
+
+        //     for (int i = 0; i < input.Length; i++)
+        //     {
+        //         char c = input[i];
+
+        //         // Prüfen, ob das aktuelle Zeichen ein eskaptes Anführungszeichen ist (\")
+        //         bool isEscaped = i > 0 && input[i - 1] == '\\';
+
+        //         if (c == '\"' && !isEscaped)
+        //         {
+        //             inQuotes = !inQuotes;
+        //         }
+
+        //         // Regel: Behalte das Zeichen, wenn...
+        //         // 1. wir uns innerhalb von Anführungszeichen befinden
+        //         // 2. ODER es kein Whitespace ist
+        //         if (inQuotes || !char.IsWhiteSpace(c))
+        //         {
+        //             destination[destIndex++] = c;
+        //         }
+        //     }
+
+        //     length = destIndex;
+        //     return destination[..destIndex];
+        // }
+
+        internal static ReadOnlySpan<char> SliceFromTo(ReadOnlySpan<char> source, int start, int end)
         {
-            int destIndex = 0;
-            bool inQuotes = false;
-
-            for (int i = 0; i < input.Length; i++)
+            if (start < 0)
             {
-                char c = input[i];
-
-                // Prüfen, ob das aktuelle Zeichen ein eskaptes Anführungszeichen ist (\")
-                bool isEscaped = i > 0 && input[i - 1] == '\\';
-
-                if (c == '\"' && !isEscaped)
-                {
-                    inQuotes = !inQuotes;
-                }
-
-                // Regel: Behalte das Zeichen, wenn...
-                // 1. wir uns innerhalb von Anführungszeichen befinden
-                // 2. ODER es kein Whitespace ist
-                if (inQuotes || !char.IsWhiteSpace(c))
-                {
-                    destination[destIndex++] = c;
-                }
+                throw new NotImplementedException();
             }
 
-            length = destIndex;
-            return destination[..destIndex];
+            if (end < start)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (source.Length - 1 < end)
+            {
+                throw new NotImplementedException();
+            }
+
+            return source.Slice(start, end - start + 1);
         }
 
         /// <summary>
@@ -108,7 +128,8 @@ namespace DotSerial.Utilities
                 throw new IndexOutOfRangeException(nameof(startIndex));
             }
 
-            if (source.Length - startIndex < 4)
+            // if (source.Length - startIndex < 4)
+            if (source.Length - startIndex != 4)
             {
                 return false;
             }
@@ -133,7 +154,7 @@ namespace DotSerial.Utilities
         internal static bool HasStartAndEndQuotes(ReadOnlySpan<char> source)
         {
             if (source.Length < 2)
-                return true;
+                return false;
 
             return source[0] == CommonConstants.Quote && source[^1] == CommonConstants.Quote;
         }
@@ -238,7 +259,7 @@ namespace DotSerial.Utilities
 
                 if (stopAtNewLine && c.IsNewLine())
                 {
-                    return j;
+                    return j - 1;
                 }
 
                 if (isEscaped)
@@ -251,7 +272,58 @@ namespace DotSerial.Utilities
                 }
                 else if (stopChars.IndexOf(c) >= 0)
                 {
-                    return j;
+                    return j - 1;
+                }
+            }
+
+            if (isEscaped)
+            {
+                throw new Exception("Parse Error: Trailing escape character.");
+            }
+
+            return source.Length - 1;
+        }
+
+        internal static int SkipTillStopChar(
+            ReadOnlySpan<char> source,
+            int startIndex,
+            char? stopChar,
+            bool stopAtNewLine = false
+        )
+        {
+            if ((uint)startIndex >= (uint)source.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            }
+
+            if (null == stopChar)
+            {
+                // sb.Append(str.SubString(startIndex, str.Length - startIndex));
+                return source.Length - 1;
+            }
+
+            bool isEscaped = false;
+
+            for (int j = startIndex; j < source.Length; j++)
+            {
+                char c = source[j];
+
+                if (stopAtNewLine && c.IsNewLine())
+                {
+                    return j - 1;
+                }
+
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == stopChar)
+                {
+                    return j - 1;
                 }
             }
 

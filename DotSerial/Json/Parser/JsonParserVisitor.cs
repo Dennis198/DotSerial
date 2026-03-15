@@ -83,7 +83,9 @@ namespace DotSerial.Json.Parser
                     }
 
                     string key = bookmark.Key;
-                    ReadOnlySpan<char> strValue = bookmark.IsNull() ? null : content[bookmark.Start..bookmark.End];
+                    ReadOnlySpan<char> strValue = bookmark.IsNull()
+                        ? null
+                        : content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
 
                     if (null == strValue)
                     {
@@ -157,7 +159,9 @@ namespace DotSerial.Json.Parser
                 for (int i = 0; i < items.Count; i++)
                 {
                     var item = items[i];
-                    ReadOnlySpan<char> strValue = item.IsNull() ? null : content[item.Start..item.End];
+                    ReadOnlySpan<char> strValue = item.IsNull()
+                        ? null
+                        : content.Slice(item.Start, item.End - item.Start + 1);
                     strValue = strValue.Trim();
 
                     if (item.IsNull() || ReadOnlySpanMethods.EqualsNullString(strValue))

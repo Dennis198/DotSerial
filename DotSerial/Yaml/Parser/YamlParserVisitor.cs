@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -16,17 +15,18 @@ namespace DotSerial.Yaml.Parser
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public static DSYamlNode Parse(string yamlString)
+        public static DSYamlNode Parse(ReadOnlySpan<char> content)
         {
-            StringBuilder sb = new(yamlString);
+            IDSNode rootNode;
+
+            // TODO
+            var trimedContent = content.Trim();
 
             // Create help object, which contains every line of the yaml file
-            var lines = new MultiLineStringBuilder(sb);
+            var lines = new MulitLineReadOnlySpan(trimedContent);
 
             // Remove start stop symbols
-            lines = YamlParserHelper.RemoveStartStopSymbols(lines);
-
-            IDSNode rootNode;
+            lines = YamlParserHelper.RemoveStartStopSymbols(lines, trimedContent);
 
             // Check if its an empty yaml file
             if (0 == lines.Count)
@@ -40,17 +40,17 @@ namespace DotSerial.Yaml.Parser
                 return new DSYamlNode(rootNode);
             }
 
-            if (YamlParserHelper.IsYamlSingleValue(lines))
+            if (YamlParserHelper.IsYamlSingleValue(lines, trimedContent))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(
+                rootNode = ParseMethods.ParsePrimitiveNode2(
                     StategyType.Yaml,
-                    lines.GetLine(0),
+                    lines.GetLine(0, trimedContent),
                     0,
                     CommonConstants.MainObjectKey
                 );
                 return new DSYamlNode(rootNode);
             }
-            else if (YamlParserHelper.IsYamlObject(lines))
+            else if (YamlParserHelper.IsYamlObject(lines, trimedContent))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Yaml,
@@ -58,12 +58,12 @@ namespace DotSerial.Yaml.Parser
                     null,
                     NodeType.InnerNode
                 );
-                if (YamlParserHelper.IsEmptyObject(lines.GetLine(0)))
+                if (YamlParserHelper.IsEmptyObject(lines.GetLine(0, trimedContent)))
                 {
                     return new DSYamlNode(rootNode);
                 }
             }
-            else if (YamlParserHelper.IsYamlList(lines))
+            else if (YamlParserHelper.IsYamlList(lines, trimedContent))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Yaml,
@@ -71,7 +71,7 @@ namespace DotSerial.Yaml.Parser
                     null,
                     NodeType.ListNode
                 );
-                if (YamlParserHelper.IsEmptyList(lines.GetLine(0)))
+                if (YamlParserHelper.IsEmptyList(lines.GetLine(0, trimedContent)))
                 {
                     return new DSYamlNode(rootNode);
                 }
@@ -83,7 +83,7 @@ namespace DotSerial.Yaml.Parser
 
             if (lines.Count > 0)
             {
-                ParserAccept(rootNode, new YamlParserVisitor(), lines);
+                ParserAccept(rootNode, new YamlParserVisitor(), lines, trimedContent);
             }
 
             return new DSYamlNode(rootNode);
@@ -94,24 +94,30 @@ namespace DotSerial.Yaml.Parser
         /// </summary>
         /// <param name="node">IDSNode</param>
         /// <param name="visitor">Visitor</param>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        private static void ParserAccept(IDSNode node, YamlParserVisitor visitor, MultiLineStringBuilder lines)
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        private static void ParserAccept(
+            IDSNode node,
+            YamlParserVisitor visitor,
+            MulitLineReadOnlySpan lines,
+            ReadOnlySpan<char> content
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, lines);
+                visitor.VisitLeafNode(leafNode, lines, content);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, lines);
+                visitor.VisitInnerNode(innerNode, lines, content);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, lines);
+                visitor.VisitListNode(listNode, lines, content);
             }
             else if (node is DictionaryNode dicNode)
             {
-                visitor.VisitDictionaryNode(dicNode, lines);
+                visitor.VisitDictionaryNode(dicNode, lines, content);
             }
             else
             {
@@ -120,23 +126,23 @@ namespace DotSerial.Yaml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, MultiLineStringBuilder lines)
+        public void VisitLeafNode(LeafNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
         {
             // Currenlty not needed
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, MultiLineStringBuilder lines)
+        public void VisitInnerNode(InnerNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
 
             // Check if helpObj is yaml-Object
-            if (YamlParserHelper.IsYamlObject(lines))
+            if (YamlParserHelper.IsYamlObject(lines, content))
             {
                 // Extract key, value pairs
-                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines);
+                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines, content);
 
                 foreach (var keyValuePair in dic)
                 {
@@ -144,9 +150,9 @@ namespace DotSerial.Yaml.Parser
                     string key = keyValuePair.Key;
                     var value = keyValuePair.Value;
 
-                    if (YamlParserHelper.IsYamlPrimitiveLine(value))
+                    if (YamlParserHelper.IsYamlPrimitiveLine(value, content))
                     {
-                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0));
+                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0, content));
                         var childNode = _nodeFactory.CreateNodeFromString(
                             StategyType.Yaml,
                             key,
@@ -155,7 +161,7 @@ namespace DotSerial.Yaml.Parser
                         );
                         node.AddChild(childNode);
                     }
-                    else if (YamlParserHelper.IsYamlObject(value))
+                    else if (YamlParserHelper.IsYamlObject(value, content))
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
@@ -165,16 +171,16 @@ namespace DotSerial.Yaml.Parser
                             NodeType.InnerNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0, content)))
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                            ParserAccept(innerNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (YamlParserHelper.IsYamlList(value))
+                    else if (YamlParserHelper.IsYamlList(value, content))
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
@@ -184,10 +190,10 @@ namespace DotSerial.Yaml.Parser
                             NodeType.ListNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0, content)))
                         {
                             // Parse list node
-                            ParserAccept(listNode, new YamlParserVisitor(), value);
+                            ParserAccept(listNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
@@ -206,15 +212,15 @@ namespace DotSerial.Yaml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, MultiLineStringBuilder lines)
+        public void VisitListNode(ListNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
 
-            if (YamlParserHelper.IsYamlList(lines))
+            if (YamlParserHelper.IsYamlList(lines, content))
             {
                 // Extract object list
-                var items2 = YamlParserHelper.ExtractObjectList(lines);
+                var items2 = YamlParserHelper.ExtractObjectList(lines, content);
                 int index = 0;
                 foreach (var keyValuePair in items2)
                 {
@@ -222,15 +228,15 @@ namespace DotSerial.Yaml.Parser
                     string key = index.ToString();
                     var value = keyValuePair;
 
-                    if (YamlParserHelper.IsYamlSingleValue(value))
+                    if (YamlParserHelper.IsYamlSingleValue(value, content))
                     {
-                        var val = value.GetLine(0);
-                        // Remove starting whitsoaces
+                        var val = value.GetLine(0, content);
+                        // Remove starting whitespaces
                         val = val.Trim();
-                        var innerNode = ParseMethods.ParsePrimitiveNode(StategyType.Yaml, val, 0, key);
+                        var innerNode = ParseMethods.ParsePrimitiveNode2(StategyType.Yaml, val, 0, key);
                         node.AddChild(innerNode);
                     }
-                    else if (YamlParserHelper.IsYamlObject(value))
+                    else if (YamlParserHelper.IsYamlObject(value, content))
                     {
                         // Create inner node
                         var innerNode =
@@ -238,16 +244,16 @@ namespace DotSerial.Yaml.Parser
                                 as InnerNode
                             ?? throw new NotImplementedException();
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0, content)))
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                            ParserAccept(innerNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (YamlParserHelper.IsYamlList(value))
+                    else if (YamlParserHelper.IsYamlList(value, content))
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
@@ -257,10 +263,10 @@ namespace DotSerial.Yaml.Parser
                             NodeType.ListNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0, content)))
                         {
                             // Parse list node
-                            ParserAccept(listNode, new YamlParserVisitor(), value);
+                            ParserAccept(listNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
@@ -281,7 +287,7 @@ namespace DotSerial.Yaml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder lines)
+        public void VisitDictionaryNode(DictionaryNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
         {
             // Currenlty not needed
             throw new NotImplementedException();

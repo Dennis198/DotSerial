@@ -7,11 +7,16 @@ namespace DotSerial.Utilities
     {
         internal readonly int End;
         internal readonly string? Key = null;
-        internal readonly int Line = 0;
+        internal readonly int RowStart;
+        internal readonly int RowEnd;
         internal readonly int Start;
 
         internal ParserBookmark(int start, int end)
         {
+            // if (end < start)
+            // {
+            //     throw new NotImplementedException();
+            // }
             Start = start;
             End = end;
         }
@@ -21,6 +26,11 @@ namespace DotSerial.Utilities
         {
             Key = key;
         }
+
+        // internal void SetStar(int i)
+        // {
+        //     Start = i;
+        // }
 
         /// <summary>
         /// Check if value represents a null value

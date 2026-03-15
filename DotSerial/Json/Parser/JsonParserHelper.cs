@@ -60,7 +60,7 @@ namespace DotSerial.Json.Parser
 
                     int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    var tmp = new ParserBookmark(i, j + 1, foundKey);
+                    var tmp = new ParserBookmark(i, j, foundKey);
                     result.Add(tmp);
 
                     foundKey = string.Empty;
@@ -144,7 +144,7 @@ namespace DotSerial.Json.Parser
                 {
                     int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    var tmp = new ParserBookmark(i, j + 1);
+                    var tmp = new ParserBookmark(i, j);
                     list.Add(tmp);
 
                     i = j;
@@ -259,7 +259,7 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ListEnd)
                 {
-                    i++;
+                    // i++;
                     break;
                 }
             }
@@ -309,7 +309,7 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ObjectEnd)
                 {
-                    i++;
+                    // i;
                     break;
                 }
             }

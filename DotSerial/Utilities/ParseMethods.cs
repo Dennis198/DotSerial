@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Channels;
 using DotSerial.Common;
@@ -428,6 +429,31 @@ namespace DotSerial.Utilities
                 throw new DotSerialException("Parse: Indentation size must be at least 1.");
             }
 
+            int level = 0;
+            for (int i = 0; i < line.Length; i++)
+            {
+                var c = line[i];
+                if (c == CommonConstants.WhiteSpace)
+                {
+                    level++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return level / indentationSize;
+        }
+
+        internal static int LineLevel2(ReadOnlySpan<char> line, int indentationSize)
+        {
+            if (indentationSize < 1)
+            {
+                throw new DotSerialException("Parse: Indentation size must be at least 1.");
+            }
+
+            // TODO mit indeof????
             int level = 0;
             for (int i = 0; i < line.Length; i++)
             {
