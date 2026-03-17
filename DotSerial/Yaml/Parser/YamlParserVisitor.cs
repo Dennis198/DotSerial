@@ -44,7 +44,7 @@ namespace DotSerial.Yaml.Parser
             {
                 rootNode = ParseMethods.ParsePrimitiveNode2(
                     StategyType.Yaml,
-                    lines.GetLine(0, trimedContent),
+                    lines.GetLineContent(0, trimedContent),
                     0,
                     CommonConstants.MainObjectKey
                 );
@@ -58,7 +58,7 @@ namespace DotSerial.Yaml.Parser
                     null,
                     NodeType.InnerNode
                 );
-                if (YamlParserHelper.IsEmptyObject(lines.GetLine(0, trimedContent)))
+                if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, trimedContent)))
                 {
                     return new DSYamlNode(rootNode);
                 }
@@ -71,7 +71,7 @@ namespace DotSerial.Yaml.Parser
                     null,
                     NodeType.ListNode
                 );
-                if (YamlParserHelper.IsEmptyList(lines.GetLine(0, trimedContent)))
+                if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, trimedContent)))
                 {
                     return new DSYamlNode(rootNode);
                 }
@@ -152,7 +152,7 @@ namespace DotSerial.Yaml.Parser
 
                     if (YamlParserHelper.IsYamlPrimitiveLine(value, content))
                     {
-                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0, content));
+                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
                         var childNode = _nodeFactory.CreateNodeFromString(
                             StategyType.Yaml,
                             key,
@@ -171,7 +171,7 @@ namespace DotSerial.Yaml.Parser
                             NodeType.InnerNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0, content)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
                         {
                             // Parse inner node
                             ParserAccept(innerNode, new YamlParserVisitor(), value, content);
@@ -190,7 +190,7 @@ namespace DotSerial.Yaml.Parser
                             NodeType.ListNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0, content)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
                         {
                             // Parse list node
                             ParserAccept(listNode, new YamlParserVisitor(), value, content);
@@ -230,7 +230,7 @@ namespace DotSerial.Yaml.Parser
 
                     if (YamlParserHelper.IsYamlSingleValue(value, content))
                     {
-                        var val = value.GetLine(0, content);
+                        var val = value.GetLineContent(0, content);
                         // Remove starting whitespaces
                         val = val.Trim();
                         var innerNode = ParseMethods.ParsePrimitiveNode2(StategyType.Yaml, val, 0, key);
@@ -244,7 +244,7 @@ namespace DotSerial.Yaml.Parser
                                 as InnerNode
                             ?? throw new NotImplementedException();
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0, content)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
                         {
                             // Parse inner node
                             ParserAccept(innerNode, new YamlParserVisitor(), value, content);
@@ -263,7 +263,7 @@ namespace DotSerial.Yaml.Parser
                             NodeType.ListNode
                         );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0, content)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
                         {
                             // Parse list node
                             ParserAccept(listNode, new YamlParserVisitor(), value, content);

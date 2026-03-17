@@ -251,6 +251,11 @@ namespace DotSerial.Utilities
                 return source.Length - 1;
             }
 
+            // if (stopChars.IndexOf(source[startIndex]) >= 0)
+            // {
+            //     throw new NotImplementedException();
+            // }
+
             bool isEscaped = false;
 
             for (int j = startIndex; j < source.Length; j++)
@@ -301,6 +306,11 @@ namespace DotSerial.Utilities
                 // sb.Append(str.SubString(startIndex, str.Length - startIndex));
                 return source.Length - 1;
             }
+
+            // if (stopChar == source[startIndex])
+            // {
+            //     throw new NotImplementedException();
+            // }
 
             bool isEscaped = false;
 

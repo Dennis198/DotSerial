@@ -22,12 +22,12 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new Dictionary<string, MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLine(0, content), YamlConstants.IndentationSize);
+            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                var line = lines.GetLine(i, content);
+                var line = lines.GetLineContent(i, content);
                 int currLevel = ParseMethods.LineLevel2(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
@@ -83,12 +83,12 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var result = new List<MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLine(0, content), YamlConstants.IndentationSize);
+            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                var line = lines.GetLine(i, content);
+                var line = lines.GetLineContent(i, content);
                 int currLevel = ParseMethods.LineLevel2(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
@@ -238,7 +238,7 @@ namespace DotSerial.Yaml.Parser
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var firstLine = lines.GetLine(0, content);
+            var firstLine = lines.GetLineContent(0, content);
 
             if (null == firstLine)
             {
@@ -274,7 +274,7 @@ namespace DotSerial.Yaml.Parser
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var firstLine = lines.GetLine(0, content);
+            var firstLine = lines.GetLineContent(0, content);
 
             if (null == firstLine)
             {
@@ -317,7 +317,7 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            var firstLine = lines.GetLine(0, content);
+            var firstLine = lines.GetLineContent(0, content);
 
             if (IsEmptyList(firstLine) || IsEmptyObject(firstLine))
             {
@@ -394,7 +394,7 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            if (IsEmptyObject(lines.GetLine(0, content)))
+            if (IsEmptyObject(lines.GetLineContent(0, content)))
             {
                 return false;
             }
@@ -409,7 +409,7 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            var firstLine = lines.GetLine(0, content);
+            var firstLine = lines.GetLineContent(0, content);
             int start = -1;
             for (int i = 0; i < firstLine.Length; i++)
             {
@@ -580,13 +580,13 @@ namespace DotSerial.Yaml.Parser
             int startIndex = 0;
             int endIndex = lines.Count - 1;
 
-            var firstLine = lines.GetLine(0, content);
+            var firstLine = lines.GetLineContent(0, content);
             if (firstLine.SequenceEqual(YamlConstants.YamlDocumentStart))
             {
                 startIndex++;
             }
 
-            var lastLine = lines.GetLine(lines.Count - 1, content);
+            var lastLine = lines.GetLineContent(lines.Count - 1, content);
             if (lastLine.SequenceEqual(YamlConstants.YamlDocumentEnd))
             {
                 endIndex--;
@@ -622,12 +622,18 @@ namespace DotSerial.Yaml.Parser
             }
 
             int endIndex = -1;
-            int objLevel = ParseMethods.LineLevel2(lines.GetLine(startIndex, content), YamlConstants.IndentationSize);
+            int objLevel = ParseMethods.LineLevel2(
+                lines.GetLineContent(startIndex, content),
+                YamlConstants.IndentationSize
+            );
 
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = ParseMethods.LineLevel2(lines.GetLine(i, content), YamlConstants.IndentationSize);
+                int currLevel = ParseMethods.LineLevel2(
+                    lines.GetLineContent(i, content),
+                    YamlConstants.IndentationSize
+                );
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;

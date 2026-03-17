@@ -7,6 +7,8 @@ namespace DotSerial.Utilities
         // Special case. (Currenly only needed in yaml/toon)
         internal bool IsOneLineObject = false;
 
+        internal string? KeyLine = null;
+
         /// <summary> Internal data </summary>
         private readonly List<ParserBookmark>? _lines = null;
 
@@ -97,7 +99,7 @@ namespace DotSerial.Utilities
         /// <param name="i">Index</param>
         /// <param name="content">String content</param>
         /// <returns>Line content</returns>
-        internal ReadOnlySpan<char> GetLine(int i, ReadOnlySpan<char> content)
+        internal ReadOnlySpan<char> GetLineContent(int i, ReadOnlySpan<char> content)
         {
             var bookmark = GetLine(i);
             return content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
