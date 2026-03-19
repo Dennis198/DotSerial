@@ -330,58 +330,19 @@ namespace DotSerial.Utilities
         /// Parses primitive node without a key, e.g "3.14"
         /// </summary>
         /// <param name="strategyType">Strategy type</param>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="content">Content</param>
         /// <param name="startIndex">StartIndex</param>
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
         internal static IDSNode ParsePrimitiveNode(
             StategyType strategyType,
-            StringBuilder sb,
+            ReadOnlySpan<char> content,
             int startIndex,
             string key,
             char[]? stopChars = null
         )
         {
-            ArgumentNullException.ThrowIfNull(sb);
-
-            if (sb.IsNullOrWhiteSpace())
-            {
-                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
-            }
-
-            StringBuilder sbPrim = new();
-
-            if (sb.HasStartAndEndQuotes())
-            {
-                int i = AppendStringValue(sbPrim, startIndex, sb);
-                if (i != sb.Length - 1)
-                {
-                    throw new DotSerialException("Parse: Can't parse single value.");
-                }
-            }
-            else
-            {
-                int i = AppendTillStopChars(sbPrim, startIndex, sb, stopChars);
-                if (i != sb.Length - 1)
-                {
-                    throw new DotSerialException("Parse: Can't parse single value.");
-                }
-            }
-
-            string nodeValue = sbPrim.ToString();
-
-            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
-        }
-
-        internal static IDSNode ParsePrimitiveNode2(
-            StategyType strategyType,
-            ReadOnlySpan<char> sb,
-            int startIndex,
-            string key,
-            char[]? stopChars = null
-        )
-        {
-            if (ReadOnlySpanMethods.IsNullOrWhiteSpace(sb))
+            if (ReadOnlySpanMethods.IsNullOrWhiteSpace(content))
             {
                 return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
             }
@@ -389,27 +350,24 @@ namespace DotSerial.Utilities
             string? nodeValue;
             int end;
 
-            if (ReadOnlySpanMethods.HasStartAndEndQuotes(sb))
+            if (ReadOnlySpanMethods.HasStartAndEndQuotes(content))
             {
-                end = ReadOnlySpanMethods.SkipQuotedValue(sb, startIndex);
-                if (end != sb.Length - 1)
+                end = ReadOnlySpanMethods.SkipQuotedValue(content, startIndex);
+                if (end != content.Length - 1)
                 {
                     throw new DotSerialException("Parse: Can't parse single value.");
                 }
-
-                nodeValue = sb.Slice(startIndex, end - startIndex + 1).ToString();
             }
             else
             {
-                end = ReadOnlySpanMethods.SkipTillStopChars(sb, startIndex, stopChars);
-                if (end != sb.Length - 1)
+                end = ReadOnlySpanMethods.SkipTillStopChars(content, startIndex, stopChars);
+                if (end != content.Length - 1)
                 {
                     throw new DotSerialException("Parse: Can't parse single value.");
                 }
-                // nodeValue = sb[startIndex..end].ToString();
             }
 
-            nodeValue = sb.Slice(startIndex, end - startIndex + 1).ToString();
+            nodeValue = ReadOnlySpanMethods.SliceFromTo(content, startIndex, end).ToString();
 
             return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
         }

@@ -1,4 +1,3 @@
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
@@ -16,14 +15,14 @@ namespace DotSerial.Xml.Parser
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public static DSXmlNode Parse(string str)
+        public static DSXmlNode Parse(ReadOnlySpan<char> content)
         {
             // Remove xml declaration
-            str = str.Replace(XmlConstants.XmlDeclaration, string.Empty);
 
-            StringBuilder sb = new(str);
+            // TODO vorhanden oder nicht
+            var orgBookmark = new ParserBookmark(XmlConstants.XmlDeclaration.Length, content.Length - 1);
 
-            var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
+            var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(orgBookmark, content);
 
             if (rootTmp.Count != 1)
             {
@@ -31,7 +30,7 @@ namespace DotSerial.Xml.Parser
             }
 
             var rootTagKeyPair = rootTmp.Keys.First();
-            var rootValue = rootTmp.Values.First();
+            var rootBookmark = rootTmp.Values.First();
 
             IDSNode rootNode;
 
@@ -55,17 +54,20 @@ namespace DotSerial.Xml.Parser
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
-                if (null == rootValue)
+                if (rootBookmark.IsNull())
                 {
-                    throw new DSXmlException("Parse: String is not a xml object.");
+                    rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, CommonConstants.MainObjectKey);
+                }
+                else
+                {
+                    rootNode = ParseMethods.ParsePrimitiveNode(
+                        StategyType.Xml,
+                        rootBookmark.GetContent(content),
+                        0,
+                        CommonConstants.MainObjectKey
+                    );
                 }
 
-                rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Xml,
-                    rootValue,
-                    0,
-                    CommonConstants.MainObjectKey
-                );
                 return new DSXmlNode(rootNode);
             }
             else
@@ -73,51 +75,21 @@ namespace DotSerial.Xml.Parser
                 throw new DSXmlException("Parse: String is not a xml object.");
             }
 
-            if (null != rootValue)
+            if (false == rootBookmark.IsNull())
             {
-                ParserAccept(rootNode, new XmlParserVisitor(), rootValue, rootTagKeyPair);
+                ParserAccept(rootNode, new XmlParserVisitor(), rootTagKeyPair, rootBookmark, content);
             }
 
             return new DSXmlNode(rootNode);
         }
 
-        /// <summary>
-        /// Parser for xml
-        /// </summary>
-        /// <param name="node">IDSNode</param>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="sb">Stringbuilder</param>
-        private static void ParserAccept(
-            IDSNode node,
-            XmlParserVisitor visitor,
-            StringBuilder sb,
-            XmlTagKeyPair tagKeyPair
-        )
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, sb, tagKeyPair);
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, sb, tagKeyPair);
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, sb, tagKeyPair);
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, sb, tagKeyPair);
-            }
-            else
-            {
-                throw new DSXmlException("Parse: Unknown node type.");
-            }
-        }
-
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
+        public void VisitDictionaryNode(
+            DictionaryNode node,
+            XmlTagKeyPair tagKeyPair,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
             // Currenlty not needed
             // Will be procced in the VisitInnerNode
@@ -125,20 +97,24 @@ namespace DotSerial.Xml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
+        public void VisitInnerNode(
+            InnerNode node,
+            XmlTagKeyPair tagKeyPair,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(sb);
 
             if (tagKeyPair.IsXmlObject())
             {
-                var dic = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
+                var dic = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(bookmark, content);
 
                 foreach (var keyValuepair in dic)
                 {
                     string key = keyValuepair.Key.Key;
                     string tag = keyValuepair.Key.Tag;
-                    StringBuilder? strValue = keyValuepair.Value;
+                    var tmpBoomkark = keyValuepair.Value;
 
                     if (keyValuepair.Key.IsXmlObject())
                     {
@@ -150,10 +126,10 @@ namespace DotSerial.Xml.Parser
                             NodeType.InnerNode
                         );
 
-                        if (null != strValue)
+                        if (false == tmpBoomkark.IsNull())
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                            ParserAccept(innerNode, new XmlParserVisitor(), keyValuepair.Key, tmpBoomkark, content);
                         }
 
                         // Add inner node to parent
@@ -164,10 +140,10 @@ namespace DotSerial.Xml.Parser
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
-                        if (null != strValue)
+                        if (false == tmpBoomkark.IsNull())
                         {
                             // Parse list node
-                            ParserAccept(listNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                            ParserAccept(listNode, new XmlParserVisitor(), keyValuepair.Key, tmpBoomkark, content);
                         }
 
                         // Add inner node to parent
@@ -175,12 +151,17 @@ namespace DotSerial.Xml.Parser
                     }
                     else if (keyValuepair.Key.IsXmlPrimitive())
                     {
-                        if (null == strValue)
+                        if (tmpBoomkark.IsNull())
                         {
-                            throw new DSXmlException("Parse: String is not a xml object.");
+                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            node.AddChild(childNode);
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
-                        node.AddChild(childNode);
+                        else
+                        {
+                            var primContent = tmpBoomkark.GetContent(content);
+                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            node.AddChild(childNode);
+                        }
                     }
                     else
                     {
@@ -195,20 +176,37 @@ namespace DotSerial.Xml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
+        public void VisitLeafNode(
+            LeafNode node,
+            XmlTagKeyPair tagKeyPair,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
+        {
+            // Currenlty not needed
+            // Will be procced in the VisitInnerNode
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void VisitListNode(
+            ListNode node,
+            XmlTagKeyPair tagKeyPair,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(sb);
 
             if (tagKeyPair.IsXmlList())
             {
-                var dic = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(sb);
+                var dic = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(bookmark, content);
                 int i = 0;
                 foreach (var keyValuepair in dic)
                 {
                     string key = i.ToString();
                     string tag = keyValuepair.Key.Tag;
-                    StringBuilder? strValue = keyValuepair.Value;
+                    var tmpBoomkark = keyValuepair.Value;
 
                     if (keyValuepair.Key.IsXmlObject())
                     {
@@ -220,10 +218,10 @@ namespace DotSerial.Xml.Parser
                             NodeType.InnerNode
                         );
 
-                        if (null != strValue)
+                        if (false == tmpBoomkark.IsNull())
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                            ParserAccept(innerNode, new XmlParserVisitor(), keyValuepair.Key, tmpBoomkark, content);
                         }
 
                         // Add inner node to parent
@@ -234,10 +232,10 @@ namespace DotSerial.Xml.Parser
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
 
-                        if (null != strValue)
+                        if (false == tmpBoomkark.IsNull())
                         {
                             // Parse list node
-                            ParserAccept(listNode, new XmlParserVisitor(), strValue, keyValuepair.Key);
+                            ParserAccept(listNode, new XmlParserVisitor(), keyValuepair.Key, tmpBoomkark, content);
                         }
 
                         // Add inner node to parent
@@ -245,12 +243,17 @@ namespace DotSerial.Xml.Parser
                     }
                     else if (keyValuepair.Key.IsXmlPrimitive())
                     {
-                        if (null == strValue)
+                        if (tmpBoomkark.IsNull())
                         {
-                            throw new DSXmlException("Parse: String is not a xml object.");
+                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            node.AddChild(childNode);
                         }
-                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, strValue, 0, key);
-                        node.AddChild(childNode);
+                        else
+                        {
+                            var primContent = tmpBoomkark.GetContent(content);
+                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            node.AddChild(childNode);
+                        }
                     }
                     else
                     {
@@ -266,12 +269,42 @@ namespace DotSerial.Xml.Parser
             }
         }
 
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, StringBuilder sb, XmlTagKeyPair tagKeyPair)
+        /// <summary>
+        /// Parser for xml
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="tagKeyPair">XmlTagKeyPair</param>
+        /// <param name="bookmark">Parser Bookmark</param>
+        /// <param name="content">Xml content</param>
+        private static void ParserAccept(
+            IDSNode node,
+            XmlParserVisitor visitor,
+            XmlTagKeyPair tagKeyPair,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
-            // Currenlty not needed
-            // Will be procced in the VisitInnerNode
-            throw new NotImplementedException();
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, tagKeyPair, bookmark, content);
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, tagKeyPair, bookmark, content);
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, tagKeyPair, bookmark, content);
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, tagKeyPair, bookmark, content);
+            }
+            else
+            {
+                throw new DSXmlException("Parse: Unknown node type.");
+            }
         }
     }
 }

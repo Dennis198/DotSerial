@@ -102,7 +102,8 @@ namespace DotSerial.Utilities
         internal ReadOnlySpan<char> GetLineContent(int i, ReadOnlySpan<char> content)
         {
             var bookmark = GetLine(i);
-            return content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
+            return bookmark.GetContent(content);
+            // return content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
         }
 
         /// <summary>

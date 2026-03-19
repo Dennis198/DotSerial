@@ -38,7 +38,7 @@ namespace DotSerial.Toon.Parser
 
             if (ToonParserHelper.IsToonSingleValue(lines, trimedContent))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode2(
+                rootNode = ParseMethods.ParsePrimitiveNode(
                     StategyType.Toon,
                     lines.GetLineContent(0, trimedContent),
                     0,
@@ -242,7 +242,7 @@ namespace DotSerial.Toon.Parser
                             else if (ToonParserHelper.IsToonSingleValue(value, content))
                             {
                                 var tmp = value.GetLineContent(0, content).Trim();
-                                var childNode = ParseMethods.ParsePrimitiveNode2(StategyType.Toon, tmp, 0, key);
+                                var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Toon, tmp, 0, key);
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonObject(value, content))

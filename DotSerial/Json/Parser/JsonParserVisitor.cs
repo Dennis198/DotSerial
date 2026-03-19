@@ -42,7 +42,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                rootNode = ParseMethods.ParsePrimitiveNode2(
+                rootNode = ParseMethods.ParsePrimitiveNode(
                     StategyType.Json,
                     trimedContent,
                     0,

@@ -40,5 +40,15 @@ namespace DotSerial.Utilities
         {
             return End == -1;
         }
+
+        internal readonly ReadOnlySpan<char> GetContent(ReadOnlySpan<char> content)
+        {
+            if (content.Length < End)
+            {
+                throw new NotImplementedException();
+            }
+
+            return ReadOnlySpanMethods.SliceFromTo(content, Start, End);
+        }
     }
 }

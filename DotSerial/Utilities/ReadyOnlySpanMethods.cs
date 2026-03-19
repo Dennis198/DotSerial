@@ -180,6 +180,67 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        internal static int SkipEnclosingValue(ReadOnlySpan<char> source, int startIndex, char openChar, char closeChar)
+        {
+            if (source.IsEmpty || source.IsWhiteSpace())
+            {
+                throw new ArgumentException("Source is empty or whitespace.");
+            }
+
+            if ((uint)startIndex >= (uint)source.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            }
+
+            if (source[startIndex] != openChar)
+            {
+                throw new ArgumentException($"Expected quote at index {startIndex}.");
+            }
+
+            if (openChar == CommonConstants.Quote || closeChar == CommonConstants.Quote)
+            {
+                throw new ArgumentException($"Open and/or close char can't be quotes.");
+            }
+
+            bool isEscaped = false;
+            int numOpen = 0;
+
+            for (int j = startIndex + 1; j < source.Length; j++)
+            {
+                char c = source[j];
+
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == closeChar)
+                {
+                    if (numOpen == 0)
+                    {
+                        return j;
+                    }
+                    else
+                    {
+                        numOpen--;
+                    }
+                }
+                else if (c == openChar)
+                {
+                    numOpen++;
+                }
+                else if (c == CommonConstants.Quote)
+                {
+                    j = SkipQuotedValue(source, j);
+                }
+            }
+
+            throw new Exception("Parse Error: Closing quote missing or invalid escape sequence.");
+        }
+
         /// <summary>
         /// Returns the index, where the next non escape quote char is hit.
         /// </summary>

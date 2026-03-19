@@ -42,7 +42,7 @@ namespace DotSerial.Yaml.Parser
 
             if (YamlParserHelper.IsYamlSingleValue(lines, trimedContent))
             {
-                rootNode = ParseMethods.ParsePrimitiveNode2(
+                rootNode = ParseMethods.ParsePrimitiveNode(
                     StategyType.Yaml,
                     lines.GetLineContent(0, trimedContent),
                     0,
@@ -233,7 +233,7 @@ namespace DotSerial.Yaml.Parser
                         var val = value.GetLineContent(0, content);
                         // Remove starting whitespaces
                         val = val.Trim();
-                        var innerNode = ParseMethods.ParsePrimitiveNode2(StategyType.Yaml, val, 0, key);
+                        var innerNode = ParseMethods.ParsePrimitiveNode(StategyType.Yaml, val, 0, key);
                         node.AddChild(innerNode);
                     }
                     else if (YamlParserHelper.IsYamlObject(value, content))
