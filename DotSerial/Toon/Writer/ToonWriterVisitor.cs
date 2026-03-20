@@ -20,6 +20,8 @@ namespace DotSerial.Toon.Writer
             {
                 var internalNode = node.GetInternalData();
                 WriterAccept(internalNode, new ToonWriterVisitor(), ref dtSB, new ToonWriterOptions(0, false));
+                dtSB.Trim();
+
                 result = dtSB.ToArray();
             }
             finally

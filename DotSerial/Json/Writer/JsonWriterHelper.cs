@@ -58,7 +58,7 @@ namespace DotSerial.Json.Writer
         /// <summary>
         /// Add a key value pair
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
@@ -148,7 +148,7 @@ namespace DotSerial.Json.Writer
         /// <summary>
         /// Appends only the value without the key
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>
@@ -177,7 +177,7 @@ namespace DotSerial.Json.Writer
         /// <summary>
         /// Adds primitive list
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="node">ListNode</param>
         /// <param name="options">Options</param>
         internal static void AddPrimitiveList(ref DotSerialStringBuilder sb, ListNode node, JsonWriterOptions options)

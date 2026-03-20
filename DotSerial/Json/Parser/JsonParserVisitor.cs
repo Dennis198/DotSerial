@@ -206,7 +206,7 @@ namespace DotSerial.Json.Parser
         /// </summary>
         /// <param name="node">IDSNode</param>
         /// <param name="visitor">Visitor</param>
-        /// <param name="content">Stringbuilder</param>
+        /// <param name="content">ReadOnlySpan</param>
         private static void ParserAccept(
             IDSNode node,
             JsonParserVisitor visitor,

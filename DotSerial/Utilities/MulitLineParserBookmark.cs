@@ -15,7 +15,7 @@ namespace DotSerial.Utilities
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         internal MulitLineParserBookmark(ReadOnlySpan<char> content)
         {
             _lines = CreateLines(content);
@@ -24,7 +24,7 @@ namespace DotSerial.Utilities
         /// <summary>
         /// Private constructor
         /// </summary>
-        /// <param name="lines"Lists of StringBuilder></param>
+        /// <param name="lines"Lists of ParserBookmark></param>
         private MulitLineParserBookmark(List<ParserBookmark> lines)
         {
             _lines = lines;
@@ -77,7 +77,7 @@ namespace DotSerial.Utilities
         /// Get a specific line
         /// </summary>
         /// <param name="i">Index of line</param>
-        /// <returns>Line as a StringBuilder</returns>
+        /// <returns>Line as a ParserBookmark</returns>
         internal ParserBookmark GetLine(int i)
         {
             if (null == _lines)
@@ -154,7 +154,7 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
-        /// Create a list of stringbuilders representing each lines of the
+        /// Create a list of ParserBookmark representing each lines of the
         /// yaml string
         /// </summary>
         /// <param name="content">String content</param>

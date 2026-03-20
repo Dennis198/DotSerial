@@ -12,7 +12,7 @@ namespace DotSerial.Xml.Parser
         /// Extracts all key value pairs from an xml object string builder.
         /// </summary>
         /// <param name="content">XMl content</param>
-        /// <returns>Dictionary<XmlTagKeyPair, StringBuilder?> </returns>
+        /// <returns>Dictionary<XmlTagKeyPair, ParserBookmark?> </returns>
         internal static Dictionary<XmlTagKeyPair, ParserBookmark> ExtractKeyValuePairsFromXmlObject(
             ParserBookmark bookmark,
             ReadOnlySpan<char> content

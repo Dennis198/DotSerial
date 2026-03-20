@@ -114,7 +114,7 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Extracts the value from a line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="lines">DotSerialStringBuilder-List</param>
         /// <returns>Value of the line</returns>
         internal static string? ExtractValueFromLine(ReadOnlySpan<char> line)
         {
@@ -477,7 +477,7 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Check is string builder is "Key": {}
         /// </summary>
-        /// <param name="line">StringBuilder</param>
+        /// <param name="line">DotSerialStringBuilder</param>
         /// <returns>True, if string is an empty yaml object</returns>
         internal static bool IsEmptyObject(ReadOnlySpan<char> line)
         {
@@ -520,7 +520,7 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Check is string builder is "Key": []
         /// </summary>
-        /// <param name="line">StringBuilder</param>
+        /// <param name="line">DotSerialStringBuilder</param>
         /// <returns>True, if string is an empty yaml list</returns>
         internal static bool IsEmptyList(ReadOnlySpan<char> line)
         {
@@ -649,7 +649,7 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Extracts the key from a line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="lines">DotSerialStringBuilder-List</param>
         /// <returns>Key of the line</returns>
         private static string ExtractKeyFromLine(ReadOnlySpan<char> line)
         {
@@ -680,7 +680,7 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Check if line is a key line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="lines">DotSerialStringBuilder-List</param>
         /// <returns>True, if line is key line</returns>
         private static bool IsKeyLine(ReadOnlySpan<char> line)
         {

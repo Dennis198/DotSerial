@@ -420,6 +420,41 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Removes leading and trailing whitespace from the builder.
+        /// </summary>
+        public void Trim()
+        {
+            if (_position == 0 || _buffer == null)
+                return;
+
+            ReadOnlySpan<char> span = _buffer.AsSpan(0, _position);
+
+            int start = 0;
+            while (start < span.Length && char.IsWhiteSpace(span[start]))
+            {
+                start++;
+            }
+
+            int end = span.Length - 1;
+            while (end >= start && char.IsWhiteSpace(span[end]))
+            {
+                end--;
+            }
+
+            int newLength = end - start + 1;
+
+            if (newLength <= 0)
+            {
+                Clear();
+                return;
+            }
+
+            ReadOnlySpan<char> trimmedSpan = span.Slice(start, newLength);
+            trimmedSpan.CopyTo(_buffer);
+            _position = newLength;
+        }
+
+        /// <summary>
         /// Truncates the builder to the given length
         /// </summary>
         /// <param name="newLength">New length</param>
