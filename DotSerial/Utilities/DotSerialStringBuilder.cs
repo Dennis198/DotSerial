@@ -19,6 +19,9 @@ namespace DotSerial.Utilities
         /// </summary>
         private int _position;
 
+        public DotSerialStringBuilder()
+            : this(null) { }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -408,7 +411,7 @@ namespace DotSerial.Utilities
                 return;
 
             int remainingSourceIndex = startIndex + length;
-            int remainingCount = _position + remainingSourceIndex;
+            int remainingCount = _position - remainingSourceIndex;
 
             if (remainingCount > 0)
             {

@@ -19,7 +19,7 @@ namespace DotSerial.Xml.Parser
         {
             // Remove xml declaration
 
-            // TODO vorhanden oder nicht
+            // TODO Check if declaration exist
             var orgBookmark = new ParserBookmark(XmlConstants.XmlDeclaration.Length, content.Length - 1);
 
             var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(orgBookmark, content);

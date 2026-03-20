@@ -19,10 +19,7 @@ namespace DotSerial.Toon.Parser
         {
             IDSNode rootNode;
 
-            // TODO
-            var trimedContent = content.Trim();
-
-            if (trimedContent.IsEmpty)
+            if (content.IsEmpty)
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Toon,
@@ -34,19 +31,19 @@ namespace DotSerial.Toon.Parser
             }
 
             // Create help object, which contains every line of the yaml file
-            var lines = new MulitLineParserBookmark(trimedContent);
+            var lines = new MulitLineParserBookmark(content);
 
-            if (ToonParserHelper.IsToonSingleValue(lines, trimedContent))
+            if (ToonParserHelper.IsToonSingleValue(lines, content))
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
                     StategyType.Toon,
-                    lines.GetLineContent(0, trimedContent),
+                    lines.GetLineContent(0, content),
                     0,
                     CommonConstants.MainObjectKey
                 );
                 return new DSToonNode(rootNode);
             }
-            else if (ToonParserHelper.IsToonObject(lines, trimedContent, true))
+            else if (ToonParserHelper.IsToonObject(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Toon,
@@ -54,12 +51,12 @@ namespace DotSerial.Toon.Parser
                     null,
                     NodeType.InnerNode
                 );
-                if (ToonParserHelper.IsEmptyObject(lines, trimedContent))
+                if (ToonParserHelper.IsEmptyObject(lines, content))
                 {
                     return new DSToonNode(rootNode);
                 }
             }
-            else if (ToonParserHelper.IsToonList(lines, trimedContent, true))
+            else if (ToonParserHelper.IsToonList(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Toon,
@@ -67,7 +64,7 @@ namespace DotSerial.Toon.Parser
                     null,
                     NodeType.ListNode
                 );
-                if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, trimedContent)))
+                if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
                     return new DSToonNode(rootNode);
                 }
@@ -79,7 +76,7 @@ namespace DotSerial.Toon.Parser
 
             if (lines.Count > 0)
             {
-                ParserAccept(rootNode, new ToonParserVisitor(), lines, trimedContent, true);
+                ParserAccept(rootNode, new ToonParserVisitor(), lines, content, true);
             }
 
             return new DSToonNode(rootNode);
