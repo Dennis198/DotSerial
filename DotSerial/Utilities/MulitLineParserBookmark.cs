@@ -2,7 +2,7 @@ using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
-    internal class MulitLineReadOnlySpan
+    internal class MulitLineParserBookmark
     {
         // Special case. (Currenly only needed in yaml/toon)
         internal bool IsOneLineObject = false;
@@ -16,7 +16,7 @@ namespace DotSerial.Utilities
         /// Constructor
         /// </summary>
         /// <param name="sb">StringBuilder</param>
-        internal MulitLineReadOnlySpan(ReadOnlySpan<char> content)
+        internal MulitLineParserBookmark(ReadOnlySpan<char> content)
         {
             _lines = CreateLines(content);
         }
@@ -25,7 +25,7 @@ namespace DotSerial.Utilities
         /// Private constructor
         /// </summary>
         /// <param name="lines"Lists of StringBuilder></param>
-        private MulitLineReadOnlySpan(List<ParserBookmark> lines)
+        private MulitLineParserBookmark(List<ParserBookmark> lines)
         {
             _lines = lines;
         }
@@ -103,7 +103,6 @@ namespace DotSerial.Utilities
         {
             var bookmark = GetLine(i);
             return bookmark.GetContent(content);
-            // return content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace DotSerial.Utilities
         /// <param name="start">Start index</param>
         /// <param name="end">End index</param>
         /// <returns>A shallow copy of a range of elements in the source.</returns>
-        internal MulitLineReadOnlySpan SliceFromTo(int start, int end)
+        internal MulitLineParserBookmark SliceFromTo(int start, int end)
         {
             if (null == _lines)
             {
@@ -151,7 +150,7 @@ namespace DotSerial.Utilities
 
             int length = end - start + 1;
             var subLines = _lines.Slice(start, length);
-            return new MulitLineReadOnlySpan(subLines);
+            return new MulitLineParserBookmark(subLines);
         }
 
         /// <summary>

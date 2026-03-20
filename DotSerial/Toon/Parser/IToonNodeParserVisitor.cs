@@ -24,7 +24,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="isRootElement">True, if root element</param>
         public abstract void VisitDictionaryNode(
             DictionaryNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         );
@@ -38,7 +38,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="isRootElement">True, if root element</param>
         public abstract void VisitInnerNode(
             InnerNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         );
@@ -52,7 +52,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="isRootElement">True, if root element</param>
         public abstract void VisitLeafNode(
             LeafNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         );
@@ -66,7 +66,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="isRootElement">True, if root element</param>
         public abstract void VisitListNode(
             ListNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         );

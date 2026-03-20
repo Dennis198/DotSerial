@@ -11,18 +11,24 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Extracts key value pairs from json object
         /// </summary>
+        /// <param name="bookmark">ParserBookmark</param>
         /// <param name="content">String content</param>
         /// <returns>List of ParseBookmarks</returns>
-        internal static List<ParserBookmark> ExtractKeyValuePairsFromJsonObject(ReadOnlySpan<char> content)
+        internal static List<ParserBookmark> ExtractKeyValuePairsFromJsonObject(
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
+            var bookmarkContent = bookmark.GetContent(content);
+            int offset = bookmark.Start;
             var result = new List<ParserBookmark>();
             bool startObjectSymbolFound = false;
             bool keyFound = false;
             string foundKey = string.Empty;
 
-            for (int i = 0; i < content.Length; i++)
+            for (int i = 0; i < bookmarkContent.Length; i++)
             {
-                char c = content[i];
+                char c = bookmarkContent[i];
 
                 if (c == JsonConstants.ObjectStart && false == startObjectSymbolFound)
                 {
@@ -46,9 +52,9 @@ namespace DotSerial.Json.Parser
                     // Quote is opening
                     keyFound = true;
 
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(bookmarkContent, i);
 
-                    foundKey = content.Slice(i, j - i + 1).ToString();
+                    foundKey = bookmarkContent.Slice(i, j - i + 1).ToString();
 
                     i = j;
                 }
@@ -58,9 +64,9 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(bookmarkContent, i);
 
-                    var tmp = new ParserBookmark(i, j, foundKey);
+                    var tmp = new ParserBookmark(i + offset, j + offset, foundKey);
                     result.Add(tmp);
 
                     foundKey = string.Empty;
@@ -72,9 +78,9 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    int j = ExtractJsonObject(content, i);
+                    int j = ExtractJsonObject(bookmarkContent, i);
 
-                    var tmp = new ParserBookmark(i, j, foundKey);
+                    var tmp = new ParserBookmark(i + offset, j + offset, foundKey);
                     result.Add(tmp);
 
                     foundKey = string.Empty;
@@ -86,9 +92,9 @@ namespace DotSerial.Json.Parser
                     // value is found
                     keyFound = false;
 
-                    int j = ExtractJsonList(content, i);
+                    int j = ExtractJsonList(bookmarkContent, i);
 
-                    var tmp = new ParserBookmark(i, j, foundKey);
+                    var tmp = new ParserBookmark(i + offset, j + offset, foundKey);
                     result.Add(tmp);
 
                     foundKey = string.Empty;
@@ -98,9 +104,9 @@ namespace DotSerial.Json.Parser
                 {
                     keyFound = false;
 
-                    if (true == ReadOnlySpanMethods.EqualsNullString(content, i))
+                    if (true == ReadOnlySpanMethods.EqualsNullString(bookmarkContent, i))
                     {
-                        var tmp = new ParserBookmark(i, -1, foundKey);
+                        var tmp = new ParserBookmark(i + offset, -1, foundKey);
                         result.Add(tmp);
 
                         foundKey = string.Empty;
@@ -108,9 +114,14 @@ namespace DotSerial.Json.Parser
                     }
                     else
                     {
-                        int j = ReadOnlySpanMethods.SkipTillStopChars(content, i, JsonConstants.ParseStopChars, true);
+                        int j = ReadOnlySpanMethods.SkipTillStopChars(
+                            bookmarkContent,
+                            i,
+                            JsonConstants.ParseStopChars,
+                            true
+                        );
 
-                        var tmp = new ParserBookmark(i, j, foundKey);
+                        var tmp = new ParserBookmark(i + offset, j + offset, foundKey);
                         result.Add(tmp);
 
                         foundKey = string.Empty;
@@ -125,15 +136,18 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Extracts object list from json string
         /// </summary>
+        /// <param name="bookmark">ParserBookmark</param>
         /// <param name="content">String content</param>
         /// <returns>List of ParserBookmark</returns>
-        internal static List<ParserBookmark> ExtractObjectList(ReadOnlySpan<char> content)
+        internal static List<ParserBookmark> ExtractObjectList(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
+            var bookmarkContent = bookmark.GetContent(content);
+            int offset = bookmark.Start;
             var list = new List<ParserBookmark>();
 
-            for (int i = 1; i < content.Length - 1; i++)
+            for (int i = 1; i < bookmarkContent.Length - 1; i++)
             {
-                char c = content[i];
+                char c = bookmarkContent[i];
 
                 if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
                 {
@@ -142,20 +156,20 @@ namespace DotSerial.Json.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(bookmarkContent, i);
 
-                    var tmp = new ParserBookmark(i, j);
+                    var tmp = new ParserBookmark(i + offset, j + offset);
                     list.Add(tmp);
 
                     i = j;
                 }
                 else if (c == JsonConstants.ListStart)
                 {
-                    int j = ExtractJsonList(content, i);
+                    int j = ExtractJsonList(bookmarkContent, i);
 
-                    if (false == IsEmptyList(content, i, j))
+                    if (false == IsEmptyList(bookmarkContent, i, j))
                     {
-                        var tmp = new ParserBookmark(i, j);
+                        var tmp = new ParserBookmark(i + offset, j + offset);
                         list.Add(tmp);
                     }
 
@@ -163,11 +177,11 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ObjectStart)
                 {
-                    int j = ExtractJsonObject(content, i);
+                    int j = ExtractJsonObject(bookmarkContent, i);
 
-                    if (false == IsEmptyObject(content, i, j))
+                    if (false == IsEmptyObject(bookmarkContent, i, j))
                     {
-                        var tmp = new ParserBookmark(i, j);
+                        var tmp = new ParserBookmark(i + offset, j + offset);
                         list.Add(tmp);
                     }
 
@@ -175,9 +189,9 @@ namespace DotSerial.Json.Parser
                 }
                 else
                 {
-                    int j = ReadOnlySpanMethods.SkipTillStopChars(content, i, JsonConstants.ParseStopChars);
+                    int j = ReadOnlySpanMethods.SkipTillStopChars(bookmarkContent, i, JsonConstants.ParseStopChars);
 
-                    var tmp = new ParserBookmark(i, j);
+                    var tmp = new ParserBookmark(i + offset, j + offset);
                     list.Add(tmp);
 
                     i = j;
@@ -190,14 +204,16 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Check if string is a json list.
         /// </summary>
+        /// <param name="bookmark">ParserBookmark</param>
         /// <param name="content">String content</param>
         /// <returns>True, if is a list</returns>
-        internal static bool IsStringJsonList(ReadOnlySpan<char> content)
+        internal static bool IsStringJsonList(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
+            var tmp = bookmark.GetContent(content);
             // // Check if first element is '['
-            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(content, JsonConstants.ListStart);
+            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(tmp, JsonConstants.ListStart);
             // // Check if last element is ']'
-            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(content, JsonConstants.ListEnd);
+            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(tmp, JsonConstants.ListEnd);
 
             return startFound && endFound;
         }
@@ -205,14 +221,16 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Check if string is a json object.
         /// </summary>
+        /// <param name="bookmark">ParserBookmark</param>
         /// <param name="content">String content</param>
         /// <returns>True, if is a object</returns>
-        internal static bool IsStringJsonObject(ReadOnlySpan<char> content)
+        internal static bool IsStringJsonObject(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
+            var tmp = bookmark.GetContent(content);
             // // Check if first element is '{'
-            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(content, JsonConstants.ObjectStart);
+            bool startFound = ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(tmp, JsonConstants.ObjectStart);
             // // Check if last element is '}'
-            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(content, JsonConstants.ObjectEnd);
+            bool endFound = ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(tmp, JsonConstants.ObjectEnd);
 
             return startFound && endFound;
         }

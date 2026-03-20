@@ -14,21 +14,21 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// /// <returns>Dictionary<string, MulitLineReadOnlySpan></returns>
-        internal static Dictionary<string, MulitLineReadOnlySpan> ExtractKeyValuePairsFromYamlObject(
-            MulitLineReadOnlySpan lines,
+        internal static Dictionary<string, MulitLineParserBookmark> ExtractKeyValuePairsFromYamlObject(
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new Dictionary<string, MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
+            var result = new Dictionary<string, MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLineContent(i, content);
-                int currLevel = ParseMethods.LineLevel2(line, YamlConstants.IndentationSize);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -75,21 +75,21 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>List<MulitLineReadOnlySpan></returns>
-        internal static List<MulitLineReadOnlySpan> ExtractObjectList(
-            MulitLineReadOnlySpan lines,
+        internal static List<MulitLineParserBookmark> ExtractObjectList(
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new List<MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
+            var result = new List<MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLineContent(i, content);
-                int currLevel = ParseMethods.LineLevel2(line, YamlConstants.IndentationSize);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -183,7 +183,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="endIndex">End index of the objects</param>
         /// <param name="content">Yaml content</param>
         private static void RemoveListItemIndicator(
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             int startIndex,
             int endIndex,
             ReadOnlySpan<char> content
@@ -192,7 +192,7 @@ namespace DotSerial.Yaml.Parser
             var startBookMark = lines.GetLine(startIndex);
             var startLine = ReadOnlySpanMethods.SliceFromTo(content, startBookMark.Start, startBookMark.End);
             int index =
-                ParseMethods.LineLevel2(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
+                ParseMethods.LineLevel(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
 
             if (startLine[index] != YamlConstants.ListItemIndicator)
             {
@@ -234,7 +234,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml object</returns>
-        internal static bool IsYamlObject(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsYamlObject(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -270,7 +270,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml list</returns>
-        internal static bool IsYamlList(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsYamlList(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -308,7 +308,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml single value</returns>
-        internal static bool IsYamlSingleValue(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsYamlSingleValue(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -380,7 +380,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml key value pair</returns>
-        internal static bool IsYamlPrimitiveLine(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsYamlPrimitiveLine(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -566,8 +566,8 @@ namespace DotSerial.Yaml.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="content">Yaml content</param>
         /// <returns>MulitLineReadOnlySpan without start end symbols</returns>
-        internal static MulitLineReadOnlySpan RemoveStartStopSymbols(
-            MulitLineReadOnlySpan lines,
+        internal static MulitLineParserBookmark RemoveStartStopSymbols(
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         )
         {
@@ -609,7 +609,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="content">Yaml content</param>
         /// <returns>End index</returns>
         private static int GetEndIndexOfYamlObject(
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             int startIndex,
             ReadOnlySpan<char> content
         )
@@ -622,7 +622,7 @@ namespace DotSerial.Yaml.Parser
             }
 
             int endIndex = -1;
-            int objLevel = ParseMethods.LineLevel2(
+            int objLevel = ParseMethods.LineLevel(
                 lines.GetLineContent(startIndex, content),
                 YamlConstants.IndentationSize
             );
@@ -630,10 +630,7 @@ namespace DotSerial.Yaml.Parser
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = ParseMethods.LineLevel2(
-                    lines.GetLineContent(i, content),
-                    YamlConstants.IndentationSize
-                );
+                int currLevel = ParseMethods.LineLevel(lines.GetLineContent(i, content), YamlConstants.IndentationSize);
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;

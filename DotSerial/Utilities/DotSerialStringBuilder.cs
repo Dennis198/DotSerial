@@ -1,7 +1,6 @@
 using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
-using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -150,6 +149,27 @@ namespace DotSerial.Utilities
         public readonly int IndexOf(ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
         {
             return MemoryExtensions.IndexOf(_buffer.AsSpan()[.._position], value, comparison);
+        }
+
+        /// <summary>
+        /// Prüft, ob der Builder leer ist oder nur aus Whitespace-Zeichen besteht.
+        /// </summary>
+        public readonly bool IsNullOrWhiteSpace()
+        {
+            if (_position == 0)
+                return true;
+
+            ReadOnlySpan<char> content = _buffer.AsSpan(0, _position);
+
+            for (int i = 0; i < content.Length; i++)
+            {
+                if (!char.IsWhiteSpace(content[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -411,161 +431,11 @@ namespace DotSerial.Utilities
             }
         }
 
-        /// <summary>
-        /// Prüft, ob der Builder leer ist oder nur aus Whitespace-Zeichen besteht.
-        /// </summary>
-        public readonly bool IsNullOrWhiteSpace()
+        [DoesNotReturn]
+        private static void ThrowIndexOutOfRangeException()
         {
-            // 1. Wenn die Position 0 ist, ist er quasi "Empty"
-            if (_position == 0)
-                return true;
-
-            // 2. Den belegten Teil des Buffers als Span betrachten
-            ReadOnlySpan<char> content = _buffer.AsSpan(0, _position);
-
-            // 3. Effiziente Prüfung über die Span-Extensions
-            // IsWhiteSpace() prüft alle Unicode-Whitespace-Zeichen
-            for (int i = 0; i < content.Length; i++)
-            {
-                if (!char.IsWhiteSpace(content[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
+            throw new IndexOutOfRangeException();
         }
-
-        // public readonly bool HasStartAndEndQuotes()
-        // {
-        //     // 1. Wenn die Position 0 ist, ist er quasi "Empty"
-        //     if (Length < 2)
-        //         return true;
-
-        //     // 2. Den belegten Teil des Buffers als Span betrachten
-        //     ReadOnlySpan<char> content = _buffer.AsSpan(0, _position);
-
-        //     return content[0] == CommonConstants.Quote && content[^1] == CommonConstants.Quote;
-        // }
-
-        // public int AppendTillStopChars(ReadOnlySpan<char> source, int startIndex, ReadOnlySpan<char> stopChars)
-        // {
-        //     // 1. Validierung
-        //     if ((uint)startIndex >= (uint)source.Length)
-        //     {
-        //         throw new IndexOutOfRangeException(nameof(startIndex));
-        //     }
-
-        //     // Wenn keine Stop-Chars definiert sind, kopiere den gesamten Rest
-        //     if (stopChars.IsEmpty)
-        //     {
-        //         ReadOnlySpan<char> remaining = source[startIndex..];
-        //         this.Append(remaining); // Nutzt dein vorhandenes Append inkl. EnsureCapacity
-        //         return source.Length - 1;
-        //     }
-
-        //     // Vorab-Check für Kapazität
-        //     EnsureCapacity(_position + (source.Length - startIndex));
-
-        //     bool isEscaped = false;
-
-        //     // 2. Parsing-Schleife (Hot Path)
-        //     for (int j = startIndex; j < source.Length; j++)
-        //     {
-        //         char c = source[j];
-
-        //         if (isEscaped)
-        //         {
-        //             this.Append(c);
-        //             isEscaped = false;
-        //         }
-        //         else if (c == CommonConstants.Backslash)
-        //         {
-        //             isEscaped = true;
-        //             this.Append(c);
-        //         }
-        //         // Prüfen, ob das aktuelle Zeichen ein Stop-Char ist
-        //         // IndexOf auf einem Span ist extrem schnell (SIMD optimiert)
-        //         else if (stopChars.IndexOf(c) >= 0)
-        //         {
-        //             return j; // Stop-Char gefunden, wir geben den Index zurück
-        //         }
-        //         else
-        //         {
-        //             this.Append(c);
-        //         }
-        //     }
-
-        //     if (isEscaped)
-        //     {
-        //         throw new Exception("Parse Error: Trailing escape character.");
-        //     }
-
-        //     return source.Length - 1;
-        // }
-
-        /// <summary>
-        /// Liest einen quoted String aus einem Span und hängt ihn an diesen Builder an.
-        /// </summary>
-        /// <param name="source">Der Quell-Span (z.B. von einem anderen Builder oder String)</param>
-        /// <param name="startIndex">Startposition im Quell-Span</param>
-        /// <returns>Der Index des schließenden Anführungszeichens im Quell-Span</returns>
-        // public int AppendQuotedValue(ReadOnlySpan<char> source, int startIndex)
-        // {
-        //     // 1. Validierung über Span-Methoden (hocheffizient)
-        //     if (source.IsEmpty || source.IsWhiteSpace())
-        //     {
-        //         throw new ArgumentException("Source is empty or whitespace.");
-        //     }
-
-        //     if ((uint)startIndex >= (uint)source.Length)
-        //     {
-        //         throw new IndexOutOfRangeException(nameof(startIndex));
-        //     }
-
-        //     if (source[startIndex] != CommonConstants.Quote)
-        //     {
-        //         throw new ArgumentException($"Expected quote at index {startIndex}.");
-        //     }
-
-        //     // Vorab-Check: Wir reservieren Platz für den Rest des Spans
-        //     // Das verhindert mehrfaches "Grow" innerhalb der Schleife.
-        //     EnsureCapacity(_position + (source.Length - startIndex));
-
-        //     this.Append(CommonConstants.Quote);
-        //     bool isEscaped = false;
-
-        //     // 2. Parsing-Schleife (Hot Path)
-        //     for (int j = startIndex + 1; j < source.Length; j++)
-        //     {
-        //         char c = source[j];
-
-        //         if (isEscaped)
-        //         {
-        //             // Das Zeichen nach dem Backslash einfach übernehmen
-        //             this.Append(c);
-        //             isEscaped = false;
-        //         }
-        //         else if (c == CommonConstants.Backslash)
-        //         {
-        //             isEscaped = true;
-        //             this.Append(c);
-        //         }
-        //         else if (c == CommonConstants.Quote)
-        //         {
-        //             // Schließendes Quote gefunden
-        //             this.Append(c);
-        //             return j;
-        //         }
-        //         else
-        //         {
-        //             this.Append(c);
-        //         }
-        //     }
-
-        //     // Wenn die Schleife ohne Rückgabe endet, fehlt das schließende Quote
-        //     throw new Exception("Parse Error: Closing quote missing or invalid escape sequence.");
-        // }
 
         /// <summary>
         /// Escures that the capacity is enough
@@ -574,25 +444,19 @@ namespace DotSerial.Utilities
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void EnsureCapacity(int requiredCapacity)
         {
-            // Schnellster Pfad: Reicht der aktuelle Buffer?
-            // (uint) cast fängt auch negative Werte ab und ist schneller.
             if ((uint)requiredCapacity > (uint)(_buffer?.Length ?? 0))
             {
                 Grow(requiredCapacity);
             }
         }
 
-        // Diese Methode wird NICHT geinlined, um den "Hot Path" (Append)
-        // klein und schnell zu halten (Cold Path Pattern).
         [MethodImpl(MethodImplOptions.NoInlining)]
         private void Grow(int minCapacity)
         {
             int currentCapacity = _buffer?.Length ?? 0;
 
-            // Strategie: Verdoppeln, aber mindestens minCapacity
             int newCapacity = Math.Max(currentCapacity * 2, minCapacity);
 
-            // Fallback für sehr kleine Kapazitäten (z.B. Start bei 0 oder 1)
             if (newCapacity < 16)
                 newCapacity = 16;
 
@@ -600,22 +464,11 @@ namespace DotSerial.Utilities
 
             if (_position > 0 && _buffer != null)
             {
-                // Alten Inhalt kopieren
                 _buffer.AsSpan(0, _position).CopyTo(newBuffer);
-
-                // Alten Buffer sofort zurückgeben!
                 ArrayPool<char>.Shared.Return(_buffer);
             }
 
             _buffer = newBuffer;
-        }
-
-        // Helper zum Werfen der Exception (verbessert Inlining des Indexers,
-        // da der "Throw"-Pfad in eine eigene Methode ausgelagert wird)
-        [DoesNotReturn]
-        private static void ThrowIndexOutOfRangeException()
-        {
-            throw new IndexOutOfRangeException();
         }
     }
 }

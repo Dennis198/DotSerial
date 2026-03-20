@@ -18,11 +18,9 @@ namespace DotSerial.Json.Parser
         public static DSJsonNode Parse(ReadOnlySpan<char> content)
         {
             IDSNode rootNode;
+            var orgBookmark = new ParserBookmark(content, true);
 
-            // TODO
-            var trimedContent = content.Trim();
-
-            if (JsonParserHelper.IsStringJsonObject(trimedContent))
+            if (JsonParserHelper.IsStringJsonObject(orgBookmark, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Json,
@@ -31,7 +29,7 @@ namespace DotSerial.Json.Parser
                     NodeType.InnerNode
                 );
             }
-            else if (JsonParserHelper.IsStringJsonList(trimedContent))
+            else if (JsonParserHelper.IsStringJsonList(orgBookmark, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
                     StategyType.Json,
@@ -44,7 +42,7 @@ namespace DotSerial.Json.Parser
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
                     StategyType.Json,
-                    trimedContent,
+                    content.Trim(),
                     0,
                     CommonConstants.MainObjectKey,
                     JsonConstants.ParseStopChars
@@ -52,13 +50,13 @@ namespace DotSerial.Json.Parser
                 return new DSJsonNode(rootNode);
             }
 
-            ParserAccept(rootNode, new JsonParserVisitor(), trimedContent);
+            ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
 
             return new DSJsonNode(rootNode);
         }
 
         /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, ReadOnlySpan<char> sb)
+        public void VisitDictionaryNode(DictionaryNode node, ParserBookmark bookmark, ReadOnlySpan<char> sb)
         {
             // Currenlty not needed
             // Will be procced in the VisitInnerNode
@@ -66,33 +64,30 @@ namespace DotSerial.Json.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, ReadOnlySpan<char> content)
+        public void VisitInnerNode(InnerNode node, ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
 
-            if (JsonParserHelper.IsStringJsonObject(content))
+            if (JsonParserHelper.IsStringJsonObject(bookmark, content))
             {
                 // Extract key, value pairs
-                var dic = JsonParserHelper.ExtractKeyValuePairsFromJsonObject(content);
+                var dic = JsonParserHelper.ExtractKeyValuePairsFromJsonObject(bookmark, content);
 
-                foreach (var bookmark in dic)
+                foreach (var innerBookmark in dic)
                 {
-                    if (null == bookmark.Key)
+                    if (null == innerBookmark.Key)
                     {
                         throw new NotImplementedException();
                     }
 
-                    string key = bookmark.Key;
-                    ReadOnlySpan<char> strValue = bookmark.IsNull()
-                        ? null
-                        : content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1);
+                    string key = innerBookmark.Key;
 
-                    if (null == strValue)
+                    if (innerBookmark.IsNull())
                     {
                         var childNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.Leaf);
                         node.AddChild(childNode);
                     }
-                    else if (JsonParserHelper.IsStringJsonObject(strValue))
+                    else if (JsonParserHelper.IsStringJsonObject(innerBookmark, content))
                     {
                         // Create inner node
                         var innerNode =
@@ -101,12 +96,12 @@ namespace DotSerial.Json.Parser
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Parse inner node
-                        ParserAccept(innerNode, new JsonParserVisitor(), strValue);
+                        ParserAccept(innerNode, new JsonParserVisitor(), innerBookmark, content);
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (JsonParserHelper.IsStringJsonList(strValue))
+                    else if (JsonParserHelper.IsStringJsonList(innerBookmark, content))
                     {
                         // Create list node
                         var listNode =
@@ -115,19 +110,14 @@ namespace DotSerial.Json.Parser
                             ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Parse list node
-                        ParserAccept(listNode, new JsonParserVisitor(), strValue);
+                        ParserAccept(listNode, new JsonParserVisitor(), innerBookmark, content);
 
                         node.AddChild(listNode);
                     }
                     else
                     {
-                        string leafValue = strValue.ToString();
-                        var childNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Json,
-                            key,
-                            leafValue,
-                            NodeType.Leaf
-                        );
+                        var primContent = innerBookmark.GetContent(content);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, primContent, 0, key);
                         node.AddChild(childNode);
                     }
                 }
@@ -139,7 +129,7 @@ namespace DotSerial.Json.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, ReadOnlySpan<char> content)
+        public void VisitLeafNode(LeafNode node, ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
             // Currenlty not needed
             // Will be procced in the VisitInnerNode
@@ -147,24 +137,20 @@ namespace DotSerial.Json.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, ReadOnlySpan<char> content)
+        public void VisitListNode(ListNode node, ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
 
-            if (JsonParserHelper.IsStringJsonList(content))
+            if (JsonParserHelper.IsStringJsonList(bookmark, content))
             {
                 // Extract object list
-                var items = JsonParserHelper.ExtractObjectList(content);
+                var items = JsonParserHelper.ExtractObjectList(bookmark, content);
 
                 for (int i = 0; i < items.Count; i++)
                 {
                     var item = items[i];
-                    ReadOnlySpan<char> strValue = item.IsNull()
-                        ? null
-                        : content.Slice(item.Start, item.End - item.Start + 1);
-                    strValue = strValue.Trim();
 
-                    if (item.IsNull() || ReadOnlySpanMethods.EqualsNullString(strValue))
+                    if (item.IsNull() || ReadOnlySpanMethods.EqualsNullString(content, item.Start))
                     {
                         var child = _nodeFactory.CreateNodeFromString(
                             StategyType.Json,
@@ -174,7 +160,7 @@ namespace DotSerial.Json.Parser
                         );
                         node.AddChild(child);
                     }
-                    else if (JsonParserHelper.IsStringJsonObject(strValue))
+                    else if (JsonParserHelper.IsStringJsonObject(item, content))
                     {
                         // Create inner node
                         var innerNode =
@@ -183,12 +169,12 @@ namespace DotSerial.Json.Parser
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Parse inner node
-                        ParserAccept(innerNode, new JsonParserVisitor(), strValue);
+                        ParserAccept(innerNode, new JsonParserVisitor(), item, content);
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (JsonParserHelper.IsStringJsonList(strValue))
+                    else if (JsonParserHelper.IsStringJsonList(item, content))
                     {
                         // Create list node
                         var listNode =
@@ -197,20 +183,15 @@ namespace DotSerial.Json.Parser
                             ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Parse list node
-                        ParserAccept(listNode, new JsonParserVisitor(), strValue);
+                        ParserAccept(listNode, new JsonParserVisitor(), item, content);
 
                         node.AddChild(listNode);
                     }
                     else
                     {
-                        string? value = strValue.ToString();
-                        var child = _nodeFactory.CreateNodeFromString(
-                            StategyType.Json,
-                            i.ToString(),
-                            value,
-                            NodeType.Leaf
-                        );
-                        node.AddChild(child);
+                        var primContent = item.GetContent(content);
+                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, primContent, 0, i.ToString());
+                        node.AddChild(childNode);
                     }
                 }
             }
@@ -226,23 +207,28 @@ namespace DotSerial.Json.Parser
         /// <param name="node">IDSNode</param>
         /// <param name="visitor">Visitor</param>
         /// <param name="content">Stringbuilder</param>
-        private static void ParserAccept(IDSNode node, JsonParserVisitor visitor, ReadOnlySpan<char> content)
+        private static void ParserAccept(
+            IDSNode node,
+            JsonParserVisitor visitor,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        )
         {
             if (node is LeafNode leafNode)
             {
-                visitor.VisitLeafNode(leafNode, content);
+                visitor.VisitLeafNode(leafNode, bookmark, content);
             }
             else if (node is InnerNode innerNode)
             {
-                visitor.VisitInnerNode(innerNode, content);
+                visitor.VisitInnerNode(innerNode, bookmark, content);
             }
             else if (node is ListNode listNode)
             {
-                visitor.VisitListNode(listNode, content);
+                visitor.VisitListNode(listNode, bookmark, content);
             }
             else if (node is DictionaryNode dicNode)
             {
-                visitor.VisitDictionaryNode(dicNode, content);
+                visitor.VisitDictionaryNode(dicNode, bookmark, content);
             }
             else
             {

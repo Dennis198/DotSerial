@@ -7,40 +7,69 @@ namespace DotSerial.Utilities
     {
         internal readonly int End;
         internal readonly string? Key = null;
-        internal readonly int RowStart;
         internal readonly int RowEnd;
+        internal readonly int RowStart;
         internal readonly int Start;
 
         internal ParserBookmark(int start, int end)
         {
-            // if (end < start)
-            // {
-            //     throw new NotImplementedException();
-            // }
             Start = start;
             End = end;
         }
 
-        internal ParserBookmark(int start, int end, string key)
+        internal ParserBookmark(int start, int end, string? key)
             : this(start, end)
         {
             Key = key;
         }
 
-        // internal void SetStar(int i)
-        // {
-        //     Start = i;
-        // }
-
-        /// <summary>
-        /// Check if value represents a null value
-        /// </summary>
-        /// <returns>True, if parsed content was null.</returns>
-        internal readonly bool IsNull()
+        internal ParserBookmark(ReadOnlySpan<char> content, bool trimContent)
         {
-            return End == -1;
+            if (false == trimContent)
+            {
+                Start = 0;
+                End = content.Length - 1;
+            }
+            else
+            {
+                if (ReadOnlySpanMethods.GetTrimParameter(content, out int startTrim, out int endTrim))
+                {
+                    Start = startTrim;
+                    End = content.Length - 1 - endTrim;
+                }
+                else
+                {
+                    Start = 0;
+                    End = content.Length - 1;
+                }
+            }
         }
 
+        /// <summary>
+        /// Trims the Bookmark, so starting and trailing whitespaces are removed
+        /// </summary>
+        /// <param name="bookmark">Untrimed bookmark</param>
+        /// <param name="content">Content</param>
+        /// <returns>Trimed Bookmark</returns>
+        internal static ParserBookmark Trim(ParserBookmark bookmark, ReadOnlySpan<char> content)
+        {
+            var bookmarkContent = bookmark.GetContent(content);
+
+            if (ReadOnlySpanMethods.GetTrimParameter(bookmarkContent, out int startTrim, out int endTrim))
+            {
+                return new ParserBookmark(bookmark.Start + startTrim, bookmark.End - endTrim, bookmark.Key);
+            }
+            else
+            {
+                return new ParserBookmark(bookmark.Start, bookmark.End, bookmark.Key);
+            }
+        }
+
+        /// <summary>
+        /// Slices the content, dependetent of the bookmark
+        /// </summary>
+        /// <param name="content">Content</param>
+        /// <returns>Sliced ReadOnlySpan</returns>
         internal readonly ReadOnlySpan<char> GetContent(ReadOnlySpan<char> content)
         {
             if (content.Length < End)
@@ -49,6 +78,15 @@ namespace DotSerial.Utilities
             }
 
             return ReadOnlySpanMethods.SliceFromTo(content, Start, End);
+        }
+
+        /// <summary>
+        /// Check if value represents a null value
+        /// </summary>
+        /// <returns>True, if parsed content was null.</returns>
+        internal readonly bool IsNull()
+        {
+            return End == -1;
         }
     }
 }

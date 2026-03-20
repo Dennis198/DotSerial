@@ -1,64 +1,12 @@
-using System.Threading.Channels;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Helper Methods for ReadOnlySpans (char)
+    /// </summary>
     internal static class ReadOnlySpanMethods
     {
-        // public static ReadOnlySpan<char> RemoveWhitespacesOutsideQuotes(
-        //     ReadOnlySpan<char> input,
-        //     Span<char> destination,
-        //     out int length
-        // )
-        // {
-        //     int destIndex = 0;
-        //     bool inQuotes = false;
-
-        //     for (int i = 0; i < input.Length; i++)
-        //     {
-        //         char c = input[i];
-
-        //         // Prüfen, ob das aktuelle Zeichen ein eskaptes Anführungszeichen ist (\")
-        //         bool isEscaped = i > 0 && input[i - 1] == '\\';
-
-        //         if (c == '\"' && !isEscaped)
-        //         {
-        //             inQuotes = !inQuotes;
-        //         }
-
-        //         // Regel: Behalte das Zeichen, wenn...
-        //         // 1. wir uns innerhalb von Anführungszeichen befinden
-        //         // 2. ODER es kein Whitespace ist
-        //         if (inQuotes || !char.IsWhiteSpace(c))
-        //         {
-        //             destination[destIndex++] = c;
-        //         }
-        //     }
-
-        //     length = destIndex;
-        //     return destination[..destIndex];
-        // }
-
-        internal static ReadOnlySpan<char> SliceFromTo(ReadOnlySpan<char> source, int start, int end)
-        {
-            if (start < 0)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (end < start)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (source.Length - 1 < end)
-            {
-                throw new NotImplementedException();
-            }
-
-            return source.Slice(start, end - start + 1);
-        }
-
         /// <summary>
         /// Check if the fist non whitespace char equals c
         /// </summary>
@@ -128,7 +76,6 @@ namespace DotSerial.Utilities
                 throw new IndexOutOfRangeException(nameof(startIndex));
             }
 
-            // if (source.Length - startIndex < 4)
             if (source.Length - startIndex != 4)
             {
                 return false;
@@ -144,6 +91,66 @@ namespace DotSerial.Utilities
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns the off set of the trimed ReadOnlySpan.
+        /// </summary>
+        /// <param name="source">Content</param>
+        /// <param name="startTrim">Offset for start</param>
+        /// <param name="endTrim">Offset for end</param>
+        /// <returns>True, if ReadOnlySpan can be trimmed</returns>
+        internal static bool GetTrimParameter(ReadOnlySpan<char> source, out int startTrim, out int endTrim)
+        {
+            startTrim = 0;
+            endTrim = 0;
+
+            if (source.IsEmpty)
+            {
+                return false;
+            }
+
+            bool canBeTrimed = false;
+
+            if (char.IsWhiteSpace(source[0]))
+            {
+                int count = 0;
+                for (int i = 0; i < source.Length; i++)
+                {
+                    if (char.IsWhiteSpace(source[i]))
+                    {
+                        count++;
+                        break;
+                    }
+                }
+
+                startTrim = count;
+                canBeTrimed = true;
+            }
+
+            if (char.IsWhiteSpace(source[^1]))
+            {
+                int count = 0;
+                for (int i = source.Length - 1; i > -1; i--)
+                {
+                    if (char.IsWhiteSpace(source[i]))
+                    {
+                        count++;
+                        break;
+                    }
+                }
+
+                endTrim = count;
+                canBeTrimed = true;
+            }
+
+            if (startTrim >= source.Length)
+            {
+                startTrim = 0;
+                endTrim = source.Length;
+            }
+
+            return canBeTrimed;
         }
 
         /// <summary>
@@ -180,6 +187,14 @@ namespace DotSerial.Utilities
             return true;
         }
 
+        /// <summary>
+        /// Returns the index, where the closed char is hit.
+        /// </summary>
+        /// <param name="source">Content</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="openChar">Open char</param>
+        /// <param name="closeChar">Close char</param>
+        /// <returns>Index, of the next close char</returns>
         internal static int SkipEnclosingValue(ReadOnlySpan<char> source, int startIndex, char openChar, char closeChar)
         {
             if (source.IsEmpty || source.IsWhiteSpace())
@@ -288,6 +303,64 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Returns the index, where the next stop char is hit.
+        /// </summary>
+        /// <param name="source">Content</param>
+        /// <param name="startIndex">Start index</param>
+        /// <param name="stopChar">Stop char</param>
+        /// <param name="stopAtNewLine">True, if also should be stopped at newline</param>
+        /// <returns>Index, of the next hit of the stop char.</returns>
+        internal static int SkipTillStopChar(
+            ReadOnlySpan<char> source,
+            int startIndex,
+            char? stopChar,
+            bool stopAtNewLine = false
+        )
+        {
+            if ((uint)startIndex >= (uint)source.Length)
+            {
+                throw new IndexOutOfRangeException(nameof(startIndex));
+            }
+
+            if (null == stopChar)
+            {
+                return source.Length - 1;
+            }
+
+            bool isEscaped = false;
+
+            for (int j = startIndex; j < source.Length; j++)
+            {
+                char c = source[j];
+
+                if (stopAtNewLine && c.IsNewLine())
+                {
+                    return j - 1;
+                }
+
+                if (isEscaped)
+                {
+                    isEscaped = false;
+                }
+                else if (c == CommonConstants.Backslash)
+                {
+                    isEscaped = true;
+                }
+                else if (c == stopChar)
+                {
+                    return j - 1;
+                }
+            }
+
+            if (isEscaped)
+            {
+                throw new Exception("Parse Error: Trailing escape character.");
+            }
+
+            return source.Length - 1;
+        }
+
+        /// <summary>
         /// Returns the index of the content, before the stop char was hit.
         /// </summary>
         /// <param name="source">Content</param>
@@ -311,11 +384,6 @@ namespace DotSerial.Utilities
             {
                 return source.Length - 1;
             }
-
-            // if (stopChars.IndexOf(source[startIndex]) >= 0)
-            // {
-            //     throw new NotImplementedException();
-            // }
 
             bool isEscaped = false;
 
@@ -350,60 +418,31 @@ namespace DotSerial.Utilities
             return source.Length - 1;
         }
 
-        internal static int SkipTillStopChar(
-            ReadOnlySpan<char> source,
-            int startIndex,
-            char? stopChar,
-            bool stopAtNewLine = false
-        )
+        /// <summary>
+        /// Creates a new ReadOnylSpan from a source ReadOnylSpan
+        /// </summary>
+        /// <param name="source">Source ReadOnlySpan</param>
+        /// <param name="start">Start index</param>
+        /// <param name="end">End index</param>
+        /// <returns>New ReadOnlySpam</returns>
+        internal static ReadOnlySpan<char> SliceFromTo(ReadOnlySpan<char> source, int start, int end)
         {
-            if ((uint)startIndex >= (uint)source.Length)
+            if (start < 0)
             {
-                throw new IndexOutOfRangeException(nameof(startIndex));
+                throw new NotImplementedException();
             }
 
-            if (null == stopChar)
+            if (end < start)
             {
-                // sb.Append(str.SubString(startIndex, str.Length - startIndex));
-                return source.Length - 1;
+                throw new NotImplementedException();
             }
 
-            // if (stopChar == source[startIndex])
-            // {
-            //     throw new NotImplementedException();
-            // }
-
-            bool isEscaped = false;
-
-            for (int j = startIndex; j < source.Length; j++)
+            if (source.Length - 1 < end)
             {
-                char c = source[j];
-
-                if (stopAtNewLine && c.IsNewLine())
-                {
-                    return j - 1;
-                }
-
-                if (isEscaped)
-                {
-                    isEscaped = false;
-                }
-                else if (c == CommonConstants.Backslash)
-                {
-                    isEscaped = true;
-                }
-                else if (c == stopChar)
-                {
-                    return j - 1;
-                }
+                throw new NotImplementedException();
             }
 
-            if (isEscaped)
-            {
-                throw new Exception("Parse Error: Trailing escape character.");
-            }
-
-            return source.Length - 1;
+            return source.Slice(start, end - start + 1);
         }
     }
 }

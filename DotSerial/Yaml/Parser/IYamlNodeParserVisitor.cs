@@ -21,7 +21,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="node">Leaf node</param>
         /// <param name="lines">Lines</param>
         /// <param name="content">Yaml content</param>
-        public abstract void VisitLeafNode(LeafNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content);
+        public abstract void VisitLeafNode(LeafNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for inner node
@@ -29,7 +29,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="node">Inner node</param>
         /// <param name="lines">Lines</param>
         /// <param name="content">Yaml content</param>
-        public abstract void VisitInnerNode(InnerNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content);
+        public abstract void VisitInnerNode(InnerNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for list node
@@ -37,7 +37,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="node">List node</param>
         /// <param name="lines">Lines</param>
         /// <param name="content">Yaml content</param>
-        public abstract void VisitListNode(ListNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content);
+        public abstract void VisitListNode(ListNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for directory node
@@ -47,7 +47,7 @@ namespace DotSerial.Yaml.Parser
         /// <param name="content">Yaml content</param>
         public abstract void VisitDictionaryNode(
             DictionaryNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         );
     }

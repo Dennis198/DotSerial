@@ -19,21 +19,21 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>Dictionary<string, MulitLineReadOnlySpan></returns>
-        internal static Dictionary<string, MulitLineReadOnlySpan> ExtractKeyValuePairsFromToonObject(
-            MulitLineReadOnlySpan lines,
+        internal static Dictionary<string, MulitLineParserBookmark> ExtractKeyValuePairsFromToonObject(
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new Dictionary<string, MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), ToonConstants.IndentationSize);
+            var result = new Dictionary<string, MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), ToonConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLineContent(i, content);
-                int currLevel = ParseMethods.LineLevel2(line, ToonConstants.IndentationSize);
+                int currLevel = ParseMethods.LineLevel(line, ToonConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -54,7 +54,7 @@ namespace DotSerial.Toon.Parser
                     if (
                         sIndex >= lines.Count
                         || currLevel
-                            >= ParseMethods.LineLevel2(
+                            >= ParseMethods.LineLevel(
                                 lines.GetLineContent(sIndex, content),
                                 ToonConstants.IndentationSize
                             )
@@ -110,21 +110,21 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>List<MulitLineReadOnlySpan></returns>
-        internal static List<MulitLineReadOnlySpan> ExtractObjectList(
-            MulitLineReadOnlySpan lines,
+        internal static List<MulitLineParserBookmark> ExtractObjectList(
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content
         )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new List<MulitLineReadOnlySpan>();
-            int objLevel = ParseMethods.LineLevel2(lines.GetLineContent(0, content), ToonConstants.IndentationSize);
+            var result = new List<MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), ToonConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
                 var line = lines.GetLineContent(i, content);
-                int currLevel = ParseMethods.LineLevel2(line, ToonConstants.IndentationSize);
+                int currLevel = ParseMethods.LineLevel(line, ToonConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -140,7 +140,7 @@ namespace DotSerial.Toon.Parser
                         if (
                             sIndex >= lines.Count
                             || currLevel
-                                >= ParseMethods.LineLevel2(
+                                >= ParseMethods.LineLevel(
                                     lines.GetLineContent(sIndex, content),
                                     ToonConstants.IndentationSize
                                 )
@@ -277,7 +277,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines"></param>
         /// <returns>True, if empty objcet</returns>
-        internal static bool IsEmptyObject(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsEmptyObject(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -324,7 +324,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines"></param>
         /// <returns></returns>
-        internal static bool IsPrimitiveList(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsPrimitiveList(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -355,7 +355,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>True, if list wioth schema</returns>
-        internal static bool IsSchemaList(MulitLineReadOnlySpan lines)
+        internal static bool IsSchemaList(MulitLineParserBookmark lines)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -425,7 +425,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>True, if list</returns>
         internal static bool IsToonList(
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool rootElement = false
         )
@@ -483,7 +483,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>True, if yaml object</returns>
         internal static bool IsToonObject(
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )
@@ -516,7 +516,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>True, if yaml key value pair</returns>
-        internal static bool IsToonPrimitiveLine(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsToonPrimitiveLine(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -602,7 +602,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <returns>True, if toon single value</returns>
-        internal static bool IsToonSingleValue(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static bool IsToonSingleValue(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -831,7 +831,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="node">ListNode</param>
         /// <param name="lines">MulitLineReadOnlySpan</param>
-        internal static void ParseSchemaList(ListNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        internal static void ParseSchemaList(ListNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
@@ -975,7 +975,7 @@ namespace DotSerial.Toon.Parser
         /// <param name="startIndex">Start index of the object</param>
         /// <returns>End index</returns>
         private static int GetEndIndexOfToonObject(
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             int startIndex,
             ReadOnlySpan<char> content
         )
@@ -988,7 +988,7 @@ namespace DotSerial.Toon.Parser
             }
 
             int endIndex = -1;
-            int objLevel = ParseMethods.LineLevel2(
+            int objLevel = ParseMethods.LineLevel(
                 lines.GetLineContent(startIndex, content),
                 ToonConstants.IndentationSize
             );
@@ -996,10 +996,7 @@ namespace DotSerial.Toon.Parser
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = ParseMethods.LineLevel2(
-                    lines.GetLineContent(i, content),
-                    ToonConstants.IndentationSize
-                );
+                int currLevel = ParseMethods.LineLevel(lines.GetLineContent(i, content), ToonConstants.IndentationSize);
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;
@@ -1030,7 +1027,7 @@ namespace DotSerial.Toon.Parser
         /// </summary>
         /// <param name="lines"></param>
         /// <returns></returns>
-        private static List<string> ParseSchemaKeys(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        private static List<string> ParseSchemaKeys(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -1090,12 +1087,12 @@ namespace DotSerial.Toon.Parser
         /// Removes the List indicator for the objects
         /// </summary>
         /// <param name="lines">MulitLineReadOnlySpan</param>
-        private static void RemoveListItemIndicator(MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        private static void RemoveListItemIndicator(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             var startBookMark = lines.GetLine(0);
             var startLine = lines.GetLineContent(0, content);
             int index =
-                ParseMethods.LineLevel2(startLine, ToonConstants.IndentationSize) * ToonConstants.IndentationSize;
+                ParseMethods.LineLevel(startLine, ToonConstants.IndentationSize) * ToonConstants.IndentationSize;
 
             if (startLine[index] != ToonConstants.ListItemIndicator)
             {

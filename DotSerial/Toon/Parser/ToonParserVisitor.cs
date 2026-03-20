@@ -34,7 +34,7 @@ namespace DotSerial.Toon.Parser
             }
 
             // Create help object, which contains every line of the yaml file
-            var lines = new MulitLineReadOnlySpan(trimedContent);
+            var lines = new MulitLineParserBookmark(trimedContent);
 
             if (ToonParserHelper.IsToonSingleValue(lines, trimedContent))
             {
@@ -88,7 +88,7 @@ namespace DotSerial.Toon.Parser
         /// <inheritdoc/>
         public void VisitDictionaryNode(
             DictionaryNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )
@@ -101,7 +101,7 @@ namespace DotSerial.Toon.Parser
         /// <inheritdoc/>
         public void VisitInnerNode(
             InnerNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )
@@ -184,7 +184,7 @@ namespace DotSerial.Toon.Parser
         /// <inheritdoc/>
         public void VisitLeafNode(
             LeafNode node,
-            MulitLineReadOnlySpan sb,
+            MulitLineParserBookmark sb,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )
@@ -196,7 +196,7 @@ namespace DotSerial.Toon.Parser
         /// <inheritdoc/>
         public void VisitListNode(
             ListNode node,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )
@@ -320,7 +320,7 @@ namespace DotSerial.Toon.Parser
         private static void ParserAccept(
             IDSNode node,
             ToonParserVisitor visitor,
-            MulitLineReadOnlySpan lines,
+            MulitLineParserBookmark lines,
             ReadOnlySpan<char> content,
             bool isRootElement = false
         )

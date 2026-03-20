@@ -23,7 +23,7 @@ namespace DotSerial.Yaml.Parser
             var trimedContent = content.Trim();
 
             // Create help object, which contains every line of the yaml file
-            var lines = new MulitLineReadOnlySpan(trimedContent);
+            var lines = new MulitLineParserBookmark(trimedContent);
 
             // Remove start stop symbols
             lines = YamlParserHelper.RemoveStartStopSymbols(lines, trimedContent);
@@ -89,51 +89,15 @@ namespace DotSerial.Yaml.Parser
             return new DSYamlNode(rootNode);
         }
 
-        /// <summary>
-        /// Parser for yaml
-        /// </summary>
-        /// <param name="node">IDSNode</param>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="lines">MulitLineReadOnlySpan</param>
-        /// <param name="content">Yaml content</param>
-        private static void ParserAccept(
-            IDSNode node,
-            YamlParserVisitor visitor,
-            MulitLineReadOnlySpan lines,
-            ReadOnlySpan<char> content
-        )
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, lines, content);
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, lines, content);
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, lines, content);
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, lines, content);
-            }
-            else
-            {
-                throw new DSYamlException("Parse: Unknown node type.");
-            }
-        }
-
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        public void VisitDictionaryNode(DictionaryNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             // Currenlty not needed
             throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        public void VisitInnerNode(InnerNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
@@ -212,7 +176,14 @@ namespace DotSerial.Yaml.Parser
         }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        public void VisitLeafNode(LeafNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
+        {
+            // Currenlty not needed
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void VisitListNode(ListNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
@@ -286,11 +257,40 @@ namespace DotSerial.Yaml.Parser
             }
         }
 
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, MulitLineReadOnlySpan lines, ReadOnlySpan<char> content)
+        /// <summary>
+        /// Parser for yaml
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        private static void ParserAccept(
+            IDSNode node,
+            YamlParserVisitor visitor,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content
+        )
         {
-            // Currenlty not needed
-            throw new NotImplementedException();
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, lines, content);
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, lines, content);
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, lines, content);
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, lines, content);
+            }
+            else
+            {
+                throw new DSYamlException("Parse: Unknown node type.");
+            }
         }
     }
 }
