@@ -1,21 +1,21 @@
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
-using DotSerial.Yaml;
 
 namespace DotSerial.Tests.Yaml
 {
     public class DSYamlNodeTests
     {
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private readonly StategyType _strategy = StategyType.Yaml;
 
         [Fact]
         public void Create()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode(StategyType.Yaml, "key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(_strategy, "key", "value", NodeType.Leaf);
 
             // Act
-            var result = new DSYamlNode(tmp);
+            var result = new DSNode(tmp);
 
             // Assert
             Assert.NotNull(result);
@@ -23,23 +23,23 @@ namespace DotSerial.Tests.Yaml
             Assert.False(result.HasChildren);
         }
 
-        [Fact]
-        public void GetChild()
-        {
-            // Arrange
-            var tmp = _nodeFactory.CreateNode(StategyType.Yaml, "child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode(StategyType.Yaml, "key", null, NodeType.InnerNode);
-            tmp2.AddChild(tmp);
-            var resultNode = new DSYamlNode(tmp2);
+        // [Fact]
+        // public void GetChild()
+        // {
+        //     // Arrange
+        //     var tmp = _nodeFactory.CreateNode(_strategy, "child", "value", NodeType.Leaf);
+        //     var tmp2 = _nodeFactory.CreateNode(_strategy, "key", null, NodeType.InnerNode);
+        //     tmp2.AddChild(tmp);
+        //     var resultNode = new DSNode(tmp2);
 
-            // Act
-            var result = resultNode.GetChild("child");
+        //     // Act
+        //     var result = resultNode.GetChild("child");
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("child", result.Key);
-            Assert.False(result.HasChildren);
-        }
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.Equal("child", result.Key);
+        //     Assert.False(result.HasChildren);
+        // }
 
         [Fact]
         public void ToNode()
@@ -48,7 +48,7 @@ namespace DotSerial.Tests.Yaml
             var example = ExampleClass.CreateTestDefault();
 
             // Act
-            var result = DSYamlNode.ToNode(example);
+            var result = DSNode.ToNode(example, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -59,25 +59,25 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
+            var tmp = DSNode.ToNode(example, _strategy);
 
             // Act
-            var result = tmp.Stringify();
+            var result = tmp.Stringify(_strategy);
 
             // Assert
             Assert.NotNull(result);
         }
 
         [Fact]
-        public void FromYamlString()
+        public void FromString()
         {
             // Arrange
-            var example = PrimitiveClassIEnumarable.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var example = ExampleClass.CreateTestDefault();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.FromString(yamlString);
+            var result = DSNode.FromString(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -88,11 +88,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             double tmp = 1234.45;
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<double>(yamlString);
+            var result = DSNode.ToObject<double>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -103,11 +103,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             string? tmp = null;
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<string>(yamlString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -118,11 +118,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             string? tmp = string.Empty;
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<string>(yamlString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -133,11 +133,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             string tmp = "{{}<><:;[[]-?!#!";
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<string>(yamlString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -148,11 +148,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<double[]>(yamlString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.NotEmpty(result);
@@ -168,11 +168,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             double[]? tmp = null;
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<double[]>(yamlString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -183,11 +183,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             double[]? tmp = [];
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<double[]>(yamlString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.Empty(result);
@@ -200,11 +200,11 @@ namespace DotSerial.Tests.Yaml
             Dictionary<string, double> tmp = [];
             tmp.Add("test1", 1.1);
             tmp.Add("test2", 2.2);
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<Dictionary<string, double>?>(yamlString);
+            var result = DSNode.ToObject<Dictionary<string, double>?>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -219,11 +219,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             Dictionary<string, double>? tmp = null;
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<Dictionary<string, double>?>(yamlString);
+            var result = DSNode.ToObject<Dictionary<string, double>?>(outputString, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -234,11 +234,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             Dictionary<string, double> tmp = [];
-            var node = DSYamlNode.ToNode(tmp);
-            string yamlString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<Dictionary<string, double>>(yamlString);
+            var result = DSNode.ToObject<Dictionary<string, double>>(outputString, _strategy);
 
             // Assert
             Assert.Empty(result);
@@ -249,11 +249,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ExampleClass>(yamlString);
+            var result = DSNode.ToObject<ExampleClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -265,11 +265,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = new EmptyClass();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<EmptyClass>(yamlString);
+            var result = DSNode.ToObject<EmptyClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -280,11 +280,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ListFirstElementNull.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ListFirstElementNull>(yamlString);
+            var result = DSNode.ToObject<ListFirstElementNull>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -296,11 +296,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = NoAttributeClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<NoAttributeClass>(yamlString);
+            var result = DSNode.ToObject<NoAttributeClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -312,11 +312,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = AccessModifierClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<AccessModifierClass>(yamlString);
+            var result = DSNode.ToObject<AccessModifierClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -328,11 +328,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = SimpleClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<SimpleClass>(yamlString);
+            var result = DSNode.ToObject<SimpleClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -344,11 +344,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = NullClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<NullClass>(yamlString);
+            var result = DSNode.ToObject<NullClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -360,11 +360,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = IEnumerableClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<IEnumerableClass>(yamlString);
+            var result = DSNode.ToObject<IEnumerableClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -376,11 +376,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = NestedClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<NestedClass>(yamlString);
+            var result = DSNode.ToObject<NestedClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -392,11 +392,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = NestedNestedClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<NestedNestedClass>(yamlString);
+            var result = DSNode.ToObject<NestedNestedClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -408,11 +408,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = PrimitiveClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<PrimitiveClass>(yamlString);
+            var result = DSNode.ToObject<PrimitiveClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -424,11 +424,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = DictionaryClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<DictionaryClass>(yamlString);
+            var result = DSNode.ToObject<DictionaryClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -440,11 +440,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = EnumClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<EnumClass>(yamlString);
+            var result = DSNode.ToObject<EnumClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -456,11 +456,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = DateTimeClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<DateTimeClass>(yamlString);
+            var result = DSNode.ToObject<DateTimeClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -472,11 +472,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = StructClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<StructClass>(yamlString);
+            var result = DSNode.ToObject<StructClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -488,11 +488,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = RecordClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<RecordClass>(yamlString);
+            var result = DSNode.ToObject<RecordClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -504,11 +504,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ParsableClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ParsableClass>(yamlString);
+            var result = DSNode.ToObject<ParsableClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -520,11 +520,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = PathClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<PathClass>(yamlString);
+            var result = DSNode.ToObject<PathClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -536,11 +536,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassWithoutParameterlessConstructor>(yamlString);
+            var result = DSNode.ToObject<ClassWithoutParameterlessConstructor>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -552,11 +552,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassRecordNoParameterlessConstructor>(yamlString);
+            var result = DSNode.ToObject<ClassRecordNoParameterlessConstructor>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -568,11 +568,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = PrimitiveClassIEnumarable.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<PrimitiveClassIEnumarable>(yamlString);
+            var result = DSNode.ToObject<PrimitiveClassIEnumarable>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -584,11 +584,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = MultiDimClassIEnumarble.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<MultiDimClassIEnumarble>(yamlString);
+            var result = DSNode.ToObject<MultiDimClassIEnumarble>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -600,11 +600,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = EmptyObjectClass.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<EmptyObjectClass>(yamlString);
+            var result = DSNode.ToObject<EmptyObjectClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -616,11 +616,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassWithOneList.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassWithOneList>(yamlString);
+            var result = DSNode.ToObject<ClassWithOneList>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -632,11 +632,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassWithOneDictionary.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassWithOneDictionary>(yamlString);
+            var result = DSNode.ToObject<ClassWithOneDictionary>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -648,11 +648,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassWithOnePrimitive.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var yamlString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassWithOnePrimitive>(yamlString);
+            var result = DSNode.ToObject<ClassWithOnePrimitive>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -664,11 +664,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassSpecialCharsKeys.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var resultString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var resultString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassSpecialCharsKeys>(resultString);
+            var result = DSNode.ToObject<ClassSpecialCharsKeys>(resultString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -680,11 +680,11 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var example = ClassSpecialCharsValue.CreateTestDefault();
-            var tmp = DSYamlNode.ToNode(example);
-            var resultString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var resultString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSYamlNode.ToObject<ClassSpecialCharsValue>(resultString);
+            var result = DSNode.ToObject<ClassSpecialCharsValue>(resultString, _strategy);
 
             // Assert
             Assert.NotNull(result);

@@ -1,3 +1,4 @@
+using DotSerial.Common.Writer;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -6,8 +7,37 @@ namespace DotSerial.Yaml.Writer
     /// <summary>
     /// Implementation of the visitor for yaml writer.
     /// </summary>
-    internal class YamlWriterVisitor : IYamlNodeWriterVisitor
+    internal class YamlWriterVisitor : IYamlNodeWriterVisitor, IWriteStrategy
     {
+        public ReadOnlySpan<char> Write(DSNode node)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            char[]? result = null;
+
+            DotSerialStringBuilder dtSB = new(8192);
+            try
+            {
+                // Add document start
+                dtSB.Append(YamlConstants.YamlDocumentStart);
+
+                var internalNode = node.GetInternalData();
+                WriterAccept(internalNode, new YamlWriterVisitor(), ref dtSB, new YamlWriterOptions(0, false));
+
+                // Add document end
+                dtSB.AppendLine();
+                dtSB.Append(YamlConstants.YamlDocumentEnd);
+
+                result = dtSB.ToArray();
+            }
+            finally
+            {
+                dtSB.Dispose();
+            }
+
+            return result.AsSpan();
+        }
+
         /// <inheritdoc/>
         public static ReadOnlySpan<char> Write(DSYamlNode node)
         {

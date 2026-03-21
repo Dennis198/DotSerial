@@ -1,4 +1,5 @@
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,10 +10,50 @@ namespace DotSerial.Json.Parser
     /// <summary>
     /// Implementation of the visitor for json parser.
     /// </summary>
-    internal class JsonParserVisitor : IJsonNodeParserVisitor
+    internal class JsonParserVisitor : IJsonNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        public DSNode Parse2(ReadOnlySpan<char> content)
+        {
+            IDSNode rootNode;
+            var orgBookmark = new ParserBookmark(content, true);
+
+            if (JsonParserHelper.IsStringJsonObject(orgBookmark, content))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Json,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+            }
+            else if (JsonParserHelper.IsStringJsonList(orgBookmark, content))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Json,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.ListNode
+                );
+            }
+            else
+            {
+                rootNode = ParseMethods.ParsePrimitiveNode(
+                    StategyType.Json,
+                    content.Trim(),
+                    0,
+                    CommonConstants.MainObjectKey,
+                    JsonConstants.ParseStopChars
+                );
+                return new DSNode(rootNode);
+            }
+
+            ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
+
+            return new DSNode(rootNode);
+        }
 
         /// <inheritdoc/>
         public static DSJsonNode Parse(ReadOnlySpan<char> content)

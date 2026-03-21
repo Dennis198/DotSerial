@@ -1,4 +1,5 @@
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,10 +10,81 @@ namespace DotSerial.Yaml.Parser
     /// <summary>
     /// Implementation of the visitor for yaml parser.
     /// </summary>
-    internal class YamlParserVisitor : IYamlNodeParserVisitor
+    internal class YamlParserVisitor : IYamlNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        public DSNode Parse2(ReadOnlySpan<char> content)
+        {
+            IDSNode rootNode;
+
+            // Create help object, which contains every line of the yaml file
+            var lines = new MulitLineParserBookmark(content);
+
+            // Remove start stop symbols
+            lines = YamlParserHelper.RemoveStartStopSymbols(lines, content);
+
+            // Check if its an empty yaml file
+            if (0 == lines.Count)
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+                return new DSNode(rootNode);
+            }
+
+            if (YamlParserHelper.IsYamlSingleValue(lines, content))
+            {
+                rootNode = ParseMethods.ParsePrimitiveNode(
+                    StategyType.Yaml,
+                    lines.GetLineContent(0, content),
+                    0,
+                    CommonConstants.MainObjectKey
+                );
+                return new DSNode(rootNode);
+            }
+            else if (YamlParserHelper.IsYamlObject(lines, content))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+                if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
+                {
+                    return new DSNode(rootNode);
+                }
+            }
+            else if (YamlParserHelper.IsYamlList(lines, content))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.ListNode
+                );
+                if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
+                {
+                    return new DSNode(rootNode);
+                }
+            }
+            else
+            {
+                throw new DSYamlException("Parse: String is not yaml.");
+            }
+
+            if (lines.Count > 0)
+            {
+                ParserAccept(rootNode, new YamlParserVisitor(), lines, content);
+            }
+
+            return new DSNode(rootNode);
+        }
 
         /// <inheritdoc/>
         public static DSYamlNode Parse(ReadOnlySpan<char> content)

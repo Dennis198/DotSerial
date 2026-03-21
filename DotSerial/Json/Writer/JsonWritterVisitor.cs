@@ -1,4 +1,5 @@
 using DotSerial.Common;
+using DotSerial.Common.Writer;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -7,8 +8,33 @@ namespace DotSerial.Json.Writer
     /// <summary>
     /// Implementation of the visitor for json writer.
     /// </summary>
-    internal class JsonWriterVisitor : IJsonNodeWriterVisitor
+    internal class JsonWriterVisitor : IJsonNodeWriterVisitor, IWriteStrategy
     {
+        public ReadOnlySpan<char> Write(DSNode node)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+
+            char[]? result = null;
+
+            DotSerialStringBuilder dtSB = new(8192);
+            try
+            {
+                var internalNode = node.GetInternalData();
+                WriterAccept(internalNode, new JsonWriterVisitor(), ref dtSB, new JsonWriterOptions(0, false));
+
+                dtSB.Truncate(dtSB.Length - 1);
+                dtSB.Trim();
+
+                result = dtSB.ToArray();
+            }
+            finally
+            {
+                dtSB.Dispose();
+            }
+
+            return result.AsSpan();
+        }
+
         /// <inheritdoc/>
         public static ReadOnlySpan<char> Write(DSJsonNode? node)
         {

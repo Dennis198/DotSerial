@@ -1,4 +1,5 @@
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,10 +10,77 @@ namespace DotSerial.Toon.Parser
     /// <summary>
     /// Implementation of the visitor for toon parser.
     /// </summary>
-    internal class ToonParserVisitor : IToonNodeParserVisitor
+    internal class ToonParserVisitor : IToonNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        public DSNode Parse2(ReadOnlySpan<char> content)
+        {
+            IDSNode rootNode;
+
+            if (content.IsEmpty)
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Toon,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+                return new DSNode(rootNode);
+            }
+
+            // Create help object, which contains every line of the yaml file
+            var lines = new MulitLineParserBookmark(content);
+
+            if (ToonParserHelper.IsToonSingleValue(lines, content))
+            {
+                rootNode = ParseMethods.ParsePrimitiveNode(
+                    StategyType.Toon,
+                    lines.GetLineContent(0, content),
+                    0,
+                    CommonConstants.MainObjectKey
+                );
+                return new DSNode(rootNode);
+            }
+            else if (ToonParserHelper.IsToonObject(lines, content, true))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Toon,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+                if (ToonParserHelper.IsEmptyObject(lines, content))
+                {
+                    return new DSNode(rootNode);
+                }
+            }
+            else if (ToonParserHelper.IsToonList(lines, content, true))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Toon,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.ListNode
+                );
+                if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
+                {
+                    return new DSNode(rootNode);
+                }
+            }
+            else
+            {
+                throw new DSToonException("Parse: String is not toon.");
+            }
+
+            if (lines.Count > 0)
+            {
+                ParserAccept(rootNode, new ToonParserVisitor(), lines, content, true);
+            }
+
+            return new DSNode(rootNode);
+        }
 
         /// <inheritdoc/>
         public static DSToonNode Parse(ReadOnlySpan<char> content)

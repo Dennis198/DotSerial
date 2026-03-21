@@ -1,4 +1,6 @@
+using System.Net;
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,10 +11,78 @@ namespace DotSerial.Xml.Parser
     /// <summary>
     /// Implementation of the visitor for xml parser.
     /// </summary>
-    internal class XmlParserVisitor : IXmlNodeParserVisitor
+    internal class XmlParserVisitor : IXmlNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
+        public DSNode Parse2(ReadOnlySpan<char> content)
+        {
+            // Remove xml declaration
+
+            // TODO Check if declaration exist
+            var orgBookmark = new ParserBookmark(XmlConstants.XmlDeclaration.Length, content.Length - 1);
+
+            var rootTmp = XmlParserHelper.ExtractKeyValuePairsFromXmlObject(orgBookmark, content);
+
+            if (rootTmp.Count != 1)
+            {
+                throw new DSXmlException("Parse: Xml must have exactly one root element.");
+            }
+
+            var rootTagKeyPair = rootTmp.Keys.First();
+            var rootBookmark = rootTmp.Values.First();
+
+            IDSNode rootNode;
+
+            if (rootTagKeyPair.IsXmlObject())
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Xml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.InnerNode
+                );
+            }
+            else if (rootTagKeyPair.IsXmlList())
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    StategyType.Xml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    NodeType.ListNode
+                );
+            }
+            else if (rootTagKeyPair.IsXmlPrimitive())
+            {
+                if (rootBookmark.IsNull())
+                {
+                    rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, CommonConstants.MainObjectKey);
+                }
+                else
+                {
+                    rootNode = ParseMethods.ParsePrimitiveNode(
+                        StategyType.Xml,
+                        rootBookmark.GetContent(content),
+                        0,
+                        CommonConstants.MainObjectKey
+                    );
+                }
+
+                return new DSNode(rootNode);
+            }
+            else
+            {
+                throw new DSXmlException("Parse: String is not a xml object.");
+            }
+
+            if (false == rootBookmark.IsNull())
+            {
+                ParserAccept(rootNode, new XmlParserVisitor(), rootTagKeyPair, rootBookmark, content);
+            }
+
+            return new DSNode(rootNode);
+        }
 
         /// <inheritdoc/>
         public static DSXmlNode Parse(ReadOnlySpan<char> content)

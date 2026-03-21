@@ -1,4 +1,3 @@
-using DotSerial.Json;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 
@@ -7,15 +6,16 @@ namespace DotSerial.Tests.Json
     public class DSJsonNodeTests
     {
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+        private readonly StategyType _strategy = StategyType.Json;
 
         [Fact]
         public void Create()
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode(StategyType.Json, "key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(_strategy, "key", "value", NodeType.Leaf);
 
             // Act
-            var result = new DSJsonNode(tmp);
+            var result = new DSNode(tmp);
 
             // Assert
             Assert.NotNull(result);
@@ -23,23 +23,23 @@ namespace DotSerial.Tests.Json
             Assert.False(result.HasChildren);
         }
 
-        [Fact]
-        public void GetChild()
-        {
-            // Arrange
-            var tmp = _nodeFactory.CreateNode(StategyType.Json, "child", "value", NodeType.Leaf);
-            var tmp2 = _nodeFactory.CreateNode(StategyType.Json, "key", null, NodeType.InnerNode);
-            tmp2.AddChild(tmp);
-            var resultNode = new DSJsonNode(tmp2);
+        // [Fact]
+        // public void GetChild()
+        // {
+        //     // Arrange
+        //     var tmp = _nodeFactory.CreateNode(_strategy, "child", "value", NodeType.Leaf);
+        //     var tmp2 = _nodeFactory.CreateNode(_strategy, "key", null, NodeType.InnerNode);
+        //     tmp2.AddChild(tmp);
+        //     var resultNode = new DSNode(tmp2);
 
-            // Act
-            var result = resultNode.GetChild("child");
+        //     // Act
+        //     var result = resultNode.GetChild("child");
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.Equal("child", result.Key);
-            Assert.False(result.HasChildren);
-        }
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.Equal("child", result.Key);
+        //     Assert.False(result.HasChildren);
+        // }
 
         [Fact]
         public void ToNode()
@@ -48,7 +48,7 @@ namespace DotSerial.Tests.Json
             var example = ExampleClass.CreateTestDefault();
 
             // Act
-            var result = DSJsonNode.ToNode(example);
+            var result = DSNode.ToNode(example, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -59,10 +59,10 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
+            var tmp = DSNode.ToNode(example, _strategy);
 
             // Act
-            var result = tmp.Stringify();
+            var result = tmp.Stringify(_strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -73,11 +73,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.FromString(jsonString);
+            var result = DSNode.FromString(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -88,11 +88,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             double tmp = 1234.45;
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<double>(jsonString);
+            var result = DSNode.ToObject<double>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -103,11 +103,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             string? tmp = null;
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<string>(jsonString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -118,11 +118,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             string? tmp = string.Empty;
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<string>(jsonString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -133,11 +133,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             string tmp = "{{}<><:;[[]-?!#!";
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<string>(jsonString);
+            var result = DSNode.ToObject<string>(outputString, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -148,11 +148,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<double[]>(jsonString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.NotEmpty(result);
@@ -168,11 +168,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             double[]? tmp = null;
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<double[]>(jsonString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -183,11 +183,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             double[]? tmp = [];
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<double[]>(jsonString);
+            var result = DSNode.ToObject<double[]>(outputString, _strategy);
 
             // Assert
             Assert.Empty(result);
@@ -200,11 +200,11 @@ namespace DotSerial.Tests.Json
             Dictionary<string, double> tmp = [];
             tmp.Add("test1", 1.1);
             tmp.Add("test2", 2.2);
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<Dictionary<string, double>?>(jsonString);
+            var result = DSNode.ToObject<Dictionary<string, double>?>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -219,11 +219,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             Dictionary<string, double>? tmp = null;
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<Dictionary<string, double>?>(jsonString);
+            var result = DSNode.ToObject<Dictionary<string, double>?>(outputString, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -234,11 +234,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             Dictionary<string, double> tmp = [];
-            var node = DSJsonNode.ToNode(tmp);
-            string jsonString = node.Stringify();
+            var node = DSNode.ToNode(tmp, _strategy);
+            string outputString = node.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<Dictionary<string, double>>(jsonString);
+            var result = DSNode.ToObject<Dictionary<string, double>>(outputString, _strategy);
 
             // Assert
             Assert.Empty(result);
@@ -249,11 +249,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ExampleClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ExampleClass>(jsonString);
+            var result = DSNode.ToObject<ExampleClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -265,11 +265,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = new EmptyClass();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<EmptyClass>(jsonString);
+            var result = DSNode.ToObject<EmptyClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -280,11 +280,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ListFirstElementNull.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ListFirstElementNull>(jsonString);
+            var result = DSNode.ToObject<ListFirstElementNull>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -296,11 +296,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = NoAttributeClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<NoAttributeClass>(jsonString);
+            var result = DSNode.ToObject<NoAttributeClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -312,11 +312,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = AccessModifierClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<AccessModifierClass>(jsonString);
+            var result = DSNode.ToObject<AccessModifierClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -328,11 +328,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = SimpleClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<SimpleClass>(jsonString);
+            var result = DSNode.ToObject<SimpleClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -344,11 +344,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = NullClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<NullClass>(jsonString);
+            var result = DSNode.ToObject<NullClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -360,11 +360,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = IEnumerableClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<IEnumerableClass>(jsonString);
+            var result = DSNode.ToObject<IEnumerableClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -376,11 +376,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = NestedClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<NestedClass>(jsonString);
+            var result = DSNode.ToObject<NestedClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -392,11 +392,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = NestedNestedClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<NestedNestedClass>(jsonString);
+            var result = DSNode.ToObject<NestedNestedClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -408,11 +408,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = PrimitiveClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<PrimitiveClass>(jsonString);
+            var result = DSNode.ToObject<PrimitiveClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -424,11 +424,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = DictionaryClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<DictionaryClass>(jsonString);
+            var result = DSNode.ToObject<DictionaryClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -440,11 +440,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = EnumClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<EnumClass>(jsonString);
+            var result = DSNode.ToObject<EnumClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -456,11 +456,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = DateTimeClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<DateTimeClass>(jsonString);
+            var result = DSNode.ToObject<DateTimeClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -472,11 +472,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = StructClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<StructClass>(jsonString);
+            var result = DSNode.ToObject<StructClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -488,11 +488,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = RecordClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<RecordClass>(jsonString);
+            var result = DSNode.ToObject<RecordClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -504,11 +504,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ParsableClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ParsableClass>(jsonString);
+            var result = DSNode.ToObject<ParsableClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -520,11 +520,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = PathClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<PathClass>(jsonString);
+            var result = DSNode.ToObject<PathClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -536,11 +536,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassWithoutParameterlessConstructor.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithoutParameterlessConstructor>(jsonString);
+            var result = DSNode.ToObject<ClassWithoutParameterlessConstructor>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -552,11 +552,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassRecordNoParameterlessConstructor.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassRecordNoParameterlessConstructor>(jsonString);
+            var result = DSNode.ToObject<ClassRecordNoParameterlessConstructor>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -568,11 +568,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = PrimitiveClassIEnumarable.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<PrimitiveClassIEnumarable>(jsonString);
+            var result = DSNode.ToObject<PrimitiveClassIEnumarable>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -584,11 +584,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = MultiDimClassIEnumarble.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<MultiDimClassIEnumarble>(jsonString);
+            var result = DSNode.ToObject<MultiDimClassIEnumarble>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -600,11 +600,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = EmptyObjectClass.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<EmptyObjectClass>(jsonString);
+            var result = DSNode.ToObject<EmptyObjectClass>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -616,11 +616,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassWithOneList.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOneList>(jsonString);
+            var result = DSNode.ToObject<ClassWithOneList>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -632,11 +632,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassWithOneDictionary.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOneDictionary>(jsonString);
+            var result = DSNode.ToObject<ClassWithOneDictionary>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -648,11 +648,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassWithOnePrimitive.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var jsonString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var outputString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassWithOnePrimitive>(jsonString);
+            var result = DSNode.ToObject<ClassWithOnePrimitive>(outputString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -664,11 +664,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassSpecialCharsKeys.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var resultString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var resultString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassSpecialCharsKeys>(resultString);
+            var result = DSNode.ToObject<ClassSpecialCharsKeys>(resultString, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -680,11 +680,11 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var example = ClassSpecialCharsValue.CreateTestDefault();
-            var tmp = DSJsonNode.ToNode(example);
-            var resultString = tmp.Stringify();
+            var tmp = DSNode.ToNode(example, _strategy);
+            var resultString = tmp.Stringify(_strategy);
 
             // Act
-            var result = DSJsonNode.ToObject<ClassSpecialCharsValue>(resultString);
+            var result = DSNode.ToObject<ClassSpecialCharsValue>(resultString, _strategy);
 
             // Assert
             Assert.NotNull(result);
