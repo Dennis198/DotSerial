@@ -3,7 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using DotSerial.Common;
 using DotSerial.Common.Parser;
 using DotSerial.Common.Writer;
-using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -44,11 +43,6 @@ namespace DotSerial
                 var root = _parserFactory.Parse(strategy, str);
                 return root;
             }
-            catch (DotSerialException ex)
-            {
-                // throw new DSJsonException(ex.Message);
-                throw;
-            }
             catch
             {
                 throw;
@@ -57,8 +51,6 @@ namespace DotSerial
 
         public static DSNode ToNode(object? obj, StategyType strategy, string? key = null)
         {
-            // TODO CHECK IF KEY IS NEEDED??
-
             try
             {
                 // Determine key
@@ -68,11 +60,6 @@ namespace DotSerial
                 var rootNode = SerializeObject.Serialize(obj, currKey, strategy);
 
                 return new DSNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                // throw new DSJsonException(ex.Message);
-                throw;
             }
             catch
             {
@@ -88,11 +75,6 @@ namespace DotSerial
                 DSNode dsNode = FromString(str, strategy);
 
                 return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
-            }
-            catch (DotSerialException ex)
-            {
-                // throw new DSJsonException(ex.Message);
-                throw;
             }
             catch
             {
@@ -113,11 +95,6 @@ namespace DotSerial
                 var jsonString = _writerFactory.Write(strategy, this);
 
                 return new string(jsonString);
-            }
-            catch (DotSerialException ex)
-            {
-                // throw new DSJsonException(ex.Message);
-                throw;
             }
             catch
             {

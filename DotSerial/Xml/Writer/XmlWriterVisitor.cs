@@ -9,33 +9,8 @@ namespace DotSerial.Xml.Writer
     /// </summary>
     internal class XmlWriterVisitor : IXmlNodeWriterVisitor, IWriteStrategy
     {
-        public ReadOnlySpan<char> Write(DSNode node)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-
-            char[]? result = null;
-
-            DotSerialStringBuilder dtSB = new(8192);
-            try
-            {
-                var internalNode = node.GetInternalData();
-                WriterAccept(internalNode, new XmlWriterVisitor(), ref dtSB, new XmlWriterOptions(0));
-
-                dtSB.Trim();
-                dtSB.Insert(0, XmlConstants.XmlDeclaration + Environment.NewLine);
-
-                result = dtSB.ToArray();
-            }
-            finally
-            {
-                dtSB.Dispose();
-            }
-
-            return result.AsSpan();
-        }
-
         /// <inheritdoc/>
-        public static ReadOnlySpan<char> Write(DSXmlNode? node)
+        public ReadOnlySpan<char> Write(DSNode node)
         {
             ArgumentNullException.ThrowIfNull(node);
 

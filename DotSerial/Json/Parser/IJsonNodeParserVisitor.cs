@@ -9,13 +9,6 @@ namespace DotSerial.Json.Parser
     internal interface IJsonNodeParserVisitor
     {
         /// <summary>
-        /// Parse the json string to create tree structure
-        /// </summary>
-        /// <param name="content">Json string</param>
-        /// <returns>Root node of tree.</returns>
-        public static abstract DSJsonNode Parse(ReadOnlySpan<char> content);
-
-        /// <summary>
         /// Visitor for leaf node
         /// </summary>
         /// <param name="node">Leaf node</param>

@@ -7,6 +7,6 @@ namespace DotSerial.Common.Parser
         /// </summary>
         /// <param name="str">String to parse</param>
         /// <returns>Parsed node</returns>
-        public DSNode Parse2(ReadOnlySpan<char> str);
+        public DSNode Parse(ReadOnlySpan<char> str);
     }
 }

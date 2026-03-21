@@ -1,5 +1,3 @@
-using DotSerial.Common;
-
 namespace DotSerial.Json
 {
     /// <summary>

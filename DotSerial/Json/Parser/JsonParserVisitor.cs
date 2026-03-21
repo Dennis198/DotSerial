@@ -15,7 +15,8 @@ namespace DotSerial.Json.Parser
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
-        public DSNode Parse2(ReadOnlySpan<char> content)
+        /// <inheritdoc/>
+        public DSNode Parse(ReadOnlySpan<char> content)
         {
             IDSNode rootNode;
             var orgBookmark = new ParserBookmark(content, true);
@@ -53,47 +54,6 @@ namespace DotSerial.Json.Parser
             ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
 
             return new DSNode(rootNode);
-        }
-
-        /// <inheritdoc/>
-        public static DSJsonNode Parse(ReadOnlySpan<char> content)
-        {
-            IDSNode rootNode;
-            var orgBookmark = new ParserBookmark(content, true);
-
-            if (JsonParserHelper.IsStringJsonObject(orgBookmark, content))
-            {
-                rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Json,
-                    CommonConstants.MainObjectKey,
-                    null,
-                    NodeType.InnerNode
-                );
-            }
-            else if (JsonParserHelper.IsStringJsonList(orgBookmark, content))
-            {
-                rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Json,
-                    CommonConstants.MainObjectKey,
-                    null,
-                    NodeType.ListNode
-                );
-            }
-            else
-            {
-                rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Json,
-                    content.Trim(),
-                    0,
-                    CommonConstants.MainObjectKey,
-                    JsonConstants.ParseStopChars
-                );
-                return new DSJsonNode(rootNode);
-            }
-
-            ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
-
-            return new DSJsonNode(rootNode);
         }
 
         /// <inheritdoc/>

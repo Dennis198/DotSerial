@@ -1,27 +1,27 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Toon;
 
 namespace DotSerial.Benchmarks.Benchmarks.Toon
 {
     [MemoryDiagnoser]
     public class ToonWriterBenchmarks
     {
-        private DSToonNode? _nodePrimitve;
-        private DSToonNode? _nodeList;
-        private DSToonNode? _nodeDictionary;
+        private readonly StategyType _strategy = StategyType.Toon;
+        private DSNode? _nodePrimitve;
+        private DSNode? _nodeList;
+        private DSNode? _nodeDictionary;
 
         [GlobalSetup]
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            _nodePrimitve = DSToonNode.ToNode(primitiveClass);
+            _nodePrimitve = DSNode.ToNode(primitiveClass, _strategy);
 
             var listClass = ListClass.Create(2, 50);
-            _nodeList = DSToonNode.ToNode(listClass);
+            _nodeList = DSNode.ToNode(listClass, _strategy);
 
             var dicClass = DictionaryClass.Create(50);
-            _nodeDictionary = DSToonNode.ToNode(dicClass);
+            _nodeDictionary = DSNode.ToNode(dicClass, _strategy);
         }
 
         [Benchmark]
@@ -31,7 +31,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodePrimitve.Stringify();
+            string result = _nodePrimitve.Stringify(_strategy);
             return result;
         }
 
@@ -42,7 +42,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeList.Stringify();
+            string result = _nodeList.Stringify(_strategy);
             return result;
         }
 
@@ -53,7 +53,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeDictionary.Stringify();
+            string result = _nodeDictionary.Stringify(_strategy);
             return result;
         }
     }

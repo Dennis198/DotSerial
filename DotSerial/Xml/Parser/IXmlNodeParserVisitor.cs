@@ -9,13 +9,6 @@ namespace DotSerial.Xml.Parser
     internal interface IXmlNodeParserVisitor
     {
         /// <summary>
-        /// Parse the xml string to create tree structure
-        /// </summary>
-        /// <param name="content">Xml content</param>
-        /// <returns>Root node of tree.</returns>
-        public static abstract DSXmlNode Parse(ReadOnlySpan<char> content);
-
-        /// <summary>
         /// Visitor for leaf node
         /// </summary>
         /// <param name="node">Leaf node</param>

@@ -9,13 +9,6 @@ namespace DotSerial.Toon.Writer
     internal interface IToonNodeWriterVisitor
     {
         /// <summary>
-        /// Writes the tree to a toon string.
-        /// </summary>
-        /// <param name="node">Node</param>
-        /// <returns>Toon string</returns>
-        public static abstract ReadOnlySpan<char> Write(DSToonNode node);
-
-        /// <summary>
         /// Visit dictionary node
         /// </summary>
         /// <param name="node">Dictioanry node</param>

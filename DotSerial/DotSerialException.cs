@@ -1,4 +1,4 @@
-namespace DotSerial.Common
+namespace DotSerial
 {
     /// <summary>
     /// Universal excpetion

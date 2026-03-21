@@ -41,7 +41,7 @@ namespace DotSerial.Common.Parser
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
-                return strategy.Parse2(str);
+                return strategy.Parse(str);
             }
             throw new NotSupportedException($"Strategy '{category}' is not supported.");
         }

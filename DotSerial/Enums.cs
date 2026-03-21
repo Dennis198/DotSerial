@@ -1,4 +1,4 @@
-namespace DotSerial.Tree.Creation
+namespace DotSerial
 {
     /// <summary>
     /// Strategy enums

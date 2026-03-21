@@ -9,13 +9,6 @@ namespace DotSerial.Xml.Writer
     internal interface IXmlNodeWriterVisitor
     {
         /// <summary>
-        /// Writes the tree to a xml string.
-        /// </summary>
-        /// <param name="node">Node</param>
-        /// <returns>xml string</returns>
-        public static abstract ReadOnlySpan<char> Write(DSXmlNode node);
-
-        /// <summary>
         /// Visit dictionary node
         /// </summary>
         /// <param name="node">Dictioanry node</param>

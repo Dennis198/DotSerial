@@ -1,12 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Yaml;
 
 namespace DotSerial.Benchmarks.Benchmarks.Yaml
 {
     [MemoryDiagnoser]
     public class YamlParserBenchmarks
     {
+        private readonly StategyType _strategy = StategyType.Yaml;
         private string? _stringPrimitive;
         private string? _stringList;
         private string? _stringDictionary;
@@ -15,48 +15,48 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            var nodePrimitive = DSYamlNode.ToNode(primitiveClass);
-            _stringPrimitive = nodePrimitive.Stringify();
+            var nodePrimitive = DSNode.ToNode(primitiveClass, _strategy);
+            _stringPrimitive = nodePrimitive.Stringify(_strategy);
 
             var listClass = ListClass.Create(2, 50);
-            var nodeList = DSYamlNode.ToNode(listClass);
-            _stringList = nodeList.Stringify();
+            var nodeList = DSNode.ToNode(listClass, _strategy);
+            _stringList = nodeList.Stringify(_strategy);
 
             var dicClass = DictionaryClass.Create(50);
-            var nodeDictionary = DSYamlNode.ToNode(dicClass);
-            _stringDictionary = nodeDictionary.Stringify();
+            var nodeDictionary = DSNode.ToNode(dicClass, _strategy);
+            _stringDictionary = nodeDictionary.Stringify(_strategy);
         }
 
         [Benchmark]
-        public DSYamlNode PrimitiveParseTest()
+        public DSNode PrimitiveParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringPrimitive))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSYamlNode.FromString(_stringPrimitive);
+            var result = DSNode.FromString(_stringPrimitive, _strategy);
             return result;
         }
 
         [Benchmark]
-        public DSYamlNode ListParseTest()
+        public DSNode ListParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringList))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSYamlNode.FromString(_stringList);
+            var result = DSNode.FromString(_stringList, _strategy);
             return result;
         }
 
         [Benchmark]
-        public DSYamlNode DictionaryParseTest()
+        public DSNode DictionaryParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringDictionary))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSYamlNode.FromString(_stringDictionary);
+            var result = DSNode.FromString(_stringDictionary, _strategy);
             return result;
         }
     }

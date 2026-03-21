@@ -9,13 +9,6 @@ namespace DotSerial.Yaml.Parser
     internal interface IYamlNodeParserVisitor
     {
         /// <summary>
-        /// Parse the yaml string to create tree structure
-        /// </summary>
-        /// <param name="content">Yaml content</param>
-        /// <returns>Root node of tree.</returns>
-        public static abstract DSYamlNode Parse(ReadOnlySpan<char> content);
-
-        /// <summary>
         /// Visitor for leaf node
         /// </summary>
         /// <param name="node">Leaf node</param>

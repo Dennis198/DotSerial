@@ -9,13 +9,6 @@ namespace DotSerial.Yaml.Writer
     internal interface IYamlNodeWriterVisitor
     {
         /// <summary>
-        /// Writes the tree to a yaml string.
-        /// </summary>
-        /// <param name="node">Node</param>
-        /// <returns>Yaml string</returns>
-        public static abstract ReadOnlySpan<char> Write(DSYamlNode node);
-
-        /// <summary>
         /// Visit dictionary node
         /// </summary>
         /// <param name="node">Dictioanry node</param>

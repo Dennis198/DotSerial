@@ -10,33 +10,8 @@ namespace DotSerial.Json.Writer
     /// </summary>
     internal class JsonWriterVisitor : IJsonNodeWriterVisitor, IWriteStrategy
     {
-        public ReadOnlySpan<char> Write(DSNode node)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-
-            char[]? result = null;
-
-            DotSerialStringBuilder dtSB = new(8192);
-            try
-            {
-                var internalNode = node.GetInternalData();
-                WriterAccept(internalNode, new JsonWriterVisitor(), ref dtSB, new JsonWriterOptions(0, false));
-
-                dtSB.Truncate(dtSB.Length - 1);
-                dtSB.Trim();
-
-                result = dtSB.ToArray();
-            }
-            finally
-            {
-                dtSB.Dispose();
-            }
-
-            return result.AsSpan();
-        }
-
         /// <inheritdoc/>
-        public static ReadOnlySpan<char> Write(DSJsonNode? node)
+        public ReadOnlySpan<char> Write(DSNode node)
         {
             ArgumentNullException.ThrowIfNull(node);
 
