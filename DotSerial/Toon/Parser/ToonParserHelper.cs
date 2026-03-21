@@ -490,13 +490,6 @@ namespace DotSerial.Toon.Parser
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var firstLine = lines.GetLineContent(0, content);
-
-            if (null == firstLine)
-            {
-                throw new NotImplementedException();
-            }
-
             // "'key':"
             if (IsEmptyObject(lines, content))
             {

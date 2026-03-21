@@ -33,15 +33,10 @@ namespace DotSerial.Toon
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSToonException">DotSerial Exception.</exception>
-        public static DSToonNode FromString(string str)
+        public static DSToonNode FromString(ReadOnlySpan<char> str)
         {
             try
             {
-                if (null == str)
-                {
-                    throw new DSToonException($"{str} can't be null.");
-                }
-
                 var root = ToonParserVisitor.Parse(str);
 
                 return root;
@@ -84,15 +79,10 @@ namespace DotSerial.Toon
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSToonException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
+        public static U ToObject<U>(ReadOnlySpan<char> str)
         {
             try
             {
-                if (null == str)
-                {
-                    throw new DSToonException($"{str} can't be null.");
-                }
-
                 // Parse json string to node
                 DSToonNode dsNode = FromString(str);
 
@@ -149,7 +139,7 @@ namespace DotSerial.Toon
                 // Convert
                 var str = ToonWriterVisitor.Write(this);
 
-                return new string(str); // TODO
+                return new string(str);
             }
             catch (DotSerialException ex)
             {

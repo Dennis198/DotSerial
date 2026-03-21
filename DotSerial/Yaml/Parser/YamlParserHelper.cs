@@ -240,11 +240,6 @@ namespace DotSerial.Yaml.Parser
 
             var firstLine = lines.GetLineContent(0, content);
 
-            if (null == firstLine)
-            {
-                throw new NotImplementedException();
-            }
-
             // "'key': {}"
             if (IsEmptyObject(firstLine))
             {
@@ -275,11 +270,6 @@ namespace DotSerial.Yaml.Parser
             ArgumentNullException.ThrowIfNull(lines);
 
             var firstLine = lines.GetLineContent(0, content);
-
-            if (null == firstLine)
-            {
-                throw new NotImplementedException();
-            }
 
             // 1. "'key': []"
             // 2. "[]"

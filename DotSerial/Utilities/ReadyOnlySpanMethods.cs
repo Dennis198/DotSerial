@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
@@ -13,6 +14,7 @@ namespace DotSerial.Utilities
         /// <param name="source">Content</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if first non whitespace char equals c</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EqualFirstNoWhiteSpaceChar(ReadOnlySpan<char> source, char c)
         {
             for (int i = 0; i < source.Length; i++)
@@ -41,6 +43,7 @@ namespace DotSerial.Utilities
         /// <param name="source">Content</param>
         /// <param name="c">Char to check</param>
         /// <returns>True, if last non whitespace char equals c</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool EqualLastNoWhiteSpaceChar(ReadOnlySpan<char> source, char c)
         {
             for (int i = source.Length - 1; i >= 0; i--)
@@ -120,6 +123,9 @@ namespace DotSerial.Utilities
                     if (char.IsWhiteSpace(source[i]))
                     {
                         count++;
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -136,6 +142,9 @@ namespace DotSerial.Utilities
                     if (char.IsWhiteSpace(source[i]))
                     {
                         count++;
+                    }
+                    else
+                    {
                         break;
                     }
                 }
@@ -158,6 +167,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="source">Content</param>
         /// <returns>True, if start end and end char is quote</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool HasStartAndEndQuotes(ReadOnlySpan<char> source)
         {
             if (source.Length < 2)
@@ -171,6 +181,7 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="source">Content</param>
         /// <returns>True, if null or only whitspaces</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static bool IsNullOrWhiteSpace(ReadOnlySpan<char> source)
         {
             if (source.IsEmpty)
@@ -424,25 +435,18 @@ namespace DotSerial.Utilities
         /// <param name="source">Source ReadOnlySpan</param>
         /// <param name="start">Start index</param>
         /// <param name="end">End index</param>
-        /// <returns>New ReadOnlySpam</returns>
+        /// <returns>New ReadOnlySpan</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static ReadOnlySpan<char> SliceFromTo(ReadOnlySpan<char> source, int start, int end)
         {
-            if (start < 0)
+            if ((uint)start > (uint)source.Length || (uint)end > (uint)source.Length || start > end)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
-            if (end < start)
-            {
-                throw new NotImplementedException();
-            }
+            int length = end - start + 1;
 
-            if (source.Length - 1 < end)
-            {
-                throw new NotImplementedException();
-            }
-
-            return source.Slice(start, end - start + 1);
+            return source.Slice(start, length);
         }
     }
 }

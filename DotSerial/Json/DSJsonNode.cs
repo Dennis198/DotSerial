@@ -33,11 +33,11 @@ namespace DotSerial.Json
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static DSJsonNode FromString(string str)
+        public static DSJsonNode FromString(ReadOnlySpan<char> str)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
                     throw new DSJsonException($"{str} can't be null or whitespace.");
                 }
@@ -84,11 +84,11 @@ namespace DotSerial.Json
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
+        public static U ToObject<U>(ReadOnlySpan<char> str)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
                     throw new DSJsonException($"{str} can't be null or whitespace.");
                 }

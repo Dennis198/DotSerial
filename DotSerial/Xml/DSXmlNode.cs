@@ -33,11 +33,11 @@ namespace DotSerial.Xml
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
-        public static DSXmlNode FromString(string str)
+        public static DSXmlNode FromString(ReadOnlySpan<char> str)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
                     throw new DSXmlException($"{str} can't be null or whitespace.");
                 }
@@ -84,11 +84,11 @@ namespace DotSerial.Xml
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSXmlException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
+        public static U ToObject<U>(ReadOnlySpan<char> str)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(str))
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
                     throw new DSXmlException($"{str} can't be null or whitespace.");
                 }

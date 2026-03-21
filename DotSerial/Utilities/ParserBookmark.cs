@@ -74,7 +74,7 @@ namespace DotSerial.Utilities
         {
             if (content.Length < End)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException();
             }
 
             return ReadOnlySpanMethods.SliceFromTo(content, Start, End);
