@@ -52,7 +52,7 @@ namespace DotSerial.Yaml.Writer
         /// <summary>
         /// Converts a key : value pair to an yaml string.
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="key">Key</param>
         /// <param name="value">Value</param>
         /// <param name="level">Indentation level</param>
@@ -108,7 +108,7 @@ namespace DotSerial.Yaml.Writer
         /// <summary>
         /// Converts a primitive list into yaml
         /// </summary>
-        /// <param name="sb">Stringbuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="node">Node</param>
         /// <param name="level">Indentation level</param>
         internal static void AddPrimitiveList(
@@ -221,7 +221,7 @@ namespace DotSerial.Yaml.Writer
         /// <summary>
         /// Appends only the value without the key
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="value">Value</param>
         /// <param name="level">Level</param>
         /// <param name="needQuotes">True, if value needs quotes</param>

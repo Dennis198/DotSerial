@@ -1,5 +1,5 @@
-using System.Text;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Json.Parser
 {
@@ -11,36 +11,44 @@ namespace DotSerial.Json.Parser
         /// <summary>
         /// Parse the json string to create tree structure
         /// </summary>
-        /// <param name="str">Json string</param>
+        /// <param name="content">Json string</param>
         /// <returns>Root node of tree.</returns>
-        public static abstract DSJsonNode Parse(string str);
+        public static abstract DSJsonNode Parse(ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for leaf node
         /// </summary>
         /// <param name="node">Leaf node</param>
-        /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitLeafNode(LeafNode node, StringBuilder sb);
+        /// <param name="bookmark">Parser Bookmark</param>
+        /// <param name="content">String content</param>
+        public abstract void VisitLeafNode(LeafNode node, ParserBookmark bookmark, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for inner node
         /// </summary>
         /// <param name="node">Inner node</param>
-        /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitInnerNode(InnerNode node, StringBuilder sb);
+        /// <param name="bookmark">Parser Bookmark</param>
+        /// <param name="content">String content</param>
+        public abstract void VisitInnerNode(InnerNode node, ParserBookmark bookmark, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for list node
         /// </summary>
         /// <param name="node">List node</param>
-        /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitListNode(ListNode node, StringBuilder sb);
+        /// <param name="bookmark">Parser Bookmark</param>
+        /// <param name="content">String content</param>
+        public abstract void VisitListNode(ListNode node, ParserBookmark bookmark, ReadOnlySpan<char> content);
 
         /// <summary>
         /// Visitor for directory node
         /// </summary>
         /// <param name="node">Inner node</param>
-        /// <param name="sb">Stringbuilder</param>
-        public abstract void VisitDictionaryNode(DictionaryNode node, StringBuilder sb);
+        /// <param name="bookmark">Parser Bookmark</param>
+        /// <param name="content">String content</param>
+        public abstract void VisitDictionaryNode(
+            DictionaryNode node,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content
+        );
     }
 }

@@ -33,13 +33,13 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSYamlException">DotSerial Exception.</exception>
-        public static DSYamlNode FromString(string str)
+        public static DSYamlNode FromString(ReadOnlySpan<char> str)
         {
             try
             {
-                if (null == str)
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
-                    throw new DSYamlException($"{str} can't be null.");
+                    throw new DSYamlException($"{str} can't be null or whitespace.");
                 }
 
                 var root = YamlParserVisitor.Parse(str);
@@ -84,13 +84,13 @@ namespace DotSerial.Yaml
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSYamlException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
+        public static U ToObject<U>(ReadOnlySpan<char> str)
         {
             try
             {
-                if (null == str)
+                if (str.IsEmpty || str.IsWhiteSpace())
                 {
-                    throw new DSYamlException($"{str} can't be null.");
+                    throw new DSYamlException($"{str} can't be null or whitespace.");
                 }
 
                 // Parse yaml string to node
@@ -149,7 +149,7 @@ namespace DotSerial.Yaml
                 // Convert
                 var yamlString = YamlWriterVisitor.Write(this);
 
-                return new string(yamlString); // TODO
+                return new string(yamlString);
             }
             catch (DotSerialException ex)
             {

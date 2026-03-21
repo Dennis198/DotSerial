@@ -25,18 +25,87 @@ namespace DotSerial.Json
         }
 
         /// <inheritdoc/>
+        public bool HasChildren => _node.HasChildren();
+
+        /// <inheritdoc/>
         public string Key => _node.Key;
 
         /// <inheritdoc/>
-        public bool HasChildren => _node.HasChildren();
-
-        /// <summary>
-        /// Returns the internal node
-        /// </summary>
-        /// <returns>IDSNode</returns>
-        internal IDSNode GetInternalData()
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static DSJsonNode FromString(ReadOnlySpan<char> str)
         {
-            return _node;
+            try
+            {
+                if (str.IsEmpty || str.IsWhiteSpace())
+                {
+                    throw new DSJsonException($"{str} can't be null or whitespace.");
+                }
+
+                var root = JsonParserVisitor.Parse(str);
+
+                return root;
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static DSJsonNode ToNode(object? obj, string? key = null)
+        {
+            try
+            {
+                // Determine key
+                string currKey = key ?? CommonConstants.MainObjectKey;
+
+                // Serialize object
+                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
+
+                return new DSJsonNode(rootNode);
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <inheritdoc/>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
+        public static U ToObject<U>(ReadOnlySpan<char> str)
+        {
+            try
+            {
+                if (str.IsEmpty || str.IsWhiteSpace())
+                {
+                    throw new DSJsonException($"{str} can't be null or whitespace.");
+                }
+
+                // Parse json string to node
+                DSJsonNode dsNode = FromString(str);
+
+                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DSJsonException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <inheritdoc/>
@@ -68,31 +137,6 @@ namespace DotSerial.Json
         /// <inheritdoc/>
         /// <exception cref="ArgumentNullException">Argument null.</exception>
         /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static DSJsonNode ToNode(object? obj, string? key = null)
-        {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
-
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, StategyType.Json);
-
-                return new DSJsonNode(rootNode);
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
         public string Stringify()
         {
             if (null == _node)
@@ -117,57 +161,13 @@ namespace DotSerial.Json
             }
         }
 
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static DSJsonNode FromString(string str)
+        /// <summary>
+        /// Returns the internal node
+        /// </summary>
+        /// <returns>IDSNode</returns>
+        internal IDSNode GetInternalData()
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    throw new DSJsonException($"{str} can't be null or whitespace.");
-                }
-
-                var root = JsonParserVisitor.Parse(str);
-
-                return root;
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <inheritdoc/>
-        /// <exception cref="ArgumentNullException">Argument null.</exception>
-        /// <exception cref="DSJsonException">DotSerial Exception.</exception>
-        public static U ToObject<U>(string str)
-        {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(str))
-                {
-                    throw new DSJsonException($"{str} can't be null or whitespace.");
-                }
-
-                // Parse json string to node
-                DSJsonNode dsNode = FromString(str);
-
-                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
-            }
-            catch (DotSerialException ex)
-            {
-                throw new DSJsonException(ex.Message);
-            }
-            catch
-            {
-                throw;
-            }
+            return _node;
         }
     }
 }

@@ -9,6 +9,16 @@ namespace DotSerial.Utilities
     internal static class HelperMethods
     {
         /// <summary>
+        /// Converts Bool to Integer
+        /// </summary>
+        /// <param name="b">Bool</param>
+        /// <returns>Integer</returns>
+        internal static string BoolToString(bool b)
+        {
+            return b ? CommonConstants.TrueString : CommonConstants.FalseString;
+        }
+
+        /// <summary>
         /// Check if Object implements IEnumerable
         /// </summary>
         /// <param name="obj">Object</param>
@@ -28,37 +38,6 @@ namespace DotSerial.Utilities
         internal static bool ImplementsIEnumerable(Type objType)
         {
             return typeof(IEnumerable).IsAssignableFrom(objType);
-        }
-
-        /// <summary>
-        /// Converts Bool to Integer
-        /// </summary>
-        /// <param name="b">Bool</param>
-        /// <returns>Integer</returns>
-        internal static string BoolToString(bool b)
-        {
-            return b ? CommonConstants.TrueString : CommonConstants.FalseString;
-        }
-
-        /// <summary>
-        /// Converts Integer to Bool
-        /// </summary>
-        /// <param name="str">Integer</param>
-        /// <returns>Bool</returns>
-        internal static bool StringToBool(string str)
-        {
-            if (str.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-            else if (str.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-            else
-            {
-                throw new InvalidOperationException("String is not a valid boolean representation.");
-            }
         }
 
         /// <summary>
@@ -106,6 +85,27 @@ namespace DotSerial.Utilities
             }
 
             return strValue;
+        }
+
+        /// <summary>
+        /// Converts Integer to Bool
+        /// </summary>
+        /// <param name="str">Integer</param>
+        /// <returns>Bool</returns>
+        internal static bool StringToBool(string str)
+        {
+            if (str.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            else if (str.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else
+            {
+                throw new InvalidOperationException("String is not a valid boolean representation.");
+            }
         }
     }
 }

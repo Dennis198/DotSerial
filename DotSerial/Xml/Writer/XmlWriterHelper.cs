@@ -163,7 +163,7 @@ namespace DotSerial.Xml.Writer
         /// <summary>
         /// Add an empty tag
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="tag">Tag of xml</param>
         /// <param name="name">Key attribute</param>
         private static void AddEmptyTag(ref DotSerialStringBuilder sb, string tag, string? name = null)
@@ -185,7 +185,7 @@ namespace DotSerial.Xml.Writer
         /// <summary>
         /// Add end tag
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="tag">Tag of xml</param>
         private static void AddEndTag(ref DotSerialStringBuilder sb, string tag)
         {
@@ -197,7 +197,7 @@ namespace DotSerial.Xml.Writer
         /// <summary>
         /// Add start tag
         /// </summary>
-        /// <param name="sb">StringBuilder</param>
+        /// <param name="sb">DotSerialStringBuilder</param>
         /// <param name="tag">Tag of xml</param>
         /// <param name="name">Key attribute</param>
         private static void AddStartTag(ref DotSerialStringBuilder sb, string tag, string? name)

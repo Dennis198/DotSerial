@@ -1,4 +1,6 @@
 using System.Buffers;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 
 namespace DotSerial.Utilities
 {
@@ -16,6 +18,9 @@ namespace DotSerial.Utilities
         /// Current position in the buffer
         /// </summary>
         private int _position;
+
+        public DotSerialStringBuilder()
+            : this(null) { }
 
         /// <summary>
         /// Constructor
@@ -48,6 +53,22 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Konstruktor, der mit einem ReadOnlySpan initialisiert wird
+        /// </summary>
+        /// <param name="value">Der initiale Inhalt</param>
+        public DotSerialStringBuilder(ReadOnlySpan<char> value)
+        {
+            // Passenden Buffer aus dem Pool mieten
+            _buffer = ArrayPool<char>.Shared.Rent(value.Length);
+
+            // Daten in den Buffer kopieren
+            value.CopyTo(_buffer);
+
+            // Aktuelle Position setzen
+            _position = value.Length;
+        }
+
+        /// <summary>
         /// Length of the builder
         /// </summary>
         public readonly int Length => _position;
@@ -70,32 +91,25 @@ namespace DotSerial.Utilities
         /// </summary>
         public readonly char this[int index]
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (null == _buffer)
-                {
-                    throw new NullReferenceException($"{_buffer} is null");
-                }
-
                 if ((uint)index >= (uint)_position)
                 {
-                    throw new IndexOutOfRangeException();
+                    ThrowIndexOutOfRangeException();
                 }
 
-                return _buffer[index];
+                return _buffer.AsSpan()[index];
             }
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             set
             {
-                if (null == _buffer)
-                {
-                    throw new NullReferenceException($"{_buffer} is null");
-                }
-
                 if ((uint)index >= (uint)_position)
                 {
-                    throw new IndexOutOfRangeException();
+                    ThrowIndexOutOfRangeException();
                 }
-                _buffer[index] = value;
+
+                _buffer.AsSpan()[index] = value;
             }
         }
 
@@ -138,6 +152,27 @@ namespace DotSerial.Utilities
         public readonly int IndexOf(ReadOnlySpan<char> value, StringComparison comparison = StringComparison.Ordinal)
         {
             return MemoryExtensions.IndexOf(_buffer.AsSpan()[.._position], value, comparison);
+        }
+
+        /// <summary>
+        /// Prüft, ob der Builder leer ist oder nur aus Whitespace-Zeichen besteht.
+        /// </summary>
+        public readonly bool IsNullOrWhiteSpace()
+        {
+            if (_position == 0)
+                return true;
+
+            ReadOnlySpan<char> content = _buffer.AsSpan(0, _position);
+
+            for (int i = 0; i < content.Length; i++)
+            {
+                if (!char.IsWhiteSpace(content[i]))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -376,7 +411,7 @@ namespace DotSerial.Utilities
                 return;
 
             int remainingSourceIndex = startIndex + length;
-            int remainingCount = _position + remainingSourceIndex;
+            int remainingCount = _position - remainingSourceIndex;
 
             if (remainingCount > 0)
             {
@@ -385,6 +420,41 @@ namespace DotSerial.Utilities
             }
 
             _position -= length;
+        }
+
+        /// <summary>
+        /// Removes leading and trailing whitespace from the builder.
+        /// </summary>
+        public void Trim()
+        {
+            if (_position == 0 || _buffer == null)
+                return;
+
+            ReadOnlySpan<char> span = _buffer.AsSpan(0, _position);
+
+            int start = 0;
+            while (start < span.Length && char.IsWhiteSpace(span[start]))
+            {
+                start++;
+            }
+
+            int end = span.Length - 1;
+            while (end >= start && char.IsWhiteSpace(span[end]))
+            {
+                end--;
+            }
+
+            int newLength = end - start + 1;
+
+            if (newLength <= 0)
+            {
+                Clear();
+                return;
+            }
+
+            ReadOnlySpan<char> trimmedSpan = span.Slice(start, newLength);
+            trimmedSpan.CopyTo(_buffer);
+            _position = newLength;
         }
 
         /// <summary>
@@ -399,27 +469,44 @@ namespace DotSerial.Utilities
             }
         }
 
+        [DoesNotReturn]
+        private static void ThrowIndexOutOfRangeException()
+        {
+            throw new IndexOutOfRangeException();
+        }
+
         /// <summary>
         /// Escures that the capacity is enough
         /// </summary>
         /// <param name="requiredCapacity">Required capacity</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void EnsureCapacity(int requiredCapacity)
         {
-            if (null == _buffer)
+            if ((uint)requiredCapacity > (uint)(_buffer?.Length ?? 0))
             {
-                throw new NullReferenceException($"{_buffer} is null");
+                Grow(requiredCapacity);
             }
+        }
 
-            if (requiredCapacity > _buffer.Length)
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private void Grow(int minCapacity)
+        {
+            int currentCapacity = _buffer?.Length ?? 0;
+
+            int newCapacity = Math.Max(currentCapacity * 2, minCapacity);
+
+            if (newCapacity < 16)
+                newCapacity = 16;
+
+            char[] newBuffer = ArrayPool<char>.Shared.Rent(newCapacity);
+
+            if (_position > 0 && _buffer != null)
             {
-                int newSize = Math.Max(_buffer.Length * 2, requiredCapacity);
-                char[] newBuffer = ArrayPool<char>.Shared.Rent(newSize);
-
                 _buffer.AsSpan(0, _position).CopyTo(newBuffer);
                 ArrayPool<char>.Shared.Return(_buffer);
-
-                _buffer = newBuffer;
             }
+
+            _buffer = newBuffer;
         }
     }
 }

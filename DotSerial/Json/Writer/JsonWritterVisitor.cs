@@ -23,10 +23,9 @@ namespace DotSerial.Json.Writer
                 WriterAccept(internalNode, new JsonWriterVisitor(), ref dtSB, new JsonWriterOptions(0, false));
 
                 dtSB.Truncate(dtSB.Length - 1);
-                result = dtSB.ToArray();
+                dtSB.Trim();
 
-                // Trim start and ending
-                // sb = sb.TrimStartAndEnd();
+                result = dtSB.ToArray();
             }
             finally
             {

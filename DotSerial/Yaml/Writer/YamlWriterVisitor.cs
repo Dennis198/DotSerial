@@ -28,9 +28,6 @@ namespace DotSerial.Yaml.Writer
                 dtSB.AppendLine();
                 dtSB.Append(YamlConstants.YamlDocumentEnd);
 
-                // Trim start and ending
-                // dtSB = dtSB.TrimStartAndEnd();
-
                 result = dtSB.ToArray();
             }
             finally
@@ -39,23 +36,6 @@ namespace DotSerial.Yaml.Writer
             }
 
             return result.AsSpan();
-
-            // StringBuilder sb = new();
-
-            // // Add document start
-            // sb.Append(YamlConstants.YamlDocumentStart);
-
-            // var internalNode = node.GetInternalData();
-            // WriterAccept(internalNode, new YamlWriterVisitor(), sb, new YamlWriterOptions(0, false));
-
-            // // Add document end
-            // sb.AppendLine();
-            // sb.Append(YamlConstants.YamlDocumentEnd);
-
-            // // Trim start and ending
-            // sb = sb.TrimStartAndEnd();
-
-            // return sb.ToString();
         }
 
         /// <inheritdoc/>

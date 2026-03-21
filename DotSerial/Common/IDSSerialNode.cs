@@ -46,17 +46,17 @@ namespace DotSerial.Common
         /// <summary>
         /// Create the node/tree from the given string.
         /// </summary>
-        /// <param name="str">String</param>
+        /// <param name="str">ReadOnlySpan<char></param>
         /// <returns>Node</returns>
-        public static abstract T FromString(string str);
+        public static abstract T FromString(ReadOnlySpan<char> str);
 
         /// <summary>
         /// Deserializes a string to an object of type U.
         /// </summary>
-        /// <param name="str">String</param>
+        /// <param name="str">ReadOnlySpan<char></param>
         /// <typeparam name="U">Type of the object</typeparam>
         /// <returns>Deserilized object</returns>
-        public static abstract U ToObject<U>(string str);
+        public static abstract U ToObject<U>(ReadOnlySpan<char> str);
 
         /// <summary>
         /// Deserializes the node to an object of type U.

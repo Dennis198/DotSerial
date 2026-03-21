@@ -18,14 +18,13 @@ namespace DotSerial.Xml.Writer
             DotSerialStringBuilder dtSB = new(8192);
             try
             {
-                dtSB.AppendLine(XmlConstants.XmlDeclaration);
-
                 var internalNode = node.GetInternalData();
                 WriterAccept(internalNode, new XmlWriterVisitor(), ref dtSB, new XmlWriterOptions(0));
-                result = dtSB.ToArray();
 
-                // Trim start and ending
-                // sb = sb.TrimStartAndEnd();
+                dtSB.Trim();
+                dtSB.Insert(0, XmlConstants.XmlDeclaration + Environment.NewLine);
+
+                result = dtSB.ToArray();
             }
             finally
             {
