@@ -1,20 +1,22 @@
 ﻿using DotSerial.Common;
-using DotSerial.Xml;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Xml
 {
     public class DotSerialXmlTests
     {
+        private readonly StategyType _strategy = StategyType.Xml;
+
         [Fact]
         public void Save_True()
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var xmlDocument = DotSerialXml.Serialize(testDefault);
+            var tmp = DSConverter.Serialize(testDefault, _strategy);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialXml.SaveToFile(file.FileInfo.FullName, xmlDocument);
+            DSConverter.SaveToFile(file.FileInfo.FullName, tmp, _strategy);
         }
 
         [Fact]
@@ -25,7 +27,7 @@ namespace DotSerial.Tests.Xml
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialXml.SaveToFile(file.FileInfo.FullName, testDefault);
+            DSConverter.SaveToFile(file.FileInfo.FullName, testDefault, _strategy);
         }
 
         [Fact]
@@ -41,7 +43,7 @@ namespace DotSerial.Tests.Xml
             try
             {
                 // Act
-                tmp = DotSerialXml.LoadFromFile<PrimitiveClass>(path);
+                tmp = DSConverter.LoadFromFile<PrimitiveClass>(path, _strategy);
             }
             catch (Exception ex)
             {
@@ -54,14 +56,109 @@ namespace DotSerial.Tests.Xml
         }
 
         [Fact]
+        public void CreateSerializedObject_Primitive()
+        {
+            // Arrange
+            double tmp = 1234.45;
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double>(serializedObject, _strategy);
+
+            // Assert
+            Assert.Equal(tmp, result);
+        }
+
+        [Fact]
+        public void CreateSerializedObject_Primitive_Null()
+        {
+            // Arrange
+            string? tmp = null;
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<string?>(serializedObject, _strategy);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void List()
+        {
+            // Arrange
+            double[] tmp = [1.1, 2.2, 3.3, 4.4];
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
+
+            // Assert
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Length, result.Length);
+            Assert.Equal(tmp[0], result[0]);
+            Assert.Equal(tmp[1], result[1]);
+            Assert.Equal(tmp[2], result[2]);
+            Assert.Equal(tmp[3], result[3]);
+        }
+
+        [Fact]
+        public void List_Null()
+        {
+            // Arrange
+            double[]? tmp = null;
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public void Dictionary()
+        {
+            // Arrange
+            Dictionary<string, double> tmp = [];
+            tmp.Add("test1", 1.1);
+            tmp.Add("test2", 2.2);
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>>(serializedObject, _strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+            Assert.Equal(tmp.Count, result.Count);
+            Assert.Equal(tmp["test1"], result["test1"]);
+            Assert.Equal(tmp["test2"], result["test2"]);
+        }
+
+        [Fact]
+        public void Dictionary_Null()
+        {
+            // Arrange
+            Dictionary<string, double>? tmp = null;
+
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>?>(serializedObject, _strategy);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
         public void CreateSerializedObject_EmptyClass()
         {
             // Arrange
             var tmp = new EmptyClass();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<EmptyClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EmptyClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -74,8 +171,8 @@ namespace DotSerial.Tests.Xml
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<AccessModifierClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<AccessModifierClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -89,8 +186,8 @@ namespace DotSerial.Tests.Xml
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<DictionaryClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DictionaryClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -104,8 +201,8 @@ namespace DotSerial.Tests.Xml
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<StructClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<StructClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -119,8 +216,8 @@ namespace DotSerial.Tests.Xml
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<RecordClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<RecordClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -134,8 +231,8 @@ namespace DotSerial.Tests.Xml
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<ParsableClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ParsableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -149,8 +246,8 @@ namespace DotSerial.Tests.Xml
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<PathClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PathClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -164,8 +261,8 @@ namespace DotSerial.Tests.Xml
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<ClassWithoutParameterlessConstructor>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassWithoutParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -179,8 +276,8 @@ namespace DotSerial.Tests.Xml
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<PrimitiveClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -191,12 +288,11 @@ namespace DotSerial.Tests.Xml
         public void CreateSerializedObject_NestedClass()
         {
             // Arrange
-            var tmp2 = PrimitiveClass.CreateTestDefault();
-            var tmp = new NestedClass { Boolean = true, PrimitiveClass = tmp2 };
+            var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<NestedClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -206,12 +302,11 @@ namespace DotSerial.Tests.Xml
         [Fact]
         public void CreateSerializedObject_NestedNestedClass()
         {
-            //Arrange
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<NestedNestedClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedNestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -225,8 +320,8 @@ namespace DotSerial.Tests.Xml
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<EnumClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EnumClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -240,8 +335,8 @@ namespace DotSerial.Tests.Xml
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<NoAttributeClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NoAttributeClass>(serializedObject, _strategy);
 
             // Arrange
             Assert.NotNull(result);
@@ -255,8 +350,8 @@ namespace DotSerial.Tests.Xml
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<MultiDimClassIEnumarble>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<MultiDimClassIEnumarble>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -270,8 +365,8 @@ namespace DotSerial.Tests.Xml
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<NullClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NullClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -285,8 +380,8 @@ namespace DotSerial.Tests.Xml
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<PrimitiveClassIEnumarable>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClassIEnumarable>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -304,8 +399,8 @@ namespace DotSerial.Tests.Xml
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<DateTimeClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DateTimeClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -319,8 +414,8 @@ namespace DotSerial.Tests.Xml
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<IEnumerableClass>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<IEnumerableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -337,8 +432,8 @@ namespace DotSerial.Tests.Xml
             };
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<ClassRecordNoParameterlessConstructor>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassRecordNoParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -352,7 +447,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -362,7 +457,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -372,7 +467,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -382,7 +477,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -392,7 +487,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -402,7 +497,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -412,7 +507,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -422,7 +517,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -432,7 +527,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -442,7 +537,7 @@ namespace DotSerial.Tests.Xml
             var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -452,8 +547,8 @@ namespace DotSerial.Tests.Xml
             object? tmp = null;
 
             // Act
-            var xmlDocument = DotSerialXml.Serialize(tmp);
-            var result = DotSerialXml.Deserialize<object?>(xmlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<object?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -466,28 +561,36 @@ namespace DotSerial.Tests.Xml
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialXml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
         public void ToString_Content()
         {
+            // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var xml = DotSerialXml.Serialize(tmp);
-            string result = xml.ToString();
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
 
+            // Act
+            string result = serializedObject.ToString();
+
+            // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
 
-        [Fact]
-        public void ToString_NoContent()
-        {
-            var xml = new DotSerialXml();
-            string result = xml.ToString();
+        // [Fact]
+        // public void ToString_NoContent()
+        // {
+        //     // Arrange
+        //     var serializedObject = new DotSerialserializedObject();
 
-            Assert.NotNull(result);
-            Assert.True(string.IsNullOrWhiteSpace(result));
-        }
+        //     // Act
+        //     string result = serializedObject.ToString();
+
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.True(string.IsNullOrWhiteSpace(result));
+        // }
     }
 }

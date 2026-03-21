@@ -1,20 +1,22 @@
 using DotSerial.Common;
-using DotSerial.Toon;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Toon
 {
     public class DotSerialToonTests
     {
+        private readonly StategyType _strategy = StategyType.Toon;
+
         [Fact]
         public void Save_True()
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var toonDocument = DotSerialToon.Serialize(testDefault);
+            var tmp = DSConverter.Serialize(testDefault, _strategy);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialToon.SaveToFile(file.FileInfo.FullName, toonDocument);
+            DSConverter.SaveToFile(file.FileInfo.FullName, tmp, _strategy);
         }
 
         [Fact]
@@ -25,7 +27,7 @@ namespace DotSerial.Tests.Toon
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialToon.SaveToFile(file.FileInfo.FullName, testDefault);
+            DSConverter.SaveToFile(file.FileInfo.FullName, testDefault, _strategy);
         }
 
         [Fact]
@@ -41,7 +43,7 @@ namespace DotSerial.Tests.Toon
             try
             {
                 // Act
-                tmp = DotSerialToon.LoadFromFile<PrimitiveClass>(path);
+                tmp = DSConverter.LoadFromFile<PrimitiveClass>(path, _strategy);
             }
             catch (Exception ex)
             {
@@ -60,8 +62,8 @@ namespace DotSerial.Tests.Toon
             double tmp = 1234.45;
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double>(serializedObject, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -74,8 +76,8 @@ namespace DotSerial.Tests.Toon
             string? tmp = null;
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<string?>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<string?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -88,8 +90,8 @@ namespace DotSerial.Tests.Toon
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double[]>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.NotEmpty(result);
@@ -107,8 +109,8 @@ namespace DotSerial.Tests.Toon
             double[]? tmp = null;
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<double[]>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -123,8 +125,8 @@ namespace DotSerial.Tests.Toon
             tmp.Add("test2", 2.2);
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<Dictionary<string, double>>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -141,8 +143,8 @@ namespace DotSerial.Tests.Toon
             Dictionary<string, double>? tmp = null;
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<Dictionary<string, double>?>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -155,8 +157,8 @@ namespace DotSerial.Tests.Toon
             var tmp = new EmptyClass();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<EmptyClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EmptyClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -169,8 +171,8 @@ namespace DotSerial.Tests.Toon
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<AccessModifierClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<AccessModifierClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -184,8 +186,8 @@ namespace DotSerial.Tests.Toon
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<DictionaryClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DictionaryClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -199,8 +201,8 @@ namespace DotSerial.Tests.Toon
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<StructClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<StructClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -214,8 +216,8 @@ namespace DotSerial.Tests.Toon
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<RecordClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<RecordClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -229,8 +231,8 @@ namespace DotSerial.Tests.Toon
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ParsableClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ParsableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -244,8 +246,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PathClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PathClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -259,8 +261,8 @@ namespace DotSerial.Tests.Toon
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ClassWithoutParameterlessConstructor>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassWithoutParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -274,8 +276,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PrimitiveClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -289,8 +291,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NestedClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -303,8 +305,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NestedNestedClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedNestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -318,8 +320,8 @@ namespace DotSerial.Tests.Toon
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<EnumClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EnumClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -333,8 +335,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NoAttributeClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NoAttributeClass>(serializedObject, _strategy);
 
             // Arrange
             Assert.NotNull(result);
@@ -348,8 +350,8 @@ namespace DotSerial.Tests.Toon
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<MultiDimClassIEnumarble>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<MultiDimClassIEnumarble>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -363,8 +365,8 @@ namespace DotSerial.Tests.Toon
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<NullClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NullClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -378,8 +380,8 @@ namespace DotSerial.Tests.Toon
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<PrimitiveClassIEnumarable>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClassIEnumarable>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -397,8 +399,8 @@ namespace DotSerial.Tests.Toon
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<DateTimeClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DateTimeClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -412,8 +414,8 @@ namespace DotSerial.Tests.Toon
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<IEnumerableClass>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<IEnumerableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -430,8 +432,8 @@ namespace DotSerial.Tests.Toon
             };
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<ClassRecordNoParameterlessConstructor>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassRecordNoParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -445,7 +447,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -455,7 +457,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -465,7 +467,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -475,7 +477,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -485,7 +487,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -495,7 +497,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -505,7 +507,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -515,7 +517,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -525,7 +527,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -535,7 +537,7 @@ namespace DotSerial.Tests.Toon
             var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -545,8 +547,8 @@ namespace DotSerial.Tests.Toon
             object? tmp = null;
 
             // Act
-            var toonDocument = DotSerialToon.Serialize(tmp);
-            var result = DotSerialToon.Deserialize<object?>(toonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<object?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -559,7 +561,7 @@ namespace DotSerial.Tests.Toon
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialToon.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -567,28 +569,28 @@ namespace DotSerial.Tests.Toon
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var toon = DotSerialToon.Serialize(tmp);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
 
             // Act
-            string result = toon.ToString();
+            string result = serializedObject.ToString();
 
             // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
 
-        [Fact]
-        public void ToString_NoContent()
-        {
-            // Arrange
-            var toon = new DotSerialToon();
+        // [Fact]
+        // public void ToString_NoContent()
+        // {
+        //     // Arrange
+        //     var json = new DotSerialJson();
 
-            // Act
-            string result = toon.ToString();
+        //     // Act
+        //     string result = json.ToString();
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(string.IsNullOrWhiteSpace(result));
-        }
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.True(string.IsNullOrWhiteSpace(result));
+        // }
     }
 }

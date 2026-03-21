@@ -1,20 +1,23 @@
 ﻿using DotSerial.Common;
 using DotSerial.Json;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Json
 {
     public class DotSerialJsonTests
     {
+        private readonly StategyType _strategy = StategyType.Json;
+
         [Fact]
         public void Save_True()
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var jsonDocument = DotSerialJson.Serialize(testDefault);
+            var tmp = DSConverter.Serialize(testDefault, _strategy);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialJson.SaveToFile(file.FileInfo.FullName, jsonDocument);
+            DSConverter.SaveToFile(file.FileInfo.FullName, tmp, _strategy);
         }
 
         [Fact]
@@ -25,7 +28,7 @@ namespace DotSerial.Tests.Json
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialJson.SaveToFile(file.FileInfo.FullName, testDefault);
+            DSConverter.SaveToFile(file.FileInfo.FullName, testDefault, _strategy);
         }
 
         [Fact]
@@ -41,7 +44,7 @@ namespace DotSerial.Tests.Json
             try
             {
                 // Act
-                tmp = DotSerialJson.LoadFromFile<PrimitiveClass>(path);
+                tmp = DSConverter.LoadFromFile<PrimitiveClass>(path, _strategy);
             }
             catch (Exception ex)
             {
@@ -60,8 +63,8 @@ namespace DotSerial.Tests.Json
             double tmp = 1234.45;
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double>(serializedObject, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -74,8 +77,8 @@ namespace DotSerial.Tests.Json
             string? tmp = null;
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<string?>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<string?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -88,8 +91,8 @@ namespace DotSerial.Tests.Json
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double[]>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.NotEmpty(result);
@@ -107,8 +110,8 @@ namespace DotSerial.Tests.Json
             double[]? tmp = null;
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<double[]>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -123,8 +126,8 @@ namespace DotSerial.Tests.Json
             tmp.Add("test2", 2.2);
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<Dictionary<string, double>>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -141,8 +144,8 @@ namespace DotSerial.Tests.Json
             Dictionary<string, double>? tmp = null;
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<Dictionary<string, double>?>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -155,8 +158,8 @@ namespace DotSerial.Tests.Json
             var tmp = new EmptyClass();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<EmptyClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EmptyClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -169,8 +172,8 @@ namespace DotSerial.Tests.Json
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<AccessModifierClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<AccessModifierClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -184,8 +187,8 @@ namespace DotSerial.Tests.Json
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<DictionaryClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DictionaryClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -199,8 +202,8 @@ namespace DotSerial.Tests.Json
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<StructClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<StructClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -214,8 +217,8 @@ namespace DotSerial.Tests.Json
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<RecordClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<RecordClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -229,8 +232,8 @@ namespace DotSerial.Tests.Json
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ParsableClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ParsableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -244,8 +247,8 @@ namespace DotSerial.Tests.Json
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PathClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PathClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -259,8 +262,8 @@ namespace DotSerial.Tests.Json
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ClassWithoutParameterlessConstructor>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassWithoutParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -274,8 +277,8 @@ namespace DotSerial.Tests.Json
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PrimitiveClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -289,8 +292,8 @@ namespace DotSerial.Tests.Json
             var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NestedClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -303,8 +306,8 @@ namespace DotSerial.Tests.Json
             var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NestedNestedClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedNestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -318,8 +321,8 @@ namespace DotSerial.Tests.Json
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<EnumClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EnumClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -333,8 +336,8 @@ namespace DotSerial.Tests.Json
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NoAttributeClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NoAttributeClass>(serializedObject, _strategy);
 
             // Arrange
             Assert.NotNull(result);
@@ -348,8 +351,8 @@ namespace DotSerial.Tests.Json
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<MultiDimClassIEnumarble>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<MultiDimClassIEnumarble>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -363,8 +366,8 @@ namespace DotSerial.Tests.Json
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<NullClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NullClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -378,8 +381,8 @@ namespace DotSerial.Tests.Json
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<PrimitiveClassIEnumarable>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClassIEnumarable>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -397,8 +400,8 @@ namespace DotSerial.Tests.Json
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<DateTimeClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DateTimeClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -412,8 +415,8 @@ namespace DotSerial.Tests.Json
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<IEnumerableClass>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<IEnumerableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -430,8 +433,8 @@ namespace DotSerial.Tests.Json
             };
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<ClassRecordNoParameterlessConstructor>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassRecordNoParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -445,7 +448,7 @@ namespace DotSerial.Tests.Json
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -455,7 +458,7 @@ namespace DotSerial.Tests.Json
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -465,7 +468,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -475,7 +478,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -485,7 +488,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -495,7 +498,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -505,7 +508,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -515,7 +518,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -525,7 +528,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -535,7 +538,7 @@ namespace DotSerial.Tests.Json
             var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -545,8 +548,8 @@ namespace DotSerial.Tests.Json
             object? tmp = null;
 
             // Act
-            var jsonDocument = DotSerialJson.Serialize(tmp);
-            var result = DotSerialJson.Deserialize<object?>(jsonDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<object?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -559,7 +562,7 @@ namespace DotSerial.Tests.Json
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialJson.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -567,28 +570,28 @@ namespace DotSerial.Tests.Json
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var json = DotSerialJson.Serialize(tmp);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
 
             // Act
-            string result = json.ToString();
+            string result = serializedObject.ToString();
 
             // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
 
-        [Fact]
-        public void ToString_NoContent()
-        {
-            // Arrange
-            var json = new DotSerialJson();
+        // [Fact]
+        // public void ToString_NoContent()
+        // {
+        //     // Arrange
+        //     var json = new DotSerialJson();
 
-            // Act
-            string result = json.ToString();
+        //     // Act
+        //     string result = json.ToString();
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(string.IsNullOrWhiteSpace(result));
-        }
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.True(string.IsNullOrWhiteSpace(result));
+        // }
     }
 }

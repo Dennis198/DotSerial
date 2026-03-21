@@ -3,20 +3,8 @@
     /// <summary>
     /// Class which represents an Document
     /// </summary>
-    internal abstract class DSDocument
+    internal static class FileMethods
     {
-        /// <summary>
-        /// Save file to disk
-        /// </summary>
-        /// <param name="fileName">Path</param>
-        internal abstract void Save(string fileName);
-
-        /// <summary>
-        /// Load file from disk
-        /// </summary>
-        /// <param name="fileName">Path</param>
-        internal abstract void Load(string fileName);
-
         /// <summary>
         /// Loads the file content into a string.
         /// </summary>

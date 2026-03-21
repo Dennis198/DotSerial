@@ -1,20 +1,23 @@
 using DotSerial.Common;
-using DotSerial.Yaml;
+using DotSerial.Json;
+using DotSerial.Tree.Creation;
 
 namespace DotSerial.Tests.Yaml
 {
     public class DotSerialYamlTests
     {
+        private readonly StategyType _strategy = StategyType.Yaml;
+
         [Fact]
         public void Save_True()
         {
             // Arrange
             var testDefault = PrimitiveClass.CreateTestDefault();
-            var yamlDocument = DotSerialYaml.Serialize(testDefault);
+            var tmp = DSConverter.Serialize(testDefault, _strategy);
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialYaml.SaveToFile(file.FileInfo.FullName, yamlDocument);
+            DSConverter.SaveToFile(file.FileInfo.FullName, tmp, _strategy);
         }
 
         [Fact]
@@ -25,7 +28,7 @@ namespace DotSerial.Tests.Yaml
 
             using var file = new TemporaryFile();
             // Act
-            DotSerialYaml.SaveToFile(file.FileInfo.FullName, testDefault);
+            DSConverter.SaveToFile(file.FileInfo.FullName, testDefault, _strategy);
         }
 
         [Fact]
@@ -41,7 +44,7 @@ namespace DotSerial.Tests.Yaml
             try
             {
                 // Act
-                tmp = DotSerialYaml.LoadFromFile<PrimitiveClass>(path);
+                tmp = DSConverter.LoadFromFile<PrimitiveClass>(path, _strategy);
             }
             catch (Exception ex)
             {
@@ -60,8 +63,8 @@ namespace DotSerial.Tests.Yaml
             double tmp = 1234.45;
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<double>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double>(serializedObject, _strategy);
 
             // Assert
             Assert.Equal(tmp, result);
@@ -74,8 +77,8 @@ namespace DotSerial.Tests.Yaml
             string? tmp = null;
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<string?>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<string?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -88,8 +91,8 @@ namespace DotSerial.Tests.Yaml
             double[] tmp = [1.1, 2.2, 3.3, 4.4];
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<double[]>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.NotEmpty(result);
@@ -107,8 +110,8 @@ namespace DotSerial.Tests.Yaml
             double[]? tmp = null;
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<double[]>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<double[]>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -123,8 +126,8 @@ namespace DotSerial.Tests.Yaml
             tmp.Add("test2", 2.2);
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<Dictionary<string, double>>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -141,8 +144,8 @@ namespace DotSerial.Tests.Yaml
             Dictionary<string, double>? tmp = null;
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<Dictionary<string, double>?>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<Dictionary<string, double>?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -155,8 +158,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = new EmptyClass();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<EmptyClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EmptyClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -169,8 +172,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = AccessModifierClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<AccessModifierClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<AccessModifierClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -184,8 +187,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = DictionaryClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<DictionaryClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DictionaryClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -199,8 +202,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = StructClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<StructClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<StructClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -214,8 +217,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = RecordClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<RecordClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<RecordClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -229,8 +232,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = ParsableClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<ParsableClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ParsableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -244,8 +247,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = PathClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<PathClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PathClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -259,8 +262,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = ClassWithoutParameterlessConstructor.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<ClassWithoutParameterlessConstructor>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassWithoutParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -274,8 +277,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = PrimitiveClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<PrimitiveClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -286,12 +289,11 @@ namespace DotSerial.Tests.Yaml
         public void CreateSerializedObject_NestedClass()
         {
             // Arrange
-            var tmp2 = PrimitiveClass.CreateTestDefault();
-            var tmp = new NestedClass { Boolean = true, PrimitiveClass = tmp2 };
+            var tmp = NestedClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<NestedClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -301,39 +303,11 @@ namespace DotSerial.Tests.Yaml
         [Fact]
         public void CreateSerializedObject_NestedNestedClass()
         {
-            //Arrange
-            var tmp3 = PrimitiveClass.CreateTestDefault();
-            var tmp4 = new PrimitiveClass
-            {
-                Boolean = true,
-                Byte = 1,
-                SByte = 2,
-                Char = 'e',
-                Decimal = 3,
-                Double = 4.9,
-                Float = 5.8F,
-                Int = 6,
-                UInt = 7,
-                NInt = 8,
-                NUInt = 9,
-                Long = 10,
-                ULong = 11,
-                Short = 12,
-                UShort = 13,
-                String = "HelloWorld",
-                Enum = TestEnum.Second,
-            };
-            var tmp2 = new NestedClass { Boolean = true, PrimitiveClass = tmp3 };
-            var tmp = new NestedNestedClass
-            {
-                NestedClass = tmp2,
-                PrimitiveClass = tmp4,
-                Boolean = true,
-            };
+            var tmp = NestedNestedClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<NestedNestedClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NestedNestedClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -347,8 +321,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = EnumClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<EnumClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<EnumClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -362,8 +336,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = NoAttributeClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<NoAttributeClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NoAttributeClass>(serializedObject, _strategy);
 
             // Arrange
             Assert.NotNull(result);
@@ -377,8 +351,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = MultiDimClassIEnumarble.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<MultiDimClassIEnumarble>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<MultiDimClassIEnumarble>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -392,8 +366,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = NullClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<NullClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<NullClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -407,8 +381,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = PrimitiveClassIEnumarable.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<PrimitiveClassIEnumarable>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<PrimitiveClassIEnumarable>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -426,8 +400,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = DateTimeClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<DateTimeClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<DateTimeClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -441,8 +415,8 @@ namespace DotSerial.Tests.Yaml
             var tmp = IEnumerableClass.CreateTestDefault();
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<IEnumerableClass>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<IEnumerableClass>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -459,8 +433,8 @@ namespace DotSerial.Tests.Yaml
             };
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<ClassRecordNoParameterlessConstructor>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<ClassRecordNoParameterlessConstructor>(serializedObject, _strategy);
 
             // Assert
             Assert.NotNull(result);
@@ -474,7 +448,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -484,7 +458,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new HashSetClassNotSupported();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -494,7 +468,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassStack();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -504,7 +478,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -514,7 +488,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -524,7 +498,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -534,7 +508,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -544,7 +518,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -554,7 +528,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -564,7 +538,7 @@ namespace DotSerial.Tests.Yaml
             var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -574,8 +548,8 @@ namespace DotSerial.Tests.Yaml
             object? tmp = null;
 
             // Act
-            var yamlDocument = DotSerialYaml.Serialize(tmp);
-            var result = DotSerialYaml.Deserialize<object?>(yamlDocument);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
+            var result = DSConverter.Deserialize<object?>(serializedObject, _strategy);
 
             // Assert
             Assert.Null(result);
@@ -588,7 +562,7 @@ namespace DotSerial.Tests.Yaml
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DotSerialYaml.Serialize(tmp));
+            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, _strategy));
         }
 
         [Fact]
@@ -596,28 +570,28 @@ namespace DotSerial.Tests.Yaml
         {
             // Arrange
             var tmp = ExampleClass.CreateTestDefault();
-            var yaml = DotSerialYaml.Serialize(tmp);
+            var serializedObject = DSConverter.Serialize(tmp, _strategy);
 
             // Act
-            string result = yaml.ToString();
+            string result = serializedObject.ToString();
 
             // Assert
             Assert.NotNull(result);
             Assert.False(string.IsNullOrWhiteSpace(result));
         }
 
-        [Fact]
-        public void ToString_NoContent()
-        {
-            // Arrange
-            var yaml = new DotSerialYaml();
+        // [Fact]
+        // public void ToString_NoContent()
+        // {
+        //     // Arrange
+        //     var json = new DotSerialJson();
 
-            // Act
-            string result = yaml.ToString();
+        //     // Act
+        //     string result = json.ToString();
 
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(string.IsNullOrWhiteSpace(result));
-        }
+        //     // Assert
+        //     Assert.NotNull(result);
+        //     Assert.True(string.IsNullOrWhiteSpace(result));
+        // }
     }
 }
