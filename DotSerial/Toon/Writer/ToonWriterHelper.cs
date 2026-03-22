@@ -70,7 +70,7 @@ namespace DotSerial.Toon.Writer
             }
 
             key = key.EscapeChars(ToonConstants.CharsToEscape);
-            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            if (_nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
             }
@@ -122,7 +122,7 @@ namespace DotSerial.Toon.Writer
             int count = lNode.GetChildren().Count;
 
             key = key.EscapeChars(ToonConstants.CharsToEscape);
-            if (key != string.Empty && _nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            if (key != string.Empty && _nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
             }
@@ -172,7 +172,7 @@ namespace DotSerial.Toon.Writer
             sb.AppendLine();
             WriteMethods.AddIndentation(ref sb, level, ToonConstants.IndentationSize);
             key = key.EscapeChars(ToonConstants.CharsToEscape);
-            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, key))
+            if (_nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Toon, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
             }
@@ -372,7 +372,7 @@ namespace DotSerial.Toon.Writer
             for (int i = 0; i < keysTmp.Count; i++)
             {
                 keysTmp[i] = keysTmp[i].EscapeChars(ToonConstants.CharsToEscape);
-                if (_nodeFactory.AreQuotesNeededForKey(StategyType.Toon, keysTmp[i]))
+                if (_nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Toon, keysTmp[i]))
                 {
                     keys += CommonConstants.Quote + keysTmp[i] + CommonConstants.Quote + CommonConstants.Comma;
                 }

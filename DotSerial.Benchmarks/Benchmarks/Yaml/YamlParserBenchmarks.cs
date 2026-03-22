@@ -6,7 +6,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
     [MemoryDiagnoser]
     public class YamlParserBenchmarks
     {
-        private readonly StategyType _strategy = StategyType.Yaml;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Yaml;
         private string? _stringPrimitive;
         private string? _stringList;
         private string? _stringDictionary;
@@ -16,15 +16,15 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
         {
             var primitiveClass = PrimitiveClass.Create();
             var nodePrimitive = DSNode.ToNode(primitiveClass, _strategy);
-            _stringPrimitive = nodePrimitive.Stringify(_strategy);
+            _stringPrimitive = nodePrimitive.Stringify();
 
             var listClass = ListClass.Create(2, 50);
             var nodeList = DSNode.ToNode(listClass, _strategy);
-            _stringList = nodeList.Stringify(_strategy);
+            _stringList = nodeList.Stringify();
 
             var dicClass = DictionaryClass.Create(50);
             var nodeDictionary = DSNode.ToNode(dicClass, _strategy);
-            _stringDictionary = nodeDictionary.Stringify(_strategy);
+            _stringDictionary = nodeDictionary.Stringify();
         }
 
         [Benchmark]

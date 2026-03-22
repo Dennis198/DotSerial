@@ -30,48 +30,48 @@ namespace DotSerial.Yaml.Parser
             if (0 == lines.Count)
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Yaml,
+                    SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
                 );
-                return new DSNode(rootNode, StategyType.Yaml);
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
 
             if (YamlParserHelper.IsYamlSingleValue(lines, content))
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Yaml,
+                    SerializeStrategy.Yaml,
                     lines.GetLineContent(0, content),
                     0,
                     CommonConstants.MainObjectKey
                 );
-                return new DSNode(rootNode, StategyType.Yaml);
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
             else if (YamlParserHelper.IsYamlObject(lines, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Yaml,
+                    SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
                 );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode, StategyType.Yaml);
+                    return new DSNode(rootNode, SerializeStrategy.Yaml);
                 }
             }
             else if (YamlParserHelper.IsYamlList(lines, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Yaml,
+                    SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.ListNode
                 );
                 if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode, StategyType.Yaml);
+                    return new DSNode(rootNode, SerializeStrategy.Yaml);
                 }
             }
             else
@@ -84,7 +84,7 @@ namespace DotSerial.Yaml.Parser
                 ParserAccept(rootNode, new YamlParserVisitor(), lines, content);
             }
 
-            return new DSNode(rootNode, StategyType.Yaml);
+            return new DSNode(rootNode, SerializeStrategy.Yaml);
         }
 
         /// <inheritdoc/>
@@ -116,7 +116,7 @@ namespace DotSerial.Yaml.Parser
                     {
                         string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
                         var childNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Yaml,
+                            SerializeStrategy.Yaml,
                             key,
                             strValue,
                             NodeType.Leaf
@@ -127,7 +127,7 @@ namespace DotSerial.Yaml.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Yaml,
+                            SerializeStrategy.Yaml,
                             key,
                             null,
                             NodeType.InnerNode
@@ -146,7 +146,7 @@ namespace DotSerial.Yaml.Parser
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Yaml,
+                            SerializeStrategy.Yaml,
                             key,
                             null,
                             NodeType.ListNode
@@ -202,14 +202,14 @@ namespace DotSerial.Yaml.Parser
                         var val = value.GetLineContent(0, content);
                         // Remove starting whitespaces
                         val = val.Trim();
-                        var innerNode = ParseMethods.ParsePrimitiveNode(StategyType.Yaml, val, 0, key);
+                        var innerNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Yaml, val, 0, key);
                         node.AddChild(innerNode);
                     }
                     else if (YamlParserHelper.IsYamlObject(value, content))
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(StategyType.Yaml, key, null, NodeType.InnerNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Yaml, key, null, NodeType.InnerNode)
                                 as InnerNode
                             ?? throw new NotImplementedException();
 
@@ -226,7 +226,7 @@ namespace DotSerial.Yaml.Parser
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Yaml,
+                            SerializeStrategy.Yaml,
                             key,
                             null,
                             NodeType.ListNode

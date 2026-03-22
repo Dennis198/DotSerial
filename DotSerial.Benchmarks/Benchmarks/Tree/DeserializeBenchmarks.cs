@@ -18,13 +18,13 @@ namespace DotSerial.Benchmarks.Benchmarks.Tree
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            _primitiveNode = SerializeObject.Serialize(primitiveClass, "0", StategyType.Json);
+            _primitiveNode = SerializeObject.Serialize(primitiveClass, "0", SerializeStrategy.Json);
 
             var listClass = ListClass.Create(2, 50);
-            _listNode = SerializeObject.Serialize(listClass, "0", StategyType.Json);
+            _listNode = SerializeObject.Serialize(listClass, "0", SerializeStrategy.Json);
 
             var dictionaryClass = DictionaryClass.Create(50);
-            _dictionaryNode = SerializeObject.Serialize(dictionaryClass, "0", StategyType.Json);
+            _dictionaryNode = SerializeObject.Serialize(dictionaryClass, "0", SerializeStrategy.Json);
         }
 
         [Benchmark]

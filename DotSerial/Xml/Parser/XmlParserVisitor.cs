@@ -39,7 +39,7 @@ namespace DotSerial.Xml.Parser
             if (rootTagKeyPair.IsXmlObject())
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Xml,
+                    SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
@@ -48,7 +48,7 @@ namespace DotSerial.Xml.Parser
             else if (rootTagKeyPair.IsXmlList())
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Xml,
+                    SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.ListNode
@@ -58,19 +58,24 @@ namespace DotSerial.Xml.Parser
             {
                 if (rootBookmark.IsNull())
                 {
-                    rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, CommonConstants.MainObjectKey);
+                    rootNode = ParseMethods.ParsePrimitiveNode(
+                        SerializeStrategy.Xml,
+                        null,
+                        0,
+                        CommonConstants.MainObjectKey
+                    );
                 }
                 else
                 {
                     rootNode = ParseMethods.ParsePrimitiveNode(
-                        StategyType.Xml,
+                        SerializeStrategy.Xml,
                         rootBookmark.GetContent(content),
                         0,
                         CommonConstants.MainObjectKey
                     );
                 }
 
-                return new DSNode(rootNode, StategyType.Xml);
+                return new DSNode(rootNode, SerializeStrategy.Xml);
             }
             else
             {
@@ -82,7 +87,7 @@ namespace DotSerial.Xml.Parser
                 ParserAccept(rootNode, new XmlParserVisitor(), rootTagKeyPair, rootBookmark, content);
             }
 
-            return new DSNode(rootNode, StategyType.Xml);
+            return new DSNode(rootNode, SerializeStrategy.Xml);
         }
 
         /// <inheritdoc/>
@@ -122,7 +127,7 @@ namespace DotSerial.Xml.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Xml,
+                            SerializeStrategy.Xml,
                             key,
                             null,
                             NodeType.InnerNode
@@ -140,7 +145,12 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Xml,
+                            key,
+                            null,
+                            NodeType.ListNode
+                        );
 
                         if (false == tmpBoomkark.IsNull())
                         {
@@ -155,13 +165,13 @@ namespace DotSerial.Xml.Parser
                     {
                         if (tmpBoomkark.IsNull())
                         {
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, null, 0, key);
                             node.AddChild(childNode);
                         }
                         else
                         {
                             var primContent = tmpBoomkark.GetContent(content);
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, primContent, 0, key);
                             node.AddChild(childNode);
                         }
                     }
@@ -214,7 +224,7 @@ namespace DotSerial.Xml.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Xml,
+                            SerializeStrategy.Xml,
                             key,
                             null,
                             NodeType.InnerNode
@@ -232,7 +242,12 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Xml,
+                            key,
+                            null,
+                            NodeType.ListNode
+                        );
 
                         if (false == tmpBoomkark.IsNull())
                         {
@@ -247,13 +262,13 @@ namespace DotSerial.Xml.Parser
                     {
                         if (tmpBoomkark.IsNull())
                         {
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, null, 0, key);
                             node.AddChild(childNode);
                         }
                         else
                         {
                             var primContent = tmpBoomkark.GetContent(content);
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, primContent, 0, key);
                             node.AddChild(childNode);
                         }
                     }

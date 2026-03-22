@@ -22,7 +22,7 @@ namespace DotSerial.Utilities
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
         internal static IDSNode ParsePrimitiveNode(
-            StategyType strategyType,
+            SerializeStrategy strategyType,
             ReadOnlySpan<char> content,
             int startIndex,
             string key,

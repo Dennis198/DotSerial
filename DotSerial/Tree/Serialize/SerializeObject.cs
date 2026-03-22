@@ -24,7 +24,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="obj">Object</param>
         /// <param name="objectID">Object-ID</param>
         /// <returns>Node</returns>
-        internal static IDSNode Serialize(object? obj, string objectID, StategyType strategyType)
+        internal static IDSNode Serialize(object? obj, string objectID, SerializeStrategy strategyType)
         {
             ///      (node) (Class)
             ///        |
@@ -82,7 +82,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="obj">Object</param>
         /// <param name="objectID">Object-ID</param>
         /// <returns>Node</returns>
-        private static IDSNode SerializeClass(object? classObj, string objectID, StategyType strategyType)
+        private static IDSNode SerializeClass(object? classObj, string objectID, SerializeStrategy strategyType)
         {
             ///      (node) (Class)
             ///        |
@@ -181,7 +181,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="dic">Dictioanry</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeDictionary(object? dic, string id, StategyType strategyType)
+        private static IDSNode SerializeDictionary(object? dic, string id, SerializeStrategy strategyType)
         {
             ///      (node) (Dictionary)
             ///        |
@@ -348,7 +348,7 @@ namespace DotSerial.Tree.Serialize
         /// <param name="list">List</param>
         /// <param name="id">Object-ID</param>
         /// <returns>DSNode</returns>
-        private static IDSNode SerializeList(object? list, string id, StategyType strategyType)
+        private static IDSNode SerializeList(object? list, string id, SerializeStrategy strategyType)
         {
             ///      (node) (List)
             ///        |

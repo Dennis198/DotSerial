@@ -24,7 +24,7 @@ namespace DotSerial.Json.Parser
             if (JsonParserHelper.IsStringJsonObject(orgBookmark, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Json,
+                    SerializeStrategy.Json,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
@@ -33,7 +33,7 @@ namespace DotSerial.Json.Parser
             else if (JsonParserHelper.IsStringJsonList(orgBookmark, content))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Json,
+                    SerializeStrategy.Json,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.ListNode
@@ -42,18 +42,18 @@ namespace DotSerial.Json.Parser
             else
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Json,
+                    SerializeStrategy.Json,
                     content.Trim(),
                     0,
                     CommonConstants.MainObjectKey,
                     JsonConstants.ParseStopChars
                 );
-                return new DSNode(rootNode, StategyType.Json);
+                return new DSNode(rootNode, SerializeStrategy.Json);
             }
 
             ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
 
-            return new DSNode(rootNode, StategyType.Json);
+            return new DSNode(rootNode, SerializeStrategy.Json);
         }
 
         /// <inheritdoc/>
@@ -85,14 +85,19 @@ namespace DotSerial.Json.Parser
 
                     if (innerBookmark.IsNull())
                     {
-                        var childNode = _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Json,
+                            key,
+                            null,
+                            NodeType.Leaf
+                        );
                         node.AddChild(childNode);
                     }
                     else if (JsonParserHelper.IsStringJsonObject(innerBookmark, content))
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.InnerNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, NodeType.InnerNode)
                                 as InnerNode
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
@@ -106,7 +111,7 @@ namespace DotSerial.Json.Parser
                     {
                         // Create list node
                         var listNode =
-                            _nodeFactory.CreateNodeFromString(StategyType.Json, key, null, NodeType.ListNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, NodeType.ListNode)
                                 as ListNode
                             ?? throw new DSJsonException("Parse: Can't create list node");
 
@@ -118,7 +123,7 @@ namespace DotSerial.Json.Parser
                     else
                     {
                         var primContent = innerBookmark.GetContent(content);
-                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, primContent, 0, key);
+                        var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Json, primContent, 0, key);
                         node.AddChild(childNode);
                     }
                 }
@@ -154,7 +159,7 @@ namespace DotSerial.Json.Parser
                     if (item.IsNull() || ReadOnlySpanMethods.EqualsNullString(content, item.Start))
                     {
                         var child = _nodeFactory.CreateNodeFromString(
-                            StategyType.Json,
+                            SerializeStrategy.Json,
                             i.ToString(),
                             null,
                             NodeType.Leaf
@@ -165,8 +170,12 @@ namespace DotSerial.Json.Parser
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.InnerNode)
-                                as InnerNode
+                            _nodeFactory.CreateNodeFromString(
+                                SerializeStrategy.Json,
+                                i.ToString(),
+                                null,
+                                NodeType.InnerNode
+                            ) as InnerNode
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
                         // Parse inner node
@@ -179,8 +188,12 @@ namespace DotSerial.Json.Parser
                     {
                         // Create list node
                         var listNode =
-                            _nodeFactory.CreateNodeFromString(StategyType.Json, i.ToString(), null, NodeType.ListNode)
-                                as ListNode
+                            _nodeFactory.CreateNodeFromString(
+                                SerializeStrategy.Json,
+                                i.ToString(),
+                                null,
+                                NodeType.ListNode
+                            ) as ListNode
                             ?? throw new DSJsonException("Parse: Can't create list node");
 
                         // Parse list node
@@ -191,7 +204,12 @@ namespace DotSerial.Json.Parser
                     else
                     {
                         var primContent = item.GetContent(content);
-                        var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Json, primContent, 0, i.ToString());
+                        var childNode = ParseMethods.ParsePrimitiveNode(
+                            SerializeStrategy.Json,
+                            primContent,
+                            0,
+                            i.ToString()
+                        );
                         node.AddChild(childNode);
                     }
                 }

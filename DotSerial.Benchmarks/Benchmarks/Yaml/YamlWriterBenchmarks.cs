@@ -6,7 +6,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
     [MemoryDiagnoser]
     public class YamlWriterBenchmarks
     {
-        private readonly StategyType _strategy = StategyType.Yaml;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Yaml;
         private DSNode? _nodePrimitve;
         private DSNode? _nodeList;
         private DSNode? _nodeDictionary;
@@ -31,7 +31,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodePrimitve.Stringify(_strategy);
+            string result = _nodePrimitve.Stringify();
             return result;
         }
 
@@ -42,7 +42,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeList.Stringify(_strategy);
+            string result = _nodeList.Stringify();
             return result;
         }
 
@@ -53,7 +53,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Yaml
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeDictionary.Stringify(_strategy);
+            string result = _nodeDictionary.Stringify();
             return result;
         }
     }

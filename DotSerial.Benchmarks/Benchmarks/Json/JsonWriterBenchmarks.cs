@@ -6,7 +6,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
     [MemoryDiagnoser]
     public class JsonWriterBenchmarks
     {
-        private readonly StategyType _strategy = StategyType.Json;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Json;
         private DSNode? _nodePrimitve;
         private DSNode? _nodeList;
         private DSNode? _nodeDictionary;
@@ -31,7 +31,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodePrimitve.Stringify(_strategy);
+            string result = _nodePrimitve.Stringify();
             return result;
         }
 
@@ -42,7 +42,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeList.Stringify(_strategy);
+            string result = _nodeList.Stringify();
             return result;
         }
 
@@ -53,7 +53,7 @@ namespace DotSerial.Benchmarks.Benchmarks.Json
             {
                 throw new InvalidOperationException("Node is null");
             }
-            string result = _nodeDictionary.Stringify(_strategy);
+            string result = _nodeDictionary.Stringify();
             return result;
         }
     }

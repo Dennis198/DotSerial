@@ -11,7 +11,7 @@ namespace DotSerial.Common.Parser
     internal sealed class ParserFactory
     {
         private static readonly Lazy<ParserFactory> _instance = new(() => new ParserFactory());
-        private readonly Dictionary<StategyType, IParserStrategy> _strategies = [];
+        private readonly Dictionary<SerializeStrategy, IParserStrategy> _strategies = [];
 
         /// <summary>
         /// Returns the instance
@@ -24,10 +24,10 @@ namespace DotSerial.Common.Parser
         private ParserFactory()
         {
             // Initialize strategies
-            _strategies.Add(StategyType.Json, new JsonParserVisitor());
-            _strategies.Add(StategyType.Toon, new ToonParserVisitor());
-            _strategies.Add(StategyType.Xml, new XmlParserVisitor());
-            _strategies.Add(StategyType.Yaml, new YamlParserVisitor());
+            _strategies.Add(SerializeStrategy.Json, new JsonParserVisitor());
+            _strategies.Add(SerializeStrategy.Toon, new ToonParserVisitor());
+            _strategies.Add(SerializeStrategy.Xml, new XmlParserVisitor());
+            _strategies.Add(SerializeStrategy.Yaml, new YamlParserVisitor());
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DotSerial.Common.Parser
         /// <param name="category">The strategy type</param>
         /// <param name="str">The string to parse</param>
         /// <returns>Parsed node</returns>
-        internal DSNode Parse(StategyType category, ReadOnlySpan<char> str)
+        internal DSNode Parse(SerializeStrategy category, ReadOnlySpan<char> str)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {

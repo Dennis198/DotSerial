@@ -11,7 +11,7 @@ namespace DotSerial.Common.Writer
     internal sealed class WriterFactory
     {
         private static readonly Lazy<WriterFactory> _instance = new(() => new WriterFactory());
-        private readonly Dictionary<StategyType, IWriteStrategy> _strategies = [];
+        private readonly Dictionary<SerializeStrategy, IWriteStrategy> _strategies = [];
 
         /// <summary>
         /// Returns the instance
@@ -24,10 +24,10 @@ namespace DotSerial.Common.Writer
         private WriterFactory()
         {
             // Initialize strategies
-            _strategies.Add(StategyType.Json, new JsonWriterVisitor());
-            _strategies.Add(StategyType.Toon, new ToonWriterVisitor());
-            _strategies.Add(StategyType.Xml, new XmlWriterVisitor());
-            _strategies.Add(StategyType.Yaml, new YamlWriterVisitor());
+            _strategies.Add(SerializeStrategy.Json, new JsonWriterVisitor());
+            _strategies.Add(SerializeStrategy.Toon, new ToonWriterVisitor());
+            _strategies.Add(SerializeStrategy.Xml, new XmlWriterVisitor());
+            _strategies.Add(SerializeStrategy.Yaml, new YamlWriterVisitor());
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace DotSerial.Common.Writer
         /// <param name="category">The strategy type</param>
         /// <param name="node">The node to write</param>
         /// <returns>Serialized string</returns>
-        internal ReadOnlySpan<char> Write(StategyType category, DSNode node)
+        internal ReadOnlySpan<char> Write(SerializeStrategy category, DSNode node)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {

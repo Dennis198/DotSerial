@@ -12,7 +12,7 @@ namespace DotSerial.Tree.Creation
     internal sealed class NodeFactory
     {
         private static readonly Lazy<NodeFactory> _instance = new(() => new NodeFactory());
-        private readonly Dictionary<StategyType, INodeStrategy> _strategies = [];
+        private readonly Dictionary<SerializeStrategy, INodeStrategy> _strategies = [];
 
         /// <summary>
         /// Returns the instance
@@ -26,10 +26,10 @@ namespace DotSerial.Tree.Creation
         {
             //  TODO Auslagern, in diespeareten Ornder json, xml, ..
             // Initialize strategies
-            _strategies.Add(StategyType.Json, new JsonNodeStrategy());
-            _strategies.Add(StategyType.Toon, new ToonNodeStrategy());
-            _strategies.Add(StategyType.Xml, new XmlNodeStrategy());
-            _strategies.Add(StategyType.Yaml, new YamlNodeStrategy());
+            _strategies.Add(SerializeStrategy.Json, new JsonNodeStrategy());
+            _strategies.Add(SerializeStrategy.Toon, new ToonNodeStrategy());
+            _strategies.Add(SerializeStrategy.Xml, new XmlNodeStrategy());
+            _strategies.Add(SerializeStrategy.Yaml, new YamlNodeStrategy());
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNode(StategyType category, string key, object? value, NodeType type)
+        internal IDSNode CreateNode(SerializeStrategy category, string key, object? value, NodeType type)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
@@ -57,7 +57,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNodeFromString(StategyType category, string key, string? value, NodeType type)
+        internal IDSNode CreateNodeFromString(SerializeStrategy category, string key, string? value, NodeType type)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
@@ -72,7 +72,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="category">Create node strategy</param>
         /// <param name="key">Key of the node</param>
         /// <returns>True, if quotes are needed</returns>
-        internal bool AreQuotesNeededForKey(StategyType category, string key)
+        internal bool AreQuotesNeededForKey(SerializeStrategy category, string key)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {

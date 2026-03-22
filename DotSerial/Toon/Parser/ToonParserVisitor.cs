@@ -23,12 +23,12 @@ namespace DotSerial.Toon.Parser
             if (content.IsEmpty)
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
                 );
-                return new DSNode(rootNode, StategyType.Toon);
+                return new DSNode(rootNode, SerializeStrategy.Toon);
             }
 
             // Create help object, which contains every line of the yaml file
@@ -37,37 +37,37 @@ namespace DotSerial.Toon.Parser
             if (ToonParserHelper.IsToonSingleValue(lines, content))
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     lines.GetLineContent(0, content),
                     0,
                     CommonConstants.MainObjectKey
                 );
-                return new DSNode(rootNode, StategyType.Toon);
+                return new DSNode(rootNode, SerializeStrategy.Toon);
             }
             else if (ToonParserHelper.IsToonObject(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.InnerNode
                 );
                 if (ToonParserHelper.IsEmptyObject(lines, content))
                 {
-                    return new DSNode(rootNode, StategyType.Toon);
+                    return new DSNode(rootNode, SerializeStrategy.Toon);
                 }
             }
             else if (ToonParserHelper.IsToonList(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
                     NodeType.ListNode
                 );
                 if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode, StategyType.Toon);
+                    return new DSNode(rootNode, SerializeStrategy.Toon);
                 }
             }
             else
@@ -80,7 +80,7 @@ namespace DotSerial.Toon.Parser
                 ParserAccept(rootNode, new ToonParserVisitor(), lines, content, true);
             }
 
-            return new DSNode(rootNode, StategyType.Toon);
+            return new DSNode(rootNode, SerializeStrategy.Toon);
         }
 
         /// <inheritdoc/>
@@ -122,7 +122,7 @@ namespace DotSerial.Toon.Parser
                     {
                         string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
                         var childNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             strValue,
                             NodeType.Leaf
@@ -133,7 +133,7 @@ namespace DotSerial.Toon.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             null,
                             NodeType.InnerNode
@@ -152,7 +152,7 @@ namespace DotSerial.Toon.Parser
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             null,
                             NodeType.ListNode
@@ -229,7 +229,7 @@ namespace DotSerial.Toon.Parser
                                     value.GetLineContent(0, content)
                                 );
                                 var childNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     strValue,
                                     NodeType.Leaf
@@ -240,14 +240,14 @@ namespace DotSerial.Toon.Parser
                             else if (ToonParserHelper.IsToonSingleValue(value, content))
                             {
                                 var tmp = value.GetLineContent(0, content).Trim();
-                                var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Toon, tmp, 0, key);
+                                var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Toon, tmp, 0, key);
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonObject(value, content))
                             {
                                 // Create inner node
                                 var innerNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     null,
                                     NodeType.InnerNode
@@ -266,7 +266,7 @@ namespace DotSerial.Toon.Parser
                             {
                                 // Create list node
                                 var listNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     null,
                                     NodeType.ListNode

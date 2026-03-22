@@ -1,8 +1,12 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
+using System.Net;
 using DotSerial.Common;
 using DotSerial.Common.Parser;
 using DotSerial.Common.Writer;
+using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -16,13 +20,18 @@ namespace DotSerial
         /// <summary>Parser factory instance</summary>
         private static readonly ParserFactory _parserFactory = ParserFactory.Instance;
 
+        /// <summary>Node factory</summary>
+        private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
+
         /// <summary>Internal node </summary>
-        private readonly IDSNode _node;
+        private IDSNode _node;
 
         /// <summary>
-        /// /// Key of the node.
+        /// Key of the node.
         /// </summary>
         public string Key => _node.Key;
+
+        public readonly SerializeStrategy Strategy;
 
         /// <summary>
         /// Check if node has children.
@@ -34,76 +43,53 @@ namespace DotSerial
         /// Constructor
         /// </summary>
         /// <param name="node">Node</param>
-        internal DSNode(IDSNode node, StategyType strategyType)
+        /// <param name="strategy">Serialization strategy</param>
+        internal DSNode(IDSNode node, SerializeStrategy strategy)
         {
             _node = node;
-            StrategyType = strategyType;
+            Strategy = strategy;
         }
 
-        public static DSNode FromString(ReadOnlySpan<char> str, StategyType strategy)
+        public static DSNode FromString(ReadOnlySpan<char> str, SerializeStrategy strategy)
         {
-            try
-            {
-                var root = _parserFactory.Parse(strategy, str);
-                return root;
-            }
-            catch
-            {
-                throw;
-            }
+            var root = _parserFactory.Parse(strategy, str);
+            return root;
         }
 
-        public static DSNode ToNode(object? obj, StategyType strategy, string? key = null)
+        public static DSNode ToNode(object? obj, SerializeStrategy strategy, string? key = null)
         {
-            try
-            {
-                // Determine key
-                string currKey = key ?? CommonConstants.MainObjectKey;
+            string currKey = key ?? CommonConstants.MainObjectKey;
+            var rootNode = SerializeObject.Serialize(obj, currKey, strategy);
 
-                // Serialize object
-                var rootNode = SerializeObject.Serialize(obj, currKey, strategy);
-
-                return new DSNode(rootNode, strategy);
-            }
-            catch
-            {
-                throw;
-            }
+            return new DSNode(rootNode, strategy);
         }
 
-        public static U ToObject<U>(ReadOnlySpan<char> str, StategyType strategy)
+        public static U ToObject<U>(ReadOnlySpan<char> str, SerializeStrategy strategy)
         {
-            try
-            {
-                // Parse json string to node
-                DSNode dsNode = FromString(str, strategy);
+            DSNode dsNode = FromString(str, strategy);
 
-                return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
-            }
-            catch
-            {
-                throw;
-            }
+            return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
         }
 
-        public string Stringify(StategyType strategy)
+        public string Stringify()
         {
             if (null == _node)
             {
                 throw new DotSerialException($"{_node} can't be null.");
             }
 
-            try
-            {
-                // Convert
-                var jsonString = _writerFactory.Write(strategy, this);
+            var jsonString = _writerFactory.Write(Strategy, this);
 
-                return new string(jsonString);
-            }
-            catch
-            {
-                throw;
-            }
+            return new string(jsonString);
+        }
+
+        public static string Stringify(object? obj, SerializeStrategy strategy)
+        {
+            string currKey = CommonConstants.MainObjectKey;
+            var rootNode = SerializeObject.Serialize(obj, currKey, strategy);
+            var jsonString = _writerFactory.Write(strategy, new DSNode(rootNode, strategy));
+
+            return new string(jsonString);
         }
 
         /// <summary>
@@ -115,14 +101,17 @@ namespace DotSerial
             return _node;
         }
 
-        # region Interface Implementation
-
         public DSNode this[string key]
         {
-            get { return new DSNode(_node.GetChild(key), StrategyType); }
+            get { return new DSNode(_node.GetChild(key), Strategy); }
             set
             {
                 ArgumentNullException.ThrowIfNull(key);
+
+                if (Strategy != value.Strategy)
+                {
+                    throw new DotSerialException("Can't set a node with a different strategy type.");
+                }
 
                 var node = value.GetInternalData();
 
@@ -132,9 +121,9 @@ namespace DotSerial
             }
         }
 
-        public ICollection<string> Keys => throw new NotImplementedException();
+        public ICollection<string> Keys => _node.Keys;
 
-        public ICollection<DSNode> Values => throw new NotImplementedException();
+        public ICollection<DSNode> Values => [.. _node.Values.Select(child => new DSNode(child, Strategy))];
 
         /// <summary>
         /// Number of items
@@ -146,6 +135,11 @@ namespace DotSerial
         public void Add(string key, DSNode value)
         {
             ArgumentNullException.ThrowIfNull(key);
+
+            if (Strategy != value.Strategy)
+            {
+                throw new DotSerialException("Can't add a node with a different strategy type.");
+            }
 
             var node = value.GetInternalData();
 
@@ -165,6 +159,11 @@ namespace DotSerial
         public bool TryAdd(string key, DSNode value)
         {
             ArgumentNullException.ThrowIfNull(key);
+
+            if (Strategy != value.Strategy)
+            {
+                return false;
+            }
 
             if (ContainsKey(key))
             {
@@ -211,7 +210,7 @@ namespace DotSerial
 
             foreach (var child in _node.GetChildren())
             {
-                array[arrayIndex++] = new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, StrategyType));
+                array[arrayIndex++] = new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, Strategy));
             }
         }
 
@@ -219,7 +218,7 @@ namespace DotSerial
         {
             foreach (var child in _node.GetChildren())
             {
-                yield return new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, StrategyType));
+                yield return new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, Strategy));
             }
         }
 
@@ -252,23 +251,142 @@ namespace DotSerial
             return GetEnumerator();
         }
 
-        #endregion
-
-        public readonly StategyType StrategyType;
-
-        public void GetNodeType()
+        public ABC GetNodeType()
         {
-            throw new NotImplementedException();
+            if (_node is LeafNode)
+            {
+                return ABC.Value;
+            }
+            if (_node is InnerNode || _node is DictionaryNode)
+            {
+                return ABC.Object;
+            }
+            if (_node is ListNode)
+            {
+                return ABC.Array;
+            }
+
+            throw new DotSerialException("Unknown node type.");
         }
 
-        public string GetNodeValue()
+        public string? GetNodeValue()
         {
-            throw new NotImplementedException();
+            return _node.GetValue();
         }
 
-        public void SetNodeValue(string value)
+        public void SetNodeValue(string? value)
         {
-            throw new NotImplementedException();
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(bool value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(byte value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(sbyte value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(char value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(decimal value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(double value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(float value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(int value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(uint value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(nint value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(nuint value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(long value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(ulong value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(short value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(ushort value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(DateTime value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(Guid value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(TimeSpan value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(Uri value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(IPAddress value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(Version value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
+        }
+
+        public void SetNodeValue(CultureInfo value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, NodeType.Leaf);
         }
     }
 }
