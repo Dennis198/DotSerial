@@ -48,12 +48,12 @@ namespace DotSerial.Json.Parser
                     CommonConstants.MainObjectKey,
                     JsonConstants.ParseStopChars
                 );
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Json);
             }
 
             ParserAccept(rootNode, new JsonParserVisitor(), orgBookmark, content);
 
-            return new DSNode(rootNode);
+            return new DSNode(rootNode, StategyType.Json);
         }
 
         /// <inheritdoc/>

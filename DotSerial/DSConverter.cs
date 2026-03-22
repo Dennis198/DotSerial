@@ -67,14 +67,14 @@ namespace DotSerial
         public static string Serialize(object? obj, StategyType strategy)
         {
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, strategy);
-            var dsNode = new DSNode(rootNode);
+            var dsNode = new DSNode(rootNode, strategy);
             return dsNode.Stringify(strategy);
         }
 
         public static DSNode ToNode(object? obj, StategyType strategy)
         {
             var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, strategy);
-            var dsNode = new DSNode(rootNode);
+            var dsNode = new DSNode(rootNode, strategy);
             return dsNode;
         }
 

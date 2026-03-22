@@ -70,7 +70,7 @@ namespace DotSerial.Xml.Parser
                     );
                 }
 
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Xml);
             }
             else
             {
@@ -82,7 +82,7 @@ namespace DotSerial.Xml.Parser
                 ParserAccept(rootNode, new XmlParserVisitor(), rootTagKeyPair, rootBookmark, content);
             }
 
-            return new DSNode(rootNode);
+            return new DSNode(rootNode, StategyType.Xml);
         }
 
         /// <inheritdoc/>

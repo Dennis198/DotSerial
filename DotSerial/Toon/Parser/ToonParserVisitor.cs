@@ -28,7 +28,7 @@ namespace DotSerial.Toon.Parser
                     null,
                     NodeType.InnerNode
                 );
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Toon);
             }
 
             // Create help object, which contains every line of the yaml file
@@ -42,7 +42,7 @@ namespace DotSerial.Toon.Parser
                     0,
                     CommonConstants.MainObjectKey
                 );
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Toon);
             }
             else if (ToonParserHelper.IsToonObject(lines, content, true))
             {
@@ -54,7 +54,7 @@ namespace DotSerial.Toon.Parser
                 );
                 if (ToonParserHelper.IsEmptyObject(lines, content))
                 {
-                    return new DSNode(rootNode);
+                    return new DSNode(rootNode, StategyType.Toon);
                 }
             }
             else if (ToonParserHelper.IsToonList(lines, content, true))
@@ -67,7 +67,7 @@ namespace DotSerial.Toon.Parser
                 );
                 if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode);
+                    return new DSNode(rootNode, StategyType.Toon);
                 }
             }
             else
@@ -80,7 +80,7 @@ namespace DotSerial.Toon.Parser
                 ParserAccept(rootNode, new ToonParserVisitor(), lines, content, true);
             }
 
-            return new DSNode(rootNode);
+            return new DSNode(rootNode, StategyType.Toon);
         }
 
         /// <inheritdoc/>

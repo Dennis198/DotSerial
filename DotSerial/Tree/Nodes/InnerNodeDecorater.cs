@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree.Deserialize;
 
 namespace DotSerial.Tree.Nodes
@@ -18,6 +17,15 @@ namespace DotSerial.Tree.Nodes
 
         /// <inheritdoc/>
         public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
+
+        /// <inheritdoc/>
+        public int Count => _wrappedInnerNode.Count;
+
+        /// <inheritdoc/>
+        public ICollection<string> Keys => _wrappedInnerNode.Keys;
+
+        /// <inheritdoc/>
+        public ICollection<IDSNode> Values => _wrappedInnerNode.Values;
 
         /// <summary>
         /// Construcot
@@ -67,6 +75,24 @@ namespace DotSerial.Tree.Nodes
         public virtual object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
         {
             throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            _wrappedInnerNode.Clear();
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key)
+        {
+            return _wrappedInnerNode.ContainsKey(key);
+        }
+
+        /// <inheritdoc/>
+        public bool Remove(string key)
+        {
+            return _wrappedInnerNode.Remove(key);
         }
     }
 }

@@ -1,6 +1,5 @@
 using DotSerial.Json.Parser;
 using DotSerial.Toon.Parser;
-using DotSerial.Tree.Creation;
 using DotSerial.Xml.Parser;
 using DotSerial.Yaml.Parser;
 
@@ -12,7 +11,7 @@ namespace DotSerial.Common.Parser
     internal sealed class ParserFactory
     {
         private static readonly Lazy<ParserFactory> _instance = new(() => new ParserFactory());
-        private readonly Dictionary<StategyType, IParserStrategy> _strategies = new();
+        private readonly Dictionary<StategyType, IParserStrategy> _strategies = [];
 
         /// <summary>
         /// Returns the instance

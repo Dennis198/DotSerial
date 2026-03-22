@@ -1,6 +1,5 @@
 using DotSerial.Json.Writer;
 using DotSerial.Toon.Writer;
-using DotSerial.Tree.Creation;
 using DotSerial.Xml.Writer;
 using DotSerial.Yaml.Writer;
 
@@ -12,7 +11,7 @@ namespace DotSerial.Common.Writer
     internal sealed class WriterFactory
     {
         private static readonly Lazy<WriterFactory> _instance = new(() => new WriterFactory());
-        private readonly Dictionary<StategyType, IWriteStrategy> _strategies = new();
+        private readonly Dictionary<StategyType, IWriteStrategy> _strategies = [];
 
         /// <summary>
         /// Returns the instance

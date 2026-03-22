@@ -10,14 +10,17 @@ namespace DotSerial
 {
     public class DSNode : IDictionary<string, DSNode>
     {
+        /// <summary>Writer factory instance</summary>
         private static readonly WriterFactory _writerFactory = WriterFactory.Instance;
+
+        /// <summary>Parser factory instance</summary>
         private static readonly ParserFactory _parserFactory = ParserFactory.Instance;
 
         /// <summary>Internal node </summary>
         private readonly IDSNode _node;
 
         /// <summary>
-        /// Key of the node.
+        /// /// Key of the node.
         /// </summary>
         public string Key => _node.Key;
 
@@ -31,9 +34,10 @@ namespace DotSerial
         /// Constructor
         /// </summary>
         /// <param name="node">Node</param>
-        internal DSNode(IDSNode node)
+        internal DSNode(IDSNode node, StategyType strategyType)
         {
             _node = node;
+            StrategyType = strategyType;
         }
 
         public static DSNode FromString(ReadOnlySpan<char> str, StategyType strategy)
@@ -59,7 +63,7 @@ namespace DotSerial
                 // Serialize object
                 var rootNode = SerializeObject.Serialize(obj, currKey, strategy);
 
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, strategy);
             }
             catch
             {
@@ -115,66 +119,132 @@ namespace DotSerial
 
         public DSNode this[string key]
         {
-            get => throw new NotImplementedException();
-            set => throw new NotImplementedException();
+            get { return new DSNode(_node.GetChild(key), StrategyType); }
+            set
+            {
+                ArgumentNullException.ThrowIfNull(key);
+
+                var node = value.GetInternalData();
+
+                node.Remove(key);
+
+                _node.AddChild(node);
+            }
         }
 
         public ICollection<string> Keys => throw new NotImplementedException();
 
         public ICollection<DSNode> Values => throw new NotImplementedException();
 
-        public int Count => throw new NotImplementedException();
+        /// <summary>
+        /// Number of items
+        /// </summary>
+        public int Count => _node.Count;
 
         public bool IsReadOnly => throw new NotImplementedException();
 
         public void Add(string key, DSNode value)
         {
-            throw new NotImplementedException();
+            ArgumentNullException.ThrowIfNull(key);
+
+            var node = value.GetInternalData();
+
+            _node.AddChild(node);
         }
 
         public void Add(KeyValuePair<string, DSNode> item)
         {
-            throw new NotImplementedException();
+            Add(item.Key, item.Value);
+        }
+
+        public bool TryAdd(KeyValuePair<string, DSNode> item)
+        {
+            return TryAdd(item.Key, item.Value);
+        }
+
+        public bool TryAdd(string key, DSNode value)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+
+            if (ContainsKey(key))
+            {
+                return false;
+            }
+
+            var node = value.GetInternalData();
+
+            _node.AddChild(node);
+            return true;
         }
 
         public void Clear()
         {
-            throw new NotImplementedException();
+            _node.Clear();
         }
 
         public bool Contains(KeyValuePair<string, DSNode> item)
         {
-            throw new NotImplementedException();
+            return ContainsKey(item.Key);
         }
 
         public bool ContainsKey(string key)
         {
-            throw new NotImplementedException();
+            return _node.ContainsKey(key);
         }
 
         public void CopyTo(KeyValuePair<string, DSNode>[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            if (array == null)
+            {
+                throw new ArgumentNullException(nameof(array));
+            }
+
+            if (arrayIndex < 0 || arrayIndex > array.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "Index is out of range.");
+            }
+
+            if (array.Length - arrayIndex < Count)
+            {
+                throw new ArgumentException("The array does not have enough space to copy the elements.");
+            }
+
+            foreach (var child in _node.GetChildren())
+            {
+                array[arrayIndex++] = new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, StrategyType));
+            }
         }
 
         public IEnumerator<KeyValuePair<string, DSNode>> GetEnumerator()
         {
-            throw new NotImplementedException();
+            foreach (var child in _node.GetChildren())
+            {
+                yield return new KeyValuePair<string, DSNode>(child.Key, new DSNode(child, StrategyType));
+            }
         }
 
         public bool Remove(string key)
         {
-            throw new NotImplementedException();
+            return _node.Remove(key);
         }
 
         public bool Remove(KeyValuePair<string, DSNode> item)
         {
-            throw new NotImplementedException();
+            return Remove(item.Key);
         }
 
         public bool TryGetValue(string key, [MaybeNullWhen(false)] out DSNode value)
         {
-            throw new NotImplementedException();
+            try
+            {
+                value = this[key];
+                return true;
+            }
+            catch
+            {
+                value = null;
+                return false;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -183,5 +253,22 @@ namespace DotSerial
         }
 
         #endregion
+
+        public readonly StategyType StrategyType;
+
+        public void GetNodeType()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetNodeValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetNodeValue(string value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

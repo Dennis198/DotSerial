@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree.Deserialize;
 
 namespace DotSerial.Tree.Nodes
@@ -11,27 +10,50 @@ namespace DotSerial.Tree.Nodes
     /// <param name="value">Truel, if value must be quoted</param>
     public class LeafNode(string key, string? value, bool isQuoted) : IDSNode
     {
-        /// <inheritdoc/>
-        public string Key { get; private set; } = key;
-
-        /// <inheritdoc/>
-        public bool IsQuoted { get; private set; } = isQuoted;
-
         /// <summary>
         /// Value of the leaf
         /// </summary>
         private readonly string? _value = value;
 
         /// <inheritdoc/>
-        public string? GetValue()
+        public int Count => throw new DotSerialException($"{nameof(Count)} can't be called on a leaf node.");
+
+        /// <inheritdoc/>
+        public bool IsQuoted { get; private set; } = isQuoted;
+
+        /// <inheritdoc/>
+        public string Key { get; private set; } = key;
+
+        /// <inheritdoc/>
+        public ICollection<string> Keys =>
+            throw new DotSerialException($"{nameof(Keys)} can't be called on a leaf node.");
+
+        /// <inheritdoc/>
+        public ICollection<IDSNode> Values =>
+            throw new DotSerialException($"{nameof(Values)} can't be called on a leaf node.");
+
+        /// <inheritdoc/>
+        public void AddChild(IDSNode? node)
         {
-            return _value;
+            throw new DotSerialException($"{nameof(AddChild)} can't be called on a leaf node.");
         }
 
         /// <inheritdoc/>
-        public bool HasChildren()
+        public void Clear()
         {
-            return false;
+            throw new DotSerialException($"{nameof(Clear)} can't be called on a leaf node.");
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key)
+        {
+            throw new DotSerialException($"{nameof(ContainsKey)} can't be called on a leaf node.");
+        }
+
+        /// <inheritdoc/>
+        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitLeafNode(this, type);
         }
 
         /// <inheritdoc/>
@@ -47,15 +69,21 @@ namespace DotSerial.Tree.Nodes
         }
 
         /// <inheritdoc/>
-        public void AddChild(IDSNode? node)
+        public string? GetValue()
         {
-            throw new DotSerialException($"{nameof(AddChild)} can't be called on a leaf node.");
+            return _value;
         }
 
         /// <inheritdoc/>
-        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        public bool HasChildren()
         {
-            return visitor.VisitLeafNode(this, type);
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public bool Remove(string key)
+        {
+            throw new DotSerialException($"{nameof(Remove)} can't be called on a leaf node.");
         }
     }
 }

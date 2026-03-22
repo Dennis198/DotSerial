@@ -35,7 +35,7 @@ namespace DotSerial.Yaml.Parser
                     null,
                     NodeType.InnerNode
                 );
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Yaml);
             }
 
             if (YamlParserHelper.IsYamlSingleValue(lines, content))
@@ -46,7 +46,7 @@ namespace DotSerial.Yaml.Parser
                     0,
                     CommonConstants.MainObjectKey
                 );
-                return new DSNode(rootNode);
+                return new DSNode(rootNode, StategyType.Yaml);
             }
             else if (YamlParserHelper.IsYamlObject(lines, content))
             {
@@ -58,7 +58,7 @@ namespace DotSerial.Yaml.Parser
                 );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode);
+                    return new DSNode(rootNode, StategyType.Yaml);
                 }
             }
             else if (YamlParserHelper.IsYamlList(lines, content))
@@ -71,7 +71,7 @@ namespace DotSerial.Yaml.Parser
                 );
                 if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSNode(rootNode);
+                    return new DSNode(rootNode, StategyType.Yaml);
                 }
             }
             else
@@ -84,7 +84,7 @@ namespace DotSerial.Yaml.Parser
                 ParserAccept(rootNode, new YamlParserVisitor(), lines, content);
             }
 
-            return new DSNode(rootNode);
+            return new DSNode(rootNode, StategyType.Yaml);
         }
 
         /// <inheritdoc/>

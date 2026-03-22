@@ -8,9 +8,9 @@ namespace DotSerial.Tree.Nodes
     public interface IDSNode
     {
         /// <summary>
-        /// Key of the node
+        /// Number of child nodes
         /// </summary>
-        public string Key { get; }
+        public int Count { get; }
 
         /// <summary>
         /// True, if the node value must be quoted when serialized
@@ -18,16 +18,44 @@ namespace DotSerial.Tree.Nodes
         public bool IsQuoted { get; }
 
         /// <summary>
-        /// Returns the value of the node.
+        /// Key of the node
         /// </summary>
-        /// <returns>Value of node</returns>
-        public abstract string? GetValue();
+        public string Key { get; }
 
         /// <summary>
-        /// Get info, if node has children.
+        /// List of child nodes keys
         /// </summary>
-        /// <returns>True, if node has children</returns>
-        public abstract bool HasChildren();
+        public ICollection<string> Keys { get; }
+
+        /// <summary>
+        /// List of child nodes
+        /// </summary>
+        public ICollection<IDSNode> Values { get; }
+
+        /// <summary>
+        /// /// Append child node
+        /// </summary>
+        /// <param name="node">Child node</param>
+        public abstract void AddChild(IDSNode? node);
+
+        /// <summary>
+        /// Clears all child nodes
+        /// </summary>
+        public void Clear();
+
+        /// <summary>
+        /// Check if the node contains child with the key
+        /// </summary>
+        /// <param name="key">Child key</param>
+        public abstract bool ContainsKey(string key);
+
+        /// <summary>
+        /// Deserialize visitor
+        /// </summary>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="type">Type of the object</param>
+        /// <returns>Deserialized object</returns>
+        public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
 
         /// <summary>
         /// Gets child node
@@ -43,17 +71,22 @@ namespace DotSerial.Tree.Nodes
         public abstract List<IDSNode> GetChildren();
 
         /// <summary>
-        /// Append child node
+        /// Returns the value of the node.
         /// </summary>
-        /// <param name="node">Child node</param>
-        public abstract void AddChild(IDSNode? node);
+        /// <returns>Value of node</returns>
+        public abstract string? GetValue();
 
         /// <summary>
-        /// Deserialize visitor
+        /// Get info, if node has children.
         /// </summary>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="type">Type of the object</param>
-        /// <returns>Deserialized object</returns>
-        public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
+        /// <returns>True, if node has children</returns>
+        public abstract bool HasChildren();
+
+        /// <summary>
+        /// Remove child node with the key
+        /// </summary>
+        /// <param name="key">Key of the child node</param>
+        /// <returns>True if the child node was removed, otherwise false</returns>
+        public abstract bool Remove(string key);
     }
 }
