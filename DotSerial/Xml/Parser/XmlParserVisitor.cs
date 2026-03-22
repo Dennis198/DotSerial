@@ -42,7 +42,7 @@ namespace DotSerial.Xml.Parser
                     SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
             }
             else if (rootTagKeyPair.IsXmlList())
@@ -51,7 +51,7 @@ namespace DotSerial.Xml.Parser
                     SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.ListNode
+                    TreeNodeType.ListNode
                 );
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
@@ -130,7 +130,7 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -149,7 +149,7 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.ListNode
+                            TreeNodeType.ListNode
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -227,7 +227,7 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -246,7 +246,7 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.ListNode
+                            TreeNodeType.ListNode
                         );
 
                         if (false == tmpBoomkark.IsNull())

@@ -27,7 +27,7 @@ namespace DotSerial.Json.Parser
                     SerializeStrategy.Json,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
             }
             else if (JsonParserHelper.IsStringJsonList(orgBookmark, content))
@@ -36,7 +36,7 @@ namespace DotSerial.Json.Parser
                     SerializeStrategy.Json,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.ListNode
+                    TreeNodeType.ListNode
                 );
             }
             else
@@ -89,7 +89,7 @@ namespace DotSerial.Json.Parser
                             SerializeStrategy.Json,
                             key,
                             null,
-                            NodeType.Leaf
+                            TreeNodeType.Leaf
                         );
                         node.AddChild(childNode);
                     }
@@ -97,7 +97,7 @@ namespace DotSerial.Json.Parser
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, NodeType.InnerNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, TreeNodeType.InnerNode)
                                 as InnerNode
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
@@ -111,7 +111,7 @@ namespace DotSerial.Json.Parser
                     {
                         // Create list node
                         var listNode =
-                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, NodeType.ListNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, TreeNodeType.ListNode)
                                 as ListNode
                             ?? throw new DSJsonException("Parse: Can't create list node");
 
@@ -162,7 +162,7 @@ namespace DotSerial.Json.Parser
                             SerializeStrategy.Json,
                             i.ToString(),
                             null,
-                            NodeType.Leaf
+                            TreeNodeType.Leaf
                         );
                         node.AddChild(child);
                     }
@@ -174,7 +174,7 @@ namespace DotSerial.Json.Parser
                                 SerializeStrategy.Json,
                                 i.ToString(),
                                 null,
-                                NodeType.InnerNode
+                                TreeNodeType.InnerNode
                             ) as InnerNode
                             ?? throw new DSJsonException("Parse: Can't create inner node");
 
@@ -192,7 +192,7 @@ namespace DotSerial.Json.Parser
                                 SerializeStrategy.Json,
                                 i.ToString(),
                                 null,
-                                NodeType.ListNode
+                                TreeNodeType.ListNode
                             ) as ListNode
                             ?? throw new DSJsonException("Parse: Can't create list node");
 

@@ -84,7 +84,7 @@ namespace DotSerial.Common
                 // dictionary node which wraps the inner node.
                 if (TypeCheckMethods.IsDictionary(typeof(U)) && nodeToSerialize is InnerNode)
                 {
-                    nodeToSerialize = NodeFactory.WrappNode(nodeToSerialize, NodeType.DictionaryNode);
+                    nodeToSerialize = NodeFactory.WrappNode(nodeToSerialize, TreeNodeType.DictionaryNode);
                 }
 
                 // Deserilize object

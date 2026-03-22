@@ -33,7 +33,7 @@ namespace DotSerial.Yaml.Parser
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
@@ -54,7 +54,7 @@ namespace DotSerial.Yaml.Parser
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
                 {
@@ -67,7 +67,7 @@ namespace DotSerial.Yaml.Parser
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.ListNode
+                    TreeNodeType.ListNode
                 );
                 if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
@@ -119,7 +119,7 @@ namespace DotSerial.Yaml.Parser
                             SerializeStrategy.Yaml,
                             key,
                             strValue,
-                            NodeType.Leaf
+                            TreeNodeType.Leaf
                         );
                         node.AddChild(childNode);
                     }
@@ -130,7 +130,7 @@ namespace DotSerial.Yaml.Parser
                             SerializeStrategy.Yaml,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
@@ -149,7 +149,7 @@ namespace DotSerial.Yaml.Parser
                             SerializeStrategy.Yaml,
                             key,
                             null,
-                            NodeType.ListNode
+                            TreeNodeType.ListNode
                         );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
@@ -209,7 +209,7 @@ namespace DotSerial.Yaml.Parser
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Yaml, key, null, NodeType.InnerNode)
+                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Yaml, key, null, TreeNodeType.InnerNode)
                                 as InnerNode
                             ?? throw new NotImplementedException();
 
@@ -229,7 +229,7 @@ namespace DotSerial.Yaml.Parser
                             SerializeStrategy.Yaml,
                             key,
                             null,
-                            NodeType.ListNode
+                            TreeNodeType.ListNode
                         );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))

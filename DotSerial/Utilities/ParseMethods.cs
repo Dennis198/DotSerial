@@ -31,7 +31,7 @@ namespace DotSerial.Utilities
         {
             if (ReadOnlySpanMethods.IsNullOrWhiteSpace(content))
             {
-                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(strategyType, key, null, TreeNodeType.Leaf);
             }
 
             string? nodeValue;
@@ -56,7 +56,7 @@ namespace DotSerial.Utilities
 
             nodeValue = ReadOnlySpanMethods.SliceFromTo(content, startIndex, end).ToString();
 
-            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
+            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, TreeNodeType.Leaf);
         }
 
         /// <summary>

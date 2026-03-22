@@ -813,7 +813,7 @@ namespace DotSerial.Toon.Parser
                     SerializeStrategy.Toon,
                     i.ToString(),
                     lItems[i],
-                    NodeType.Leaf
+                    TreeNodeType.Leaf
                 );
                 node.AddChild(listNode);
             }
@@ -843,7 +843,7 @@ namespace DotSerial.Toon.Parser
                     SerializeStrategy.Toon,
                     i.ToString(),
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
                 var values = ParseCommaSeperateValues(line, 0);
 
@@ -860,7 +860,7 @@ namespace DotSerial.Toon.Parser
                         SerializeStrategy.Toon,
                         key,
                         value,
-                        NodeType.Leaf
+                        TreeNodeType.Leaf
                     );
                     child.AddChild(childChild);
                 }

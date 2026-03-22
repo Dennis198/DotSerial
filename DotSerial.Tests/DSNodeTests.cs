@@ -17,7 +17,7 @@ namespace DotSerial.Tests
         public void Create(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode(strategy, "key", "value", NodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(strategy, "key", "value", TreeNodeType.Leaf);
 
             // Act
             var result = new DSNode(tmp, strategy);

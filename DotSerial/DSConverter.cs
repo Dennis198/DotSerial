@@ -18,14 +18,7 @@ namespace DotSerial
         /// <returns>An instance of <typeparamref name="U"/> populated with the deserialized data.</returns>
         public static U Deserialize<U>(ReadOnlySpan<char> str, SerializeStrategy strategy)
         {
-            try
-            {
-                return DSNode.ToObject<U>(str, strategy);
-            }
-            catch
-            {
-                throw;
-            }
+            return DSNode.ToObject<U>(str, strategy);
         }
 
         /// <summary>

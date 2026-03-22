@@ -40,7 +40,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNode(SerializeStrategy category, string key, object? value, NodeType type)
+        internal IDSNode CreateNode(SerializeStrategy category, string key, object? value, TreeNodeType type)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
@@ -57,7 +57,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNodeFromString(SerializeStrategy category, string key, string? value, NodeType type)
+        internal IDSNode CreateNodeFromString(SerializeStrategy category, string key, string? value, TreeNodeType type)
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
@@ -87,11 +87,11 @@ namespace DotSerial.Tree.Creation
         /// <param name="node">Node to be wrapped.</param>
         /// <param name="targetType">Wrapped type</param>
         /// <returns>IDSNode</returns>
-        internal static IDSNode WrappNode(IDSNode node, NodeType targetType)
+        internal static IDSNode WrappNode(IDSNode node, TreeNodeType targetType)
         {
             ArgumentNullException.ThrowIfNull(node);
 
-            if (targetType != NodeType.ListNode && targetType != NodeType.DictionaryNode)
+            if (targetType != TreeNodeType.ListNode && targetType != TreeNodeType.DictionaryNode)
             {
                 throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
             }
@@ -100,11 +100,11 @@ namespace DotSerial.Tree.Creation
             {
                 switch (targetType)
                 {
-                    case NodeType.ListNode:
+                    case TreeNodeType.ListNode:
                     {
                         return new ListNode(wrapper);
                     }
-                    case NodeType.DictionaryNode:
+                    case TreeNodeType.DictionaryNode:
                     {
                         return new DictionaryNode(wrapper);
                     }
