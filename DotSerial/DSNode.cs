@@ -142,7 +142,7 @@ namespace DotSerial
         {
             DSNode dsNode = FromString(str, strategy);
 
-            return IDSSerialNode<U>.ToObject<U>(dsNode.GetInternalData());
+            return IDSNode.ToObject<U>(dsNode.GetInternalData());
         }
 
         /// <summary>

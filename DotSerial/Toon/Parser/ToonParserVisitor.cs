@@ -72,7 +72,7 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DSToonException("Parse: String is not toon.");
+                throw new DotSerialException("Parse: String is not toon.");
             }
 
             if (lines.Count > 0)
@@ -169,13 +169,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DSToonException("Parse: String is not a toon object.");
+                        throw new DotSerialException("Parse: String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DSToonException("Parse: String is not a toon object.");
+                throw new DotSerialException("Parse: String is not a toon object.");
             }
         }
 
@@ -283,7 +283,7 @@ namespace DotSerial.Toon.Parser
                             }
                             else
                             {
-                                throw new DSToonException("Parse: String is not a toon object.");
+                                throw new DotSerialException("Parse: String is not a toon object.");
                             }
                             index++;
                         }
@@ -297,13 +297,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DSToonException("Parse: String is not a toon object.");
+                        throw new DotSerialException("Parse: String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DSToonException("Parse: String is not a toon list.");
+                throw new DotSerialException("Parse: String is not a toon list.");
             }
         }
 
@@ -341,7 +341,7 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DSToonException("Parse: Unknown node type.");
+                throw new DotSerialException("Parse: Unknown node type.");
             }
         }
     }

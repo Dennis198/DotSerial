@@ -28,7 +28,7 @@ namespace DotSerial.Xml.Parser
 
             if (rootTmp.Count != 1)
             {
-                throw new DSXmlException("Parse: Xml must have exactly one root element.");
+                throw new DotSerialException("Parse: Xml must have exactly one root element.");
             }
 
             var rootTagKeyPair = rootTmp.Keys.First();
@@ -79,7 +79,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml object.");
+                throw new DotSerialException("Parse: String is not a xml object.");
             }
 
             if (false == rootBookmark.IsNull())
@@ -177,13 +177,13 @@ namespace DotSerial.Xml.Parser
                     }
                     else
                     {
-                        throw new DSXmlException("Parse: String is not a xml object.");
+                        throw new DotSerialException("Parse: String is not a xml object.");
                     }
                 }
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml object.");
+                throw new DotSerialException("Parse: String is not a xml object.");
             }
         }
 
@@ -274,7 +274,7 @@ namespace DotSerial.Xml.Parser
                     }
                     else
                     {
-                        throw new DSXmlException("Parse: String is not a xml object.");
+                        throw new DotSerialException("Parse: String is not a xml object.");
                     }
 
                     i++;
@@ -282,7 +282,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml list.");
+                throw new DotSerialException("Parse: String is not a xml list.");
             }
         }
 
@@ -320,7 +320,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DSXmlException("Parse: Unknown node type.");
+                throw new DotSerialException("Parse: Unknown node type.");
             }
         }
     }

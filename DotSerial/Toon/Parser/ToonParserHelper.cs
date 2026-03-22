@@ -46,7 +46,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
 
                     int sIndex = i + 1;
@@ -93,7 +93,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
 
                     var helpObj = lines.SliceFromTo(i, i);
@@ -944,7 +944,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (seperatorFound)
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
                     seperatorFound = true;
                 }

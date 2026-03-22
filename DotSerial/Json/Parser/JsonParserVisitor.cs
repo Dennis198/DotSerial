@@ -99,7 +99,7 @@ namespace DotSerial.Json.Parser
                         var innerNode =
                             _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, TreeNodeType.InnerNode)
                                 as InnerNode
-                            ?? throw new DSJsonException("Parse: Can't create inner node");
+                            ?? throw new DotSerialException("Parse: Can't create inner node");
 
                         // Parse inner node
                         ParserAccept(innerNode, new JsonParserVisitor(), innerBookmark, content);
@@ -113,7 +113,7 @@ namespace DotSerial.Json.Parser
                         var listNode =
                             _nodeFactory.CreateNodeFromString(SerializeStrategy.Json, key, null, TreeNodeType.ListNode)
                                 as ListNode
-                            ?? throw new DSJsonException("Parse: Can't create list node");
+                            ?? throw new DotSerialException("Parse: Can't create list node");
 
                         // Parse list node
                         ParserAccept(listNode, new JsonParserVisitor(), innerBookmark, content);
@@ -130,7 +130,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                throw new DSJsonException("Parse: String is not a json object.");
+                throw new DotSerialException("Parse: String is not a json object.");
             }
         }
 
@@ -176,7 +176,7 @@ namespace DotSerial.Json.Parser
                                 null,
                                 TreeNodeType.InnerNode
                             ) as InnerNode
-                            ?? throw new DSJsonException("Parse: Can't create inner node");
+                            ?? throw new DotSerialException("Parse: Can't create inner node");
 
                         // Parse inner node
                         ParserAccept(innerNode, new JsonParserVisitor(), item, content);
@@ -194,7 +194,7 @@ namespace DotSerial.Json.Parser
                                 null,
                                 TreeNodeType.ListNode
                             ) as ListNode
-                            ?? throw new DSJsonException("Parse: Can't create list node");
+                            ?? throw new DotSerialException("Parse: Can't create list node");
 
                         // Parse list node
                         ParserAccept(listNode, new JsonParserVisitor(), item, content);
@@ -216,7 +216,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                throw new DSJsonException("Parse: String is not a json list.");
+                throw new DotSerialException("Parse: String is not a json list.");
             }
         }
 
@@ -251,7 +251,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                throw new DSJsonException("Parse: Unknown node type.");
+                throw new DotSerialException("Parse: Unknown node type.");
             }
         }
     }

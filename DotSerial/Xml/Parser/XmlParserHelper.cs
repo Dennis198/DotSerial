@@ -106,12 +106,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DSXmlException("Parse: Start char is not '<'.");
+                throw new DotSerialException("Parse: Start char is not '<'.");
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DSXmlException("Parse: End char is not '>'.");
+                throw new DotSerialException("Parse: End char is not '>'.");
             }
 
             string tagBuilder = string.Empty;
@@ -164,7 +164,7 @@ namespace DotSerial.Xml.Parser
                 }
                 else
                 {
-                    throw new DSXmlException("Parse: Invalid key format.");
+                    throw new DotSerialException("Parse: Invalid key format.");
                 }
             }
 
@@ -276,7 +276,7 @@ namespace DotSerial.Xml.Parser
 
             if (-1 == startIndex || -1 == endIndex)
             {
-                throw new DSXmlException("Parse: Could not find end of xml tag.");
+                throw new DotSerialException("Parse: Could not find end of xml tag.");
             }
 
             return (startIndex, endIndex);
@@ -291,12 +291,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DSXmlException("Parse: Start char is not '<'.");
+                throw new DotSerialException("Parse: Start char is not '<'.");
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DSXmlException("Parse: End char is not '>'.");
+                throw new DotSerialException("Parse: End char is not '>'.");
             }
 
             for (int i = 1; i < content.Length - 1; i++)
@@ -316,7 +316,7 @@ namespace DotSerial.Xml.Parser
                 }
             }
 
-            throw new DSXmlException("Parse: Unkown error.");
+            throw new DotSerialException("Parse: Unkown error.");
         }
 
         /// <summary>
@@ -328,12 +328,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DSXmlException("Parse: Start char is not '<'.");
+                throw new DotSerialException("Parse: Start char is not '<'.");
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DSXmlException("Parse: End char is not '>'.");
+                throw new DotSerialException("Parse: End char is not '>'.");
             }
 
             for (int i = content.Length - 2; i > 0; i--)
@@ -353,7 +353,7 @@ namespace DotSerial.Xml.Parser
                 }
             }
 
-            throw new DSXmlException("Parse: Unkown error.");
+            throw new DotSerialException("Parse: Unkown error.");
         }
     }
 

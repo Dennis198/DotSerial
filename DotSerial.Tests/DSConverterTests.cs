@@ -1,6 +1,3 @@
-using DotSerial.Common;
-using DotSerial.Tree.Creation;
-
 namespace DotSerial.Tests
 {
     public class DSConverterTests
@@ -720,6 +717,43 @@ namespace DotSerial.Tests
             using var file = new TemporaryFile();
             // Act
             DSConverter.SaveToFile(file.FileInfo.FullName, tmp, strategy);
+        }
+
+        [Theory]
+        [InlineData(SerializeStrategy.Json)]
+        [InlineData(SerializeStrategy.Toon)]
+        [InlineData(SerializeStrategy.Xml)]
+        [InlineData(SerializeStrategy.Yaml)]
+        public void ToNode(SerializeStrategy strategy)
+        {
+            // Arrange
+            var tmp = ExampleClass.CreateTestDefault();
+
+            // Act
+            var node = DSConverter.ToNode(tmp, strategy);
+
+            // Assert
+            Assert.NotNull(node);
+            Assert.Equal(node.Strategy, strategy);
+        }
+
+        [Theory]
+        [InlineData(SerializeStrategy.Json)]
+        [InlineData(SerializeStrategy.Toon)]
+        [InlineData(SerializeStrategy.Xml)]
+        [InlineData(SerializeStrategy.Yaml)]
+        public void ToNodeFromString(SerializeStrategy strategy)
+        {
+            // Arrange
+            var tmp = ExampleClass.CreateTestDefault();
+            string? serializedObject = DSConverter.Serialize(tmp, strategy);
+
+            // Act
+            var node = DSConverter.ToNodeFromString(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(node);
+            Assert.Equal(node.Strategy, strategy);
         }
 
         [Theory]
