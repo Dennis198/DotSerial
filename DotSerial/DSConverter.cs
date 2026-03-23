@@ -77,9 +77,7 @@ namespace DotSerial
         /// <returns>A string containing the serialized representation of <paramref name="obj"/>.</returns>
         public static string Serialize(object? obj, SerializeStrategy strategy)
         {
-            var rootNode = SerializeObject.Serialize(obj, CommonConstants.MainObjectKey, strategy);
-            var dsNode = new DSNode(rootNode, strategy);
-            return dsNode.Stringify();
+            return DSNode.Stringify(obj, strategy);
         }
 
         /// <summary>

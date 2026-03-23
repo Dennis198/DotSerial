@@ -49,14 +49,14 @@ namespace DotSerial
         /// <summary>Gets the number of child nodes.</summary>
         public int Count => _node.Count;
 
-        /// <summary>Gets a value indicating whether this node has any child nodes.</summary>
-        public bool HasChildren => _node.HasChildren();
-
         /// <summary>Gets a value indicating whether the node is read-only.</summary>
-        public bool IsReadOnly => throw new NotImplementedException();
+        public bool IsReadOnly => false;
 
         /// <summary>Gets the key associated with this node.</summary>
         public string Key => _node.Key;
+
+        /// <summary>Gets a value indicating whether this node is a leaf node with a quoted value.</summary>
+        public bool IsQuoted => _node.IsQuoted;
 
         /// <summary>Gets a collection containing the keys of all child nodes.</summary>
         public ICollection<string> Keys => _node.Keys;
@@ -82,8 +82,9 @@ namespace DotSerial
                 }
 
                 var node = value.GetInternalData();
-
-                node.Remove(key);
+                // Set key for node
+                node.Key = key;
+                _node.Remove(key);
 
                 _node.AddChild(node);
             }
@@ -161,6 +162,7 @@ namespace DotSerial
             }
 
             var node = value.GetInternalData();
+            node.Key = key;
 
             _node.AddChild(node);
         }
@@ -295,6 +297,12 @@ namespace DotSerial
         public bool Remove(KeyValuePair<string, DSNode> item)
         {
             return Remove(item.Key);
+        }
+
+        /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
+        public void SetNodeValueNull()
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="string"/>.</summary>
@@ -496,20 +504,28 @@ namespace DotSerial
         {
             ArgumentNullException.ThrowIfNull(key);
 
-            if (Strategy != value.Strategy)
+            try
+            {
+                if (Strategy != value.Strategy)
+                {
+                    return false;
+                }
+
+                if (ContainsKey(key))
+                {
+                    return false;
+                }
+
+                var node = value.GetInternalData();
+                node.Key = key;
+
+                _node.AddChild(node);
+                return true;
+            }
+            catch
             {
                 return false;
             }
-
-            if (ContainsKey(key))
-            {
-                return false;
-            }
-
-            var node = value.GetInternalData();
-
-            _node.AddChild(node);
-            return true;
         }
 
         /// <summary>

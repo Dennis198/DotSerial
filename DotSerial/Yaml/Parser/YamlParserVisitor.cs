@@ -23,10 +23,21 @@ namespace DotSerial.Yaml.Parser
             // Create help object, which contains every line of the yaml file
             var lines = new MulitLineParserBookmark(content);
 
+            // Check if its an empty yaml file
+            if (0 == lines.Count)
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Yaml,
+                    CommonConstants.MainObjectKey,
+                    null,
+                    TreeNodeType.InnerNode
+                );
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
+            }
+
             // Remove start stop symbols
             lines = YamlParserHelper.RemoveStartStopSymbols(lines, content);
 
-            // Check if its an empty yaml file
             if (0 == lines.Count)
             {
                 rootNode = _nodeFactory.CreateNodeFromString(

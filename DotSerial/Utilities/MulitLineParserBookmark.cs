@@ -170,7 +170,12 @@ namespace DotSerial.Utilities
             {
                 if (createNewLine)
                 {
-                    result.Add(new ParserBookmark(currStart, currEnd));
+                    if (currEnd >= currStart)
+                    {
+                        // Add the line to the result list
+                        result.Add(new ParserBookmark(currStart, currEnd));
+                    }
+
                     createNewLine = false;
                     currStart = i;
                 }
@@ -187,7 +192,10 @@ namespace DotSerial.Utilities
                 }
             }
 
-            result.Add(new ParserBookmark(currStart, content.Length - 1));
+            if (currStart < content.Length)
+            {
+                result.Add(new ParserBookmark(currStart, content.Length - 1));
+            }
 
             return result;
         }

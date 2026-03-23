@@ -22,7 +22,7 @@ namespace DotSerial.Tree.Nodes
         /// <summary>
         /// Key of the node
         /// </summary>
-        public string Key { get; }
+        public string Key { get; set; }
 
         /// <summary>
         /// List of child nodes keys

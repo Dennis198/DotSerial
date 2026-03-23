@@ -13,7 +13,11 @@ namespace DotSerial.Tree.Nodes
         protected IDSNode _wrappedInnerNode;
 
         /// <inheritdoc/>
-        public string Key => _wrappedInnerNode.Key;
+        public string Key
+        {
+            get => _wrappedInnerNode.Key;
+            set => _wrappedInnerNode.Key = value;
+        }
 
         /// <inheritdoc/>
         public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");

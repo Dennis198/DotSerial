@@ -1,3 +1,4 @@
+using System.Reflection.Metadata.Ecma335;
 using DotSerial.Tree.Deserialize;
 
 namespace DotSerial.Tree.Nodes
@@ -16,13 +17,13 @@ namespace DotSerial.Tree.Nodes
         private readonly string? _value = value;
 
         /// <inheritdoc/>
-        public int Count => throw new DotSerialException($"{nameof(Count)} can't be called on a leaf node.");
+        public int Count => 0;
 
         /// <inheritdoc/>
         public bool IsQuoted { get; private set; } = isQuoted;
 
         /// <inheritdoc/>
-        public string Key { get; private set; } = key;
+        public string Key { get; set; } = key;
 
         /// <inheritdoc/>
         public ICollection<string> Keys =>
@@ -83,7 +84,7 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public bool Remove(string key)
         {
-            throw new DotSerialException($"{nameof(Remove)} can't be called on a leaf node.");
+            return false;
         }
     }
 }

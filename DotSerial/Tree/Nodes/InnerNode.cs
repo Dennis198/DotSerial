@@ -20,7 +20,7 @@ namespace DotSerial.Tree.Nodes
         public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
 
         /// <inheritdoc/>
-        public string Key { get; private set; } = key;
+        public string Key { get; set; } = key;
 
         /// <inheritdoc/>
         public ICollection<string> Keys
@@ -71,7 +71,7 @@ namespace DotSerial.Tree.Nodes
 
             if (ContainsKey(key))
             {
-                throw new DotSerialException($"Child with the key {key} already present.");
+                throw new ArgumentException($"Child with the key {key} already present.");
             }
 
             _children.Add(node);
@@ -131,7 +131,7 @@ namespace DotSerial.Tree.Nodes
                 }
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException($"Child with the key {key} not found.");
         }
 
         /// <inheritdoc/>

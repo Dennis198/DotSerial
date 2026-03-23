@@ -20,15 +20,16 @@ namespace DotSerial.Yaml.Writer
             try
             {
                 // Add document start
-                dtSB.Append(YamlConstants.YamlDocumentStart);
+                // dtSB.Append(YamlConstants.YamlDocumentStart);
 
                 var internalNode = node.GetInternalData();
                 WriterAccept(internalNode, new YamlWriterVisitor(), ref dtSB, new YamlWriterOptions(0, false));
 
                 // Add document end
-                dtSB.AppendLine();
-                dtSB.Append(YamlConstants.YamlDocumentEnd);
+                // dtSB.AppendLine();
+                // dtSB.Append(YamlConstants.YamlDocumentEnd);
 
+                dtSB.Trim();
                 result = dtSB.ToArray();
             }
             finally
