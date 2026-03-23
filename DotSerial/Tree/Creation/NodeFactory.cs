@@ -24,7 +24,6 @@ namespace DotSerial.Tree.Creation
         /// </summary>
         private NodeFactory()
         {
-            //  TODO Auslagern, in diespeareten Ornder json, xml, ..
             // Initialize strategies
             _strategies.Add(SerializeStrategy.Json, new JsonNodeStrategy());
             _strategies.Add(SerializeStrategy.Toon, new ToonNodeStrategy());
