@@ -1,3 +1,4 @@
+using DotSerial.Common.Writer;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -6,10 +7,10 @@ namespace DotSerial.Toon.Writer
     /// <summary>
     /// Implementation of the visitor for toon writer.
     /// </summary>
-    internal class ToonWriterVisitor : IToonNodeWriterVisitor
+    internal class ToonWriterVisitor : IToonNodeWriterVisitor, IWriteStrategy
     {
         /// <inheritdoc/>
-        public static ReadOnlySpan<char> Write(DSToonNode node)
+        public ReadOnlySpan<char> Write(DSNode node)
         {
             ArgumentNullException.ThrowIfNull(node);
 

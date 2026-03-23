@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree.Deserialize;
 
 namespace DotSerial.Tree.Nodes
@@ -9,16 +8,54 @@ namespace DotSerial.Tree.Nodes
     /// <param name="key">Key of the node</param>
     public class InnerNode(string key) : IDSNode
     {
-        /// <inheritdoc/>
-        public string Key { get; private set; } = key;
-
-        /// <inheritdoc/>
-        public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
-
         /// <summary>
         /// Children of the node
         /// </summary>
         private readonly List<IDSNode> _children = [];
+
+        /// <inheritdoc/>
+        public int Count => _children.Count;
+
+        /// <inheritdoc/>
+        public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
+
+        /// <inheritdoc/>
+        public string Key { get; set; } = key;
+
+        /// <inheritdoc/>
+        public ICollection<string> Keys
+        {
+            get
+            {
+                if (null == _children)
+                {
+                    throw new DotSerialException($"{_children} can't be null.");
+                }
+
+                var keys = new List<string>();
+
+                foreach (var child in _children)
+                {
+                    keys.Add(child.Key);
+                }
+
+                return keys;
+            }
+        }
+
+        /// <inheritdoc/>
+        public ICollection<IDSNode> Values
+        {
+            get
+            {
+                if (null == _children)
+                {
+                    throw new DotSerialException($"{_children} can't be null.");
+                }
+
+                return _children;
+            }
+        }
 
         /// <inheritdoc/>
         public void AddChild(IDSNode? node)
@@ -32,16 +69,48 @@ namespace DotSerial.Tree.Nodes
 
             string key = node.Key;
 
-            // Key is already taken
+            if (ContainsKey(key))
+            {
+                throw new ArgumentException($"Child with the key {key} already present.");
+            }
+
+            _children.Add(node);
+        }
+
+        /// <inheritdoc/>
+        public void Clear()
+        {
+            if (null == _children)
+            {
+                throw new DotSerialException($"{_children} can't be null.");
+            }
+
+            _children.Clear();
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key)
+        {
+            if (null == _children)
+            {
+                throw new DotSerialException($"{_children} can't be null.");
+            }
+
             foreach (var child in _children)
             {
                 if (child.Key.Equals(key))
                 {
-                    throw new DotSerialException($"Child with the key {key} already present.");
+                    return true;
                 }
             }
 
-            _children.Add(node);
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitInnerNode(this, type);
         }
 
         /// <inheritdoc/>
@@ -62,7 +131,7 @@ namespace DotSerial.Tree.Nodes
                 }
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException($"Child with the key {key} not found.");
         }
 
         /// <inheritdoc/>
@@ -94,9 +163,23 @@ namespace DotSerial.Tree.Nodes
         }
 
         /// <inheritdoc/>
-        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        public bool Remove(string key)
         {
-            return visitor.VisitInnerNode(this, type);
+            if (null == _children)
+            {
+                throw new DotSerialException($"{_children} can't be null.");
+            }
+
+            for (int i = 0; i < _children.Count; i++)
+            {
+                if (_children[i].Key.Equals(key))
+                {
+                    _children.RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

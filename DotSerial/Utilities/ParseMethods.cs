@@ -22,7 +22,7 @@ namespace DotSerial.Utilities
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
         internal static IDSNode ParsePrimitiveNode(
-            StategyType strategyType,
+            SerializeStrategy strategyType,
             ReadOnlySpan<char> content,
             int startIndex,
             string key,
@@ -31,7 +31,7 @@ namespace DotSerial.Utilities
         {
             if (ReadOnlySpanMethods.IsNullOrWhiteSpace(content))
             {
-                return _nodeFactory.CreateNodeFromString(strategyType, key, null, NodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(strategyType, key, null, TreeNodeType.Leaf);
             }
 
             string? nodeValue;
@@ -56,7 +56,7 @@ namespace DotSerial.Utilities
 
             nodeValue = ReadOnlySpanMethods.SliceFromTo(content, startIndex, end).ToString();
 
-            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, NodeType.Leaf);
+            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, TreeNodeType.Leaf);
         }
 
         /// <summary>

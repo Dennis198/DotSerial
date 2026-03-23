@@ -1,9 +1,9 @@
 ﻿namespace DotSerial.Tree
 {
     /// <summary>
-    /// Type of the node
+    /// Type of the node (internal)
     /// </summary>
-    public enum NodeType
+    public enum TreeNodeType
     {
         Leaf = 0,
         InnerNode = 1,

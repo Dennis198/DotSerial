@@ -1,27 +1,27 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Yaml;
 
 namespace DotSerial.Benchmarks.Benchmarks.Yaml
 {
     [MemoryDiagnoser]
     public class YamlWriterBenchmarks
     {
-        private DSYamlNode? _nodePrimitve;
-        private DSYamlNode? _nodeList;
-        private DSYamlNode? _nodeDictionary;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Yaml;
+        private DSNode? _nodePrimitve;
+        private DSNode? _nodeList;
+        private DSNode? _nodeDictionary;
 
         [GlobalSetup]
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            _nodePrimitve = DSYamlNode.ToNode(primitiveClass);
+            _nodePrimitve = DSNode.ToNode(primitiveClass, _strategy);
 
             var listClass = ListClass.Create(2, 50);
-            _nodeList = DSYamlNode.ToNode(listClass);
+            _nodeList = DSNode.ToNode(listClass, _strategy);
 
             var dicClass = DictionaryClass.Create(50);
-            _nodeDictionary = DSYamlNode.ToNode(dicClass);
+            _nodeDictionary = DSNode.ToNode(dicClass, _strategy);
         }
 
         [Benchmark]

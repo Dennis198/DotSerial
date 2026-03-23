@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
 
@@ -27,21 +26,21 @@ namespace DotSerial.Benchmarks.Benchmarks.Tree
         [Benchmark]
         public IDSNode PrimitiveSerialize()
         {
-            var result = SerializeObject.Serialize(_primitiveClass, "0", StategyType.Json);
+            var result = SerializeObject.Serialize(_primitiveClass, "0", SerializeStrategy.Json);
             return result;
         }
 
         [Benchmark]
         public IDSNode ListSerialize()
         {
-            var result = SerializeObject.Serialize(_listClass, "0", StategyType.Json);
+            var result = SerializeObject.Serialize(_listClass, "0", SerializeStrategy.Json);
             return result;
         }
 
         [Benchmark]
         public IDSNode DictionarySerialize()
         {
-            var result = SerializeObject.Serialize(_dictionaryClass, "0", StategyType.Json);
+            var result = SerializeObject.Serialize(_dictionaryClass, "0", SerializeStrategy.Json);
             return result;
         }
     }

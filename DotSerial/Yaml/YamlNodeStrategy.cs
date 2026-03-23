@@ -12,20 +12,20 @@ namespace DotSerial.Yaml
     internal class YamlNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
-        public IDSNode CreateNode(string key, object? value, NodeType type)
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
         {
             if (null == key || key.Length == 0)
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
 
-            if (null != value && (type != NodeType.Leaf))
+            if (null != value && (type != TreeNodeType.Leaf))
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
 
             // Create inner node
-            if (type != NodeType.Leaf)
+            if (type != TreeNodeType.Leaf)
             {
                 return INodeStrategy.CreateInnerNode(key, type);
             }
@@ -42,7 +42,7 @@ namespace DotSerial.Yaml
         }
 
         /// <inheritdoc/>
-        public IDSNode CreateNodeFromString(string key, string? value, NodeType type)
+        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type)
         {
             if (key.HasStartAndEndQuotes())
             {
@@ -54,7 +54,7 @@ namespace DotSerial.Yaml
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
 
-            if (null != value && (type != NodeType.Leaf))
+            if (null != value && (type != TreeNodeType.Leaf))
             {
                 throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
             }
@@ -62,7 +62,7 @@ namespace DotSerial.Yaml
             key = key.UnescapeString(YamlConstants.CharsToEscape);
 
             // Create inner node
-            if (type != NodeType.Leaf)
+            if (type != TreeNodeType.Leaf)
             {
                 return INodeStrategy.CreateInnerNode(key, type);
             }

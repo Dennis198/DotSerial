@@ -15,7 +15,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        public IDSNode CreateNode(string key, object? value, NodeType type);
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type);
 
         /// <summary>
         /// Creates a node from string value
@@ -24,7 +24,7 @@ namespace DotSerial.Tree.Creation
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        public IDSNode CreateNodeFromString(string key, string? value, NodeType type);
+        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type);
 
         /// <summary>
         /// Check if a object and his string represntive need quotes.
@@ -54,28 +54,28 @@ namespace DotSerial.Tree.Creation
         /// <param name="key">Key of the node</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        protected static IDSNode CreateInnerNode(string key, NodeType type)
+        protected static IDSNode CreateInnerNode(string key, TreeNodeType type)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
                 throw new DotSerialException("NodeFactory: Key can't be null.");
             }
 
-            if (type == NodeType.Leaf)
+            if (type == TreeNodeType.Leaf)
             {
                 throw new DotSerialException("NodeFactory: Leaf nodes are not allowed in this context.");
             }
 
             switch (type)
             {
-                case NodeType.InnerNode:
+                case TreeNodeType.InnerNode:
                     return new InnerNode(key);
-                case NodeType.ListNode:
+                case TreeNodeType.ListNode:
                 {
                     var wrapper = new InnerNode(key);
                     return new ListNode(wrapper);
                 }
-                case NodeType.DictionaryNode:
+                case TreeNodeType.DictionaryNode:
                 {
                     var wrapper = new InnerNode(key);
                     return new DictionaryNode(wrapper);

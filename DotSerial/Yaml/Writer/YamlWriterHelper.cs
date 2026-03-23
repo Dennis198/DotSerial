@@ -34,7 +34,7 @@ namespace DotSerial.Yaml.Writer
 
             WriteMethods.AddIndentation(ref sb, level, YamlConstants.IndentationSize);
             key = key.EscapeChars(YamlConstants.CharsToEscape);
-            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
+            if (_nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Yaml, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
             }
@@ -85,7 +85,7 @@ namespace DotSerial.Yaml.Writer
             }
 
             key = key.EscapeChars(YamlConstants.CharsToEscape);
-            if (_nodeFactory.AreQuotesNeededForKey(StategyType.Yaml, key))
+            if (_nodeFactory.AreQuotesNeededForKey(SerializeStrategy.Yaml, key))
             {
                 key = StringMethods.AddStartAndEndQuotes(key);
             }

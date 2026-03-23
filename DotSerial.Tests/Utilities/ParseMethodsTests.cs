@@ -12,7 +12,12 @@ namespace DotSerial.Tests.Utilities
             var span = str.AsSpan();
 
             // Act
-            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(StategyType.Json, span, 0, "testKey");
+            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(
+                SerializeStrategy.Json,
+                span,
+                0,
+                "testKey"
+            );
 
             // Assert
             Assert.Equal("testKey", result.Key);

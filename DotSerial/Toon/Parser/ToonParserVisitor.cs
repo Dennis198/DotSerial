@@ -1,4 +1,5 @@
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,25 +10,25 @@ namespace DotSerial.Toon.Parser
     /// <summary>
     /// Implementation of the visitor for toon parser.
     /// </summary>
-    internal class ToonParserVisitor : IToonNodeParserVisitor
+    internal class ToonParserVisitor : IToonNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public static DSToonNode Parse(ReadOnlySpan<char> content)
+        public DSNode Parse(ReadOnlySpan<char> content)
         {
             IDSNode rootNode;
 
             if (content.IsEmpty)
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
-                return new DSToonNode(rootNode);
+                return new DSNode(rootNode, SerializeStrategy.Toon);
             }
 
             // Create help object, which contains every line of the yaml file
@@ -36,42 +37,42 @@ namespace DotSerial.Toon.Parser
             if (ToonParserHelper.IsToonSingleValue(lines, content))
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     lines.GetLineContent(0, content),
                     0,
                     CommonConstants.MainObjectKey
                 );
-                return new DSToonNode(rootNode);
+                return new DSNode(rootNode, SerializeStrategy.Toon);
             }
             else if (ToonParserHelper.IsToonObject(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
                 if (ToonParserHelper.IsEmptyObject(lines, content))
                 {
-                    return new DSToonNode(rootNode);
+                    return new DSNode(rootNode, SerializeStrategy.Toon);
                 }
             }
             else if (ToonParserHelper.IsToonList(lines, content, true))
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.ListNode
+                    TreeNodeType.ListNode
                 );
                 if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSToonNode(rootNode);
+                    return new DSNode(rootNode, SerializeStrategy.Toon);
                 }
             }
             else
             {
-                throw new DSToonException("Parse: String is not toon.");
+                throw new DotSerialException("Parse: String is not toon.");
             }
 
             if (lines.Count > 0)
@@ -79,7 +80,7 @@ namespace DotSerial.Toon.Parser
                 ParserAccept(rootNode, new ToonParserVisitor(), lines, content, true);
             }
 
-            return new DSToonNode(rootNode);
+            return new DSNode(rootNode, SerializeStrategy.Toon);
         }
 
         /// <inheritdoc/>
@@ -121,10 +122,10 @@ namespace DotSerial.Toon.Parser
                     {
                         string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
                         var childNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             strValue,
-                            NodeType.Leaf
+                            TreeNodeType.Leaf
                         );
                         node.AddChild(childNode);
                     }
@@ -132,10 +133,10 @@ namespace DotSerial.Toon.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == ToonParserHelper.IsEmptyObject(value, content))
@@ -151,10 +152,10 @@ namespace DotSerial.Toon.Parser
                     {
                         // Create list node
                         var listNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Toon,
+                            SerializeStrategy.Toon,
                             key,
                             null,
-                            NodeType.ListNode
+                            TreeNodeType.ListNode
                         );
 
                         if (false == ToonParserHelper.IsEmptyList(value.GetLineContent(0, content)))
@@ -168,13 +169,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DSToonException("Parse: String is not a toon object.");
+                        throw new DotSerialException("Parse: String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DSToonException("Parse: String is not a toon object.");
+                throw new DotSerialException("Parse: String is not a toon object.");
             }
         }
 
@@ -228,10 +229,10 @@ namespace DotSerial.Toon.Parser
                                     value.GetLineContent(0, content)
                                 );
                                 var childNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     strValue,
-                                    NodeType.Leaf
+                                    TreeNodeType.Leaf
                                 );
 
                                 node.AddChild(childNode);
@@ -239,17 +240,17 @@ namespace DotSerial.Toon.Parser
                             else if (ToonParserHelper.IsToonSingleValue(value, content))
                             {
                                 var tmp = value.GetLineContent(0, content).Trim();
-                                var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Toon, tmp, 0, key);
+                                var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Toon, tmp, 0, key);
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonObject(value, content))
                             {
                                 // Create inner node
                                 var innerNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     null,
-                                    NodeType.InnerNode
+                                    TreeNodeType.InnerNode
                                 );
 
                                 if (false == ToonParserHelper.IsEmptyObject(value, content))
@@ -265,10 +266,10 @@ namespace DotSerial.Toon.Parser
                             {
                                 // Create list node
                                 var listNode = _nodeFactory.CreateNodeFromString(
-                                    StategyType.Toon,
+                                    SerializeStrategy.Toon,
                                     key,
                                     null,
-                                    NodeType.ListNode
+                                    TreeNodeType.ListNode
                                 );
 
                                 if (false == ToonParserHelper.IsEmptyList(value.GetLineContent(0, content)))
@@ -282,7 +283,7 @@ namespace DotSerial.Toon.Parser
                             }
                             else
                             {
-                                throw new DSToonException("Parse: String is not a toon object.");
+                                throw new DotSerialException("Parse: String is not a toon object.");
                             }
                             index++;
                         }
@@ -296,13 +297,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DSToonException("Parse: String is not a toon object.");
+                        throw new DotSerialException("Parse: String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DSToonException("Parse: String is not a toon list.");
+                throw new DotSerialException("Parse: String is not a toon list.");
             }
         }
 
@@ -340,7 +341,7 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DSToonException("Parse: Unknown node type.");
+                throw new DotSerialException("Parse: Unknown node type.");
             }
         }
     }

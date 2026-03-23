@@ -1,12 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Toon;
 
 namespace DotSerial.Benchmarks.Benchmarks.Toon
 {
     [MemoryDiagnoser]
     public class ToonParserBenchmarks
     {
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Toon;
         private string? _stringPrimitive;
         private string? _stringList;
         private string? _stringDictionary;
@@ -15,48 +15,48 @@ namespace DotSerial.Benchmarks.Benchmarks.Toon
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            var nodePrimitive = DSToonNode.ToNode(primitiveClass);
+            var nodePrimitive = DSNode.ToNode(primitiveClass, _strategy);
             _stringPrimitive = nodePrimitive.Stringify();
 
             var listClass = ListClass.Create(2, 50);
-            var nodeList = DSToonNode.ToNode(listClass);
+            var nodeList = DSNode.ToNode(listClass, _strategy);
             _stringList = nodeList.Stringify();
 
             var dicClass = DictionaryClass.Create(50);
-            var nodeDictionary = DSToonNode.ToNode(dicClass);
+            var nodeDictionary = DSNode.ToNode(dicClass, _strategy);
             _stringDictionary = nodeDictionary.Stringify();
         }
 
         [Benchmark]
-        public DSToonNode PrimitiveParseTest()
+        public DSNode PrimitiveParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringPrimitive))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSToonNode.FromString(_stringPrimitive);
+            var result = DSNode.FromString(_stringPrimitive, _strategy);
             return result;
         }
 
         [Benchmark]
-        public DSToonNode ListParseTest()
+        public DSNode ListParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringList))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSToonNode.FromString(_stringList);
+            var result = DSNode.FromString(_stringList, _strategy);
             return result;
         }
 
         [Benchmark]
-        public DSToonNode DictionaryParseTest()
+        public DSNode DictionaryParseTest()
         {
             if (string.IsNullOrWhiteSpace(_stringDictionary))
             {
                 throw new InvalidOperationException("String is null or empty");
             }
-            var result = DSToonNode.FromString(_stringDictionary);
+            var result = DSNode.FromString(_stringDictionary, _strategy);
             return result;
         }
     }

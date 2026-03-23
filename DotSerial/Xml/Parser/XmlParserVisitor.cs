@@ -1,4 +1,6 @@
+using System.Net;
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -9,13 +11,13 @@ namespace DotSerial.Xml.Parser
     /// <summary>
     /// Implementation of the visitor for xml parser.
     /// </summary>
-    internal class XmlParserVisitor : IXmlNodeParserVisitor
+    internal class XmlParserVisitor : IXmlNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public static DSXmlNode Parse(ReadOnlySpan<char> content)
+        public DSNode Parse(ReadOnlySpan<char> content)
         {
             // Remove xml declaration
 
@@ -26,7 +28,7 @@ namespace DotSerial.Xml.Parser
 
             if (rootTmp.Count != 1)
             {
-                throw new DSXmlException("Parse: Xml must have exactly one root element.");
+                throw new DotSerialException("Parse: Xml must have exactly one root element.");
             }
 
             var rootTagKeyPair = rootTmp.Keys.First();
@@ -37,42 +39,47 @@ namespace DotSerial.Xml.Parser
             if (rootTagKeyPair.IsXmlObject())
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Xml,
+                    SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.InnerNode
+                    TreeNodeType.InnerNode
                 );
             }
             else if (rootTagKeyPair.IsXmlList())
             {
                 rootNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Xml,
+                    SerializeStrategy.Xml,
                     CommonConstants.MainObjectKey,
                     null,
-                    NodeType.ListNode
+                    TreeNodeType.ListNode
                 );
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
             {
                 if (rootBookmark.IsNull())
                 {
-                    rootNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, CommonConstants.MainObjectKey);
+                    rootNode = ParseMethods.ParsePrimitiveNode(
+                        SerializeStrategy.Xml,
+                        null,
+                        0,
+                        CommonConstants.MainObjectKey
+                    );
                 }
                 else
                 {
                     rootNode = ParseMethods.ParsePrimitiveNode(
-                        StategyType.Xml,
+                        SerializeStrategy.Xml,
                         rootBookmark.GetContent(content),
                         0,
                         CommonConstants.MainObjectKey
                     );
                 }
 
-                return new DSXmlNode(rootNode);
+                return new DSNode(rootNode, SerializeStrategy.Xml);
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml object.");
+                throw new DotSerialException("Parse: String is not a xml object.");
             }
 
             if (false == rootBookmark.IsNull())
@@ -80,7 +87,7 @@ namespace DotSerial.Xml.Parser
                 ParserAccept(rootNode, new XmlParserVisitor(), rootTagKeyPair, rootBookmark, content);
             }
 
-            return new DSXmlNode(rootNode);
+            return new DSNode(rootNode, SerializeStrategy.Xml);
         }
 
         /// <inheritdoc/>
@@ -120,10 +127,10 @@ namespace DotSerial.Xml.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Xml,
+                            SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -138,7 +145,12 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Xml,
+                            key,
+                            null,
+                            TreeNodeType.ListNode
+                        );
 
                         if (false == tmpBoomkark.IsNull())
                         {
@@ -153,25 +165,25 @@ namespace DotSerial.Xml.Parser
                     {
                         if (tmpBoomkark.IsNull())
                         {
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, null, 0, key);
                             node.AddChild(childNode);
                         }
                         else
                         {
                             var primContent = tmpBoomkark.GetContent(content);
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, primContent, 0, key);
                             node.AddChild(childNode);
                         }
                     }
                     else
                     {
-                        throw new DSXmlException("Parse: String is not a xml object.");
+                        throw new DotSerialException("Parse: String is not a xml object.");
                     }
                 }
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml object.");
+                throw new DotSerialException("Parse: String is not a xml object.");
             }
         }
 
@@ -212,10 +224,10 @@ namespace DotSerial.Xml.Parser
                     {
                         // Create inner node
                         var innerNode = _nodeFactory.CreateNodeFromString(
-                            StategyType.Xml,
+                            SerializeStrategy.Xml,
                             key,
                             null,
-                            NodeType.InnerNode
+                            TreeNodeType.InnerNode
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -230,7 +242,12 @@ namespace DotSerial.Xml.Parser
                     else if (keyValuepair.Key.IsXmlList())
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNodeFromString(StategyType.Xml, key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Xml,
+                            key,
+                            null,
+                            TreeNodeType.ListNode
+                        );
 
                         if (false == tmpBoomkark.IsNull())
                         {
@@ -245,19 +262,19 @@ namespace DotSerial.Xml.Parser
                     {
                         if (tmpBoomkark.IsNull())
                         {
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, null, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, null, 0, key);
                             node.AddChild(childNode);
                         }
                         else
                         {
                             var primContent = tmpBoomkark.GetContent(content);
-                            var childNode = ParseMethods.ParsePrimitiveNode(StategyType.Xml, primContent, 0, key);
+                            var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Xml, primContent, 0, key);
                             node.AddChild(childNode);
                         }
                     }
                     else
                     {
-                        throw new DSXmlException("Parse: String is not a xml object.");
+                        throw new DotSerialException("Parse: String is not a xml object.");
                     }
 
                     i++;
@@ -265,7 +282,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DSXmlException("Parse: String is not a xml list.");
+                throw new DotSerialException("Parse: String is not a xml list.");
             }
         }
 
@@ -303,7 +320,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DSXmlException("Parse: Unknown node type.");
+                throw new DotSerialException("Parse: Unknown node type.");
             }
         }
     }

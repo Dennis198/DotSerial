@@ -1,3 +1,4 @@
+using DotSerial.Common.Writer;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -6,10 +7,10 @@ namespace DotSerial.Xml.Writer
     /// <summary>
     /// Implementation of the visitor for xml writer.
     /// </summary>
-    internal class XmlWriterVisitor : IXmlNodeWriterVisitor
+    internal class XmlWriterVisitor : IXmlNodeWriterVisitor, IWriteStrategy
     {
         /// <inheritdoc/>
-        public static ReadOnlySpan<char> Write(DSXmlNode? node)
+        public ReadOnlySpan<char> Write(DSNode node)
         {
             ArgumentNullException.ThrowIfNull(node);
 

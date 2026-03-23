@@ -9,13 +9,6 @@ namespace DotSerial.Toon.Parser
     internal interface IToonNodeParserVisitor
     {
         /// <summary>
-        /// Parse the toon string to create tree structure
-        /// </summary>
-        /// <param name="content">Toon content</param>
-        /// <returns>Root node of tree.</returns>
-        public static abstract DSToonNode Parse(ReadOnlySpan<char> content);
-
-        /// <summary>
         /// Visitor for directory node
         /// </summary>
         /// <param name="node">Inner node</param>

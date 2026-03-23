@@ -250,7 +250,7 @@ namespace DotSerial.Json.Parser
 
             if (content[startIndex] != JsonConstants.ListStart)
             {
-                throw new DSJsonException("Invalid json.");
+                throw new DotSerialException("Invalid json.");
             }
 
             int i;
@@ -300,7 +300,7 @@ namespace DotSerial.Json.Parser
 
             if (content[startIndex] != JsonConstants.ObjectStart)
             {
-                throw new DSJsonException("Invalid json.");
+                throw new DotSerialException("Invalid json.");
             }
 
             int i;
@@ -346,7 +346,7 @@ namespace DotSerial.Json.Parser
         {
             if (content[startIndex] != JsonConstants.ListStart && content[endIndex] != JsonConstants.ListEnd)
             {
-                throw new DSJsonException("Invalid json.");
+                throw new DotSerialException("Invalid json.");
             }
 
             for (int i = startIndex + 1; i < content.Length - 1; i++)
@@ -373,7 +373,7 @@ namespace DotSerial.Json.Parser
         {
             if (content[startIndex] != JsonConstants.ObjectStart && content[endIndex] != JsonConstants.ObjectEnd)
             {
-                throw new DSJsonException("Invalid json.");
+                throw new DotSerialException("Invalid json.");
             }
 
             for (int i = startIndex + 1; i < content.Length - 1; i++)

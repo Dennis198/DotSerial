@@ -1,27 +1,27 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Json;
 
 namespace DotSerial.Benchmarks.Benchmarks.Json
 {
     [MemoryDiagnoser]
     public class JsonWriterBenchmarks
     {
-        private DSJsonNode? _nodePrimitve;
-        private DSJsonNode? _nodeList;
-        private DSJsonNode? _nodeDictionary;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Json;
+        private DSNode? _nodePrimitve;
+        private DSNode? _nodeList;
+        private DSNode? _nodeDictionary;
 
         [GlobalSetup]
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            _nodePrimitve = DSJsonNode.ToNode(primitiveClass);
+            _nodePrimitve = DSNode.ToNode(primitiveClass, _strategy);
 
             var listClass = ListClass.Create(2, 50);
-            _nodeList = DSJsonNode.ToNode(listClass);
+            _nodeList = DSNode.ToNode(listClass, _strategy);
 
             var dicClass = DictionaryClass.Create(50);
-            _nodeDictionary = DSJsonNode.ToNode(dicClass);
+            _nodeDictionary = DSNode.ToNode(dicClass, _strategy);
         }
 
         [Benchmark]

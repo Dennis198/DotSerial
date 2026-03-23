@@ -46,7 +46,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
 
                     int sIndex = i + 1;
@@ -93,7 +93,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
 
                     var helpObj = lines.SliceFromTo(i, i);
@@ -810,10 +810,10 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < count; i++)
             {
                 var listNode = _nodeFactory.CreateNodeFromString(
-                    StategyType.Toon,
+                    SerializeStrategy.Toon,
                     i.ToString(),
                     lItems[i],
-                    NodeType.Leaf
+                    TreeNodeType.Leaf
                 );
                 node.AddChild(listNode);
             }
@@ -839,7 +839,12 @@ namespace DotSerial.Toon.Parser
             for (int i = 0; i < lines.Count; i++)
             {
                 var line = lines.GetLineContent(i, content);
-                var child = _nodeFactory.CreateNodeFromString(StategyType.Toon, i.ToString(), null, NodeType.InnerNode);
+                var child = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Toon,
+                    i.ToString(),
+                    null,
+                    TreeNodeType.InnerNode
+                );
                 var values = ParseCommaSeperateValues(line, 0);
 
                 if (keys.Count != values.Count)
@@ -851,7 +856,12 @@ namespace DotSerial.Toon.Parser
                 {
                     string key = keys[j];
                     string value = values[j];
-                    var childChild = _nodeFactory.CreateNodeFromString(StategyType.Toon, key, value, NodeType.Leaf);
+                    var childChild = _nodeFactory.CreateNodeFromString(
+                        SerializeStrategy.Toon,
+                        key,
+                        value,
+                        TreeNodeType.Leaf
+                    );
                     child.AddChild(childChild);
                 }
 
@@ -934,7 +944,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (seperatorFound)
                     {
-                        throw new DSToonException("Invalid toon");
+                        throw new DotSerialException("Invalid toon");
                     }
                     seperatorFound = true;
                 }

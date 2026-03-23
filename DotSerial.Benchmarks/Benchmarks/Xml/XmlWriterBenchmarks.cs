@@ -1,27 +1,27 @@
 ﻿using BenchmarkDotNet.Attributes;
 using DotSerial.Benchmarks.Helpers;
-using DotSerial.Xml;
 
 namespace DotSerial.Benchmarks.Benchmarks.Xml
 {
     [MemoryDiagnoser]
     public class XmlWriterBenchmarks
     {
-        private DSXmlNode? _nodePrimitve;
-        private DSXmlNode? _nodeList;
-        private DSXmlNode? _nodeDictionary;
+        private readonly SerializeStrategy _strategy = SerializeStrategy.Xml;
+        private DSNode? _nodePrimitve;
+        private DSNode? _nodeList;
+        private DSNode? _nodeDictionary;
 
         [GlobalSetup]
         public void Setup()
         {
             var primitiveClass = PrimitiveClass.Create();
-            _nodePrimitve = DSXmlNode.ToNode(primitiveClass);
+            _nodePrimitve = DSNode.ToNode(primitiveClass, _strategy);
 
             var listClass = ListClass.Create(2, 50);
-            _nodeList = DSXmlNode.ToNode(listClass);
+            _nodeList = DSNode.ToNode(listClass, _strategy);
 
             var dicClass = DictionaryClass.Create(50);
-            _nodeDictionary = DSXmlNode.ToNode(dicClass);
+            _nodeDictionary = DSNode.ToNode(dicClass, _strategy);
         }
 
         [Benchmark]
