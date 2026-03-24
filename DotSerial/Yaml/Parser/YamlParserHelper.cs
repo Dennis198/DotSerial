@@ -198,7 +198,7 @@ namespace DotSerial.Yaml.Parser
 
             if (startLine[index] != YamlConstants.ListItemIndicator)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(startIndex, startLine[index]);
             }
 
             var newBookmark = new ParserBookmark(startBookMark.Start + index + 1, startBookMark.End);
@@ -448,7 +448,7 @@ namespace DotSerial.Yaml.Parser
 
                 if (valueWasFound)
                 {
-                    throw new NotImplementedException();
+                    ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                 }
 
                 if (c == CommonConstants.Quote)
@@ -487,7 +487,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     if (true == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     closedBracletFound = true;
                 }
@@ -495,7 +495,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     if (false == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     return true;
@@ -530,7 +530,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     if (true == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     closedBracletFound = true;
                 }
@@ -538,7 +538,7 @@ namespace DotSerial.Yaml.Parser
                 {
                     if (false == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     return true;
@@ -610,7 +610,7 @@ namespace DotSerial.Yaml.Parser
 
             if (lines.Count - 1 < startIndex)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
             int endIndex = -1;
@@ -666,7 +666,8 @@ namespace DotSerial.Yaml.Parser
                 }
             }
 
-            throw new NotImplementedException();
+            ThrowHelper.ThrowKeyNodeNullException();
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>

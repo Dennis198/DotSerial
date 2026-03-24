@@ -68,7 +68,8 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a xml object.");
+                ThrowHelper.ThrowGenericParserException("String is not a xml object.");
+                throw new Exception("Unreachable code");
             }
 
             if (false == rootBookmark.IsNull())
@@ -164,13 +165,13 @@ namespace DotSerial.Xml.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a xml object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a xml object.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a xml object.");
+                ThrowHelper.ThrowGenericParserException("String is not a xml object.");
             }
         }
 
@@ -259,7 +260,7 @@ namespace DotSerial.Xml.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a xml object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a xml object.");
                     }
 
                     i++;
@@ -267,7 +268,7 @@ namespace DotSerial.Xml.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a xml list.");
+                ThrowHelper.ThrowGenericParserException("String is not a xml list.");
             }
         }
 

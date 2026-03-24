@@ -394,7 +394,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (startSchemaFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     startSchemaFound = true;
                 }
@@ -402,7 +402,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (false == startSchemaFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     endSchemaFound = true;
                 }
@@ -577,7 +577,7 @@ namespace DotSerial.Toon.Parser
 
                 if (valueWasFound)
                 {
-                    throw new NotImplementedException();
+                    ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                 }
 
                 if (c == CommonConstants.Quote)
@@ -721,7 +721,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (true == countIndicatorStartFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     i = ReadOnlySpanMethods.SkipQuotedValue(line, i);
@@ -730,7 +730,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (true == countIndicatorStartFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     countIndicatorStartFound = true;
                 }
@@ -738,7 +738,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (false == countIndicatorStartFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     countIndicatorEndFound = true;
                     break;
@@ -766,7 +766,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (true == countIndicatorStartFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     i = ReadOnlySpanMethods.SkipTillStopChars(
@@ -809,7 +809,7 @@ namespace DotSerial.Toon.Parser
 
             if (count != lItems.Count)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowGenericParserException("List count does not match the number of items.");
             }
 
             for (int i = 0; i < count; i++)
@@ -853,7 +853,7 @@ namespace DotSerial.Toon.Parser
 
             if (keys.Count == 0)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowGenericParserException("No keys found in schema.");
             }
 
             for (int i = 0; i < lines.Count; i++)
@@ -870,7 +870,7 @@ namespace DotSerial.Toon.Parser
 
                 if (keys.Count != values.Count)
                 {
-                    throw new NotImplementedException();
+                    ThrowHelper.ThrowGenericParserException("Number of keys does not match the number of values.");
                 }
 
                 for (int j = 0; j < keys.Count; j++)
@@ -927,7 +927,8 @@ namespace DotSerial.Toon.Parser
                 }
             }
 
-            throw new NotImplementedException();
+            ThrowHelper.ThrowKeyNodeNullException();
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>
@@ -966,7 +967,7 @@ namespace DotSerial.Toon.Parser
                 {
                     if (seperatorFound)
                     {
-                        throw new DotSerialException("Invalid toon");
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     seperatorFound = true;
                 }
@@ -1009,7 +1010,7 @@ namespace DotSerial.Toon.Parser
 
             if (lines.Count - 1 < startIndex)
             {
-                throw new NotImplementedException();
+                throw new ArgumentOutOfRangeException(nameof(startIndex));
             }
 
             int endIndex = -1;
@@ -1058,7 +1059,7 @@ namespace DotSerial.Toon.Parser
 
             if (string.IsNullOrWhiteSpace(lines.KeyLine))
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             var firstLine = lines.KeyLine.AsSpan();
@@ -1067,7 +1068,7 @@ namespace DotSerial.Toon.Parser
 
             if (start == -1 || firstLine[start] != CommonConstants.BracesStart)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(start, firstLine[start]);
             }
 
             List<string> result = [];
@@ -1121,7 +1122,7 @@ namespace DotSerial.Toon.Parser
 
             if (startLine[index] != ToonConstants.ListItemIndicator)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(index, startLine[index]);
             }
 
             var newBookmark = new ParserBookmark(startBookMark.Start + index + 1, startBookMark.End);

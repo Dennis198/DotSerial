@@ -56,7 +56,7 @@ namespace DotSerial.Toon.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Make sure key:value has its own line.
@@ -114,7 +114,7 @@ namespace DotSerial.Toon.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             key = addKey ? key : string.Empty;
@@ -166,7 +166,7 @@ namespace DotSerial.Toon.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             sb.AppendLine();

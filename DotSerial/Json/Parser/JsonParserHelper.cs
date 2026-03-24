@@ -303,7 +303,7 @@ namespace DotSerial.Json.Parser
 
             if (content[startIndex] != JsonConstants.ObjectStart)
             {
-                throw new DotSerialException("Invalid json.");
+                ThrowHelper.ThrowGenericParserException($"Invalid json at {startIndex}.");
             }
 
             int i;

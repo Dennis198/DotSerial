@@ -30,7 +30,7 @@ namespace DotSerial.Utilities
             // Check if type is supported
             if (false == TypeCheckMethods.IsTypeSupported(itemType))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
             }
 
             // Check if type is array
@@ -125,7 +125,7 @@ namespace DotSerial.Utilities
                     }
                     else
                     {
-                        throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
+                        ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
                     }
                 }
 
@@ -157,12 +157,12 @@ namespace DotSerial.Utilities
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
-                    throw new DotSerialException(string.Format("Type {0} is not supported.", keyType.Name));
+                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
                 }
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(valueType))
                 {
-                    throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
+                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                 }
 
                 // result object
@@ -239,7 +239,7 @@ namespace DotSerial.Utilities
                         }
                         else
                         {
-                            throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
+                            ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                         }
                     }
 
@@ -296,7 +296,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
             }
 
             object? primObj;
@@ -339,7 +339,8 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
+                throw new Exception("Unreachable code.");
             }
 
             return primObj;
@@ -364,7 +365,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsPrimitive(typeObj))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
             }
 
             object? primObj;
@@ -472,7 +473,8 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
+                throw new Exception("Unreachable code.");
             }
 
             return primObj;

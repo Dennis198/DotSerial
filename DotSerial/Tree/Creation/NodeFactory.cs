@@ -47,7 +47,9 @@ namespace DotSerial.Tree.Creation
             {
                 return strategy.CreateNode(key, value, type);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -71,7 +73,8 @@ namespace DotSerial.Tree.Creation
             {
                 return strategy.CreateNodeFromString(key, bookmark, content, type);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -86,7 +89,8 @@ namespace DotSerial.Tree.Creation
             {
                 return strategy.AreQuotesNeededForKey(key);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -101,7 +105,7 @@ namespace DotSerial.Tree.Creation
 
             if (targetType != TreeNodeType.ListNode && targetType != TreeNodeType.DictionaryNode)
             {
-                throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+                ThrowHelper.ThrowWrongNodeTypeException();
             }
 
             if (node is InnerNode wrapper)
@@ -117,12 +121,14 @@ namespace DotSerial.Tree.Creation
                         return new DictionaryNode(wrapper);
                     }
                     default:
-                        throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+                        ThrowHelper.ThrowWrongNodeTypeException();
+                        throw new Exception("Unreachable code.");
                 }
             }
             else
             {
-                throw new DotSerialException("NodeFactory: Wrapped node must be an inner node.");
+                ThrowHelper.ThrowWrongNodeTypeException();
+                throw new Exception("Unreachable code.");
             }
         }
     }

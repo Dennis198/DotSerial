@@ -157,7 +157,7 @@ namespace DotSerial.Xml.Writer
             }
             else
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

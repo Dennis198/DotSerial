@@ -240,7 +240,7 @@ namespace DotSerial.Json.Writer
             }
             else
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

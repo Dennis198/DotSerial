@@ -9,6 +9,7 @@ using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
+using DotSerial.Utilities;
 
 namespace DotSerial
 {
@@ -78,7 +79,7 @@ namespace DotSerial
 
                 if (Strategy != value.Strategy)
                 {
-                    throw new DotSerialException("Can't set a node with a different strategy type.");
+                    ThrowHelper.ThrowDifferentStrategyException();
                 }
 
                 var node = value.GetInternalData();
@@ -158,7 +159,7 @@ namespace DotSerial
 
             if (Strategy != value.Strategy)
             {
-                throw new DotSerialException("Can't add a node with a different strategy type.");
+                ThrowHelper.ThrowDifferentStrategyException();
             }
 
             var node = value.GetInternalData();
@@ -267,7 +268,8 @@ namespace DotSerial
                 return NodeType.Array;
             }
 
-            throw new DotSerialException("Unknown node type.");
+            ThrowHelper.ThrowUnknownNodeTypeException();
+            throw new Exception("Unreachable code."); // This line should never be reached due to the exception thrown above.
         }
 
         /// <summary>

@@ -75,7 +75,8 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not toon.");
+                ThrowHelper.ThrowGenericParserException("String is not toon.");
+                throw new Exception("Unreachable code");
             }
 
             if (lines.Count > 0)
@@ -175,13 +176,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a toon object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a toon object.");
+                ThrowHelper.ThrowGenericParserException("String is not a toon object.");
             }
         }
 
@@ -295,7 +296,7 @@ namespace DotSerial.Toon.Parser
                             }
                             else
                             {
-                                throw new DotSerialException("Parse: String is not a toon object.");
+                                ThrowHelper.ThrowGenericParserException("String is not a toon object.");
                             }
                             index++;
                         }
@@ -309,13 +310,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a toon object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a toon list.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a toon list.");
+                ThrowHelper.ThrowGenericParserException("String is not a toon list.");
             }
         }
 

@@ -1,5 +1,6 @@
 using DotSerial.Json.Writer;
 using DotSerial.Toon.Writer;
+using DotSerial.Utilities;
 using DotSerial.Xml.Writer;
 using DotSerial.Yaml.Writer;
 
@@ -42,7 +43,8 @@ namespace DotSerial.Common.Writer
             {
                 return strategy.Write(node);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
     }
 }

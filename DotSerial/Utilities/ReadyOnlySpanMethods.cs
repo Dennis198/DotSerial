@@ -220,7 +220,7 @@ namespace DotSerial.Utilities
 
             if (source[startIndex] != openChar)
             {
-                throw new ArgumentException($"Expected quote at index {startIndex}.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(startIndex, source[startIndex]);
             }
 
             if (openChar == CommonConstants.Quote || closeChar == CommonConstants.Quote)
@@ -288,7 +288,7 @@ namespace DotSerial.Utilities
 
             if (source[startIndex] != CommonConstants.Quote)
             {
-                throw new ArgumentException($"Expected quote at index {startIndex}.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(startIndex, source[startIndex]);
             }
 
             bool isEscaped = false;

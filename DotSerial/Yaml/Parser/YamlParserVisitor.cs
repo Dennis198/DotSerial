@@ -91,7 +91,8 @@ namespace DotSerial.Yaml.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not yaml.");
+                ThrowHelper.ThrowGenericParserException("String is not yaml.");
+                throw new Exception("Unreachable code");
             }
 
             if (lines.Count > 0)
@@ -181,13 +182,13 @@ namespace DotSerial.Yaml.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a yaml object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a yaml object.");
+                ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
             }
         }
 
@@ -269,7 +270,7 @@ namespace DotSerial.Yaml.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a yaml object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
                     }
 
                     index++;
@@ -277,7 +278,7 @@ namespace DotSerial.Yaml.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a yaml list.");
+                ThrowHelper.ThrowGenericParserException("String is not a yaml list.");
             }
         }
 

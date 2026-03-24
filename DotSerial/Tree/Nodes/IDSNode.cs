@@ -46,10 +46,7 @@ namespace DotSerial.Tree.Nodes
         {
             try
             {
-                if (null == node)
-                {
-                    throw new DotSerialException($"{node} can't be null.");
-                }
+                ArgumentNullException.ThrowIfNull(node);
 
                 IDSNode nodeToSerialize = node;
 

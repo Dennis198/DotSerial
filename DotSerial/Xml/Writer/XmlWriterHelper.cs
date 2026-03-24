@@ -71,7 +71,7 @@ namespace DotSerial.Xml.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Maku sure that key/value pair is in new line
@@ -119,7 +119,7 @@ namespace DotSerial.Xml.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             sb.AppendLine();
@@ -152,7 +152,7 @@ namespace DotSerial.Xml.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             sb.AppendLine();

@@ -14,7 +14,7 @@
         {
             if (false == HelperMethods.ImplementsIEnumerable(objType))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(objType);
             }
 
             if (objType.IsArray)
@@ -35,7 +35,7 @@
         {
             if (false == HelperMethods.ImplementsIEnumerable(obj))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(obj.GetType());
             }
 
             if (obj is Array)
@@ -56,7 +56,7 @@
         {
             if (false == HelperMethods.ImplementsIEnumerable(obj))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(obj.GetType());
             }
 
             return obj.GetType().GetElementType();
@@ -71,7 +71,7 @@
         {
             if (false == HelperMethods.ImplementsIEnumerable(objType))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(objType);
             }
 
             return objType.GetElementType();
@@ -88,14 +88,14 @@
         {
             if (false == TypeCheckMethods.IsDictionary(obj))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(obj.GetType());
             }
 
             Type[] arguments = obj.GetType().GetGenericArguments();
 
             if (arguments.Length != 2)
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(obj.GetType());
             }
 
             typeKey = arguments[0];
@@ -115,14 +115,14 @@
         {
             if (false == TypeCheckMethods.IsDictionary(type))
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(type);
             }
 
             Type[] arguments = type.GetGenericArguments();
 
             if (arguments.Length != 2)
             {
-                throw new NotSupportedException();
+                ThrowHelper.ThrowWrongTypeException(type);
             }
 
             typeKey = arguments[0];

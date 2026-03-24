@@ -146,7 +146,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a json object.");
+                ThrowHelper.ThrowGenericParserException("String is not a json object.");
             }
         }
 
@@ -234,7 +234,7 @@ namespace DotSerial.Json.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a json list.");
+                ThrowHelper.ThrowGenericParserException("String is not a json list.");
             }
         }
 

@@ -64,12 +64,12 @@ namespace DotSerial.Tree.Creation
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             if (type == TreeNodeType.Leaf)
             {
-                throw new DotSerialException("NodeFactory: Leaf nodes are not allowed in this context.");
+                ThrowHelper.ThrowWrongNodeTypeException();
             }
 
             switch (type)
@@ -87,7 +87,8 @@ namespace DotSerial.Tree.Creation
                     return new DictionaryNode(wrapper);
                 }
                 default:
-                    throw new DotSerialException($"NodeFactory: Unkown node type {type}.");
+                    ThrowHelper.ThrowUnknownNodeTypeException();
+                    throw new Exception("Unreachable code.");
             }
         }
     }

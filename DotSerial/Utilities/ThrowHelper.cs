@@ -2,6 +2,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Helper class for throwing exceptions.
+    /// </summary>
     internal static class ThrowHelper
     {
         #region  Common Exceptions
@@ -10,6 +13,30 @@ namespace DotSerial.Utilities
         internal static void ThrowKeyNodeNullException()
         {
             throw new DotSerialException($"Key cannot be null.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowTypeIsNotSupportedException(Type type)
+        {
+            throw new DotSerialException($"Type {type} is not supported.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowWrongTypeException(Type type)
+        {
+            throw new DotSerialException($"Type {type} is wrong.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowDifferentStrategyException()
+        {
+            throw new DotSerialException($"Different strategy exception.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowStrategyNotSupportedException()
+        {
+            throw new DotSerialException($"Strategy not supported.");
         }
 
         [DoesNotReturn]
@@ -22,6 +49,18 @@ namespace DotSerial.Utilities
         internal static void ThrowUnknownNodeTypeException()
         {
             throw new DotSerialException($"Unknown node type.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowDuplicateNodeKeyTypeException(string key)
+        {
+            throw new DotSerialException($"Duplicate node key: {key}.");
+        }
+
+        [DoesNotReturn]
+        internal static void ThrowWrongNodeTypeException()
+        {
+            throw new DotSerialException($"Wrong node type.");
         }
 
         # endregion
