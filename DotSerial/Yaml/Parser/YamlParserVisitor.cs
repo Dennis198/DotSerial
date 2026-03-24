@@ -29,7 +29,8 @@ namespace DotSerial.Yaml.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
@@ -43,7 +44,8 @@ namespace DotSerial.Yaml.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
@@ -53,8 +55,8 @@ namespace DotSerial.Yaml.Parser
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
                     SerializeStrategy.Yaml,
-                    lines.GetLineContent(0, content),
-                    0,
+                    content,
+                    lines.GetLine(0),
                     CommonConstants.MainObjectKey
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
@@ -64,7 +66,8 @@ namespace DotSerial.Yaml.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
@@ -77,7 +80,8 @@ namespace DotSerial.Yaml.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Yaml,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.ListNode
                 );
                 if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
@@ -125,11 +129,12 @@ namespace DotSerial.Yaml.Parser
 
                     if (YamlParserHelper.IsYamlPrimitiveLine(value, content))
                     {
-                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
+                        var valueBookmark = YamlParserHelper.ExtractValueFromLine(value.GetLine(0), content);
                         var childNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Yaml,
                             key,
-                            strValue,
+                            valueBookmark,
+                            content,
                             TreeNodeType.Leaf
                         );
                         node.AddChild(childNode);
@@ -140,7 +145,8 @@ namespace DotSerial.Yaml.Parser
                         var innerNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Yaml,
                             key,
-                            null,
+                            ParserBookmark.Empty,
+                            [],
                             TreeNodeType.InnerNode
                         );
 
@@ -159,7 +165,8 @@ namespace DotSerial.Yaml.Parser
                         var listNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Yaml,
                             key,
-                            null,
+                            ParserBookmark.Empty,
+                            [],
                             TreeNodeType.ListNode
                         );
 
@@ -210,18 +217,25 @@ namespace DotSerial.Yaml.Parser
 
                     if (YamlParserHelper.IsYamlSingleValue(value, content))
                     {
-                        var val = value.GetLineContent(0, content);
-                        // Remove starting whitespaces
-                        val = val.Trim();
-                        var innerNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Yaml, val, 0, key);
+                        var innerNode = ParseMethods.ParsePrimitiveNode(
+                            SerializeStrategy.Yaml,
+                            content,
+                            value.GetLine(0),
+                            key
+                        );
                         node.AddChild(innerNode);
                     }
                     else if (YamlParserHelper.IsYamlObject(value, content))
                     {
                         // Create inner node
                         var innerNode =
-                            _nodeFactory.CreateNodeFromString(SerializeStrategy.Yaml, key, null, TreeNodeType.InnerNode)
-                                as InnerNode
+                            _nodeFactory.CreateNodeFromString(
+                                SerializeStrategy.Yaml,
+                                key,
+                                ParserBookmark.Empty,
+                                [],
+                                TreeNodeType.InnerNode
+                            ) as InnerNode
                             ?? throw new NotImplementedException();
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
@@ -239,7 +253,8 @@ namespace DotSerial.Yaml.Parser
                         var listNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Yaml,
                             key,
-                            null,
+                            ParserBookmark.Empty,
+                            [],
                             TreeNodeType.ListNode
                         );
 
@@ -298,7 +313,7 @@ namespace DotSerial.Yaml.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: Unknown node type.");
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

@@ -46,7 +46,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DotSerialException("Invalid toon");
+                        ThrowHelper.ThrowKeyNodeNullException();
                     }
 
                     int sIndex = i + 1;
@@ -93,7 +93,7 @@ namespace DotSerial.Toon.Parser
 
                     if (string.IsNullOrWhiteSpace(key))
                     {
-                        throw new DotSerialException("Invalid toon");
+                        ThrowHelper.ThrowKeyNodeNullException();
                     }
 
                     var helpObj = lines.SliceFromTo(i, i);
@@ -197,14 +197,15 @@ namespace DotSerial.Toon.Parser
         /// <summary>
         /// Extracts the value from a line
         /// </summary>
-        /// <param name="lines">ReadOnlySpan</param>
-        /// <returns>Value of the line</returns>
-        internal static string? ExtractValueFromLine(ReadOnlySpan<char> line)
+        /// <param name="lines">DotSerialStringBuilder-List</param>
+        /// <param name="content">Yaml content</param>
+        /// <returns>ParserBookmark</returns>
+        internal static ParserBookmark ExtractValueFromLine(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
             int start = -1;
-            for (int i = 0; i < line.Length; i++)
+            for (int i = bookmark.Start; i <= bookmark.End; i++)
             {
-                char c = line[i];
+                char c = content[i];
 
                 if (char.IsWhiteSpace(c))
                 {
@@ -213,7 +214,7 @@ namespace DotSerial.Toon.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    i = ReadOnlySpanMethods.SkipQuotedValue(line, i);
+                    i = ReadOnlySpanMethods.SkipQuotedValue(content, i);
                 }
                 else if (c == ToonConstants.KeyValueSeperator)
                 {
@@ -222,21 +223,21 @@ namespace DotSerial.Toon.Parser
                 }
                 else
                 {
-                    i = ReadOnlySpanMethods.SkipTillStopChar(line, i, ToonConstants.KeyValueSeperator);
+                    i = ReadOnlySpanMethods.SkipTillStopChar(content, i, ToonConstants.KeyValueSeperator);
                 }
             }
 
             if (start == -1)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Skip seperator
             start++;
 
-            for (int i = start; i < line.Length; i++)
+            for (int i = start; i <= bookmark.End; i++)
             {
-                var c = line[i];
+                var c = content[i];
 
                 if (char.IsWhiteSpace(c))
                 {
@@ -245,19 +246,18 @@ namespace DotSerial.Toon.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(line, i);
-                    var tmp = ReadOnlySpanMethods.SliceFromTo(line, i, j);
-                    return tmp.ToString();
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    return new ParserBookmark(i, j);
                 }
                 else
                 {
-                    int j = ReadOnlySpanMethods.SkipTillStopChar(line, i, null);
-                    var tmp = ReadOnlySpanMethods.SliceFromTo(line, i, j);
-                    return tmp.ToString();
+                    int j = ReadOnlySpanMethods.SkipTillStopChar(content, i, null, true);
+                    return new ParserBookmark(i, j);
                 }
             }
 
-            throw new NotImplementedException();
+            ThrowHelper.ThrowNoValueFoundForKeyException(start, bookmark.GetContent(content).ToString());
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>
@@ -559,6 +559,11 @@ namespace DotSerial.Toon.Parser
                 }
             }
 
+            if (start == -1)
+            {
+                return false;
+            }
+
             bool valueWasFound = false;
 
             for (int i = start; i < firstLine.Length; i++)
@@ -809,13 +814,28 @@ namespace DotSerial.Toon.Parser
 
             for (int i = 0; i < count; i++)
             {
-                var listNode = _nodeFactory.CreateNodeFromString(
-                    SerializeStrategy.Toon,
-                    i.ToString(),
-                    lItems[i],
-                    TreeNodeType.Leaf
-                );
-                node.AddChild(listNode);
+                if (null == lItems[i])
+                {
+                    var listNode = _nodeFactory.CreateNodeFromString(
+                        SerializeStrategy.Toon,
+                        i.ToString(),
+                        ParserBookmark.Empty,
+                        [],
+                        TreeNodeType.Leaf
+                    );
+                    node.AddChild(listNode);
+                }
+                else
+                {
+                    var listNode = _nodeFactory.CreateNodeFromString(
+                        SerializeStrategy.Toon,
+                        i.ToString(),
+                        new ParserBookmark(0, lItems[i]!.Length - 1),
+                        lItems[i].AsSpan(),
+                        TreeNodeType.Leaf
+                    );
+                    node.AddChild(listNode);
+                }
             }
         }
 
@@ -842,7 +862,8 @@ namespace DotSerial.Toon.Parser
                 var child = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Toon,
                     i.ToString(),
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 var values = ParseCommaSeperateValues(line, 0);
@@ -859,7 +880,8 @@ namespace DotSerial.Toon.Parser
                     var childChild = _nodeFactory.CreateNodeFromString(
                         SerializeStrategy.Toon,
                         key,
-                        value,
+                        new ParserBookmark(0, value.Length - 1),
+                        value.AsSpan(),
                         TreeNodeType.Leaf
                     );
                     child.AddChild(childChild);

@@ -88,5 +88,7 @@ namespace DotSerial.Utilities
         {
             return End == -1;
         }
+
+        public static readonly ParserBookmark Empty = new(-1, -1);
     }
 }

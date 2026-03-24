@@ -115,13 +115,14 @@ namespace DotSerial.Yaml.Parser
         /// Extracts the value from a line
         /// </summary>
         /// <param name="lines">DotSerialStringBuilder-List</param>
-        /// <returns>Value of the line</returns>
-        internal static string? ExtractValueFromLine(ReadOnlySpan<char> line)
+        /// <param name="content">Yaml content</param>
+        /// <returns>ParserBookmark</returns>
+        internal static ParserBookmark ExtractValueFromLine(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
             int start = -1;
-            for (int i = 0; i < line.Length; i++)
+            for (int i = bookmark.Start; i <= bookmark.End; i++)
             {
-                char c = line[i];
+                char c = content[i];
 
                 if (char.IsWhiteSpace(c))
                 {
@@ -130,7 +131,7 @@ namespace DotSerial.Yaml.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    i = ReadOnlySpanMethods.SkipQuotedValue(line, i);
+                    i = ReadOnlySpanMethods.SkipQuotedValue(content, i);
                 }
                 else if (c == YamlConstants.KeyValueSeperator)
                 {
@@ -139,21 +140,21 @@ namespace DotSerial.Yaml.Parser
                 }
                 else
                 {
-                    i = ReadOnlySpanMethods.SkipTillStopChar(line, i, YamlConstants.KeyValueSeperator);
+                    i = ReadOnlySpanMethods.SkipTillStopChar(content, i, YamlConstants.KeyValueSeperator);
                 }
             }
 
             if (start == -1)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Skip seperator
             start++;
 
-            for (int i = start; i < line.Length; i++)
+            for (int i = start; i <= bookmark.End; i++)
             {
-                var c = line[i];
+                var c = content[i];
 
                 if (char.IsWhiteSpace(c))
                 {
@@ -162,17 +163,18 @@ namespace DotSerial.Yaml.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(line, i);
-                    return ReadOnlySpanMethods.SliceFromTo(line, i, j).ToString();
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    return new ParserBookmark(i, j);
                 }
                 else
                 {
-                    int j = ReadOnlySpanMethods.SkipTillStopChar(line, i, null);
-                    return ReadOnlySpanMethods.SliceFromTo(line, i, j).ToString();
+                    int j = ReadOnlySpanMethods.SkipTillStopChar(content, i, null, true);
+                    return new ParserBookmark(i, j);
                 }
             }
 
-            throw new NotImplementedException();
+            ThrowHelper.ThrowNoValueFoundForKeyException(start, bookmark.GetContent(content).ToString());
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>

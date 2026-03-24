@@ -264,7 +264,8 @@ namespace DotSerial.Utilities
                 }
             }
 
-            throw new Exception("Parse Error: Closing quote missing or invalid escape sequence.");
+            ThrowHelper.ThrowMissingClosingCharException(startIndex, closeChar);
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>
@@ -310,7 +311,8 @@ namespace DotSerial.Utilities
                 }
             }
 
-            throw new Exception("Parse Error: Closing quote missing or invalid escape sequence.");
+            ThrowHelper.ThrowUnterminatedStringException(startIndex);
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>
@@ -333,7 +335,7 @@ namespace DotSerial.Utilities
                 throw new IndexOutOfRangeException(nameof(startIndex));
             }
 
-            if (null == stopChar)
+            if (null == stopChar && !stopAtNewLine)
             {
                 return source.Length - 1;
             }
@@ -365,7 +367,8 @@ namespace DotSerial.Utilities
 
             if (isEscaped)
             {
-                throw new Exception("Parse Error: Trailing escape character.");
+                ThrowHelper.ThrowUnterminatedCharException(startIndex);
+                throw new Exception("Unreachable code");
             }
 
             return source.Length - 1;
@@ -423,7 +426,8 @@ namespace DotSerial.Utilities
 
             if (isEscaped)
             {
-                throw new Exception("Parse Error: Trailing escape character.");
+                ThrowHelper.ThrowUnterminatedCharException(startIndex);
+                throw new Exception("Unreachable code");
             }
 
             return source.Length - 1;

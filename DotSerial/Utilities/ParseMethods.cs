@@ -18,45 +18,22 @@ namespace DotSerial.Utilities
         /// </summary>
         /// <param name="strategyType">Strategy type</param>
         /// <param name="content">Content</param>
-        /// <param name="startIndex">StartIndex</param>
+        /// <param name="bookmark">Parser bookmark</param>
         /// <param name="key">Key of the node</param>
         /// <returns>Leafnode</returns>
         internal static IDSNode ParsePrimitiveNode(
             SerializeStrategy strategyType,
             ReadOnlySpan<char> content,
-            int startIndex,
-            string key,
-            char[]? stopChars = null
+            ParserBookmark bookmark,
+            string key
         )
         {
             if (ReadOnlySpanMethods.IsNullOrWhiteSpace(content))
             {
-                return _nodeFactory.CreateNodeFromString(strategyType, key, null, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(strategyType, key, bookmark, content, TreeNodeType.Leaf);
             }
 
-            string? nodeValue;
-            int end;
-
-            if (ReadOnlySpanMethods.HasStartAndEndQuotes(content))
-            {
-                end = ReadOnlySpanMethods.SkipQuotedValue(content, startIndex);
-                if (end != content.Length - 1)
-                {
-                    throw new DotSerialException("Parse: Can't parse single value.");
-                }
-            }
-            else
-            {
-                end = ReadOnlySpanMethods.SkipTillStopChars(content, startIndex, stopChars);
-                if (end != content.Length - 1)
-                {
-                    throw new DotSerialException("Parse: Can't parse single value.");
-                }
-            }
-
-            nodeValue = ReadOnlySpanMethods.SliceFromTo(content, startIndex, end).ToString();
-
-            return _nodeFactory.CreateNodeFromString(strategyType, key, nodeValue, TreeNodeType.Leaf);
+            return _nodeFactory.CreateNodeFromString(strategyType, key, bookmark, content, TreeNodeType.Leaf);
         }
 
         /// <summary>

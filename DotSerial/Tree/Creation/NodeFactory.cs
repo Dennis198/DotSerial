@@ -1,6 +1,8 @@
+using System.Threading.Channels;
 using DotSerial.Json;
 using DotSerial.Toon;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 using DotSerial.Xml;
 using DotSerial.Yaml;
 
@@ -53,14 +55,21 @@ namespace DotSerial.Tree.Creation
         /// </summary>
         /// <param name="category">Create node strategy</param>
         /// <param name="key">Key of the node</param>
-        /// <param name="Value">Value of the node</param>
+        /// <param name="bookmark">Parser bookmark</param>
+        /// <param name="content">Content span</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNodeFromString(SerializeStrategy category, string key, string? value, TreeNodeType type)
+        internal IDSNode CreateNodeFromString(
+            SerializeStrategy category,
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
-                return strategy.CreateNodeFromString(key, value, type);
+                return strategy.CreateNodeFromString(key, bookmark, content, type);
             }
             throw new NotSupportedException($"Strategy '{category}' is not supported.");
         }
