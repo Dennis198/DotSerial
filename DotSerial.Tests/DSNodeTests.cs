@@ -353,6 +353,44 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
+        public void TryGetNodeValue_True(SerializeStrategy strategy)
+        {
+            // Arrange
+            int example = 5;
+            var node = DSNode.ToNode(example, strategy);
+
+            // Act
+            var result = node.TryGetNodeValue(out var value);
+
+            // Assert
+            Assert.True(result);
+            Assert.Equal("5", value);
+        }
+
+        [Theory]
+        [InlineData(SerializeStrategy.Json)]
+        [InlineData(SerializeStrategy.Toon)]
+        [InlineData(SerializeStrategy.Xml)]
+        [InlineData(SerializeStrategy.Yaml)]
+        public void TryGetNodeValue_False(SerializeStrategy strategy)
+        {
+            // Arrange
+            var example = ExampleClass.CreateTestDefault();
+            var node = DSNode.ToNode(example, strategy);
+
+            // Act
+            var result = node.TryGetNodeValue(out var value);
+
+            // Assert
+            Assert.False(result);
+            Assert.Null(value);
+        }
+
+        [Theory]
+        [InlineData(SerializeStrategy.Json)]
+        [InlineData(SerializeStrategy.Toon)]
+        [InlineData(SerializeStrategy.Xml)]
+        [InlineData(SerializeStrategy.Yaml)]
         public void GetNodeValue_Object(SerializeStrategy strategy)
         {
             // Arrange

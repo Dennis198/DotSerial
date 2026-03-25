@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Net;
 using DotSerial.Common;
@@ -50,14 +51,14 @@ namespace DotSerial
         /// <summary>Gets the number of child nodes.</summary>
         public int Count => _node.Count;
 
+        /// <summary>Gets a value indicating whether this node is a leaf node with a quoted value.</summary>
+        public bool IsQuoted => _node.IsQuoted;
+
         /// <summary>Gets a value indicating whether the node is read-only.</summary>
         public bool IsReadOnly => false;
 
         /// <summary>Gets the key associated with this node.</summary>
         public string Key => _node.Key;
-
-        /// <summary>Gets a value indicating whether this node is a leaf node with a quoted value.</summary>
-        public bool IsQuoted => _node.IsQuoted;
 
         /// <summary>Gets a collection containing the keys of all child nodes.</summary>
         public ICollection<string> Keys => _node.Keys;
@@ -298,12 +299,6 @@ namespace DotSerial
             return Remove(item.Key);
         }
 
-        /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
-        public void SetNodeValueNull()
-        {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
-        }
-
         /// <summary>Sets the leaf value of this node to the specified <see cref="string"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(string? value)
@@ -465,6 +460,12 @@ namespace DotSerial
             _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
         }
 
+        /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
+        public void SetNodeValueNull()
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
+        }
+
         /// <summary>
         /// Serializes this node and its children into a string using the node's associated strategy.
         /// </summary>
@@ -520,6 +521,30 @@ namespace DotSerial
             }
             catch
             {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the raw string value of this leaf node.
+        /// </summary>
+        /// <param name="value">When this method returns, contains the raw string value if the node has a value; otherwise, <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if the node has a value; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetNodeValue([MaybeNullWhen(false)] out string value)
+        {
+            try
+            {
+                value = GetNodeValue();
+
+                if (null == value)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                value = null;
                 return false;
             }
         }
