@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Updated Interface(s) => see README.md
 - Performance improvments.
 - Correct quotes handling for values if needed.
+- Support .net10
 - Benchmarks
 
 ### Info
