@@ -247,10 +247,7 @@ namespace DotSerial.Json.Parser
         /// <returns>Index of end symbol</returns>
         private static int ExtractJsonList(ReadOnlySpan<char> content, int startIndex)
         {
-            if (content.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, content.Length);
 
             if (content[startIndex] != JsonConstants.ListStart)
             {
@@ -296,10 +293,7 @@ namespace DotSerial.Json.Parser
         /// <returns>Index of end symbol</returns>
         private static int ExtractJsonObject(ReadOnlySpan<char> content, int startIndex)
         {
-            if (content.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, content.Length);
 
             if (content[startIndex] != JsonConstants.ObjectStart)
             {

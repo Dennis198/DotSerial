@@ -44,10 +44,7 @@ namespace DotSerial.Utilities
         /// <returns>indentation level of a line</returns>
         internal static int LineLevel(ReadOnlySpan<char> line, int indentationSize)
         {
-            if (indentationSize < 1)
-            {
-                throw new DotSerialException("Parse: Indentation size must be at least 1.");
-            }
+            ArgumentOutOfRangeException.ThrowIfLessThan(indentationSize, 1);
 
             int level = 0;
             for (int i = 0; i < line.Length; i++)

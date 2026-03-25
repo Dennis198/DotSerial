@@ -16,10 +16,8 @@ namespace DotSerial.Utilities
         /// <param name="size">Size of one intdentaion</param>
         internal static void AddIndentation(ref DotSerialStringBuilder sb, int count, int size)
         {
-            if (count < 0)
-            {
-                throw new ArgumentException(count.ToString());
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(count);
+            ArgumentOutOfRangeException.ThrowIfNegative(size);
 
             sb.Append(CommonConstants.WhiteSpace, count * size);
         }

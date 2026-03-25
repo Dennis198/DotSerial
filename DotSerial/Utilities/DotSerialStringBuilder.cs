@@ -96,7 +96,7 @@ namespace DotSerial.Utilities
             {
                 if ((uint)index >= (uint)_position)
                 {
-                    ThrowIndexOutOfRangeException();
+                    ThrowHelper.ThrowIndexOutOfRangeException();
                 }
 
                 return _buffer.AsSpan()[index];
@@ -106,7 +106,7 @@ namespace DotSerial.Utilities
             {
                 if ((uint)index >= (uint)_position)
                 {
-                    ThrowIndexOutOfRangeException();
+                    ThrowHelper.ThrowIndexOutOfRangeException();
                 }
 
                 _buffer.AsSpan()[index] = value;
@@ -467,12 +467,6 @@ namespace DotSerial.Utilities
             {
                 _position = newLength;
             }
-        }
-
-        [DoesNotReturn]
-        private static void ThrowIndexOutOfRangeException()
-        {
-            throw new IndexOutOfRangeException();
         }
 
         /// <summary>

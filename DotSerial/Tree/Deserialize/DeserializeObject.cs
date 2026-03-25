@@ -85,13 +85,6 @@ namespace DotSerial.Tree.Deserialize
                         continue;
                     }
 
-                    if (null == child)
-                    {
-                        throw new DotSerialException(
-                            $"Deserialize: Child with ID {propDSName} not found in node {node.Key}"
-                        );
-                    }
-
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
                     prop.SetValue(result, tmp);
                 }

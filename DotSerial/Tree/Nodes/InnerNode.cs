@@ -1,4 +1,5 @@
 using DotSerial.Tree.Deserialize;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Nodes
 {
@@ -27,10 +28,7 @@ namespace DotSerial.Tree.Nodes
         {
             get
             {
-                if (null == _children)
-                {
-                    throw new DotSerialException($"{_children} can't be null.");
-                }
+                ThrowHelper.ThrowIfNullException(_children);
 
                 var keys = new List<string>();
 
@@ -48,11 +46,7 @@ namespace DotSerial.Tree.Nodes
         {
             get
             {
-                if (null == _children)
-                {
-                    throw new DotSerialException($"{_children} can't be null.");
-                }
-
+                ThrowHelper.ThrowIfNullException(_children);
                 return _children;
             }
         }
@@ -61,17 +55,13 @@ namespace DotSerial.Tree.Nodes
         public void AddChild(IDSNode? node)
         {
             ArgumentNullException.ThrowIfNull(node);
-
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
+            ThrowHelper.ThrowIfNullException(_children);
 
             string key = node.Key;
 
             if (ContainsKey(key))
             {
-                throw new ArgumentException($"Child with the key {key} already present.");
+                ThrowHelper.ThrowDuplicateNodeKeyTypeException(key);
             }
 
             _children.Add(node);
@@ -80,22 +70,15 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public void Clear()
         {
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
-
+            ThrowHelper.ThrowIfNullException(_children);
             _children.Clear();
         }
 
         /// <inheritdoc/>
         public bool ContainsKey(string key)
         {
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
-
+            ArgumentNullException.ThrowIfNull(key);
+            ThrowHelper.ThrowIfNullException(_children);
             foreach (var child in _children)
             {
                 if (child.Key.Equals(key))
@@ -117,11 +100,7 @@ namespace DotSerial.Tree.Nodes
         public IDSNode GetChild(string key)
         {
             ArgumentNullException.ThrowIfNull(key);
-
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
+            ThrowHelper.ThrowIfNullException(_children);
 
             foreach (var child in _children)
             {
@@ -137,11 +116,7 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public List<IDSNode> GetChildren()
         {
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
-
+            ThrowHelper.ThrowIfNullException(_children);
             return _children;
         }
 
@@ -154,21 +129,15 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public bool HasChildren()
         {
-            if (null == _children)
-            {
-                return false;
-            }
-
+            ThrowHelper.ThrowIfNullException(_children);
             return _children.Count > 0;
         }
 
         /// <inheritdoc/>
         public bool Remove(string key)
         {
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
+            ArgumentNullException.ThrowIfNull(key);
+            ThrowHelper.ThrowIfNullException(_children);
 
             for (int i = 0; i < _children.Count; i++)
             {

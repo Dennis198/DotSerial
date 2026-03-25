@@ -215,10 +215,7 @@ namespace DotSerial
         /// <exception cref="ArgumentException">Thrown when the array does not have enough space.</exception>
         public void CopyTo(KeyValuePair<string, DSNode>[] array, int arrayIndex)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+            ArgumentNullException.ThrowIfNull(array);
 
             if (arrayIndex < 0 || arrayIndex > array.Length)
             {
@@ -269,7 +266,7 @@ namespace DotSerial
             }
 
             ThrowHelper.ThrowUnknownNodeTypeException();
-            throw new Exception("Unreachable code."); // This line should never be reached due to the exception thrown above.
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -475,10 +472,7 @@ namespace DotSerial
         /// <exception cref="DotSerialException">Thrown when the internal node is <see langword="null"/>.</exception>
         public string Stringify()
         {
-            if (null == _node)
-            {
-                throw new DotSerialException($"{_node} can't be null.");
-            }
+            ArgumentNullException.ThrowIfNull(_node);
 
             var jsonString = _writerFactory.Write(Strategy, this);
 

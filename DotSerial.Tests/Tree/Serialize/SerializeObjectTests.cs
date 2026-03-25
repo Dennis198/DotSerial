@@ -411,7 +411,7 @@ namespace DotSerial.Tests.Tree.Serialize
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            Assert.Throws<ArgumentException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
         }
 
         [Fact]
@@ -511,7 +511,9 @@ namespace DotSerial.Tests.Tree.Serialize
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            Assert.Throws<ArgumentOutOfRangeException>(() =>
+                SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json)
+            );
         }
     }
 }

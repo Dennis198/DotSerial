@@ -1,4 +1,5 @@
 using DotSerial.Tree.Deserialize;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Nodes
 {
@@ -39,7 +40,7 @@ namespace DotSerial.Tree.Nodes
         {
             if (wrappedNode is not InnerNode)
             {
-                throw new DotSerialException($"Wrapped node {wrappedNode} is not of type ${nameof(InnerNode)}.");
+                ThrowHelper.ThrowWrongNodeTypeException();
             }
 
             _wrappedInnerNode = wrappedNode;

@@ -72,11 +72,7 @@ namespace DotSerial.Utilities
         /// <returns>Sliced ReadOnlySpan</returns>
         internal readonly ReadOnlySpan<char> GetContent(ReadOnlySpan<char> content)
         {
-            if (content.Length < End)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(End, content.Length);
             return ReadOnlySpanMethods.SliceFromTo(content, Start, End);
         }
 

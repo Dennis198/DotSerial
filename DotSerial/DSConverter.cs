@@ -44,7 +44,7 @@ namespace DotSerial
 
             if (false == FileMethods.LoadFileContent(path, out string content))
             {
-                throw new NotSupportedException();
+                throw new FileLoadException($"Failed to load content from file: {path}");
             }
 
             var result = Deserialize<U>(content, strategy);

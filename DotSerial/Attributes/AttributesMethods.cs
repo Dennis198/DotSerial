@@ -45,10 +45,7 @@ namespace DotSerial.Attributes
                 {
                     string result = saveAtt.Name;
 
-                    if (result.Length == 0)
-                    {
-                        throw new DotSerialException($"{nameof(DotSerialNameAttribute)} can't be null.");
-                    }
+                    ArgumentOutOfRangeException.ThrowIfZero(result.Length, result);
 
                     return result;
                 }

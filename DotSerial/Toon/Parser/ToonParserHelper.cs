@@ -1007,11 +1007,7 @@ namespace DotSerial.Toon.Parser
         )
         {
             ArgumentNullException.ThrowIfNull(lines);
-
-            if (lines.Count - 1 < startIndex)
-            {
-                throw new ArgumentOutOfRangeException(nameof(startIndex));
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, lines.Count - 1);
 
             int endIndex = -1;
             int objLevel = ParseMethods.LineLevel(

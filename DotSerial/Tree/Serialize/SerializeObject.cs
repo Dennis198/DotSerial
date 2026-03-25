@@ -71,7 +71,8 @@ namespace DotSerial.Tree.Serialize
 
             if (null == result)
             {
-                throw new DotSerialException($"Serialize: {result} can't be null.");
+                ThrowHelper.ThrowIfNullException(result);
+                throw new Exception("Unreachable code.");
             }
 
             return result;
@@ -225,10 +226,7 @@ namespace DotSerial.Tree.Serialize
                         #region Key
 
                         // Key
-                        if (null == key)
-                        {
-                            throw new NullReferenceException();
-                        }
+                        ThrowHelper.ThrowIfNullException(key);
 
                         if (TypeCheckMethods.IsPrimitive(keyType) || TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {

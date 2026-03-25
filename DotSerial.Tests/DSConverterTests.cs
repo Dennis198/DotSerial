@@ -115,7 +115,7 @@ namespace DotSerial.Tests
             var tmp = new DuplicateIDClass();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            Assert.Throws<ArgumentException>(() => DSConverter.Serialize(tmp, strategy));
         }
 
         [Theory]
@@ -185,7 +185,7 @@ namespace DotSerial.Tests
             InvalidIDClass tmp = new();
 
             // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            Assert.Throws<ArgumentOutOfRangeException>(() => DSConverter.Serialize(tmp, strategy));
         }
 
         [Theory]

@@ -98,10 +98,7 @@ namespace DotSerial.Utilities
                     }
                     else if (itemType.IsEnum)
                     {
-                        if (null == castedList[i])
-                        {
-                            throw new NullReferenceException();
-                        }
+                        ThrowHelper.ThrowIfNullException(castedList[i]);
 
 #pragma warning disable CS8604
                         object enumObj = ConvertEnumToObject(itemType, castedList[i]);
@@ -169,10 +166,7 @@ namespace DotSerial.Utilities
                 Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
                 object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
 
-                if (null == result)
-                {
-                    throw new NullReferenceException();
-                }
+                ThrowHelper.ThrowIfNullException(result);
 
                 if (dic is IDictionary castedDic && result is IDictionary castedDicResult)
                 {
@@ -203,10 +197,7 @@ namespace DotSerial.Utilities
                         }
                         else if (valueType.IsEnum)
                         {
-                            if (null == castedDic[keyValuePair.Key])
-                            {
-                                throw new NullReferenceException();
-                            }
+                            ThrowHelper.ThrowIfNullException(castedDic[keyValuePair.Key]);
 
 #pragma warning disable CS8604
                             castedDicResult.Add(
