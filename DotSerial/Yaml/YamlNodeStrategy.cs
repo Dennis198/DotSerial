@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -8,91 +7,33 @@ namespace DotSerial.Yaml
 {
     /// <summary>
     /// Yaml strategy for parsing and writing.
-    /// </summary>
+    /// /// </summary>
     internal class YamlNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
-        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
+        public bool AreQuotesNeededForKey(string key)
         {
-            if (null == key || key.Length == 0)
-            {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
-            }
-
-            if (null != value && (type != TreeNodeType.Leaf))
-            {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
-            }
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
-            {
-                return INodeStrategy.CreateInnerNode(key, type);
-            }
-
-            if (null == value)
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
-            bool needQuotes = AreQuotesNeededForValue(value, strValue);
-
-            return new LeafNode(key, strValue, needQuotes);
-        }
-
-        /// <inheritdoc/>
-        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type)
-        {
-            if (key.HasStartAndEndQuotes())
-            {
-                key = StringMethods.RemoveStartAndEndQuotes(key);
-            }
-
             if (key == null || key.Length == 0)
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
-            if (null != value && (type != TreeNodeType.Leaf))
+            if (string.IsNullOrWhiteSpace(key))
             {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
+                return true;
             }
 
-            key = key.UnescapeString(YamlConstants.CharsToEscape);
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
+            if (key.HasLeadingOrTrailingWhitespaces())
             {
-                return INodeStrategy.CreateInnerNode(key, type);
+                return true;
             }
 
-            if (null == value)
+            if (key.ContainsChars(YamlConstants.YamlSpecialChars))
             {
-                return new LeafNode(key, null, false);
+                return true;
             }
 
-            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            bool needQuotes = false;
-
-            if (value.HasStartAndEndQuotes())
-            {
-                needQuotes = true;
-                value = StringMethods.RemoveStartAndEndQuotes(value);
-            }
-
-            value = value.UnescapeString(YamlConstants.CharsToEscape);
-
-            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
-            {
-                throw new DotSerialException("NodeFactory: Invalid yaml value.");
-            }
-
-            return new LeafNode(key, value, needQuotes);
+            return false;
         }
 
         /// <inheritdoc/>
@@ -145,29 +86,94 @@ namespace DotSerial.Yaml
         }
 
         /// <inheritdoc/>
-        public bool AreQuotesNeededForKey(string key)
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
         {
+            if (null == key || key.Length == 0)
+            {
+                ThrowHelper.ThrowKeyNodeNullException();
+            }
+
+            if (null != value && (type != TreeNodeType.Leaf))
+            {
+                ThrowHelper.ThrowInnerNodeValueException();
+            }
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
+            {
+                return INodeStrategy.CreateInnerNode(key, type);
+            }
+
+            if (null == value)
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            bool needQuotes = AreQuotesNeededForValue(value, strValue);
+
+            return new LeafNode(key, strValue, needQuotes);
+        }
+
+        /// <inheritdoc/>
+        public IDSNode CreateNodeFromString(
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
+        {
+            if (key.HasStartAndEndQuotes())
+            {
+                key = StringMethods.RemoveStartAndEndQuotes(key);
+            }
+
             if (key == null || key.Length == 0)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (false == bookmark.IsNull() && (type != TreeNodeType.Leaf))
             {
-                return true;
+                ThrowHelper.ThrowInnerNodeValueException();
             }
 
-            if (key.HasLeadingOrTrailingWhitespaces())
+            key = key.UnescapeString(YamlConstants.CharsToEscape);
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
             {
-                return true;
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
-            if (key.ContainsChars(YamlConstants.YamlSpecialChars))
+            if (bookmark.IsNull())
             {
-                return true;
+                return new LeafNode(key, null, false);
             }
 
-            return false;
+            string value = bookmark.GetContent(content).ToString();
+
+            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            bool needQuotes = false;
+
+            if (value.HasStartAndEndQuotes())
+            {
+                needQuotes = true;
+                value = StringMethods.RemoveStartAndEndQuotes(value);
+            }
+
+            value = value.UnescapeString(YamlConstants.CharsToEscape);
+
+            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
+            {
+                ThrowHelper.ThrowUnterminatedStringException(bookmark.Start);
+            }
+
+            return new LeafNode(key, value, needQuotes);
         }
 
         /// <inheritdoc/>

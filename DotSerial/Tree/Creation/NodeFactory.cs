@@ -1,6 +1,8 @@
+using System.Threading.Channels;
 using DotSerial.Json;
 using DotSerial.Toon;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 using DotSerial.Xml;
 using DotSerial.Yaml;
 
@@ -45,7 +47,9 @@ namespace DotSerial.Tree.Creation
             {
                 return strategy.CreateNode(key, value, type);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -53,16 +57,24 @@ namespace DotSerial.Tree.Creation
         /// </summary>
         /// <param name="category">Create node strategy</param>
         /// <param name="key">Key of the node</param>
-        /// <param name="Value">Value of the node</param>
+        /// <param name="bookmark">Parser bookmark</param>
+        /// <param name="content">Content span</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNodeFromString(SerializeStrategy category, string key, string? value, TreeNodeType type)
+        internal IDSNode CreateNodeFromString(
+            SerializeStrategy category,
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
-                return strategy.CreateNodeFromString(key, value, type);
+                return strategy.CreateNodeFromString(key, bookmark, content, type);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -77,7 +89,8 @@ namespace DotSerial.Tree.Creation
             {
                 return strategy.AreQuotesNeededForKey(key);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -92,7 +105,7 @@ namespace DotSerial.Tree.Creation
 
             if (targetType != TreeNodeType.ListNode && targetType != TreeNodeType.DictionaryNode)
             {
-                throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+                ThrowHelper.ThrowWrongNodeTypeException();
             }
 
             if (node is InnerNode wrapper)
@@ -108,12 +121,14 @@ namespace DotSerial.Tree.Creation
                         return new DictionaryNode(wrapper);
                     }
                     default:
-                        throw new DotSerialException("NodeFactory: Target node can't be leaf or inner node.");
+                        ThrowHelper.ThrowWrongNodeTypeException();
+                        throw new Exception("Unreachable code.");
                 }
             }
             else
             {
-                throw new DotSerialException("NodeFactory: Wrapped node must be an inner node.");
+                ThrowHelper.ThrowWrongNodeTypeException();
+                throw new Exception("Unreachable code.");
             }
         }
     }

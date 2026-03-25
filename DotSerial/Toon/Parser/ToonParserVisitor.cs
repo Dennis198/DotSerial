@@ -25,7 +25,8 @@ namespace DotSerial.Toon.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 return new DSNode(rootNode, SerializeStrategy.Toon);
@@ -38,8 +39,8 @@ namespace DotSerial.Toon.Parser
             {
                 rootNode = ParseMethods.ParsePrimitiveNode(
                     SerializeStrategy.Toon,
-                    lines.GetLineContent(0, content),
-                    0,
+                    content,
+                    lines.GetLine(0),
                     CommonConstants.MainObjectKey
                 );
                 return new DSNode(rootNode, SerializeStrategy.Toon);
@@ -49,7 +50,8 @@ namespace DotSerial.Toon.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.InnerNode
                 );
                 if (ToonParserHelper.IsEmptyObject(lines, content))
@@ -62,7 +64,8 @@ namespace DotSerial.Toon.Parser
                 rootNode = _nodeFactory.CreateNodeFromString(
                     SerializeStrategy.Toon,
                     CommonConstants.MainObjectKey,
-                    null,
+                    ParserBookmark.Empty,
+                    [],
                     TreeNodeType.ListNode
                 );
                 if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
@@ -72,7 +75,8 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: String is not toon.");
+                ThrowHelper.ThrowGenericParserException("String is not toon.");
+                throw new Exception("Unreachable code");
             }
 
             if (lines.Count > 0)
@@ -120,11 +124,12 @@ namespace DotSerial.Toon.Parser
 
                     if (ToonParserHelper.IsToonPrimitiveLine(value, content))
                     {
-                        string? strValue = ToonParserHelper.ExtractValueFromLine(value.GetLineContent(0, content));
+                        var valueBookmark = ToonParserHelper.ExtractValueFromLine(value.GetLine(0), content);
                         var childNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Toon,
                             key,
-                            strValue,
+                            valueBookmark,
+                            content,
                             TreeNodeType.Leaf
                         );
                         node.AddChild(childNode);
@@ -135,7 +140,8 @@ namespace DotSerial.Toon.Parser
                         var innerNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Toon,
                             key,
-                            null,
+                            ParserBookmark.Empty,
+                            [],
                             TreeNodeType.InnerNode
                         );
 
@@ -154,7 +160,8 @@ namespace DotSerial.Toon.Parser
                         var listNode = _nodeFactory.CreateNodeFromString(
                             SerializeStrategy.Toon,
                             key,
-                            null,
+                            ParserBookmark.Empty,
+                            [],
                             TreeNodeType.ListNode
                         );
 
@@ -169,13 +176,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a toon object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a toon object.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a toon object.");
+                ThrowHelper.ThrowGenericParserException("String is not a toon object.");
             }
         }
 
@@ -225,13 +232,12 @@ namespace DotSerial.Toon.Parser
 
                             if (ToonParserHelper.IsToonPrimitiveLine(value, content))
                             {
-                                string? strValue = ToonParserHelper.ExtractValueFromLine(
-                                    value.GetLineContent(0, content)
-                                );
+                                var valueBookmark = ToonParserHelper.ExtractValueFromLine(value.GetLine(0), content);
                                 var childNode = _nodeFactory.CreateNodeFromString(
                                     SerializeStrategy.Toon,
                                     key,
-                                    strValue,
+                                    valueBookmark,
+                                    content,
                                     TreeNodeType.Leaf
                                 );
 
@@ -239,8 +245,13 @@ namespace DotSerial.Toon.Parser
                             }
                             else if (ToonParserHelper.IsToonSingleValue(value, content))
                             {
-                                var tmp = value.GetLineContent(0, content).Trim();
-                                var childNode = ParseMethods.ParsePrimitiveNode(SerializeStrategy.Toon, tmp, 0, key);
+                                var childNode = ParseMethods.ParsePrimitiveNode(
+                                    SerializeStrategy.Toon,
+                                    content,
+                                    value.GetLine(0),
+                                    key
+                                );
+
                                 node.AddChild(childNode);
                             }
                             else if (ToonParserHelper.IsToonObject(value, content))
@@ -249,7 +260,8 @@ namespace DotSerial.Toon.Parser
                                 var innerNode = _nodeFactory.CreateNodeFromString(
                                     SerializeStrategy.Toon,
                                     key,
-                                    null,
+                                    ParserBookmark.Empty,
+                                    [],
                                     TreeNodeType.InnerNode
                                 );
 
@@ -268,7 +280,8 @@ namespace DotSerial.Toon.Parser
                                 var listNode = _nodeFactory.CreateNodeFromString(
                                     SerializeStrategy.Toon,
                                     key,
-                                    null,
+                                    ParserBookmark.Empty,
+                                    [],
                                     TreeNodeType.ListNode
                                 );
 
@@ -283,7 +296,7 @@ namespace DotSerial.Toon.Parser
                             }
                             else
                             {
-                                throw new DotSerialException("Parse: String is not a toon object.");
+                                ThrowHelper.ThrowGenericParserException("String is not a toon object.");
                             }
                             index++;
                         }
@@ -297,13 +310,13 @@ namespace DotSerial.Toon.Parser
                     }
                     else
                     {
-                        throw new DotSerialException("Parse: String is not a toon object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a toon list.");
                     }
                 }
             }
             else
             {
-                throw new DotSerialException("Parse: String is not a toon list.");
+                ThrowHelper.ThrowGenericParserException("String is not a toon list.");
             }
         }
 
@@ -341,7 +354,7 @@ namespace DotSerial.Toon.Parser
             }
             else
             {
-                throw new DotSerialException("Parse: Unknown node type.");
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

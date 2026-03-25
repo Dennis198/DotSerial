@@ -243,7 +243,7 @@ namespace DotSerial.Yaml.Writer
             }
             else
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

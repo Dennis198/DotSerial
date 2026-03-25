@@ -18,27 +18,24 @@ namespace DotSerial.Xml.Parser
             ReadOnlySpan<char> content
         )
         {
-            var tmpContent = bookmark.GetContent(content);
-            int offSet = bookmark.Start;
-
             var result = new Dictionary<XmlTagKeyPair, ParserBookmark>();
 
-            for (int i = 0; i < tmpContent.Length; i++)
+            for (int i = bookmark.Start; i < bookmark.End; i++)
             {
-                char c = tmpContent[i];
+                char c = content[i];
 
                 if (c == XmlConstants.XmlTagOpening)
                 {
-                    (int start, int end) = ExtractKeyValuePair(tmpContent, i, out XmlTagKeyPair tagKeyPair, out int j);
+                    (int start, int end) = ExtractKeyValuePair(content, i, out XmlTagKeyPair tagKeyPair, out int j);
 
                     if (end != -1)
                     {
-                        var tmpBookmark = new ParserBookmark(start + offSet, end + offSet);
+                        var tmpBookmark = new ParserBookmark(start, end);
                         result.Add(tagKeyPair, tmpBookmark);
                     }
                     else
                     {
-                        var tmpBookmark = new ParserBookmark(start + offSet, -1);
+                        var tmpBookmark = new ParserBookmark(start, -1);
                         result.Add(tagKeyPair, tmpBookmark);
                     }
 
@@ -106,12 +103,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DotSerialException("Parse: Start char is not '<'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(0, content[0]);
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DotSerialException("Parse: End char is not '>'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(content.Length - 1, content[^1]);
             }
 
             string tagBuilder = string.Empty;
@@ -143,7 +140,7 @@ namespace DotSerial.Xml.Parser
 
             if (-1 == indexKey)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             indexKey += XmlConstants.XmlAttributeKey.Length;
@@ -164,7 +161,7 @@ namespace DotSerial.Xml.Parser
                 }
                 else
                 {
-                    throw new DotSerialException("Parse: Invalid key format.");
+                    ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(indexKey, c);
                 }
             }
 
@@ -276,7 +273,7 @@ namespace DotSerial.Xml.Parser
 
             if (-1 == startIndex || -1 == endIndex)
             {
-                throw new DotSerialException("Parse: Could not find end of xml tag.");
+                ThrowHelper.ThrowGenericParserException($"Could not find end of xml tag at {startIndex}.");
             }
 
             return (startIndex, endIndex);
@@ -291,12 +288,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DotSerialException("Parse: Start char is not '<'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(0, content[0]);
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DotSerialException("Parse: End char is not '>'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(content.Length - 1, content[^1]);
             }
 
             for (int i = 1; i < content.Length - 1; i++)
@@ -316,7 +313,8 @@ namespace DotSerial.Xml.Parser
                 }
             }
 
-            throw new DotSerialException("Parse: Unkown error.");
+            ThrowHelper.ThrowGenericParserException("Unkown error.");
+            throw new Exception("Unreachable code");
         }
 
         /// <summary>
@@ -328,12 +326,12 @@ namespace DotSerial.Xml.Parser
         {
             if (content[0] != XmlConstants.XmlTagOpening)
             {
-                throw new DotSerialException("Parse: Start char is not '<'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(0, content[0]);
             }
 
             if (content[^1] != XmlConstants.XmlTagClosing)
             {
-                throw new DotSerialException("Parse: End char is not '>'.");
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(content.Length - 1, content[^1]);
             }
 
             for (int i = content.Length - 2; i > 0; i--)
@@ -353,7 +351,8 @@ namespace DotSerial.Xml.Parser
                 }
             }
 
-            throw new DotSerialException("Parse: Unkown error.");
+            ThrowHelper.ThrowGenericParserException("Unkown error.");
+            throw new Exception("Unreachable code");
         }
     }
 

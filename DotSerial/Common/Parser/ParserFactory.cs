@@ -1,5 +1,6 @@
 using DotSerial.Json.Parser;
 using DotSerial.Toon.Parser;
+using DotSerial.Utilities;
 using DotSerial.Xml.Parser;
 using DotSerial.Yaml.Parser;
 
@@ -42,7 +43,9 @@ namespace DotSerial.Common.Parser
             {
                 return strategy.Parse(str);
             }
-            throw new NotSupportedException($"Strategy '{category}' is not supported.");
+
+            ThrowHelper.ThrowStrategyNotSupportedException();
+            throw new Exception("Unreachable code.");
         }
     }
 }

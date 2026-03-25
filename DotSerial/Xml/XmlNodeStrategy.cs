@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -12,16 +11,36 @@ namespace DotSerial.Xml
     internal class XmlNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
+        public bool AreQuotesNeededForKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public bool AreQuotesNeededForValue(object? value, string? strValue)
+        {
+            if (null == value)
+                return false;
+
+            Type type = value.GetType();
+
+            if (type == typeof(string) && string.IsNullOrWhiteSpace(strValue))
+                return true;
+
+            return false;
+        }
+
+        /// <inheritdoc/>
         public IDSNode CreateNode(string key, object? value, TreeNodeType type)
         {
             if (null == key || key.Length == 0)
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             if (null != value && (type != TreeNodeType.Leaf))
             {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
+                ThrowHelper.ThrowInnerNodeValueException();
             }
 
             // Create inner node
@@ -42,7 +61,12 @@ namespace DotSerial.Xml
         }
 
         /// <inheritdoc/>
-        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type)
+        public IDSNode CreateNodeFromString(
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
         {
             if (key.HasStartAndEndQuotes())
             {
@@ -51,12 +75,12 @@ namespace DotSerial.Xml
 
             if (key == null || key.Length == 0)
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
-            if (null != value && (type != TreeNodeType.Leaf))
+            if (false == bookmark.IsNull() && (type != TreeNodeType.Leaf))
             {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
+                ThrowHelper.ThrowInnerNodeValueException();
             }
 
             key = key.XmlUnEscape();
@@ -67,10 +91,12 @@ namespace DotSerial.Xml
                 return INodeStrategy.CreateInnerNode(key, type);
             }
 
-            if (null == value)
+            if (bookmark.IsNull())
             {
                 return new LeafNode(key, null, false);
             }
+
+            string value = bookmark.GetContent(content).ToString();
 
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -94,26 +120,6 @@ namespace DotSerial.Xml
         public bool IsValueValidWithoutQuotes(string value)
         {
             throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool AreQuotesNeededForKey(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc/>
-        public bool AreQuotesNeededForValue(object? value, string? strValue)
-        {
-            if (null == value)
-                return false;
-
-            Type type = value.GetType();
-
-            if (type == typeof(string) && string.IsNullOrWhiteSpace(strValue))
-                return true;
-
-            return false;
         }
     }
 }

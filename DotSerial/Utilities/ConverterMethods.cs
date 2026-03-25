@@ -30,7 +30,7 @@ namespace DotSerial.Utilities
             // Check if type is supported
             if (false == TypeCheckMethods.IsTypeSupported(itemType))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
             }
 
             // Check if type is array
@@ -98,10 +98,7 @@ namespace DotSerial.Utilities
                     }
                     else if (itemType.IsEnum)
                     {
-                        if (null == castedList[i])
-                        {
-                            throw new NullReferenceException();
-                        }
+                        ThrowHelper.ThrowIfNullException(castedList[i]);
 
 #pragma warning disable CS8604
                         object enumObj = ConvertEnumToObject(itemType, castedList[i]);
@@ -125,7 +122,7 @@ namespace DotSerial.Utilities
                     }
                     else
                     {
-                        throw new DotSerialException(string.Format("Type {0} is not supported.", itemType.Name));
+                        ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
                     }
                 }
 
@@ -157,22 +154,19 @@ namespace DotSerial.Utilities
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
-                    throw new DotSerialException(string.Format("Type {0} is not supported.", keyType.Name));
+                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
                 }
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(valueType))
                 {
-                    throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
+                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                 }
 
                 // result object
                 Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
                 object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
 
-                if (null == result)
-                {
-                    throw new NullReferenceException();
-                }
+                ThrowHelper.ThrowIfNullException(result);
 
                 if (dic is IDictionary castedDic && result is IDictionary castedDicResult)
                 {
@@ -203,10 +197,7 @@ namespace DotSerial.Utilities
                         }
                         else if (valueType.IsEnum)
                         {
-                            if (null == castedDic[keyValuePair.Key])
-                            {
-                                throw new NullReferenceException();
-                            }
+                            ThrowHelper.ThrowIfNullException(castedDic[keyValuePair.Key]);
 
 #pragma warning disable CS8604
                             castedDicResult.Add(
@@ -239,7 +230,7 @@ namespace DotSerial.Utilities
                         }
                         else
                         {
-                            throw new DotSerialException(string.Format("Type {0} is not supported.", valueType.Name));
+                            ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                         }
                     }
 
@@ -296,7 +287,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
             }
 
             object? primObj;
@@ -339,7 +330,8 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
+                throw new Exception("Unreachable code.");
             }
 
             return primObj;
@@ -364,7 +356,7 @@ namespace DotSerial.Utilities
             // Check if primitive type
             if (!TypeCheckMethods.IsPrimitive(typeObj))
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
             }
 
             object? primObj;
@@ -472,7 +464,8 @@ namespace DotSerial.Utilities
             }
             else
             {
-                throw new DotSerialException(string.Format("Type {0} is not supported.", typeObj.Name));
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
+                throw new Exception("Unreachable code.");
             }
 
             return primObj;

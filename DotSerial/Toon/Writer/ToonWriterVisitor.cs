@@ -204,7 +204,7 @@ namespace DotSerial.Toon.Writer
             }
             else
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnknownNodeTypeException();
             }
         }
     }

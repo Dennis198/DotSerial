@@ -1,5 +1,5 @@
-using DotSerial.Common;
 using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Creation
 {
@@ -19,12 +19,18 @@ namespace DotSerial.Tree.Creation
 
         /// <summary>
         /// Creates a node from string value
-        /// </summary>
+        /// /// </summary>
         /// <param name="key">Key of the node</param>
-        /// <param name="Value">Value of the node</param>
+        /// <param name="bookmark">Parser bookmark</param>
+        /// <param name="content">Content</param>
         /// <param name="type">Type of the node</param>
         /// <returns>IDSNode</returns>
-        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type);
+        public IDSNode CreateNodeFromString(
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        );
 
         /// <summary>
         /// Check if a object and his string represntive need quotes.
@@ -58,12 +64,12 @@ namespace DotSerial.Tree.Creation
         {
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             if (type == TreeNodeType.Leaf)
             {
-                throw new DotSerialException("NodeFactory: Leaf nodes are not allowed in this context.");
+                ThrowHelper.ThrowWrongNodeTypeException();
             }
 
             switch (type)
@@ -81,7 +87,8 @@ namespace DotSerial.Tree.Creation
                     return new DictionaryNode(wrapper);
                 }
                 default:
-                    throw new DotSerialException($"NodeFactory: Unkown node type {type}.");
+                    ThrowHelper.ThrowUnknownNodeTypeException();
+                    throw new Exception("Unreachable code.");
             }
         }
     }

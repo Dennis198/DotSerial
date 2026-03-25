@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Net;
 using DotSerial.Common;
@@ -9,6 +10,7 @@ using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Tree.Serialize;
+using DotSerial.Utilities;
 
 namespace DotSerial
 {
@@ -49,14 +51,14 @@ namespace DotSerial
         /// <summary>Gets the number of child nodes.</summary>
         public int Count => _node.Count;
 
+        /// <summary>Gets a value indicating whether this node is a leaf node with a quoted value.</summary>
+        public bool IsQuoted => _node.IsQuoted;
+
         /// <summary>Gets a value indicating whether the node is read-only.</summary>
         public bool IsReadOnly => false;
 
         /// <summary>Gets the key associated with this node.</summary>
         public string Key => _node.Key;
-
-        /// <summary>Gets a value indicating whether this node is a leaf node with a quoted value.</summary>
-        public bool IsQuoted => _node.IsQuoted;
 
         /// <summary>Gets a collection containing the keys of all child nodes.</summary>
         public ICollection<string> Keys => _node.Keys;
@@ -78,7 +80,7 @@ namespace DotSerial
 
                 if (Strategy != value.Strategy)
                 {
-                    throw new DotSerialException("Can't set a node with a different strategy type.");
+                    ThrowHelper.ThrowDifferentStrategyException();
                 }
 
                 var node = value.GetInternalData();
@@ -158,7 +160,7 @@ namespace DotSerial
 
             if (Strategy != value.Strategy)
             {
-                throw new DotSerialException("Can't add a node with a different strategy type.");
+                ThrowHelper.ThrowDifferentStrategyException();
             }
 
             var node = value.GetInternalData();
@@ -214,10 +216,7 @@ namespace DotSerial
         /// <exception cref="ArgumentException">Thrown when the array does not have enough space.</exception>
         public void CopyTo(KeyValuePair<string, DSNode>[] array, int arrayIndex)
         {
-            if (array == null)
-            {
-                throw new ArgumentNullException(nameof(array));
-            }
+            ArgumentNullException.ThrowIfNull(array);
 
             if (arrayIndex < 0 || arrayIndex > array.Length)
             {
@@ -267,7 +266,8 @@ namespace DotSerial
                 return NodeType.Array;
             }
 
-            throw new DotSerialException("Unknown node type.");
+            ThrowHelper.ThrowUnknownNodeTypeException();
+            throw new Exception("Unreachable code.");
         }
 
         /// <summary>
@@ -297,12 +297,6 @@ namespace DotSerial
         public bool Remove(KeyValuePair<string, DSNode> item)
         {
             return Remove(item.Key);
-        }
-
-        /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
-        public void SetNodeValueNull()
-        {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="string"/>.</summary>
@@ -466,6 +460,12 @@ namespace DotSerial
             _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
         }
 
+        /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
+        public void SetNodeValueNull()
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
+        }
+
         /// <summary>
         /// Serializes this node and its children into a string using the node's associated strategy.
         /// </summary>
@@ -473,10 +473,7 @@ namespace DotSerial
         /// <exception cref="DotSerialException">Thrown when the internal node is <see langword="null"/>.</exception>
         public string Stringify()
         {
-            if (null == _node)
-            {
-                throw new DotSerialException($"{_node} can't be null.");
-            }
+            ArgumentNullException.ThrowIfNull(_node);
 
             var jsonString = _writerFactory.Write(Strategy, this);
 
@@ -524,6 +521,30 @@ namespace DotSerial
             }
             catch
             {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the raw string value of this leaf node.
+        /// </summary>
+        /// <param name="value">When this method returns, contains the raw string value if the node has a value; otherwise, <see langword="null"/>.</param>
+        /// <returns><see langword="true"/> if the node has a value; otherwise, <see langword="false"/>.</returns>
+        public bool TryGetNodeValue([MaybeNullWhen(false)] out string value)
+        {
+            try
+            {
+                value = GetNodeValue();
+
+                if (null == value)
+                {
+                    return false;
+                }
+                return true;
+            }
+            catch
+            {
+                value = null;
                 return false;
             }
         }

@@ -25,8 +25,9 @@ namespace DotSerial.Json.Parser
             bool startObjectSymbolFound = false;
             bool keyFound = false;
             string foundKey = string.Empty;
+            int i;
 
-            for (int i = 0; i < bookmarkContent.Length; i++)
+            for (i = 0; i < bookmarkContent.Length; i++)
             {
                 char c = bookmarkContent[i];
 
@@ -43,7 +44,7 @@ namespace DotSerial.Json.Parser
 
                 if (false == startObjectSymbolFound)
                 {
-                    continue;
+                    ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i + offset, c);
                 }
 
                 // Check if opening quote for the key is found
@@ -130,6 +131,11 @@ namespace DotSerial.Json.Parser
                 }
             }
 
+            if (true == keyFound)
+            {
+                ThrowHelper.ThrowNoValueFoundForKeyException(i + offset, foundKey);
+            }
+
             return result;
         }
 
@@ -141,13 +147,11 @@ namespace DotSerial.Json.Parser
         /// <returns>List of ParserBookmark</returns>
         internal static List<ParserBookmark> ExtractObjectList(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
-            var bookmarkContent = bookmark.GetContent(content);
-            int offset = bookmark.Start;
             var list = new List<ParserBookmark>();
 
-            for (int i = 1; i < bookmarkContent.Length - 1; i++)
+            for (int i = bookmark.Start + 1; i < bookmark.End; i++)
             {
-                char c = bookmarkContent[i];
+                char c = content[i];
 
                 if (char.IsWhiteSpace(c) || c == CommonConstants.Comma || c == JsonConstants.KeyValueSeperator)
                 {
@@ -156,20 +160,20 @@ namespace DotSerial.Json.Parser
 
                 if (c == CommonConstants.Quote)
                 {
-                    int j = ReadOnlySpanMethods.SkipQuotedValue(bookmarkContent, i);
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
 
-                    var tmp = new ParserBookmark(i + offset, j + offset);
+                    var tmp = new ParserBookmark(i, j);
                     list.Add(tmp);
 
                     i = j;
                 }
                 else if (c == JsonConstants.ListStart)
                 {
-                    int j = ExtractJsonList(bookmarkContent, i);
+                    int j = ExtractJsonList(content, i);
 
-                    if (false == IsEmptyList(bookmarkContent, i, j))
+                    if (false == IsEmptyList(content, i, j))
                     {
-                        var tmp = new ParserBookmark(i + offset, j + offset);
+                        var tmp = new ParserBookmark(i, j);
                         list.Add(tmp);
                     }
 
@@ -177,11 +181,11 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ObjectStart)
                 {
-                    int j = ExtractJsonObject(bookmarkContent, i);
+                    int j = ExtractJsonObject(content, i);
 
-                    if (false == IsEmptyObject(bookmarkContent, i, j))
+                    if (false == IsEmptyObject(content, i, j))
                     {
-                        var tmp = new ParserBookmark(i + offset, j + offset);
+                        var tmp = new ParserBookmark(i, j);
                         list.Add(tmp);
                     }
 
@@ -189,9 +193,9 @@ namespace DotSerial.Json.Parser
                 }
                 else
                 {
-                    int j = ReadOnlySpanMethods.SkipTillStopChars(bookmarkContent, i, JsonConstants.ParseStopChars);
+                    int j = ReadOnlySpanMethods.SkipTillStopChars(content, i, JsonConstants.ParseStopChars);
 
-                    var tmp = new ParserBookmark(i + offset, j + offset);
+                    var tmp = new ParserBookmark(i, j);
                     list.Add(tmp);
 
                     i = j;
@@ -243,14 +247,11 @@ namespace DotSerial.Json.Parser
         /// <returns>Index of end symbol</returns>
         private static int ExtractJsonList(ReadOnlySpan<char> content, int startIndex)
         {
-            if (content.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, content.Length);
 
             if (content[startIndex] != JsonConstants.ListStart)
             {
-                throw new DotSerialException("Invalid json.");
+                ThrowHelper.ThrowGenericParserException($"Invalid json at {startIndex}.");
             }
 
             int i;
@@ -277,7 +278,6 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ListEnd)
                 {
-                    // i++;
                     break;
                 }
             }
@@ -293,14 +293,11 @@ namespace DotSerial.Json.Parser
         /// <returns>Index of end symbol</returns>
         private static int ExtractJsonObject(ReadOnlySpan<char> content, int startIndex)
         {
-            if (content.Length < startIndex)
-            {
-                throw new IndexOutOfRangeException();
-            }
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, content.Length);
 
             if (content[startIndex] != JsonConstants.ObjectStart)
             {
-                throw new DotSerialException("Invalid json.");
+                ThrowHelper.ThrowGenericParserException($"Invalid json at {startIndex}.");
             }
 
             int i;
@@ -327,7 +324,6 @@ namespace DotSerial.Json.Parser
                 }
                 else if (c == JsonConstants.ObjectEnd)
                 {
-                    // i;
                     break;
                 }
             }
@@ -346,7 +342,7 @@ namespace DotSerial.Json.Parser
         {
             if (content[startIndex] != JsonConstants.ListStart && content[endIndex] != JsonConstants.ListEnd)
             {
-                throw new DotSerialException("Invalid json.");
+                return false;
             }
 
             for (int i = startIndex + 1; i < content.Length - 1; i++)
@@ -373,7 +369,7 @@ namespace DotSerial.Json.Parser
         {
             if (content[startIndex] != JsonConstants.ObjectStart && content[endIndex] != JsonConstants.ObjectEnd)
             {
-                throw new DotSerialException("Invalid json.");
+                return false;
             }
 
             for (int i = startIndex + 1; i < content.Length - 1; i++)

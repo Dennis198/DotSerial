@@ -26,7 +26,7 @@ namespace DotSerial.Yaml.Writer
 
             if (string.IsNullOrWhiteSpace(key))
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Make sure key:value has its own line.
@@ -71,7 +71,7 @@ namespace DotSerial.Yaml.Writer
 
             if (null == key || key.Length == 0)
             {
-                throw new ArgumentException("Value cannot be null or whitespace.", nameof(key));
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
             // Make sure key:value has its own line.
@@ -166,7 +166,7 @@ namespace DotSerial.Yaml.Writer
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    ThrowHelper.ThrowWrongNodeTypeException();
                 }
             }
 

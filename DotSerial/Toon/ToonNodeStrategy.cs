@@ -1,4 +1,3 @@
-using DotSerial.Common;
 using DotSerial.Tree;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
@@ -12,87 +11,34 @@ namespace DotSerial.Toon
     internal class ToonNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
-        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
+        public bool AreQuotesNeededForKey(string key)
         {
-            if (null == key || key.Length == 0)
-            {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
-            }
-
-            if (null != value && (type != TreeNodeType.Leaf))
-            {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
-            }
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
-            {
-                return INodeStrategy.CreateInnerNode(key, type);
-            }
-
-            if (null == value)
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
-            bool needQuotes = AreQuotesNeededForValue(value, strValue);
-
-            return new LeafNode(key, strValue, needQuotes);
-        }
-
-        /// <inheritdoc/>
-        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type)
-        {
-            if (key.HasStartAndEndQuotes())
-            {
-                key = StringMethods.RemoveStartAndEndQuotes(key);
-            }
-
             if (key == null || key.Length == 0)
             {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
-            if (null != value && (type != TreeNodeType.Leaf))
+            if (string.IsNullOrWhiteSpace(key))
             {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
+                return true;
             }
 
-            key = key.UnescapeString(ToonConstants.CharsToEscape);
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
+            if (key.HasLeadingOrTrailingWhitespaces())
             {
-                return INodeStrategy.CreateInnerNode(key, type);
+                return true;
             }
 
-            if (null == value)
+            if (key.IsNumericValue())
             {
-                return new LeafNode(key, null, false);
+                return false;
             }
 
-            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
+            if (key.ContainsChars(ToonConstants.ToonSpecialChars))
             {
-                return new LeafNode(key, null, false);
+                return true;
             }
 
-            bool needQuotes = false;
-
-            if (value.HasStartAndEndQuotes())
-            {
-                needQuotes = true;
-                value = StringMethods.RemoveStartAndEndQuotes(value);
-            }
-
-            value = value.UnescapeString(ToonConstants.CharsToEscape);
-
-            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
-            {
-                throw new DotSerialException("NodeFactory: Invalid toon value.");
-            }
-
-            return new LeafNode(key, value, needQuotes);
+            return false;
         }
 
         /// <inheritdoc/>
@@ -139,34 +85,96 @@ namespace DotSerial.Toon
         }
 
         /// <inheritdoc/>
-        public bool AreQuotesNeededForKey(string key)
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
         {
+            if (null == key || key.Length == 0)
+            {
+                ThrowHelper.ThrowKeyNodeNullException();
+            }
+
+            if (null != value && (type != TreeNodeType.Leaf))
+            {
+                ThrowHelper.ThrowInnerNodeValueException();
+            }
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
+            {
+                return INodeStrategy.CreateInnerNode(key, type);
+            }
+
+            if (null == value)
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            bool needQuotes = AreQuotesNeededForValue(value, strValue);
+
+            return new LeafNode(key, strValue, needQuotes);
+        }
+
+        /// <inheritdoc/>
+        public IDSNode CreateNodeFromString(
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
+        {
+            if (key.HasStartAndEndQuotes())
+            {
+                key = StringMethods.RemoveStartAndEndQuotes(key);
+            }
+
             if (key == null || key.Length == 0)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowKeyNodeNullException();
             }
 
-            if (string.IsNullOrWhiteSpace(key))
+            if (false == bookmark.IsNull() && (type != TreeNodeType.Leaf))
             {
-                return true;
+                ThrowHelper.ThrowInnerNodeValueException();
             }
 
-            if (key.HasLeadingOrTrailingWhitespaces())
+            key = key.UnescapeString(ToonConstants.CharsToEscape);
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
             {
-                return true;
+                return INodeStrategy.CreateInnerNode(key, type);
             }
 
-            if (key.IsNumericValue())
+            if (bookmark.IsNull())
             {
-                return false;
+                return new LeafNode(key, null, false);
             }
 
-            if (key.ContainsChars(ToonConstants.ToonSpecialChars))
+            // TODO " null" ListFirstElementNull
+            // string? value = bookmark.GetContent(content).ToString();
+            string? value = bookmark.GetContent(content).ToString().Trim();
+
+            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
             {
-                return true;
+                return new LeafNode(key, null, false);
             }
 
-            return false;
+            bool needQuotes = false;
+
+            if (value.HasStartAndEndQuotes())
+            {
+                needQuotes = true;
+                value = StringMethods.RemoveStartAndEndQuotes(value);
+            }
+
+            value = value.UnescapeString(ToonConstants.CharsToEscape);
+
+            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
+            {
+                ThrowHelper.ThrowUnterminatedStringException(bookmark.Start);
+            }
+
+            return new LeafNode(key, value, needQuotes);
         }
 
         /// <inheritdoc/>

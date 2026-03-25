@@ -81,7 +81,7 @@ namespace DotSerial.Utilities
 
             if (null == strValue)
             {
-                throw new InvalidOperationException("Could not convert primitive to string.");
+                ThrowHelper.ThrowWrongTypeException(type);
             }
 
             return strValue;

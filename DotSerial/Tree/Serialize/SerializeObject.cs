@@ -42,7 +42,7 @@ namespace DotSerial.Tree.Serialize
             // Check if type is supported
             if (false == TypeCheckMethods.IsTypeSupported(typeObj))
             {
-                throw new DotSerialException($"Serialize: Type {typeObj} is not supported.");
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
             }
 
             IDSNode? result;
@@ -65,12 +65,14 @@ namespace DotSerial.Tree.Serialize
             }
             else
             {
-                throw new DotSerialException($"Serialize: Type {typeObj} is unknown.");
+                ThrowHelper.ThrowTypeIsNotSupportedException(typeObj);
+                throw new Exception("Unreachable code.");
             }
 
             if (null == result)
             {
-                throw new DotSerialException($"Serialize: {result} can't be null.");
+                ThrowHelper.ThrowIfNullException(result);
+                throw new Exception("Unreachable code.");
             }
 
             return result;
@@ -118,14 +120,14 @@ namespace DotSerial.Tree.Serialize
                     // Check if type is supported
                     if (false == TypeCheckMethods.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new DotSerialException($"Serialize: Type {prop.PropertyType} is not supported.");
+                        ThrowHelper.ThrowTypeIsNotSupportedException(prop.PropertyType);
                     }
 
                     // Check if id was already used.
                     // If yes throw exception.
                     if (dicIdName.ContainsKey(dsPropName))
                     {
-                        throw new DotSerialException($"Serialize: Duplicate id: {dsPropName}.");
+                        ThrowHelper.ThrowDuplicateNodeKeyTypeException(dsPropName);
                     }
 
                     // Get Value of property
@@ -167,7 +169,7 @@ namespace DotSerial.Tree.Serialize
                     }
                     else
                     {
-                        throw new DotSerialException($"Serialize: Type {prop.PropertyType} is unknown.");
+                        ThrowHelper.ThrowTypeIsNotSupportedException(prop.PropertyType);
                     }
                 }
             }
@@ -206,12 +208,12 @@ namespace DotSerial.Tree.Serialize
                     // Check if type is supported
                     if (false == TypeCheckMethods.IsTypeSupported(keyType))
                     {
-                        throw new DotSerialException($"Serialize: Type {keyType} is not supported.");
+                        ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
                     }
                     // Check if type is supported
                     if (false == TypeCheckMethods.IsTypeSupported(valueType))
                     {
-                        throw new DotSerialException($"Serialize: Type {valueType} is not supported.");
+                        ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                     }
 
                     foreach (DictionaryEntry keyValuePair in castedDic)
@@ -224,10 +226,7 @@ namespace DotSerial.Tree.Serialize
                         #region Key
 
                         // Key
-                        if (null == key)
-                        {
-                            throw new NullReferenceException();
-                        }
+                        ThrowHelper.ThrowIfNullException(key);
 
                         if (TypeCheckMethods.IsPrimitive(keyType) || TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
@@ -242,7 +241,7 @@ namespace DotSerial.Tree.Serialize
 
                         if (null == keyString)
                         {
-                            throw new DotSerialException($"Serialize: Key can't be null.");
+                            ThrowHelper.ThrowKeyNodeNullException();
                         }
 
                         #endregion
@@ -326,7 +325,8 @@ namespace DotSerial.Tree.Serialize
                         }
                         else
                         {
-                            throw new DotSerialException($"Serialize: Type {valueType} is unknown.");
+                            ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                            throw new Exception("Unreachable code.");
                         }
 
                         #endregion
@@ -376,7 +376,7 @@ namespace DotSerial.Tree.Serialize
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(type))
                 {
-                    throw new DotSerialException($"Serialize: Type {type} is not supported.");
+                    ThrowHelper.ThrowTypeIsNotSupportedException(type);
                 }
 
                 if (TypeCheckMethods.IsPrimitive(type) || TypeCheckMethods.IsSpecialParsableObject(type))
@@ -429,7 +429,7 @@ namespace DotSerial.Tree.Serialize
                 }
                 else
                 {
-                    throw new DotSerialException($"Serialize: Type {type} is unknown.");
+                    ThrowHelper.ThrowTypeIsNotSupportedException(type);
                 }
 
                 return result;

@@ -11,87 +11,9 @@ namespace DotSerial.Json
     internal class JsonNodeStrategy : INodeStrategy
     {
         /// <inheritdoc/>
-        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
+        public bool AreQuotesNeededForKey(string key)
         {
-            if (null == key || key.Length == 0)
-            {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
-            }
-
-            if (null != value && (type != TreeNodeType.Leaf))
-            {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
-            }
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
-            {
-                return INodeStrategy.CreateInnerNode(key, type);
-            }
-
-            if (null == value)
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
-            bool needQuotes = AreQuotesNeededForValue(value, strValue);
-
-            return new LeafNode(key, strValue, needQuotes);
-        }
-
-        /// <inheritdoc/>
-        public IDSNode CreateNodeFromString(string key, string? value, TreeNodeType type)
-        {
-            if (key.HasStartAndEndQuotes())
-            {
-                key = StringMethods.RemoveStartAndEndQuotes(key);
-            }
-
-            if (key == null || key.Length == 0)
-            {
-                throw new DotSerialException("NodeFactory: Key can't be null.");
-            }
-
-            if (null != value && (type != TreeNodeType.Leaf))
-            {
-                throw new DotSerialException("NodeFactory: Only leaf nodes can have a value.");
-            }
-
-            key = key.UnescapeString(JsonConstants.CharsToEscape);
-
-            // Create inner node
-            if (type != TreeNodeType.Leaf)
-            {
-                return INodeStrategy.CreateInnerNode(key, type);
-            }
-
-            if (null == value)
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
-            {
-                return new LeafNode(key, null, false);
-            }
-
-            bool needQuotes = false;
-
-            if (value.HasStartAndEndQuotes())
-            {
-                needQuotes = true;
-                value = StringMethods.RemoveStartAndEndQuotes(value);
-            }
-
-            value = value.UnescapeString(JsonConstants.CharsToEscape);
-
-            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
-            {
-                throw new DotSerialException("NodeFactory: Invalid json value.");
-            }
-
-            return new LeafNode(key, value, needQuotes);
+            throw new NotImplementedException();
         }
 
         /// <inheritdoc/>
@@ -115,9 +37,94 @@ namespace DotSerial.Json
         }
 
         /// <inheritdoc/>
-        public bool AreQuotesNeededForKey(string key)
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
         {
-            throw new NotImplementedException();
+            if (null == key || key.Length == 0)
+            {
+                ThrowHelper.ThrowKeyNodeNullException();
+            }
+
+            if (null != value && (type != TreeNodeType.Leaf))
+            {
+                ThrowHelper.ThrowInnerNodeValueException();
+            }
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
+            {
+                return INodeStrategy.CreateInnerNode(key, type);
+            }
+
+            if (null == value)
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            bool needQuotes = AreQuotesNeededForValue(value, strValue);
+
+            return new LeafNode(key, strValue, needQuotes);
+        }
+
+        /// <inheritdoc/>
+        public IDSNode CreateNodeFromString(
+            string key,
+            ParserBookmark bookmark,
+            ReadOnlySpan<char> content,
+            TreeNodeType type
+        )
+        {
+            if (key.HasStartAndEndQuotes())
+            {
+                key = StringMethods.RemoveStartAndEndQuotes(key);
+            }
+
+            if (key == null || key.Length == 0)
+            {
+                ThrowHelper.ThrowKeyNodeNullException();
+            }
+
+            if (false == bookmark.IsNull() && (type != TreeNodeType.Leaf))
+            {
+                ThrowHelper.ThrowInnerNodeValueException();
+            }
+
+            key = key.UnescapeString(JsonConstants.CharsToEscape);
+
+            // Create inner node
+            if (type != TreeNodeType.Leaf)
+            {
+                return INodeStrategy.CreateInnerNode(key, type);
+            }
+
+            if (bookmark.IsNull())
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            string value = bookmark.GetContent(content).ToString();
+
+            if (string.IsNullOrWhiteSpace(value) || value.EqualsNullString())
+            {
+                return new LeafNode(key, null, false);
+            }
+
+            bool needQuotes = false;
+
+            if (value.HasStartAndEndQuotes())
+            {
+                needQuotes = true;
+                value = StringMethods.RemoveStartAndEndQuotes(value);
+            }
+
+            value = value.UnescapeString(JsonConstants.CharsToEscape);
+
+            if (false == needQuotes && false == IsValueValidWithoutQuotes(value))
+            {
+                ThrowHelper.ThrowUnterminatedStringException(bookmark.Start);
+            }
+
+            return new LeafNode(key, value, needQuotes);
         }
 
         /// <inheritdoc/>

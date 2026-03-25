@@ -1,4 +1,4 @@
-using DotSerial.Tree.Creation;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tests.Utilities
 {
@@ -12,10 +12,10 @@ namespace DotSerial.Tests.Utilities
             var span = str.AsSpan();
 
             // Act
-            var result = DotSerial.Utilities.ParseMethods.ParsePrimitiveNode(
+            var result = ParseMethods.ParsePrimitiveNode(
                 SerializeStrategy.Json,
                 span,
-                0,
+                new ParserBookmark(span, false),
                 "testKey"
             );
 

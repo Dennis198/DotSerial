@@ -10,7 +10,7 @@ namespace DotSerial.Utilities
         internal string? KeyLine = null;
 
         /// <summary> Internal data </summary>
-        private readonly List<ParserBookmark>? _lines = null;
+        private readonly List<ParserBookmark> _lines;
 
         /// <summary>
         /// Constructor
@@ -44,15 +44,9 @@ namespace DotSerial.Utilities
         {
             string str = string.Empty;
 
-            if (_lines == null)
-            {
-                return str;
-            }
-
             for (int i = 0; i < _lines.Count; i++)
             {
                 var bookmark = _lines[i];
-
                 str +=
                     content.Slice(bookmark.Start, bookmark.End - bookmark.Start + 1).ToString() + Environment.NewLine;
             }
@@ -65,11 +59,6 @@ namespace DotSerial.Utilities
         /// </summary>
         internal void Clear()
         {
-            if (null == _lines)
-            {
-                throw new NotImplementedException();
-            }
-
             _lines.Clear();
         }
 
@@ -80,15 +69,8 @@ namespace DotSerial.Utilities
         /// <returns>Line as a ParserBookmark</returns>
         internal ParserBookmark GetLine(int i)
         {
-            if (null == _lines)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (i < 0 || i > _lines.Count - 1)
-            {
-                throw new NotImplementedException();
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(i);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(i, _lines.Count - 1);
 
             return _lines[i];
         }
@@ -112,15 +94,8 @@ namespace DotSerial.Utilities
         /// <param name="bookmark">ParserBookmark</param>
         internal void SetLine(int i, ParserBookmark bookmark)
         {
-            if (null == _lines)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (0 > i || i > _lines.Count - 1)
-            {
-                throw new NotImplementedException();
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(i);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(i, _lines.Count - 1);
 
             _lines[i] = bookmark;
         }
@@ -133,20 +108,9 @@ namespace DotSerial.Utilities
         /// <returns>A shallow copy of a range of elements in the source.</returns>
         internal MulitLineParserBookmark SliceFromTo(int start, int end)
         {
-            if (null == _lines)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (end < start)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (start < 0 || end > _lines.Count - 1)
-            {
-                throw new NotImplementedException();
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(start);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(start, end);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(end, _lines.Count - 1);
 
             int length = end - start + 1;
             var subLines = _lines.Slice(start, length);
