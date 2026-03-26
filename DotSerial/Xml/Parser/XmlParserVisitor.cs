@@ -42,7 +42,8 @@ namespace DotSerial.Xml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
             }
             else if (rootTagKeyPair.IsXmlList())
@@ -52,7 +53,8 @@ namespace DotSerial.Xml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.ListNode
+                    TreeNodeType.ListNode,
+                    null
                 );
             }
             else if (rootTagKeyPair.IsXmlPrimitive())
@@ -61,7 +63,8 @@ namespace DotSerial.Xml.Parser
                     SerializeStrategy.Xml,
                     content,
                     rootBookmark,
-                    CommonConstants.MainObjectKey
+                    CommonConstants.MainObjectKey,
+                    null
                 );
 
                 return new DSNode(rootNode, SerializeStrategy.Xml);
@@ -121,7 +124,8 @@ namespace DotSerial.Xml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.InnerNode
+                            TreeNodeType.InnerNode,
+                            node
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -141,7 +145,8 @@ namespace DotSerial.Xml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.ListNode
+                            TreeNodeType.ListNode,
+                            node
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -159,7 +164,8 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             content,
                             tmpBoomkark,
-                            key
+                            key,
+                            node
                         );
                         node.AddChild(childNode);
                     }
@@ -216,7 +222,8 @@ namespace DotSerial.Xml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.InnerNode
+                            TreeNodeType.InnerNode,
+                            node
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -236,7 +243,8 @@ namespace DotSerial.Xml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.ListNode
+                            TreeNodeType.ListNode,
+                            node
                         );
 
                         if (false == tmpBoomkark.IsNull())
@@ -254,7 +262,8 @@ namespace DotSerial.Xml.Parser
                             SerializeStrategy.Xml,
                             content,
                             tmpBoomkark,
-                            key
+                            key,
+                            node
                         );
                         node.AddChild(childNode);
                     }

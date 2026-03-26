@@ -234,6 +234,7 @@ public string Gender { get; set; }
 | `ContainsKey(key)` | Check if a child with the key exists |
 | `Count` | Number of child nodes |
 | `Keys` / `Values` | Child keys and nodes |
+| `IsQuoted` | Is true, if the value must be quoted in the strategy |
 
 ---
 

@@ -30,6 +30,11 @@ namespace DotSerial.Tree.Nodes
         public ICollection<string> Keys { get; }
 
         /// <summary>
+        /// Parent node
+        /// </summary>
+        public IDSNode? Parent { get; set; }
+
+        /// <summary>
         /// List of child nodes
         /// </summary>
         public ICollection<IDSNode> Values { get; }

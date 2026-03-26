@@ -821,7 +821,8 @@ namespace DotSerial.Toon.Parser
                         i.ToString(),
                         ParserBookmark.Empty,
                         [],
-                        TreeNodeType.Leaf
+                        TreeNodeType.Leaf,
+                        node
                     );
                     node.AddChild(listNode);
                 }
@@ -832,7 +833,8 @@ namespace DotSerial.Toon.Parser
                         i.ToString(),
                         new ParserBookmark(0, lItems[i]!.Length - 1),
                         lItems[i].AsSpan(),
-                        TreeNodeType.Leaf
+                        TreeNodeType.Leaf,
+                        node
                     );
                     node.AddChild(listNode);
                 }
@@ -864,7 +866,8 @@ namespace DotSerial.Toon.Parser
                     i.ToString(),
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    node
                 );
                 var values = ParseCommaSeperateValues(line, 0);
 
@@ -882,7 +885,8 @@ namespace DotSerial.Toon.Parser
                         key,
                         new ParserBookmark(0, value.Length - 1),
                         value.AsSpan(),
-                        TreeNodeType.Leaf
+                        TreeNodeType.Leaf,
+                        node
                     );
                     child.AddChild(childChild);
                 }

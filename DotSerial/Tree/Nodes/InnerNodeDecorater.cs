@@ -32,8 +32,15 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public ICollection<IDSNode> Values => _wrappedInnerNode.Values;
 
+        /// <inheritdoc/>
+        public IDSNode? Parent
+        {
+            get => _wrappedInnerNode.Parent;
+            set => _wrappedInnerNode.Parent = value;
+        }
+
         /// <summary>
-        /// Construcot
+        /// Constructor
         /// </summary>
         /// <param name="wrappedNode">Innernode to wrap</param>
         protected InnerNodeDecorater(IDSNode wrappedNode)

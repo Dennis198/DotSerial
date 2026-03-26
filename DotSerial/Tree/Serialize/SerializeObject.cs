@@ -34,7 +34,7 @@ namespace DotSerial.Tree.Serialize
             // If classObj is null, create Null node
             if (obj == null)
             {
-                return _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.Leaf, null);
             }
 
             Type typeObj = obj.GetType();
@@ -49,7 +49,7 @@ namespace DotSerial.Tree.Serialize
 
             if (TypeCheckMethods.IsPrimitive(typeObj) || TypeCheckMethods.IsSpecialParsableObject(typeObj))
             {
-                result = _nodeFactory.CreateNode(strategyType, objectID, obj, TreeNodeType.Leaf);
+                result = _nodeFactory.CreateNode(strategyType, objectID, obj, TreeNodeType.Leaf, null);
             }
             else if (TypeCheckMethods.IsDictionary(typeObj))
             {
@@ -94,11 +94,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is null, create Null node
             if (classObj == null)
             {
-                return _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.Leaf, null);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.InnerNode);
+            var result = _nodeFactory.CreateNode(strategyType, objectID, null, TreeNodeType.InnerNode, null);
 
             Type typeObj = classObj.GetType();
 
@@ -144,19 +144,27 @@ namespace DotSerial.Tree.Serialize
                     )
                     {
                         // Primitive types || String
-                        var childNode = _nodeFactory.CreateNode(strategyType, dsPropName, value, TreeNodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNode(
+                            strategyType,
+                            dsPropName,
+                            value,
+                            TreeNodeType.Leaf,
+                            result
+                        );
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
                     {
                         // Dictionary
                         var childNode = SerializeDictionary(value, dsPropName, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsList(prop.PropertyType) || TypeCheckMethods.IsArray(prop.PropertyType))
                     {
                         // List || Array
                         var childNode = SerializeList(value, dsPropName, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                     }
                     else if (
@@ -165,6 +173,7 @@ namespace DotSerial.Tree.Serialize
                     {
                         // Class || Struct
                         var childNode = SerializeClass(value, dsPropName, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                     }
                     else
@@ -195,11 +204,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is list, create Null node
             if (dic == null)
             {
-                return _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.Leaf, null);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.DictionaryNode);
+            var result = _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.DictionaryNode, null);
 
             if (dic is IDictionary castedDic)
             {
@@ -250,14 +259,26 @@ namespace DotSerial.Tree.Serialize
 
                         if (null == value)
                         {
-                            keyValue = _nodeFactory.CreateNode(strategyType, keyString, null, TreeNodeType.Leaf);
+                            keyValue = _nodeFactory.CreateNode(
+                                strategyType,
+                                keyString,
+                                null,
+                                TreeNodeType.Leaf,
+                                result
+                            );
                         }
                         else if (
                             TypeCheckMethods.IsPrimitive(valueType)
                             || TypeCheckMethods.IsSpecialParsableObject(valueType)
                         )
                         {
-                            keyValue = _nodeFactory.CreateNode(strategyType, keyString, value, TreeNodeType.Leaf);
+                            keyValue = _nodeFactory.CreateNode(
+                                strategyType,
+                                keyString,
+                                value,
+                                TreeNodeType.Leaf,
+                                result
+                            );
                         }
                         else if (TypeCheckMethods.IsDictionary(value))
                         {
@@ -270,7 +291,8 @@ namespace DotSerial.Tree.Serialize
                                         strategyType,
                                         keyString,
                                         null,
-                                        TreeNodeType.DictionaryNode
+                                        TreeNodeType.DictionaryNode,
+                                        result
                                     );
                                     foreach (DictionaryEntry str in castedValue)
                                     {
@@ -280,6 +302,7 @@ namespace DotSerial.Tree.Serialize
                                                 $"Serialize: Can't convert {str.Key} to string."
                                             );
                                         var childNode = SerializeDictionary(str, innerDicID, strategyType);
+                                        childNode.Parent = keyValue;
                                         keyValue.AddChild(childNode);
                                     }
                                 }
@@ -303,13 +326,15 @@ namespace DotSerial.Tree.Serialize
                                     strategyType,
                                     keyString,
                                     null,
-                                    TreeNodeType.ListNode
+                                    TreeNodeType.ListNode,
+                                    result
                                 );
                                 int listID = 0;
                                 foreach (var str in castedValue)
                                 {
                                     string listIDString = listID.ToString();
                                     var childNode = SerializeList(str, listIDString, strategyType);
+                                    childNode.Parent = keyValue;
                                     keyValue.AddChild(childNode);
                                     listID++;
                                 }
@@ -331,6 +356,7 @@ namespace DotSerial.Tree.Serialize
 
                         #endregion
 
+                        keyValue.Parent = result;
                         result.AddChild(keyValue);
                     }
 
@@ -363,11 +389,11 @@ namespace DotSerial.Tree.Serialize
             // If classObj is list, create Null node
             if (list == null)
             {
-                return _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.Leaf, null);
             }
 
             // Create node
-            var result = _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.ListNode);
+            var result = _nodeFactory.CreateNode(strategyType, id, null, TreeNodeType.ListNode, null);
 
             if (list is IEnumerable castedList)
             {
@@ -386,7 +412,13 @@ namespace DotSerial.Tree.Serialize
                     foreach (var str in castedList)
                     {
                         string listIDString = listID.ToString();
-                        var childNode = _nodeFactory.CreateNode(strategyType, listIDString, str, TreeNodeType.Leaf);
+                        var childNode = _nodeFactory.CreateNode(
+                            strategyType,
+                            listIDString,
+                            str,
+                            TreeNodeType.Leaf,
+                            result
+                        );
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -399,6 +431,7 @@ namespace DotSerial.Tree.Serialize
                     {
                         string listIDString = listID.ToString();
                         var childNode = SerializeList(str, listIDString, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -411,6 +444,7 @@ namespace DotSerial.Tree.Serialize
                     {
                         string listIDString = listID.ToString();
                         var childNode = SerializeDictionary(str, listIDString, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                         listID++;
                     }
@@ -423,6 +457,7 @@ namespace DotSerial.Tree.Serialize
                     {
                         string listIDString = listID.ToString();
                         var childNode = SerializeClass(entry, listIDString, strategyType);
+                        childNode.Parent = result;
                         result.AddChild(childNode);
                         listID++;
                     }

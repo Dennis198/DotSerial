@@ -8,8 +8,9 @@ namespace DotSerial.Tree.Nodes
     /// </summary>
     /// <param name="key">Key of node</param>
     /// <param name="value">Value of node</param>
-    /// <param name="value">Truel, if value must be quoted</param>
-    public class LeafNode(string key, string? value, bool isQuoted) : IDSNode
+    /// <param name="isQuoted">True, if value must be quoted</param>
+    /// <param name="parent">Parent node</param>
+    public class LeafNode(string key, string? value, bool isQuoted, IDSNode? parent) : IDSNode
     {
         /// <summary>
         /// Value of the leaf
@@ -28,6 +29,9 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public ICollection<string> Keys =>
             throw new DotSerialException($"{nameof(Keys)} can't be called on a leaf node.");
+
+        /// <inheritdoc/>
+        public IDSNode? Parent { get; set; } = parent;
 
         /// <inheritdoc/>
         public ICollection<IDSNode> Values =>

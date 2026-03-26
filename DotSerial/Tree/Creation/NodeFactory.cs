@@ -1,4 +1,3 @@
-using System.Threading.Channels;
 using DotSerial.Json;
 using DotSerial.Toon;
 using DotSerial.Tree.Nodes;
@@ -40,12 +39,19 @@ namespace DotSerial.Tree.Creation
         /// <param name="key">Key of the node</param>
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>IDSNode</returns>
-        internal IDSNode CreateNode(SerializeStrategy category, string key, object? value, TreeNodeType type)
+        internal IDSNode CreateNode(
+            SerializeStrategy category,
+            string key,
+            object? value,
+            TreeNodeType type,
+            IDSNode? parent
+        )
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
-                return strategy.CreateNode(key, value, type);
+                return strategy.CreateNode(key, value, type, parent);
             }
 
             ThrowHelper.ThrowStrategyNotSupportedException();
@@ -60,18 +66,20 @@ namespace DotSerial.Tree.Creation
         /// <param name="bookmark">Parser bookmark</param>
         /// <param name="content">Content span</param>
         /// <param name="type">Type of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>IDSNode</returns>
         internal IDSNode CreateNodeFromString(
             SerializeStrategy category,
             string key,
             ParserBookmark bookmark,
             ReadOnlySpan<char> content,
-            TreeNodeType type
+            TreeNodeType type,
+            IDSNode? parent
         )
         {
             if (_strategies.TryGetValue(category, out var strategy))
             {
-                return strategy.CreateNodeFromString(key, bookmark, content, type);
+                return strategy.CreateNodeFromString(key, bookmark, content, type, parent);
             }
             ThrowHelper.ThrowStrategyNotSupportedException();
             throw new Exception("Unreachable code.");

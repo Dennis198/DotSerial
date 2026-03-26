@@ -31,7 +31,7 @@ namespace DotSerial.Xml
         }
 
         /// <inheritdoc/>
-        public IDSNode CreateNode(string key, object? value, TreeNodeType type)
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type, IDSNode? parent)
         {
             if (null == key || key.Length == 0)
             {
@@ -46,18 +46,18 @@ namespace DotSerial.Xml
             // Create inner node
             if (type != TreeNodeType.Leaf)
             {
-                return INodeStrategy.CreateInnerNode(key, type);
+                return INodeStrategy.CreateInnerNode(key, type, parent);
             }
 
             if (null == value)
             {
-                return new LeafNode(key, null, false);
+                return new LeafNode(key, null, false, parent);
             }
 
             string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
             bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
-            return new LeafNode(key, strValue, needQuotes);
+            return new LeafNode(key, strValue, needQuotes, parent);
         }
 
         /// <inheritdoc/>
@@ -65,7 +65,8 @@ namespace DotSerial.Xml
             string key,
             ParserBookmark bookmark,
             ReadOnlySpan<char> content,
-            TreeNodeType type
+            TreeNodeType type,
+            IDSNode? parent
         )
         {
             if (key.HasStartAndEndQuotes())
@@ -88,19 +89,19 @@ namespace DotSerial.Xml
             // Create inner node
             if (type != TreeNodeType.Leaf)
             {
-                return INodeStrategy.CreateInnerNode(key, type);
+                return INodeStrategy.CreateInnerNode(key, type, parent);
             }
 
             if (bookmark.IsNull())
             {
-                return new LeafNode(key, null, false);
+                return new LeafNode(key, null, false, parent);
             }
 
             string value = bookmark.GetContent(content).ToString();
 
             if (string.IsNullOrWhiteSpace(value))
             {
-                return new LeafNode(key, null, false);
+                return new LeafNode(key, null, false, parent);
             }
 
             bool needQuotes = false;
@@ -113,7 +114,7 @@ namespace DotSerial.Xml
 
             value = value.XmlUnEscape();
 
-            return new LeafNode(key, value, needQuotes);
+            return new LeafNode(key, value, needQuotes, parent);
         }
 
         /// <inheritdoc/>

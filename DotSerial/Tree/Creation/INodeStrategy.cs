@@ -14,8 +14,9 @@ namespace DotSerial.Tree.Creation
         /// <param name="key">Key of the node</param>
         /// <param name="Value">Value of the node</param>
         /// <param name="type">Type of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>IDSNode</returns>
-        public IDSNode CreateNode(string key, object? value, TreeNodeType type);
+        public IDSNode CreateNode(string key, object? value, TreeNodeType type, IDSNode? parent);
 
         /// <summary>
         /// Creates a node from string value
@@ -24,12 +25,14 @@ namespace DotSerial.Tree.Creation
         /// <param name="bookmark">Parser bookmark</param>
         /// <param name="content">Content</param>
         /// <param name="type">Type of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>IDSNode</returns>
         public IDSNode CreateNodeFromString(
             string key,
             ParserBookmark bookmark,
             ReadOnlySpan<char> content,
-            TreeNodeType type
+            TreeNodeType type,
+            IDSNode? parent
         );
 
         /// <summary>
@@ -59,8 +62,9 @@ namespace DotSerial.Tree.Creation
         /// </summary>
         /// <param name="key">Key of the node</param>
         /// <param name="type">Type of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>IDSNode</returns>
-        protected static IDSNode CreateInnerNode(string key, TreeNodeType type)
+        protected static IDSNode CreateInnerNode(string key, TreeNodeType type, IDSNode? parent)
         {
             if (string.IsNullOrWhiteSpace(key))
             {
@@ -75,15 +79,15 @@ namespace DotSerial.Tree.Creation
             switch (type)
             {
                 case TreeNodeType.InnerNode:
-                    return new InnerNode(key);
+                    return new InnerNode(key, parent);
                 case TreeNodeType.ListNode:
                 {
-                    var wrapper = new InnerNode(key);
+                    var wrapper = new InnerNode(key, parent);
                     return new ListNode(wrapper);
                 }
                 case TreeNodeType.DictionaryNode:
                 {
-                    var wrapper = new InnerNode(key);
+                    var wrapper = new InnerNode(key, parent);
                     return new DictionaryNode(wrapper);
                 }
                 default:
