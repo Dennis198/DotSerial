@@ -94,9 +94,10 @@ namespace DotSerial.Tests
 
             // Act
             node.Clear();
+            int count = node.Count;
 
             // Assert
-            Assert.Equal(0, node.Count);
+            Assert.Equal(0, count);
         }
 
         [Theory]
@@ -187,12 +188,13 @@ namespace DotSerial.Tests
 
             // Act
             var result = new DSNode(tmp, strategy);
+            int count = result.Count;
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal("key", result.Key);
             Assert.Null(result.Parent);
-            Assert.Equal(0, result.Count);
+            Assert.Equal(0, count);
         }
 
         [Theory]
