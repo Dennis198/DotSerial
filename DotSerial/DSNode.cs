@@ -63,6 +63,12 @@ namespace DotSerial
         /// <summary>Gets a collection containing the keys of all child nodes.</summary>
         public ICollection<string> Keys => _node.Keys;
 
+        /// <summary>
+        /// Gets the parent node of this node, or <c>null</c> if this node is the root.
+        /// </summary>
+        /// <returns>The parent <see cref="DSNode"/> or <c>null</c>.</returns>
+        public DSNode? Parent => _node.Parent is not null ? new DSNode(_node.Parent, Strategy) : null;
+
         /// <summary>Gets a collection containing all child nodes.</summary>
         public ICollection<DSNode> Values => [.. _node.Values.Select(child => new DSNode(child, Strategy))];
 
@@ -303,167 +309,167 @@ namespace DotSerial
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(string? value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="bool"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(bool value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="byte"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(byte value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="sbyte"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(sbyte value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="char"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(char value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="decimal"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(decimal value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="double"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(double value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="float"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(float value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="int"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(int value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="uint"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(uint value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="nint"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(nint value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="nuint"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(nuint value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="long"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(long value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="ulong"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(ulong value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="short"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(short value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="ushort"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(ushort value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="DateTime"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(DateTime value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="Guid"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(Guid value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="TimeSpan"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(TimeSpan value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="Uri"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(Uri value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="IPAddress"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(IPAddress value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="Version"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(Version value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to the specified <see cref="CultureInfo"/>.</summary>
         /// <param name="value">The value to set.</param>
         public void SetNodeValue(CultureInfo value)
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf);
+            SetNodeValuePrivate(value);
         }
 
         /// <summary>Sets the leaf value of this node to <see langword="null"/>.</summary>
         public void SetNodeValueNull()
         {
-            _node = _nodeFactory.CreateNode(Strategy, _node.Key, null, TreeNodeType.Leaf);
+            SetNodeValuePrivate(null);
         }
 
         /// <summary>
@@ -581,6 +587,21 @@ namespace DotSerial
         internal IDSNode GetInternalData()
         {
             return _node;
+        }
+
+        /// <summary>
+        /// Sets the value of this node.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        private void SetNodeValuePrivate(object? value)
+        {
+            _node = _nodeFactory.CreateNode(Strategy, _node.Key, value, TreeNodeType.Leaf, _node.Parent);
+
+            if (null != _node.Parent)
+            {
+                _node.Parent.Remove(_node.Key);
+                _node.Parent.AddChild(_node);
+            }
         }
     }
 }

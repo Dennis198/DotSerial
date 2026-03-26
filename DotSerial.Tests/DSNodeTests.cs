@@ -94,9 +94,10 @@ namespace DotSerial.Tests
 
             // Act
             node.Clear();
+            int count = node.Count;
 
             // Assert
-            Assert.Equal(0, node.Count);
+            Assert.Equal(0, count);
         }
 
         [Theory]
@@ -183,15 +184,17 @@ namespace DotSerial.Tests
         public void Create(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = _nodeFactory.CreateNode(strategy, "key", "value", TreeNodeType.Leaf);
+            var tmp = _nodeFactory.CreateNode(strategy, "key", "value", TreeNodeType.Leaf, null);
 
             // Act
             var result = new DSNode(tmp, strategy);
+            int count = result.Count;
 
             // Assert
             Assert.NotNull(result);
             Assert.Equal("key", result.Key);
-            Assert.Equal(0, result.Count);
+            Assert.Null(result.Parent);
+            Assert.Equal(0, count);
         }
 
         [Theory]
@@ -1068,6 +1071,24 @@ namespace DotSerial.Tests
 
             // Assert
             Assert.Equal("Hello DotSerial!", node.GetNodeValue());
+        }
+
+        [Theory]
+        [InlineData(SerializeStrategy.Json)]
+        [InlineData(SerializeStrategy.Toon)]
+        [InlineData(SerializeStrategy.Xml)]
+        [InlineData(SerializeStrategy.Yaml)]
+        public void SetNodeValue_String_Child(SerializeStrategy strategy)
+        {
+            // Arrange
+            var example = ExampleClass.CreateTestDefault();
+            var node = DSNode.ToNode(example, strategy);
+
+            // Act
+            node["2"].SetNodeValue("Bye DotSerial!");
+
+            // Assert
+            Assert.Equal("Bye DotSerial!", node["2"].GetNodeValue());
         }
 
         [Theory]

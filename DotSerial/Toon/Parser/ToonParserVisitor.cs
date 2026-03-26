@@ -27,7 +27,8 @@ namespace DotSerial.Toon.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
                 return new DSNode(rootNode, SerializeStrategy.Toon);
             }
@@ -41,7 +42,8 @@ namespace DotSerial.Toon.Parser
                     SerializeStrategy.Toon,
                     content,
                     lines.GetLine(0),
-                    CommonConstants.MainObjectKey
+                    CommonConstants.MainObjectKey,
+                    null
                 );
                 return new DSNode(rootNode, SerializeStrategy.Toon);
             }
@@ -52,7 +54,8 @@ namespace DotSerial.Toon.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
                 if (ToonParserHelper.IsEmptyObject(lines, content))
                 {
@@ -66,7 +69,8 @@ namespace DotSerial.Toon.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.ListNode
+                    TreeNodeType.ListNode,
+                    null
                 );
                 if (ToonParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
@@ -130,7 +134,8 @@ namespace DotSerial.Toon.Parser
                             key,
                             valueBookmark,
                             content,
-                            TreeNodeType.Leaf
+                            TreeNodeType.Leaf,
+                            node
                         );
                         node.AddChild(childNode);
                     }
@@ -142,7 +147,8 @@ namespace DotSerial.Toon.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.InnerNode
+                            TreeNodeType.InnerNode,
+                            node
                         );
 
                         if (false == ToonParserHelper.IsEmptyObject(value, content))
@@ -162,7 +168,8 @@ namespace DotSerial.Toon.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.ListNode
+                            TreeNodeType.ListNode,
+                            node
                         );
 
                         if (false == ToonParserHelper.IsEmptyList(value.GetLineContent(0, content)))
@@ -238,7 +245,8 @@ namespace DotSerial.Toon.Parser
                                     key,
                                     valueBookmark,
                                     content,
-                                    TreeNodeType.Leaf
+                                    TreeNodeType.Leaf,
+                                    node
                                 );
 
                                 node.AddChild(childNode);
@@ -249,7 +257,8 @@ namespace DotSerial.Toon.Parser
                                     SerializeStrategy.Toon,
                                     content,
                                     value.GetLine(0),
-                                    key
+                                    key,
+                                    node
                                 );
 
                                 node.AddChild(childNode);
@@ -262,7 +271,8 @@ namespace DotSerial.Toon.Parser
                                     key,
                                     ParserBookmark.Empty,
                                     [],
-                                    TreeNodeType.InnerNode
+                                    TreeNodeType.InnerNode,
+                                    node
                                 );
 
                                 if (false == ToonParserHelper.IsEmptyObject(value, content))
@@ -282,7 +292,8 @@ namespace DotSerial.Toon.Parser
                                     key,
                                     ParserBookmark.Empty,
                                     [],
-                                    TreeNodeType.ListNode
+                                    TreeNodeType.ListNode,
+                                    node
                                 );
 
                                 if (false == ToonParserHelper.IsEmptyList(value.GetLineContent(0, content)))

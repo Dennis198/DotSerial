@@ -20,20 +20,29 @@ namespace DotSerial.Utilities
         /// <param name="content">Content</param>
         /// <param name="bookmark">Parser bookmark</param>
         /// <param name="key">Key of the node</param>
+        /// <param name="parent">Parent node</param>
         /// <returns>Leafnode</returns>
         internal static IDSNode ParsePrimitiveNode(
             SerializeStrategy strategyType,
             ReadOnlySpan<char> content,
             ParserBookmark bookmark,
-            string key
+            string key,
+            IDSNode? parent
         )
         {
             if (ReadOnlySpanMethods.IsNullOrWhiteSpace(content))
             {
-                return _nodeFactory.CreateNodeFromString(strategyType, key, bookmark, content, TreeNodeType.Leaf);
+                return _nodeFactory.CreateNodeFromString(
+                    strategyType,
+                    key,
+                    bookmark,
+                    content,
+                    TreeNodeType.Leaf,
+                    parent
+                );
             }
 
-            return _nodeFactory.CreateNodeFromString(strategyType, key, bookmark, content, TreeNodeType.Leaf);
+            return _nodeFactory.CreateNodeFromString(strategyType, key, bookmark, content, TreeNodeType.Leaf, parent);
         }
 
         /// <summary>

@@ -16,12 +16,14 @@ namespace DotSerial.Tests.Utilities
                 SerializeStrategy.Json,
                 span,
                 new ParserBookmark(span, false),
-                "testKey"
+                "testKey",
+                null
             );
 
             // Assert
             Assert.Equal("testKey", result.Key);
             Assert.Equal("4.4", result.GetValue());
+            Assert.Null(result.Parent);
         }
     }
 }

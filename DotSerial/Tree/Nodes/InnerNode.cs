@@ -7,7 +7,8 @@ namespace DotSerial.Tree.Nodes
     /// Inner node
     /// </summary>
     /// <param name="key">Key of the node</param>
-    public class InnerNode(string key) : IDSNode
+    /// <param name="parent">Parent node</param>
+    public class InnerNode(string key, IDSNode? parent) : IDSNode
     {
         /// <summary>
         /// Children of the node
@@ -40,6 +41,9 @@ namespace DotSerial.Tree.Nodes
                 return keys;
             }
         }
+
+        /// <inheritdoc/>
+        public IDSNode? Parent { get; set; } = parent;
 
         /// <inheritdoc/>
         public ICollection<IDSNode> Values

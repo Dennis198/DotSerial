@@ -31,7 +31,8 @@ namespace DotSerial.Yaml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
@@ -46,7 +47,8 @@ namespace DotSerial.Yaml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
@@ -57,7 +59,8 @@ namespace DotSerial.Yaml.Parser
                     SerializeStrategy.Yaml,
                     content,
                     lines.GetLine(0),
-                    CommonConstants.MainObjectKey
+                    CommonConstants.MainObjectKey,
+                    null
                 );
                 return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
@@ -68,7 +71,8 @@ namespace DotSerial.Yaml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.InnerNode
+                    TreeNodeType.InnerNode,
+                    null
                 );
                 if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
                 {
@@ -82,7 +86,8 @@ namespace DotSerial.Yaml.Parser
                     CommonConstants.MainObjectKey,
                     ParserBookmark.Empty,
                     [],
-                    TreeNodeType.ListNode
+                    TreeNodeType.ListNode,
+                    null
                 );
                 if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
@@ -136,7 +141,8 @@ namespace DotSerial.Yaml.Parser
                             key,
                             valueBookmark,
                             content,
-                            TreeNodeType.Leaf
+                            TreeNodeType.Leaf,
+                            node
                         );
                         node.AddChild(childNode);
                     }
@@ -148,7 +154,8 @@ namespace DotSerial.Yaml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.InnerNode
+                            TreeNodeType.InnerNode,
+                            node
                         );
 
                         if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
@@ -168,7 +175,8 @@ namespace DotSerial.Yaml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.ListNode
+                            TreeNodeType.ListNode,
+                            node
                         );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
@@ -222,7 +230,8 @@ namespace DotSerial.Yaml.Parser
                             SerializeStrategy.Yaml,
                             content,
                             value.GetLine(0),
-                            key
+                            key,
+                            node
                         );
                         node.AddChild(innerNode);
                     }
@@ -235,7 +244,8 @@ namespace DotSerial.Yaml.Parser
                                 key,
                                 ParserBookmark.Empty,
                                 [],
-                                TreeNodeType.InnerNode
+                                TreeNodeType.InnerNode,
+                                node
                             ) as InnerNode
                             ?? throw new NotImplementedException();
 
@@ -256,7 +266,8 @@ namespace DotSerial.Yaml.Parser
                             key,
                             ParserBookmark.Empty,
                             [],
-                            TreeNodeType.ListNode
+                            TreeNodeType.ListNode,
+                            node
                         );
 
                         if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
