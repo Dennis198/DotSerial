@@ -1,31 +1,7 @@
-#region License
-//Copyright (c) 2026 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
 using System.Reflection;
-
-using DotSerial.Utilities;
-using DotSerial.Tree.Nodes;
-using DotSerial.Common;
 using DotSerial.Attributes;
+using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Deserialize
 {
@@ -59,11 +35,11 @@ namespace DotSerial.Tree.Deserialize
             }
             else
             {
-                throw new DotSerialException($"Deserialize: Type {type} is not a leaf");
+                ThrowHelper.ThrowWrongNodeTypeException();
+                throw new Exception("Unreachable code.");
             }
 
             return result;
-
         }
 
         /// <inheritdoc/>
@@ -90,7 +66,7 @@ namespace DotSerial.Tree.Deserialize
                     // Check if type is supported
                     if (false == TypeCheckMethods.IsTypeSupported(prop.PropertyType))
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowTypeIsNotSupportedException(prop.PropertyType);
                     }
 
                     var child = node.GetChild(propDSName);
@@ -108,11 +84,6 @@ namespace DotSerial.Tree.Deserialize
                         prop.SetValue(result, tmpValue);
                         continue;
                     }
-
-                    if (null == child)
-                    {
-                        throw new DotSerialException($"Deserialize: Child with ID {propDSName} not found in node {node.Key}");
-                    }                    
 
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
                     prop.SetValue(result, tmp);
@@ -133,7 +104,7 @@ namespace DotSerial.Tree.Deserialize
             // Check if type is supported
             if (false == TypeCheckMethods.IsTypeSupported(itemType))
             {
-                throw new DotSerialException($"Deserialize: Type {itemType} is not supported.");
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
             }
 
             List<object?> tmpList = [];
@@ -168,7 +139,7 @@ namespace DotSerial.Tree.Deserialize
             object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
 
             return tmpValue;
-        }        
+        }
 
         /// <summary>
         /// Deserialize dictionary
@@ -183,15 +154,15 @@ namespace DotSerial.Tree.Deserialize
 
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
-                 // Check if type is supported
+                // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(keyType))
                 {
-                    throw new DotSerialException($"Deserialize: Type {keyType} is not supported.");
+                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
                 }
                 // Check if type is supported
                 if (false == TypeCheckMethods.IsTypeSupported(valueType))
                 {
-                    throw new DotSerialException($"Deserialize: Type {valueType} is not supported.");
+                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
                 }
 
                 if (node is LeafNode leaf)
@@ -202,14 +173,14 @@ namespace DotSerial.Tree.Deserialize
                     }
                     else
                     {
-                        throw new DotSerialException($"Deserialize: Node is a leaf but dictionary expected.");
+                        ThrowHelper.ThrowWrongNodeTypeException();
                     }
                 }
 
                 Dictionary<object, object?> result = [];
                 var children = node.GetChildren();
 
-                foreach(var child in children)
+                foreach (var child in children)
                 {
                     string key = child.Key;
                     object? value;
@@ -229,10 +200,9 @@ namespace DotSerial.Tree.Deserialize
             }
             else
             {
-                throw new DotSerialException("Type is not a Dictionary.");
+                ThrowHelper.ThrowTypeIsNotSupportedException(type);
+                throw new Exception("Unreachable code.");
             }
-
         }
-
     }
 }

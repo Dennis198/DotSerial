@@ -1,30 +1,8 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using DotSerial.Attributes;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Net;
+using DotSerial.Attributes;
 
 namespace DotSerial.Tests
 {
@@ -36,6 +14,28 @@ namespace DotSerial.Tests
 
 #pragma warning disable CS8602
 #pragma warning disable CS8604
+
+    public class DebugClass : ITestable<DebugClass>
+    {
+        [DotSerialName("pairs")]
+        public List<List<int>>? Tmp { get; set; }
+
+        public static DebugClass CreateTestDefault()
+        {
+            List<int> tmp1 = [1, 2];
+            List<int> tmp2 = [3, 4];
+            List<List<int>> tmp = [tmp1, tmp2];
+
+            var result = new DebugClass { Tmp = tmp };
+
+            return result;
+        }
+
+        public bool AssertTest(DebugClass actual)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
     /// <summary>
     /// Example class (ReadMe.md)
@@ -55,9 +55,9 @@ namespace DotSerial.Tests
         {
             var tmp = new ExampleClass
             {
-               Boolean = true,
-               Number = 42,
-               Text = "Hello DotSerial!"
+                Boolean = true,
+                Number = 42,
+                Text = "Hello DotSerial!",
             };
 
             return tmp;
@@ -66,14 +66,14 @@ namespace DotSerial.Tests
         public bool AssertTest(ExampleClass actual)
         {
             var expected = this;
-            
+
             if (expected.Boolean != actual.Boolean)
                 return false;
             if (expected.Number != actual.Number)
                 return false;
             if (false == expected?.Text?.Equals(actual.Text))
                 return false;
-            
+
             return true;
         }
     }
@@ -81,8 +81,7 @@ namespace DotSerial.Tests
     /// <summary>
     /// Empty Class
     /// </summary>
-    public class EmptyClass
-    {}
+    public class EmptyClass { }
 
     /// <summary>
     /// No Attribute Class
@@ -91,23 +90,31 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
+
         [DotSerialName("1")]
         public bool Boolean { get; set; }
 
         [DotSerialIgnore]
         public bool BooleanNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public int IntNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public string? StringNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public SimpleClass? SimpleClassNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public PrimitiveClass? PrimitiveClassNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public TestEnum EnumNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public int[]? ArrayNoAttribute { get; set; }
+
         [DotSerialIgnore]
         public List<int>? ListNoAttribute { get; set; }
 
@@ -124,7 +131,7 @@ namespace DotSerial.Tests
                 PrimitiveClassNoAttribute = PrimitiveClass.CreateTestDefault(),
                 EnumNoAttribute = TestEnum.Second,
                 ArrayNoAttribute = [1, 2, 3, 4],
-                ListNoAttribute = [9, 8, 7, 6]
+                ListNoAttribute = [9, 8, 7, 6],
             };
 
             return tmp;
@@ -136,7 +143,7 @@ namespace DotSerial.Tests
 
             if (expected.Boolean != actual.Boolean)
                 return false;
-            
+
             if (false == expected.PrimitiveClass.AssertTest(actual.PrimitiveClass))
             {
                 return false;
@@ -150,38 +157,38 @@ namespace DotSerial.Tests
             if (actual.IntNoAttribute != 0)
             {
                 return false;
-            }   
+            }
 
             if (actual.StringNoAttribute != null)
             {
                 return false;
-            }    
+            }
 
             if (actual.SimpleClassNoAttribute != null)
             {
                 return false;
-            }    
+            }
 
             if (actual.PrimitiveClassNoAttribute != null)
             {
                 return false;
-            }          
+            }
 
             if (actual.EnumNoAttribute != TestEnum.None)
             {
                 return false;
-            }         
+            }
 
             if (actual.ArrayNoAttribute != null)
             {
                 return false;
-            }    
+            }
 
             if (actual.ListNoAttribute != null)
             {
                 return false;
-            }                                                                              
-            
+            }
+
             return true;
         }
     }
@@ -190,12 +197,16 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public int PublicBoolean { get; set; }
+
         [DotSerialName("1")]
         private int PrivateBoolean { get; set; }
+
         [DotSerialName("2")]
         internal int InternalBoolean { get; set; }
+
         [DotSerialName("3")]
         protected int ProtectedBoolean { get; set; }
+
         [DotSerialName("4")]
         public static int StaticBoolean { get; set; }
 
@@ -222,7 +233,7 @@ namespace DotSerial.Tests
                 return false;
             if (AccessModifierClass.StaticBoolean != 15)
                 return false;
-            
+
             return true;
         }
     }
@@ -234,38 +245,55 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public SimpleClass? SimpleClass { get; set; }
+
         [DotSerialName("1")]
         public SimpleClass[]? Array { get; set; }
+
         [DotSerialName("2")]
         public List<SimpleClass>? List { get; set; }
+
         [DotSerialName("3")]
         public SimpleClass?[]? ArrayWithNulls { get; set; }
+
         [DotSerialName("4")]
-        public List<SimpleClass>? ListWithNulls { get; set; }
+        public List<SimpleClass?>? ListWithNulls { get; set; }
+
         [DotSerialName("5")]
         public string? String { get; set; }
+
         [DotSerialName("6")]
         public bool[]? BooleanArray { get; set; }
+
         [DotSerialName("7")]
         public List<bool>? BooleanList { get; set; }
+
         [DotSerialName("8")]
         public string[]? StringArray { get; set; }
+
         [DotSerialName("9")]
         public List<string>? StringList { get; set; }
+
         [DotSerialName("10")]
         public string?[]? StringArrayWithNulls { get; set; }
+
         [DotSerialName("11")]
-        public List<string>? StringListWithNulls { get; set; }
+        public List<string?>? StringListWithNulls { get; set; }
+
         [DotSerialName("12")]
         public TestEnum[]? EnumArray { get; set; }
+
         [DotSerialName("13")]
         public List<TestEnum>? EnumList { get; set; }
+
         [DotSerialName("14")]
         public Dictionary<int, SimpleClass>? Dictionary { get; set; }
+
         [DotSerialName("15")]
         public Dictionary<int, SimpleClass?>? DictionaryWithNulls { get; set; }
+
         [DotSerialName("16")]
         public string? StringAsText { get; set; }
+
         [DotSerialName("17")]
         public string? StringEmpty { get; set; }
 
@@ -309,25 +337,25 @@ namespace DotSerial.Tests
             if (expected.List != null || actual.List != null)
                 return false;
             if (expected.String != null || actual.String != null)
-                return false;    
+                return false;
             if (expected.BooleanArray != null || actual.BooleanArray != null)
-                return false;         
+                return false;
             if (expected.BooleanList != null || actual.BooleanList != null)
-                return false;    
+                return false;
             if (expected.StringArray != null || actual.StringArray != null)
-                return false;   
+                return false;
             if (expected.StringList != null || actual.StringList != null)
-                return false;        
+                return false;
             if (expected.EnumArray != null || actual.EnumArray != null)
-                return false;   
+                return false;
             if (expected.EnumList != null || actual.EnumList != null)
-                return false;       
+                return false;
             if (expected.Dictionary != null || actual.Dictionary != null)
-                return false;     
+                return false;
             if (!expected.StringAsText.Equals(actual.StringAsText))
-                return false;            
+                return false;
             if (!expected.StringEmpty.Equals(actual.StringEmpty))
-                return false;    
+                return false;
 
             if (expected.ArrayWithNulls.Length != actual.ArrayWithNulls.Length)
                 return false;
@@ -335,7 +363,7 @@ namespace DotSerial.Tests
             {
                 if (expected.ArrayWithNulls[0] != null || actual.ArrayWithNulls[0] != null)
                     return false;
-            } 
+            }
 
             if (expected.ListWithNulls.Count != actual.ListWithNulls.Count)
                 return false;
@@ -343,7 +371,7 @@ namespace DotSerial.Tests
             {
                 if (expected.ListWithNulls[0] != null || actual.ListWithNulls[0] != null)
                     return false;
-            }      
+            }
 
             if (expected.StringArrayWithNulls.Length != actual.StringArrayWithNulls.Length)
                 return false;
@@ -351,7 +379,7 @@ namespace DotSerial.Tests
             {
                 if (expected.StringArrayWithNulls[0] != null || actual.StringArrayWithNulls[0] != null)
                     return false;
-            } 
+            }
 
             if (expected.StringListWithNulls.Count != actual.StringListWithNulls.Count)
                 return false;
@@ -359,12 +387,12 @@ namespace DotSerial.Tests
             {
                 if (expected.StringListWithNulls[0] != null || actual.StringListWithNulls[0] != null)
                     return false;
-            }               
+            }
 
             if (expected.DictionaryWithNulls.Count != actual.DictionaryWithNulls.Count)
                 return false;
 
-            foreach(var keyValue in expected.DictionaryWithNulls)
+            foreach (var keyValue in expected.DictionaryWithNulls)
             {
                 if (actual.DictionaryWithNulls.TryGetValue(keyValue.Key, out var simple))
                 {
@@ -375,7 +403,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }    
+            }
 
             return true;
         }
@@ -389,17 +417,11 @@ namespace DotSerial.Tests
         public static ListFirstElementNull CreateTestDefault()
         {
             int num = 5;
-            var tmp = new ListFirstElementNull
-            {
-                List = []
-            };
+            var tmp = new ListFirstElementNull { List = [] };
             tmp.List.Add(null);
             for (int i = 1; i < num; i++)
             {
-                var d = new SimpleClass
-                {
-                    Boolean = true
-                };
+                var d = new SimpleClass { Boolean = true };
 
                 tmp.List.Add(d);
             }
@@ -421,9 +443,8 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }   
+            }
             return true;
-
         }
     }
 
@@ -437,9 +458,7 @@ namespace DotSerial.Tests
 
         public static SimpleClass CreateTestDefault()
         {
-            var tmp = new SimpleClass{
-                Boolean = true,
-            };
+            var tmp = new SimpleClass { Boolean = true };
 
             return tmp;
         }
@@ -453,7 +472,7 @@ namespace DotSerial.Tests
 
             if (expected.Boolean != actual.Boolean)
                 return false;
-            
+
             return true;
         }
     }
@@ -465,8 +484,10 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public SimpleClass[]? Array { get; set; }
+
         [DotSerialName("1")]
         public List<SimpleClass>? List { get; set; }
+
         [DotSerialName("2")]
         public Dictionary<int, SimpleClass>? Dic { get; set; }
 
@@ -477,14 +498,11 @@ namespace DotSerial.Tests
             {
                 Array = new SimpleClass[num],
                 List = [],
-                Dic = []
+                Dic = [],
             };
             for (int i = 0; i < num; i++)
             {
-                var d = new SimpleClass
-                {
-                    Boolean = true
-                };
+                var d = new SimpleClass { Boolean = true };
 
                 tmp.Array[i] = d;
                 tmp.List.Add(d);
@@ -516,11 +534,11 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }       
+            }
 
             if (expected.Dic.Count != actual.Dic.Count)
                 return false;
-            foreach(var keyValue in expected.Dic)
+            foreach (var keyValue in expected.Dic)
             {
                 if (actual.Dic.TryGetValue(keyValue.Key, out var simple))
                 {
@@ -533,9 +551,9 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }   
+            }
 
-            return true;                
+            return true;
         }
     }
 
@@ -546,16 +564,13 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public PrimitiveClass? PrimitiveClass { get; set; }
+
         [DotSerialName("1")]
         public bool Boolean { get; set; }
 
         public static NestedClass CreateTestDefault()
         {
-            var tmp = new NestedClass
-            {
-                PrimitiveClass = PrimitiveClass.CreateTestDefault(),
-                Boolean = true
-            };
+            var tmp = new NestedClass { PrimitiveClass = PrimitiveClass.CreateTestDefault(), Boolean = true };
 
             return tmp;
         }
@@ -568,7 +583,7 @@ namespace DotSerial.Tests
                 return false;
             if (expected.Boolean != actual.Boolean)
                 return false;
-            
+
             return true;
         }
     }
@@ -580,8 +595,10 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public NestedClass? NestedClass { get; set; }
+
         [DotSerialName("1")]
         public PrimitiveClass? PrimitiveClass { get; set; }
+
         [DotSerialName("2")]
         public bool Boolean { get; set; }
 
@@ -591,7 +608,7 @@ namespace DotSerial.Tests
             {
                 NestedClass = NestedClass.CreateTestDefault(),
                 PrimitiveClass = PrimitiveClass.CreateTestDefault(),
-                Boolean = true
+                Boolean = true,
             };
 
             return tmp;
@@ -607,7 +624,7 @@ namespace DotSerial.Tests
                 return false;
             if (expected.Boolean != actual.Boolean)
                 return false;
-            
+
             return true;
         }
     }
@@ -619,38 +636,54 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public bool Boolean { get; set; }
+
         [DotSerialName("1")]
         public byte Byte { get; set; }
+
         [DotSerialName("2")]
         public sbyte SByte { get; set; }
+
         [DotSerialName("3")]
         public char Char { get; set; }
+
         [DotSerialName("4")]
         public decimal Decimal { get; set; }
+
         [DotSerialName("5")]
         public double Double { get; set; }
+
         [DotSerialName("6")]
         public float Float { get; set; }
+
         [DotSerialName("7")]
         public int Int { get; set; }
+
         [DotSerialName("8")]
         public uint UInt { get; set; }
+
         [DotSerialName("9")]
         public nint NInt { get; set; }
+
         [DotSerialName("10")]
         public nuint NUInt { get; set; }
+
         [DotSerialName("11")]
         public long Long { get; set; }
+
         [DotSerialName("12")]
         public ulong ULong { get; set; }
+
         [DotSerialName("13")]
         public short Short { get; set; }
+
         [DotSerialName("14")]
         public ushort UShort { get; set; }
+
         [DotSerialName("15")]
         public string? String { get; set; }
+
         [DotSerialName("16")]
-        public TestEnum Enum { get; set; }        
+        public TestEnum Enum { get; set; }
 
         public static PrimitiveClass CreateTestDefault()
         {
@@ -672,7 +705,7 @@ namespace DotSerial.Tests
                 Short = 31,
                 UShort = 30,
                 String = "HelloWorld",
-                Enum = TestEnum.First
+                Enum = TestEnum.First,
             };
 
             return tmp;
@@ -687,7 +720,7 @@ namespace DotSerial.Tests
             if (expected.Byte != actual.Byte)
                 return false;
             if (expected.SByte != actual.SByte)
-                return false;                
+                return false;
             if (expected.Char != actual.Char)
                 return false;
             if (expected.Decimal != actual.Decimal)
@@ -715,11 +748,11 @@ namespace DotSerial.Tests
                 return false;
             }
             if (false == expected.String.Equals(actual.String))
-                return false;                
+                return false;
             if (expected.Enum != actual.Enum)
-                return false;   
-                                                                                                            
-            return true;                                                                                                            
+                return false;
+
+            return true;
         }
     }
 
@@ -730,70 +763,103 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public bool[]? Boolean { get; set; }
+
         [DotSerialName("1")]
         public List<bool>? BooleanList { get; set; }
+
         [DotSerialName("2")]
         public byte[]? Byte { get; set; }
+
         [DotSerialName("3")]
         public List<byte>? ByteList { get; set; }
+
         [DotSerialName("4")]
         public sbyte[]? SByte { get; set; }
+
         [DotSerialName("5")]
         public List<sbyte>? SByteList { get; set; }
+
         [DotSerialName("6")]
         public char[]? Char { get; set; }
+
         [DotSerialName("7")]
         public List<char>? CharList { get; set; }
+
         [DotSerialName("8")]
         public decimal[]? Decimal { get; set; }
+
         [DotSerialName("9")]
         public List<decimal>? DecimalList { get; set; }
+
         [DotSerialName("10")]
         public double[]? Double { get; set; }
+
         [DotSerialName("11")]
         public List<double>? DoubleList { get; set; }
+
         [DotSerialName("12")]
         public float[]? Float { get; set; }
+
         [DotSerialName("13")]
         public List<float>? FloatList { get; set; }
+
         [DotSerialName("14")]
         public int[]? Int { get; set; }
+
         [DotSerialName("15")]
         public List<int>? IntList { get; set; }
+
         [DotSerialName("16")]
         public uint[]? UInt { get; set; }
+
         [DotSerialName("17")]
         public List<uint>? UIntList { get; set; }
+
         [DotSerialName("18")]
         public nint[]? NInt { get; set; }
+
         [DotSerialName("19")]
         public List<nint>? NIntList { get; set; }
+
         [DotSerialName("20")]
         public nuint[]? NUInt { get; set; }
+
         [DotSerialName("21")]
         public List<nuint>? NUIntList { get; set; }
+
         [DotSerialName("22")]
         public long[]? Long { get; set; }
+
         [DotSerialName("23")]
         public List<long>? LongList { get; set; }
+
         [DotSerialName("24")]
         public ulong[]? ULong { get; set; }
+
         [DotSerialName("25")]
         public List<ulong>? ULongList { get; set; }
+
         [DotSerialName("26")]
         public short[]? Short { get; set; }
+
         [DotSerialName("27")]
         public List<short>? ShortList { get; set; }
+
         [DotSerialName("28")]
         public ushort[]? UShort { get; set; }
+
         [DotSerialName("29")]
         public List<ushort>? UShortList { get; set; }
+
         [DotSerialName("30")]
         public string[]? String { get; set; }
+
         [DotSerialName("31")]
         public List<string>? StringList { get; set; }
+
         [DotSerialName("32")]
         public TestEnum[]? Enum { get; set; }
+
         [DotSerialName("33")]
         public List<TestEnum>? EnumList { get; set; }
 
@@ -852,7 +918,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.BooleanList.Count != actual.BooleanList.Count)
                 return false;
@@ -862,7 +928,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }        
+            }
 
             if (expected.Byte.Length != actual.Byte.Length)
                 return false;
@@ -872,7 +938,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.ByteList.Count != actual.ByteList.Count)
                 return false;
@@ -882,7 +948,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }             
+            }
 
             if (expected.SByte.Length != actual.SByte.Length)
                 return false;
@@ -892,7 +958,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.SByteList.Count != actual.SByteList.Count)
                 return false;
@@ -902,7 +968,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }          
+            }
 
             if (expected.Char.Length != actual.Char.Length)
                 return false;
@@ -912,7 +978,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.CharList.Count != actual.CharList.Count)
                 return false;
@@ -922,7 +988,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }     
+            }
 
             if (expected.Decimal.Length != actual.Decimal.Length)
                 return false;
@@ -932,7 +998,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.DecimalList.Count != actual.DecimalList.Count)
                 return false;
@@ -942,7 +1008,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }     
+            }
 
             if (expected.Double.Length != actual.Double.Length)
                 return false;
@@ -952,7 +1018,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.DoubleList.Count != actual.DoubleList.Count)
                 return false;
@@ -962,7 +1028,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }        
+            }
 
             if (expected.Float.Length != actual.Float.Length)
                 return false;
@@ -972,7 +1038,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.FloatList.Count != actual.FloatList.Count)
                 return false;
@@ -982,7 +1048,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }           
+            }
 
             if (expected.Int.Length != actual.Int.Length)
                 return false;
@@ -992,7 +1058,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.IntList.Count != actual.IntList.Count)
                 return false;
@@ -1002,7 +1068,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }     
+            }
 
             if (expected.UInt.Length != actual.UInt.Length)
                 return false;
@@ -1012,7 +1078,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.UIntList.Count != actual.UIntList.Count)
                 return false;
@@ -1022,7 +1088,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }    
+            }
 
             if (expected.NInt.Length != actual.NInt.Length)
                 return false;
@@ -1032,7 +1098,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.NIntList.Count != actual.NIntList.Count)
                 return false;
@@ -1042,7 +1108,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }      
+            }
 
             if (expected.NUInt.Length != actual.NUInt.Length)
                 return false;
@@ -1052,7 +1118,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.NUIntList.Count != actual.NUIntList.Count)
                 return false;
@@ -1062,7 +1128,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }       
+            }
 
             if (expected.Long.Length != actual.Long.Length)
                 return false;
@@ -1072,7 +1138,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.LongList.Count != actual.LongList.Count)
                 return false;
@@ -1082,7 +1148,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }           
+            }
 
             if (expected.ULong.Length != actual.ULong.Length)
                 return false;
@@ -1092,7 +1158,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.ULongList.Count != actual.ULongList.Count)
                 return false;
@@ -1102,7 +1168,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }     
+            }
 
             if (expected.Short.Length != actual.Short.Length)
                 return false;
@@ -1112,8 +1178,8 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
- 
+            }
+
             if (expected.ShortList.Count != actual.ShortList.Count)
                 return false;
             for (int i = 0; i < expected.ShortList.Count; i++)
@@ -1122,7 +1188,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }    
+            }
 
             if (expected.UShort.Length != actual.UShort.Length)
                 return false;
@@ -1132,8 +1198,8 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
- 
+            }
+
             if (expected.UShortList.Count != actual.UShortList.Count)
                 return false;
             for (int i = 0; i < expected.UShortList.Count; i++)
@@ -1142,7 +1208,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
+            }
 
             if (expected.String.Length != actual.String.Length)
                 return false;
@@ -1152,8 +1218,8 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
- 
+            }
+
             if (expected.StringList.Count != actual.StringList.Count)
                 return false;
             for (int i = 0; i < expected.StringList.Count; i++)
@@ -1162,7 +1228,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }                 
+            }
 
             if (expected.Enum.Length != actual.Enum.Length)
                 return false;
@@ -1172,8 +1238,8 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }  
- 
+            }
+
             if (expected.EnumList.Count != actual.EnumList.Count)
                 return false;
             for (int i = 0; i < expected.EnumList.Count; i++)
@@ -1182,8 +1248,7 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }                                                                                                                  
-
+            }
 
             return true;
         }
@@ -1196,67 +1261,89 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public int[][]? Int { get; set; }
+
         [DotSerialName("1")]
-        public List<List<int>>? IntList{ get; set; }
+        public List<List<int>>? IntList { get; set; }
+
         [DotSerialName("2")]
         public int[][][]? IntThree { get; set; }
+
         [DotSerialName("3")]
         public List<List<List<int>>>? IntListThree { get; set; }
+
         [DotSerialName("4")]
         public List<int>[]? IntMix { get; set; }
+
         [DotSerialName("5")]
         public List<int[]>? IntListMix { get; set; }
 
         [DotSerialName("6")]
         public string[][]? String { get; set; }
+
         [DotSerialName("7")]
         public List<List<string>>? StringList { get; set; }
+
         [DotSerialName("8")]
         public string[][][]? StringThree { get; set; }
+
         [DotSerialName("9")]
         public List<List<List<string>>>? StringListThree { get; set; }
+
         [DotSerialName("10")]
         public List<string>[]? StringMix { get; set; }
+
         [DotSerialName("11")]
         public List<string[]>? StringListMix { get; set; }
 
         [DotSerialName("12")]
         public PrimitiveClass[][]? PrimitiveClassArray { get; set; }
+
         [DotSerialName("13")]
         public List<List<PrimitiveClass>>? PrimitiveClassList { get; set; }
+
         [DotSerialName("14")]
         public PrimitiveClass[][][]? PrimitiveClassArrayThree { get; set; }
+
         [DotSerialName("15")]
         public List<List<List<PrimitiveClass>>>? PrimitiveClassListThree { get; set; }
+
         [DotSerialName("16")]
         public List<PrimitiveClass>[]? PrimitiveClassArrayMix { get; set; }
+
         [DotSerialName("17")]
         public List<PrimitiveClass[]>? PrimitiveClassListMix { get; set; }
 
         [DotSerialName("18")]
         public TestEnum[][]? Enum { get; set; }
+
         [DotSerialName("19")]
         public List<List<TestEnum>>? EnumList { get; set; }
+
         [DotSerialName("20")]
         public TestEnum[][][]? EnumThree { get; set; }
+
         [DotSerialName("21")]
         public List<List<List<TestEnum>>>? EnumListThree { get; set; }
+
         [DotSerialName("22")]
         public List<TestEnum>[]? EnumMix { get; set; }
+
         [DotSerialName("23")]
         public List<TestEnum[]>? EnumListMix { get; set; }
-        
+
         public static MultiDimClassIEnumarble CreateTestDefault()
         {
-            var tmp = new MultiDimClassIEnumarble
-            {
-                Int = new int[3][]
-            };
+            var tmp = new MultiDimClassIEnumarble { Int = new int[3][] };
             tmp.Int[0] = [1, 2, 3];
             tmp.Int[1] = [3, 4, 5];
             tmp.Int[2] = [6, 7, 8];
 
-            tmp.IntList = [[], [], []];
+            tmp.IntList =
+            [
+                [],
+                [],
+                [],
+            ];
             tmp.IntList[2] = [1, 2, 3];
             tmp.IntList[1] = [3, 4, 5];
             tmp.IntList[0] = [6, 7, 8];
@@ -1299,14 +1386,23 @@ namespace DotSerial.Tests
             tmp.IntMix[0] = [3, 4, 6666];
             tmp.IntMix[1] = [3222, 4, 6666, 664545];
 
-            tmp.IntListMix = [[77, 888, 9999], [7, 88, 999]];
+            tmp.IntListMix =
+            [
+                [77, 888, 9999],
+                [7, 88, 999],
+            ];
 
             tmp.String = new string[3][];
             tmp.String[0] = ["1", "2", "3"];
             tmp.String[1] = ["11", "22", "33"];
             tmp.String[2] = ["111", "222", "333"];
 
-            tmp.StringList = [[], [], []];
+            tmp.StringList =
+            [
+                [],
+                [],
+                [],
+            ];
             tmp.StringList[2] = ["13", "23", "33"];
             tmp.StringList[1] = ["11", "21", "31"];
             tmp.StringList[0] = ["15", "25", "35"];
@@ -1349,14 +1445,22 @@ namespace DotSerial.Tests
             tmp.StringMix[0] = ["3", "4", "6666"];
             tmp.StringMix[1] = ["3222", "4", "6666", "664545"];
 
-            tmp.StringListMix = [["77", "888", "9999"], ["7", "88", "2"]];
+            tmp.StringListMix =
+            [
+                ["77", "888", "9999"],
+                ["7", "88", "2"],
+            ];
 
             PrimitiveClass pDefault = PrimitiveClass.CreateTestDefault();
             tmp.PrimitiveClassArray = new PrimitiveClass[2][];
             tmp.PrimitiveClassArray[0] = [pDefault, pDefault, pDefault, pDefault];
             tmp.PrimitiveClassArray[1] = [pDefault, pDefault, pDefault, pDefault];
 
-            tmp.PrimitiveClassList = [[], []];
+            tmp.PrimitiveClassList =
+            [
+                [],
+                [],
+            ];
             tmp.PrimitiveClassList[0] = [pDefault, pDefault, pDefault, pDefault];
             tmp.PrimitiveClassList[1] = [pDefault, pDefault, pDefault, pDefault];
 
@@ -1398,14 +1502,23 @@ namespace DotSerial.Tests
             tmp.PrimitiveClassArrayMix[0] = [pDefault, pDefault, pDefault];
             tmp.PrimitiveClassArrayMix[1] = [pDefault, pDefault, pDefault, pDefault];
 
-            tmp.PrimitiveClassListMix = [[pDefault, pDefault], [pDefault, pDefault, pDefault]];
+            tmp.PrimitiveClassListMix =
+            [
+                [pDefault, pDefault],
+                [pDefault, pDefault, pDefault],
+            ];
 
             tmp.Enum = new TestEnum[3][];
             tmp.Enum[0] = [TestEnum.Second, TestEnum.First, TestEnum.Fourth];
             tmp.Enum[1] = [TestEnum.Undefined, TestEnum.Fourth, TestEnum.First];
             tmp.Enum[2] = [TestEnum.First, TestEnum.Fourth, TestEnum.Second];
 
-            tmp.EnumList = [[], [], []];
+            tmp.EnumList =
+            [
+                [],
+                [],
+                [],
+            ];
             tmp.EnumList[2] = [TestEnum.First, TestEnum.Fourth, TestEnum.First];
             tmp.EnumList[1] = [TestEnum.First, TestEnum.First, TestEnum.Second];
             tmp.EnumList[0] = [TestEnum.First, TestEnum.First, TestEnum.Second];
@@ -1448,7 +1561,11 @@ namespace DotSerial.Tests
             tmp.EnumMix[0] = [TestEnum.Second, TestEnum.Second, TestEnum.Second];
             tmp.EnumMix[1] = [TestEnum.First, TestEnum.Second, TestEnum.None, TestEnum.Second];
 
-            tmp.EnumListMix = [[TestEnum.None, TestEnum.Second], [TestEnum.Fourth, TestEnum.Second, TestEnum.Fourth]];
+            tmp.EnumListMix =
+            [
+                [TestEnum.None, TestEnum.Second],
+                [TestEnum.Fourth, TestEnum.Second, TestEnum.Fourth],
+            ];
 
             return tmp;
         }
@@ -1467,23 +1584,25 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public Dictionary<int, int>? DicIntInt { get; set; }
+
         [DotSerialName("1")]
         public Dictionary<int, string?>? DicIntString { get; set; }
+
         [DotSerialName("2")]
         public Dictionary<string, int>? DicStringInt { get; set; }
+
         [DotSerialName("3")]
         public Dictionary<string, string>? DicStringString { get; set; }
+
         [DotSerialName("4")]
         public Dictionary<string, string>? DicEmpty { get; set; }
+
         [DotSerialName("5")]
         public Dictionary<string, string>? DicNull { get; set; }
 
         public static DictionaryClass CreateTestDefault()
         {
-            var result = new DictionaryClass
-            {
-                DicIntInt = []
-            };
+            var result = new DictionaryClass { DicIntInt = [] };
             result.DicIntInt.Add(33, 44);
             result.DicIntInt.Add(-33, 88);
 
@@ -1513,7 +1632,7 @@ namespace DotSerial.Tests
 
             if (expected.DicIntInt.Count != actual.DicIntInt.Count)
                 return false;
-            foreach(var keyValue in expected.DicIntInt)
+            foreach (var keyValue in expected.DicIntInt)
             {
                 if (actual.DicIntInt.TryGetValue(keyValue.Key, out var value))
                 {
@@ -1524,11 +1643,11 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            } 
+            }
 
             if (expected.DicIntString.Count != actual.DicIntString.Count)
                 return false;
-            foreach(var keyValue in expected.DicIntString)
+            foreach (var keyValue in expected.DicIntString)
             {
                 if (actual.DicIntString.TryGetValue(keyValue.Key, out var value))
                 {
@@ -1536,7 +1655,7 @@ namespace DotSerial.Tests
                     {
                         if (value != null)
                             return false;
-                        
+
                         continue;
                     }
                     if (false == keyValue.Value.Equals(value))
@@ -1546,11 +1665,11 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }    
+            }
 
             if (expected.DicStringInt.Count != actual.DicStringInt.Count)
                 return false;
-            foreach(var keyValue in expected.DicStringInt)
+            foreach (var keyValue in expected.DicStringInt)
             {
                 if (actual.DicStringInt.TryGetValue(keyValue.Key, out var value))
                 {
@@ -1561,11 +1680,11 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }   
+            }
 
             if (expected.DicStringString.Count != actual.DicStringString.Count)
                 return false;
-            foreach(var keyValue in expected.DicStringString)
+            foreach (var keyValue in expected.DicStringString)
             {
                 if (actual.DicStringString.TryGetValue(keyValue.Key, out var value))
                 {
@@ -1576,13 +1695,13 @@ namespace DotSerial.Tests
                 {
                     return false;
                 }
-            }      
+            }
 
             if (expected.DicEmpty.Count != actual.DicEmpty.Count)
-                return false;  
+                return false;
 
             if (expected.DicNull != null || actual.DicNull != null)
-                return false;    
+                return false;
 
             return true;
         }
@@ -1595,10 +1714,13 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public TestEnum TestEnum0 { get; set; }
+
         [DotSerialName("1")]
         public TestEnum TestEnum1 { get; set; }
+
         [DotSerialName("2")]
         public TestEnum TestEnum2 { get; set; }
+
         [DotSerialName("3")]
         public TestEnum[]? TestEnumArray { get; set; }
 
@@ -1609,7 +1731,7 @@ namespace DotSerial.Tests
                 TestEnum0 = TestEnum.Fourth,
                 TestEnum1 = TestEnum.Undefined,
                 TestEnum2 = TestEnum.First,
-                TestEnumArray = [TestEnum.Fourth, TestEnum.Fourth, TestEnum.First]
+                TestEnumArray = [TestEnum.Fourth, TestEnum.Fourth, TestEnum.First],
             };
 
             return tmp;
@@ -1626,7 +1748,7 @@ namespace DotSerial.Tests
             if (expected.TestEnum2 != actual.TestEnum2)
                 return false;
             if (expected.TestEnumArray.Length != actual.TestEnumArray.Length)
-                return false;                                                
+                return false;
             for (int i = 0; i < expected.TestEnumArray.Length; i++)
             {
                 if (expected.TestEnumArray[i] != actual.TestEnumArray[i])
@@ -1641,12 +1763,16 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public DateTime Date1 { get; set; }
+
         [DotSerialName("1")]
         public DateTime Date2 { get; set; }
+
         [DotSerialName("2")]
         public DateTime Date3 { get; set; }
+
         [DotSerialName("3")]
         public DateTime[]? DateArray { get; set; }
+
         [DotSerialName("4")]
         public Dictionary<int, DateTime>? DateDic { get; set; }
 
@@ -1658,7 +1784,7 @@ namespace DotSerial.Tests
                 Date2 = DateTime.MaxValue,
                 Date3 = DateTime.MinValue,
                 DateArray = [DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue],
-                DateDic = []
+                DateDic = [],
             };
             tmp.DateDic.Add(5, DateTime.MaxValue);
             tmp.DateDic.Add(10, DateTime.MaxValue);
@@ -1671,36 +1797,35 @@ namespace DotSerial.Tests
             var expected = this;
 
             if (!expected.Date1.ToString().Equals(actual.Date1.ToString()))
-                return false;  
+                return false;
             if (!expected.Date2.ToString().Equals(actual.Date2.ToString()))
-                return false; 
+                return false;
             if (!expected.Date3.ToString().Equals(actual.Date3.ToString()))
-                return false; 
+                return false;
             if (expected.DateArray.Length != actual.DateArray.Length)
-                return false;                                                
+                return false;
             for (int i = 0; i < expected.DateArray.Length; i++)
             {
                 if (!expected.DateArray[i].ToString().Equals(actual.DateArray[i].ToString()))
-                    return false; 
-            }   
+                    return false;
+            }
 
             if (expected.DateDic.Count != actual.DateDic.Count)
                 return false;
-            foreach(var keyValue in expected.DateDic)
+            foreach (var keyValue in expected.DateDic)
             {
                 if (actual.DateDic.TryGetValue(keyValue.Key, out var value))
                 {
                     if (!keyValue.Value.ToString().Equals(value.ToString()))
-                        return false; 
+                        return false;
                 }
                 else
                 {
                     return false;
                 }
-            }     
+            }
 
-            return true;                      
-
+            return true;
         }
     }
 
@@ -1711,10 +1836,13 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public TestStruct TestStruct0 { get; set; }
+
         [DotSerialName("1")]
         public TestStruct TestStruct1 { get; set; }
+
         [DotSerialName("2")]
         public TestStruct TestStruct2 { get; set; }
+
         [DotSerialName("3")]
         public TestStruct[]? TestStructArray { get; set; }
 
@@ -1725,7 +1853,7 @@ namespace DotSerial.Tests
                 TestStruct0 = new TestStruct(55, 3),
                 TestStruct1 = new TestStruct(5, 3),
                 TestStruct2 = new TestStruct(55, 32),
-                TestStructArray = [new TestStruct(6, 5), new TestStruct(4, 3), new TestStruct(2, 1)]
+                TestStructArray = [new TestStruct(6, 5), new TestStruct(4, 3), new TestStruct(2, 1)],
             };
 
             return tmp;
@@ -1746,19 +1874,18 @@ namespace DotSerial.Tests
             if (expected.TestStruct2.Value0 != actual.TestStruct2.Value0)
                 return false;
             if (expected.TestStruct2.Value1 != actual.TestStruct2.Value1)
-                return false;  
+                return false;
             if (expected.TestStructArray.Length != actual.TestStructArray.Length)
-                return false;                                                
+                return false;
             for (int i = 0; i < expected.TestStructArray.Length; i++)
             {
                 if (expected.TestStructArray[i].Value0 != actual.TestStructArray[i].Value0)
                     return false;
                 if (expected.TestStructArray[i].Value1 != actual.TestStructArray[i].Value1)
-                    return false; 
-            }  
+                    return false;
+            }
 
-            return true; 
-
+            return true;
         }
     }
 
@@ -1769,6 +1896,7 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public int Value0 { get; set; }
+
         [DotSerialName("1893")]
         public int Value1 { get; set; }
     }
@@ -1789,10 +1917,13 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public TestRecord? TestRecord0 { get; set; }
+
         [DotSerialName("1")]
         public TestRecord? TestRecord1 { get; set; }
+
         [DotSerialName("2")]
         public TestRecord? TestRecord2 { get; set; }
+
         [DotSerialName("3")]
         public TestRecord[]? TestRecordArray { get; set; }
 
@@ -1803,7 +1934,7 @@ namespace DotSerial.Tests
                 TestRecord0 = new TestRecord(55, 3),
                 TestRecord1 = new TestRecord(5, 3),
                 TestRecord2 = new TestRecord(55, 32),
-                TestRecordArray = [new TestRecord(6, 5), new TestRecord(4, 3), new TestRecord(2, 1)]
+                TestRecordArray = [new TestRecord(6, 5), new TestRecord(4, 3), new TestRecord(2, 1)],
             };
 
             return tmp;
@@ -1824,18 +1955,18 @@ namespace DotSerial.Tests
             if (expected.TestRecord2.Value0 != actual.TestRecord2.Value0)
                 return false;
             if (expected.TestRecord2.Value1 != actual.TestRecord2.Value1)
-                return false;  
+                return false;
             if (expected.TestRecordArray.Length != actual.TestRecordArray.Length)
-                return false;                                                
+                return false;
             for (int i = 0; i < expected.TestRecordArray.Length; i++)
             {
                 if (expected.TestRecordArray[i].Value0 != actual.TestRecordArray[i].Value0)
                     return false;
                 if (expected.TestRecordArray[i].Value1 != actual.TestRecordArray[i].Value1)
-                    return false; 
-            }  
+                    return false;
+            }
 
-            return true; 
+            return true;
         }
     }
 
@@ -1846,18 +1977,23 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public DateTime DateTime0 { get; set; }
+
         [DotSerialName("1")]
         public Guid Guid0 { get; set; }
+
         [DotSerialName("2")]
         public TimeSpan TimeSpan0 { get; set; }
+
         [DotSerialName("3")]
         public Uri? Uri0 { get; set; }
+
         [DotSerialName("4")]
         public IPAddress? IPAddress0 { get; set; }
+
         [DotSerialName("5")]
         public Version? Version0 { get; set; }
-        [DotSerialName("6")]
 
+        [DotSerialName("6")]
         public CultureInfo? CultureInfo0 { get; set; }
 
         public static ParsableClass CreateTestDefault()
@@ -1881,19 +2017,19 @@ namespace DotSerial.Tests
             var expected = this;
 
             if (!expected.DateTime0.ToString().Equals(actual.DateTime0.ToString()))
-                return false; 
+                return false;
             if (!expected.Guid0.ToString().Equals(actual.Guid0.ToString()))
-                return false; 
+                return false;
             if (!expected.TimeSpan0.ToString().Equals(actual.TimeSpan0.ToString()))
-                return false; 
+                return false;
             if (!expected.Uri0.ToString().Equals(actual.Uri0.ToString()))
-                return false; 
+                return false;
             if (!expected.IPAddress0.ToString().Equals(actual.IPAddress0.ToString()))
-                return false;      
+                return false;
             if (!expected.Version0.ToString().Equals(actual.Version0.ToString()))
-                return false;    
+                return false;
             if (!expected.CultureInfo0.ToString().Equals(actual.CultureInfo0.ToString()))
-                return false;                                                                                               
+                return false;
 
             return true;
         }
@@ -1906,8 +2042,10 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public string? Path1 { get; set; }
+
         [DotSerialName("1")]
         public string? Path2 { get; set; }
+
         [DotSerialName("2")]
         public string? Path3 { get; set; }
 
@@ -1927,11 +2065,11 @@ namespace DotSerial.Tests
             var expected = this;
 
             if (!expected.Path1.ToString().Equals(actual.Path1.ToString()))
-                return false; 
+                return false;
             if (!expected.Path2.ToString().Equals(actual.Path2.ToString()))
-                return false; 
+                return false;
             if (!expected.Path3.ToString().Equals(actual.Path3.ToString()))
-                return false;     
+                return false;
 
             return true;
         }
@@ -1956,9 +2094,9 @@ namespace DotSerial.Tests
             var expected = this;
 
             if (!expected.Name.ToString().Equals(actual.Name.ToString()))
-                return false;     
+                return false;
 
-            return true;             
+            return true;
         }
     }
 
@@ -1984,12 +2122,420 @@ namespace DotSerial.Tests
         {
             var expected = this;
 
-            if (expected.Value0.Value0 !=  actual.Value0.Value0)
+            if (expected.Value0.Value0 != actual.Value0.Value0)
                 return false;
-            if (expected.Value0.Value1 !=  actual.Value0.Value1)
+            if (expected.Value0.Value1 != actual.Value0.Value1)
                 return false;
 
-            return true; 
+            return true;
+        }
+    }
+
+    public class EmptyObjectClass : ITestable<EmptyObjectClass>
+    {
+        [DotSerialName("1")]
+        public SimpleClass[]? EmptyArray { get; set; }
+
+        [DotSerialName("2")]
+        public Dictionary<int, SimpleClass>? EmptyDictionary { get; set; }
+
+        [DotSerialName("3")]
+        public string? StringEmpty { get; set; }
+
+        public static EmptyObjectClass CreateTestDefault()
+        {
+            var tmp = new EmptyObjectClass
+            {
+                EmptyArray = [],
+                EmptyDictionary = [],
+                StringEmpty = string.Empty,
+            };
+            return tmp;
+        }
+
+        public bool AssertTest(EmptyObjectClass actual)
+        {
+            if (actual.EmptyArray == null || actual.EmptyArray.Length != 0)
+                return false;
+            if (actual.EmptyDictionary == null || actual.EmptyDictionary.Count != 0)
+                return false;
+            if (actual.StringEmpty == null || !actual.StringEmpty.Equals(string.Empty))
+                return false;
+
+            return true;
+        }
+    }
+
+    public class ClassWithOneList : ITestable<ClassWithOneList>
+    {
+        [DotSerialName("0")]
+        public bool[]? Boolean { get; set; }
+
+        public static ClassWithOneList CreateTestDefault()
+        {
+            var tmp = new ClassWithOneList { Boolean = [true, true, false, true] };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOneList actual)
+        {
+            var expected = this;
+
+            if (expected.Boolean.Length != actual.Boolean.Length)
+                return false;
+
+            for (int i = 0; i < expected.Boolean.Length; i++)
+            {
+                if (expected.Boolean[i] != actual.Boolean[i])
+                    return false;
+            }
+
+            return true;
+        }
+    }
+
+    public class ClassWithOneDictionary : ITestable<ClassWithOneDictionary>
+    {
+        [DotSerialName("0")]
+        public Dictionary<int, int>? DicIntInt { get; set; }
+
+        public static ClassWithOneDictionary CreateTestDefault()
+        {
+            var tmp = new ClassWithOneDictionary { DicIntInt = [] };
+
+            tmp.DicIntInt.Add(33, 44);
+            tmp.DicIntInt.Add(-33, 88);
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOneDictionary actual)
+        {
+            var expected = this;
+
+            if (expected.DicIntInt.Count != actual.DicIntInt.Count)
+                return false;
+            foreach (var keyValue in expected.DicIntInt)
+            {
+                if (actual.DicIntInt.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
+
+    public class ClassWithOnePrimitive : ITestable<ClassWithOnePrimitive>
+    {
+        [DotSerialName("0")]
+        public int Value { get; set; }
+
+        public static ClassWithOnePrimitive CreateTestDefault()
+        {
+            var tmp = new ClassWithOnePrimitive { Value = 55 };
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassWithOnePrimitive actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+
+            return true;
+        }
+    }
+
+    public class ClassSpecialCharsKeys : ITestable<ClassSpecialCharsKeys>
+    {
+        public int Value { get; set; }
+
+        [DotSerialName("1234")]
+        public int KeyAsInt { get; set; }
+
+        [DotSerialName("12.34")]
+        public int KeyAsDouble { get; set; }
+
+        [DotSerialName("-1234")]
+        public int KeyAsIntNegative { get; set; }
+
+        [DotSerialName("-12.34")]
+        public int KeyAsDoubleNegative { get; set; }
+
+        [DotSerialName("true")]
+        public int KeyAsTrue { get; set; }
+
+        [DotSerialName("false")]
+        public int KeyAsFalse { get; set; }
+
+        [DotSerialName("null")]
+        public int KeyAsNull { get; set; }
+
+        [DotSerialName("Hello World")]
+        public int KeyWithWhiteSpaceMiddle { get; set; }
+
+        [DotSerialName(" HelloWorld")]
+        public int KeyWithWhiteSpaceStart { get; set; }
+
+        [DotSerialName("HelloWorld ")]
+        public int KeyWithWhiteSpaceEnd { get; set; }
+
+        [DotSerialName(" HelloWorld ")]
+        public int KeyWithWhiteSpaceStartEnd { get; set; }
+
+        [DotSerialName("[{;,!? \\§$%&'\"|-.}]")]
+        public int KeyWithSpecialChars1 { get; set; }
+
+        [DotSerialName(";,.-'!")]
+        public int KeyWithSpecialChars2 { get; set; }
+
+        [DotSerialName("<><:;-?!#!")]
+        public int KeyWithSpecialChars3 { get; set; }
+
+        [DotSerialName("{}<><:;-?!#!")]
+        public int KeyWithSpecialChars4 { get; set; }
+
+        [DotSerialName("   ")]
+        public int KeyWithOnlyWhiteSpaces { get; set; }
+
+        [DotSerialName("[ \"\\[]")]
+        public string[]? Array { get; set; }
+
+        [DotSerialName("{}<><:;[]-?!#!")]
+        public Dictionary<string, string>? Dictionary { get; set; }
+
+        // [DotSerialName("")]
+        // public string? StringEmpty { get; set; }
+
+        public static ClassSpecialCharsKeys CreateTestDefault()
+        {
+            var tmp = new ClassSpecialCharsKeys
+            {
+                Value = 55,
+                KeyAsInt = 1,
+                KeyAsDouble = 2,
+                KeyAsIntNegative = 3,
+                KeyAsDoubleNegative = 4,
+                KeyAsTrue = 5,
+                KeyAsFalse = 6,
+                KeyAsNull = 7,
+                KeyWithWhiteSpaceMiddle = 8,
+                KeyWithWhiteSpaceStart = 9,
+                KeyWithWhiteSpaceEnd = 10,
+                KeyWithWhiteSpaceStartEnd = 11,
+                KeyWithSpecialChars1 = 12,
+                KeyWithSpecialChars2 = 13,
+                KeyWithSpecialChars3 = 14,
+                KeyWithSpecialChars4 = 15,
+                KeyWithOnlyWhiteSpaces = 16,
+                Array = ["[{;,! \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
+                Dictionary = [],
+                // StringEmpty = ""
+            };
+
+            tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
+            tmp.Dictionary.Add("   ", ";,.-'!");
+            tmp.Dictionary.Add("[ \"\\[]", "[ \"\\[]");
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSpecialCharsKeys actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+            if (expected.KeyAsInt != actual.KeyAsInt)
+                return false;
+            if (expected.KeyAsDouble != actual.KeyAsDouble)
+                return false;
+            if (expected.KeyAsIntNegative != actual.KeyAsIntNegative)
+                return false;
+            if (expected.KeyAsDoubleNegative != actual.KeyAsDoubleNegative)
+                return false;
+            if (expected.KeyAsTrue != actual.KeyAsTrue)
+                return false;
+            if (expected.KeyAsFalse != actual.KeyAsFalse)
+                return false;
+            if (expected.KeyAsNull != actual.KeyAsNull)
+                return false;
+            if (expected.KeyWithWhiteSpaceMiddle != actual.KeyWithWhiteSpaceMiddle)
+                return false;
+            if (expected.KeyWithWhiteSpaceStart != actual.KeyWithWhiteSpaceStart)
+                return false;
+            if (expected.KeyWithWhiteSpaceEnd != actual.KeyWithWhiteSpaceEnd)
+                return false;
+            if (expected.KeyWithWhiteSpaceStartEnd != actual.KeyWithWhiteSpaceStartEnd)
+                return false;
+            if (expected.KeyWithSpecialChars1 != actual.KeyWithSpecialChars1)
+                return false;
+            if (expected.KeyWithSpecialChars2 != actual.KeyWithSpecialChars2)
+                return false;
+            if (expected.KeyWithSpecialChars3 != actual.KeyWithSpecialChars3)
+                return false;
+            if (expected.KeyWithOnlyWhiteSpaces != actual.KeyWithOnlyWhiteSpaces)
+                return false;
+            if (expected.Array.Length != actual.Array.Length)
+                return false;
+            for (int i = 0; i < expected.Array.Length; i++)
+            {
+                if (!expected.Array[i].Equals(actual.Array[i]))
+                    return false;
+            }
+            if (expected.Dictionary.Count != actual.Dictionary.Count)
+                return false;
+            foreach (var keyValue in expected.Dictionary)
+            {
+                if (actual.Dictionary.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            // if (expected.StringEmpty != actual.StringEmpty)
+            //     return false;
+
+            return true;
+        }
+    }
+
+    public class ClassSpecialCharsValue : ITestable<ClassSpecialCharsValue>
+    {
+        public int Value { get; set; }
+        public string? StringAsInt { get; set; }
+        public string? StringAsDouble { get; set; }
+        public string? StringAsIntNegative { get; set; }
+        public string? StringAsDoubleNegative { get; set; }
+        public string? StringAsTrue { get; set; }
+        public string? StringAsFalse { get; set; }
+        public string? StringAsNull { get; set; }
+        public string? StringAsEmpty { get; set; }
+        public string? StringWithWhiteSpaceMiddle { get; set; }
+        public string? StringWithWhiteSpaceStart { get; set; }
+        public string? StringWithWhiteSpaceEnd { get; set; }
+        public string? StringWithWhiteSpaceStartEnd { get; set; }
+        public string? SpecialChars1 { get; set; }
+        public string? SpecialChars2 { get; set; }
+        public string? SpecialChars3 { get; set; }
+        public string? SpecialChars4 { get; set; }
+        public string? StringWithOnlyWhiteSpaces { get; set; }
+        public string[]? Array { get; set; }
+        public Dictionary<string, string>? Dictionary { get; set; }
+        public string? StringEmpty { get; set; }
+
+        public static ClassSpecialCharsValue CreateTestDefault()
+        {
+            var tmp = new ClassSpecialCharsValue
+            {
+                Value = 55,
+                StringAsInt = "1234",
+                StringAsDouble = "12.34",
+                StringAsIntNegative = "-1234",
+                StringAsDoubleNegative = "-12.34",
+                StringAsTrue = "true",
+                StringAsFalse = "false",
+                StringAsNull = "null",
+                StringAsEmpty = string.Empty,
+                StringWithWhiteSpaceMiddle = "Hello  World",
+                StringWithWhiteSpaceStart = " HelloWorld",
+                StringWithWhiteSpaceEnd = "HelloWorld ",
+                StringWithWhiteSpaceStartEnd = " HelloWorld ",
+                SpecialChars1 = "[{;,!? \\§$%&'\"|-.}]",
+                SpecialChars2 = ";,.-'!",
+                SpecialChars3 = "<><:;-?!#!",
+                SpecialChars4 = "{}<><:;-?!#!",
+                StringWithOnlyWhiteSpaces = "   ",
+                Array = ["[{;,!? \\§$%&'\"|-.}]", ";,.-'!", "{}<><:;-?!#!", "   ", "[ \"\\[]"],
+                Dictionary = [],
+                StringEmpty = "",
+            };
+
+            tmp.Dictionary.Add("[{;,!? \\§$%&'\"|-.}]", ";,.-'!");
+            tmp.Dictionary.Add("   ", ";,.-'!");
+            tmp.Dictionary.Add("[ \"\\[]", "[ \"\\[]");
+
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSpecialCharsValue actual)
+        {
+            var expected = this;
+
+            if (expected.Value != actual.Value)
+                return false;
+            if (!expected.StringAsInt.Equals(actual.StringAsInt))
+                return false;
+            if (!expected.StringAsDouble.Equals(actual.StringAsDouble))
+                return false;
+            if (!expected.StringAsIntNegative.Equals(actual.StringAsIntNegative))
+                return false;
+            if (!expected.StringAsDoubleNegative.Equals(actual.StringAsDoubleNegative))
+                return false;
+            if (!expected.StringAsTrue.Equals(actual.StringAsTrue))
+                return false;
+            if (!expected.StringAsFalse.Equals(actual.StringAsFalse))
+                return false;
+            if (!expected.StringAsNull.Equals(actual.StringAsNull))
+                return false;
+            if (!expected.StringAsEmpty.Equals(actual.StringAsEmpty))
+                return false;
+            if (!expected.StringWithWhiteSpaceMiddle.Equals(actual.StringWithWhiteSpaceMiddle))
+                return false;
+            if (!expected.StringWithWhiteSpaceStart.Equals(actual.StringWithWhiteSpaceStart))
+                return false;
+            if (!expected.StringWithWhiteSpaceEnd.Equals(actual.StringWithWhiteSpaceEnd))
+                return false;
+            if (!expected.StringWithWhiteSpaceStartEnd.Equals(actual.StringWithWhiteSpaceStartEnd))
+                return false;
+            if (!expected.SpecialChars1.Equals(actual.SpecialChars1))
+                return false;
+            if (!expected.SpecialChars2.Equals(actual.SpecialChars2))
+                return false;
+            if (!expected.SpecialChars3.Equals(actual.SpecialChars3))
+                return false;
+            if (!expected.SpecialChars4.Equals(actual.SpecialChars4))
+                return false;
+            if (!expected.StringWithOnlyWhiteSpaces.Equals(actual.StringWithOnlyWhiteSpaces))
+                return false;
+            if (expected.Array.Length != actual.Array.Length)
+                return false;
+            for (int i = 0; i < expected.Array.Length; i++)
+            {
+                if (!expected.Array[i].Equals(actual.Array[i]))
+                    return false;
+            }
+            if (expected.Dictionary.Count != actual.Dictionary.Count)
+                return false;
+            foreach (var keyValue in expected.Dictionary)
+            {
+                if (actual.Dictionary.TryGetValue(keyValue.Key, out var value))
+                {
+                    if (keyValue.Value != value)
+                        return false;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            if (expected.StringEmpty != actual.StringEmpty)
+                return false;
+
+            return true;
         }
     }
 
@@ -2014,6 +2560,7 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public int Value0 { get; set; } = x;
+
         [DotSerialName("1")]
         public int Value1 { get; set; } = y;
     }
@@ -2025,11 +2572,11 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public int Value0 { get; set; }
+
         [DotSerialName("1")]
         public int Value1 { get; set; }
 
-        public TestRecord()
-        { }
+        public TestRecord() { }
 
         public TestRecord(int x, int y)
         {
@@ -2045,6 +2592,7 @@ namespace DotSerial.Tests
     {
         [DotSerialName("0")]
         public int Value0 { get; set; }
+
         [DotSerialName("1")]
         public int Value1 { get; set; }
 
@@ -2109,7 +2657,6 @@ namespace DotSerial.Tests
 
     #endregion
 
-#pragma warning restore CS8602        
-#pragma warning restore CS8604        
-
+#pragma warning restore CS8602
+#pragma warning restore CS8604
 }

@@ -1,26 +1,6 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Deserialize;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Nodes
 {
@@ -30,21 +10,115 @@ namespace DotSerial.Tree.Nodes
     public interface IDSNode
     {
         /// <summary>
+        /// Number of child nodes
+        /// </summary>
+        public int Count { get; }
+
+        /// <summary>
+        /// True, if the node value must be quoted when serialized
+        /// </summary>
+        public bool IsQuoted { get; }
+
+        /// <summary>
         /// Key of the node
         /// </summary>
-        public string Key {get;}
+        public string Key { get; set; }
 
         /// <summary>
-        /// Returns the value of the node.
+        /// List of child nodes keys
         /// </summary>
-        /// <returns>Value of node</returns>
-        public abstract string? GetValue();
+        public ICollection<string> Keys { get; }
 
         /// <summary>
-        /// Get info, if node has children.
+        /// Parent node
         /// </summary>
-        /// <returns>True, if node has children</returns>
-        public abstract bool HasChildren();
+        public IDSNode? Parent { get; set; }
+
+        /// <summary>
+        /// List of child nodes
+        /// </summary>
+        public ICollection<IDSNode> Values { get; }
+
+        /// <summary>
+        /// Deserializes the node to an object of type U.
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <typeparam name="U">Type of the object</typeparam>
+        /// <returns>Deserilized object</returns>
+        /// <exception cref="ArgumentNullException">Argument null.</exception>
+        /// <exception cref="DotSerialException">DotSerial Exception.</exception>
+        public static U ToObject<U>(IDSNode node)
+        {
+            try
+            {
+                ArgumentNullException.ThrowIfNull(node);
+
+                IDSNode nodeToSerialize = node;
+
+                // Special case: In must formats (json, yaml, ..) there is no
+                // difference in classes or dictionarys when parsing. So
+                // in parsing an dictionary node will be created as an inner node.
+                // So for the deserialization of an dictionaty type we habe to create an
+                // dictionary node which wraps the inner node.
+                if (TypeCheckMethods.IsDictionary(typeof(U)) && nodeToSerialize is InnerNode)
+                {
+                    nodeToSerialize = NodeFactory.WrappNode(nodeToSerialize, TreeNodeType.DictionaryNode);
+                }
+
+                // Deserilize object
+                var resultObj = nodeToSerialize.DeserializeAccept(new DeserializeObject(), typeof(U));
+
+                if (null == resultObj)
+                {
+#pragma warning disable CS8603
+                    return default;
+#pragma warning restore CS8603
+                }
+
+                // cast object to U
+                if (resultObj is U result)
+                {
+                    return result;
+                }
+                else
+                {
+                    throw new DotSerialException($"{resultObj} is not of type {nameof(U)}.");
+                }
+            }
+            catch (DotSerialException ex)
+            {
+                throw new DotSerialException(ex.Message);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// /// Append child node
+        /// </summary>
+        /// <param name="node">Child node</param>
+        public abstract void AddChild(IDSNode? node);
+
+        /// <summary>
+        /// Clears all child nodes
+        /// </summary>
+        public void Clear();
+
+        /// <summary>
+        /// Check if the node contains child with the key
+        /// </summary>
+        /// <param name="key">Child key</param>
+        public abstract bool ContainsKey(string key);
+
+        /// <summary>
+        /// Deserialize visitor
+        /// </summary>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="type">Type of the object</param>
+        /// <returns>Deserialized object</returns>
+        public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
 
         /// <summary>
         /// Gets child node
@@ -60,17 +134,22 @@ namespace DotSerial.Tree.Nodes
         public abstract List<IDSNode> GetChildren();
 
         /// <summary>
-        /// Append child node
+        /// Returns the value of the node.
         /// </summary>
-        /// <param name="node">Child node</param>
-        public abstract void AddChild(IDSNode? node);
+        /// <returns>Value of node</returns>
+        public abstract string? GetValue();
 
         /// <summary>
-        /// Deserialize visitor
+        /// Get info, if node has children.
         /// </summary>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="type">Type of the object</param>
-        /// <returns>Deserialized object</returns>
-        public abstract object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type);
+        /// <returns>True, if node has children</returns>
+        public abstract bool HasChildren();
+
+        /// <summary>
+        /// Remove child node with the key
+        /// </summary>
+        /// <param name="key">Key of the child node</param>
+        /// <returns>True if the child node was removed, otherwise false</returns>
+        public abstract bool Remove(string key);
     }
 }

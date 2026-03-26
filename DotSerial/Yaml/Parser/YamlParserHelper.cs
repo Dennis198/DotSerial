@@ -1,26 +1,3 @@
-#region License
-//Copyright (c) 2026 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using System.Text;
 using DotSerial.Common;
 using DotSerial.Utilities;
 
@@ -31,24 +8,27 @@ namespace DotSerial.Yaml.Parser
     /// </summary>
     internal static class YamlParserHelper
     {
-
         /// <summary>
         /// Extracts key value pairs from yaml object
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        /// <returns>Dictionary<string, MultiLineStringBuilder></returns>
-        internal static Dictionary<string, MultiLineStringBuilder> ExtractKeyValuePairsFromYamlObject(MultiLineStringBuilder lines)
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        /// /// <returns>Dictionary<string, MulitLineReadOnlySpan></returns>
+        internal static Dictionary<string, MulitLineParserBookmark> ExtractKeyValuePairsFromYamlObject(
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new Dictionary<string, MultiLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            var result = new Dictionary<string, MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                var line = lines.GetLineContent(i, content);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
@@ -60,11 +40,11 @@ namespace DotSerial.Yaml.Parser
                     string key = ExtractKeyFromLine(line);
 
                     int sIndex = i + 1;
-                    int eIndex = GetEndIndexOfYamlObject(lines, i);
+                    int eIndex = GetEndIndexOfYamlObject(lines, i, content);
 
-                    var helpObj = lines.Slice(sIndex, eIndex);
-                    
-                    if (sIndex == eIndex && !IsYamlList(helpObj))
+                    var helpObj = lines.SliceFromTo(sIndex, eIndex);
+
+                    if (sIndex == eIndex && !IsYamlList(helpObj, content))
                     {
                         // Special case an object with exaclty one item.
                         // Must be marked, otherwise there is no way to
@@ -74,158 +54,193 @@ namespace DotSerial.Yaml.Parser
                     }
 
                     result.Add(key, helpObj);
-                    i = eIndex;                    
-
+                    i = eIndex;
                 }
                 // "Key": "Value"
                 else
                 {
                     string key = ExtractKeyFromLine(line);
-                    var helpObj = lines.Slice(i, i);
-                   
+                    var helpObj = lines.SliceFromTo(i, i);
+
                     result.Add(key, helpObj);
                 }
             }
 
             return result;
-        }        
+        }
 
         /// <summary>
         /// Extracts list of objcts from yaml string
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        /// <returns>List<MultiLineStringBuilder></returns>
-        internal static List<MultiLineStringBuilder> ExtractObjectList(MultiLineStringBuilder lines)
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        /// <returns>List<MulitLineReadOnlySpan></returns>
+        internal static List<MulitLineParserBookmark> ExtractObjectList(
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var result = new List<MultiLineStringBuilder>();
-            int objLevel = LineLevel(lines.GetLine(0));
+            var result = new List<MulitLineParserBookmark>();
+            int objLevel = ParseMethods.LineLevel(lines.GetLineContent(0, content), YamlConstants.IndentationSize);
 
             for (int i = 0; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                var line = lines.GetLine(i);
-                int currLevel = LineLevel(line);
+                var line = lines.GetLineContent(i, content);
+                int currLevel = ParseMethods.LineLevel(line, YamlConstants.IndentationSize);
                 if (currLevel < objLevel)
                 {
                     break;
                 }
 
-                if (true == line.EqualFirstNoWhiteSpaceChar(YamlConstants.ListItemIndicator))
+                if (true == ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(line, YamlConstants.ListItemIndicator))
                 {
-                    int endIndex = GetEndIndexOfYamlObject(lines, i);
+                    int endIndex = GetEndIndexOfYamlObject(lines, i, content);
 
                     // Remove List indicator of the objects
-                    RemoveListItemIndicator(lines, i, endIndex);
+                    RemoveListItemIndicator(lines, i, endIndex, content);
 
-                    var helpObj = lines.Slice(i, endIndex);
+                    var helpObj = lines.SliceFromTo(i, endIndex);
                     result.Add(helpObj);
                     i = endIndex;
                 }
-                
             }
 
             return result;
-        }   
+        }
 
         /// <summary>
         /// Extracts the value from a line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
-        /// <returns>Value of the line</returns>
-        internal static string? ExtractValueFromLine(StringBuilder line)
+        /// <param name="lines">DotSerialStringBuilder-List</param>
+        /// <param name="content">Yaml content</param>
+        /// <returns>ParserBookmark</returns>
+        internal static ParserBookmark ExtractValueFromLine(ParserBookmark bookmark, ReadOnlySpan<char> content)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
-            StringBuilder keyBuilder = new();
-            bool keyWasFound = false;
-
-            for (int i = 0; i < line.Length; i++)
+            int start = -1;
+            for (int i = bookmark.Start; i <= bookmark.End; i++)
             {
-                var c = line[i];
+                char c = content[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                        // Remove ending quote
-                        keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                        // Remove starting quote
-                        keyBuilder.Remove(0, 1);
-                        
-                        return keyBuilder.ToString();
-                    }
-                    else
-                    {
-                        i = line.SkipStringValue(i);
-                        keyWasFound = true;
-                    }
+                    i = ReadOnlySpanMethods.SkipQuotedValue(content, i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == YamlConstants.KeyValueSeperator)
                 {
-                    if (false == line.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
-
-                    return null;
+                    start = i;
+                    break;
+                }
+                else
+                {
+                    i = ReadOnlySpanMethods.SkipTillStopChar(content, i, YamlConstants.KeyValueSeperator);
                 }
             }
 
-            throw new NotImplementedException();
-        }                  
- 
+            if (start == -1)
+            {
+                ThrowHelper.ThrowKeyNodeNullException();
+            }
+
+            // Skip seperator
+            start++;
+
+            for (int i = start; i <= bookmark.End; i++)
+            {
+                var c = content[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(content, i);
+                    return new ParserBookmark(i, j);
+                }
+                else
+                {
+                    int j = ReadOnlySpanMethods.SkipTillStopChar(content, i, null, true);
+                    return new ParserBookmark(i, j);
+                }
+            }
+
+            ThrowHelper.ThrowNoValueFoundForKeyException(start, bookmark.GetContent(content).ToString());
+            throw new Exception("Unreachable code");
+        }
+
         /// <summary>
         /// Removes the List indicator for the objects
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="startIndex">Start index of the objcets</param>
         /// <param name="endIndex">End index of the objects</param>
-        private static void RemoveListItemIndicator(MultiLineStringBuilder lines, int startIndex, int endIndex)
+        /// <param name="content">Yaml content</param>
+        private static void RemoveListItemIndicator(
+            MulitLineParserBookmark lines,
+            int startIndex,
+            int endIndex,
+            ReadOnlySpan<char> content
+        )
         {
-            var startLine = lines.GetLine(startIndex);
-            int index = LineLevel(startLine) * YamlConstants.IndentationSize;
+            var startBookMark = lines.GetLine(startIndex);
+            var startLine = ReadOnlySpanMethods.SliceFromTo(content, startBookMark.Start, startBookMark.End);
+            int index =
+                ParseMethods.LineLevel(startLine, YamlConstants.IndentationSize) * YamlConstants.IndentationSize;
 
             if (startLine[index] != YamlConstants.ListItemIndicator)
             {
-                throw new NotImplementedException();
+                ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(startIndex, startLine[index]);
             }
 
-            startLine.Remove(index, 1);
+            var newBookmark = new ParserBookmark(startBookMark.Start + index + 1, startBookMark.End);
+            lines.SetLine(startIndex, newBookmark);
 
             for (int i = startIndex; i <= endIndex; i++)
             {
-                var line = lines.GetLine(i);
-                for(int j = index; j < index + YamlConstants.IndentationSize; j++)
+                var tmpBookmark = lines.GetLine(i);
+                var line = ReadOnlySpanMethods.SliceFromTo(content, tmpBookmark.Start, tmpBookmark.End);
+                int tmpIndex = 0;
+
+                if (i != startIndex)
                 {
-                    if (char.IsWhiteSpace(line[index]))
+                    tmpIndex = index;
+                }
+
+                for (int j = tmpIndex; j < tmpIndex + YamlConstants.IndentationSize; j++)
+                {
+                    if (char.IsWhiteSpace(line[j]))
                     {
-                        line.Remove(index, 1);
+                        var tmpNewBookmark = new ParserBookmark(tmpBookmark.Start + j + 1, tmpBookmark.End);
+                        lines.SetLine(i, tmpNewBookmark);
                     }
                     else
                     {
                         break;
                     }
-                }   
+                }
             }
-        }           
+        }
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a yaml object
+        /// Check if MulitLineReadOnlySpan is a yaml object
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml object</returns>
-        internal static bool IsYamlObject(MultiLineStringBuilder lines)
+        internal static bool IsYamlObject(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var firstLine = lines.GetLine(0);
-
-            if (null == firstLine)
-            {
-                throw new NotImplementedException();
-            }
+            var firstLine = lines.GetLineContent(0, content);
 
             // "'key': {}"
             if (IsEmptyObject(firstLine))
@@ -233,12 +248,12 @@ namespace DotSerial.Yaml.Parser
                 return true;
             }
 
-            if (IsYamlList(lines))
+            if (IsYamlList(lines, content))
             {
                 return false;
             }
 
-            if (IsYamlSingleValue(lines))
+            if (IsYamlSingleValue(lines, content))
             {
                 return false;
             }
@@ -247,44 +262,45 @@ namespace DotSerial.Yaml.Parser
         }
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a yaml list
+        /// Check if MulitLineReadOnlySpan is a yaml list
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml list</returns>
-        internal static bool IsYamlList(MultiLineStringBuilder lines)
+        internal static bool IsYamlList(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
-            var firstLine = lines.GetLine(0);
-
-            if (null == firstLine)
-            {
-                throw new NotImplementedException();
-            }
+            var firstLine = lines.GetLineContent(0, content);
 
             // 1. "'key': []"
             // 2. "[]"
             if (IsEmptyList(firstLine))
             {
+                if (lines.Count != 1)
+                {
+                    return false;
+                }
                 return true;
             }
 
             // 1. "- 'item'"
             // 2. "- 'key' : 'item'"
-            if (firstLine.EqualFirstNoWhiteSpaceChar(YamlConstants.ListItemIndicator))
+            if (ReadOnlySpanMethods.EqualFirstNoWhiteSpaceChar(firstLine, YamlConstants.ListItemIndicator))
             {
                 return true;
             }
 
             return false;
-        } 
+        }
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a single value
+        /// Check if MulitLineReadOnlySpan is a single value
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml single value</returns>
-        internal static bool IsYamlSingleValue(MultiLineStringBuilder lines)
+        internal static bool IsYamlSingleValue(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -293,10 +309,15 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            var firstLine = lines.GetLine(0);
+            var firstLine = lines.GetLineContent(0, content);
+
+            if (IsEmptyList(firstLine) || IsEmptyObject(firstLine))
+            {
+                return false;
+            }
 
             // "null"
-            if (firstLine.EqualsNullString())
+            if (ReadOnlySpanMethods.EqualsNullString(firstLine))
             {
                 return true;
             }
@@ -307,20 +328,51 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            if (1 == firstLine.CountQuotedValues())
+            bool seperatorFound = false;
+            bool keyFound = false;
+
+            for (int i = 0; i < firstLine.Length; i++)
             {
-                return true;
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (true == keyFound && c == YamlConstants.KeyValueSeperator)
+                {
+                    seperatorFound = true;
+                    continue;
+                }
+
+                if (seperatorFound)
+                {
+                    return false;
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = ReadOnlySpanMethods.SkipQuotedValue(firstLine, i);
+                    keyFound = true;
+                }
+                else
+                {
+                    i = ReadOnlySpanMethods.SkipTillStopChar(firstLine, i, YamlConstants.KeyValueSeperator);
+                    keyFound = true;
+                }
             }
 
-            return false;
-        }   
+            return true;
+        }
 
         /// <summary>
-        /// Check if MultiLineStringBuilder is a key only a key value pair
+        /// Check if MulitLineReadOnlySpan is only a key value pair
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
         /// <returns>True, if yaml key value pair</returns>
-        internal static bool IsYamlPrimitiveLine(MultiLineStringBuilder lines)
+        internal static bool IsYamlPrimitiveLine(MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(lines);
 
@@ -334,72 +386,96 @@ namespace DotSerial.Yaml.Parser
                 return false;
             }
 
-            if (IsYamlList(lines))
+            if (IsEmptyObject(lines.GetLineContent(0, content)))
             {
                 return false;
             }
 
-            if (IsYamlSingleValue(lines))
+            if (IsYamlList(lines, content))
             {
                 return false;
             }
 
-            var firstLine = lines.GetLine(0);
-            bool keyWasFound = false;
-            bool valueWasFound =  false;
+            if (IsYamlSingleValue(lines, content))
+            {
+                return false;
+            }
 
+            var firstLine = lines.GetLineContent(0, content);
+            int start = -1;
             for (int i = 0; i < firstLine.Length; i++)
             {
-                var c = firstLine[i];
-                
-                if (false == char.IsWhiteSpace(c))
+                char c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
                 {
-                    if (keyWasFound && valueWasFound)
-                    {
-                        throw new NotImplementedException();
-                    }
+                    continue;
                 }
 
                 if (c == CommonConstants.Quote)
                 {
-                    if (keyWasFound)
-                    {
-                        i = firstLine.SkipStringValue(i);                        
-                        valueWasFound = true;
-                    }
-                    else
-                    {
-                        i = firstLine.SkipStringValue(i);   
-                        keyWasFound = true;
-                    }
+                    i = ReadOnlySpanMethods.SkipQuotedValue(firstLine, i);
                 }
-                else if (keyWasFound && c == CommonConstants.N)
+                else if (c == YamlConstants.KeyValueSeperator)
                 {
-                    if (false == firstLine.EqualsNullString(i))
-                    {
-                        throw new DSYamlException("Invalid yaml");
-                    }
+                    start = i;
+                    break;
+                }
+                else
+                {
+                    i = ReadOnlySpanMethods.SkipTillStopChar(firstLine, i, YamlConstants.KeyValueSeperator);
+                }
+            }
 
-                    i += 3;
+            if (start == -1)
+            {
+                return false;
+            }
+
+            // Skip seperator
+            start++;
+
+            bool valueWasFound = false;
+
+            for (int i = start; i < firstLine.Length; i++)
+            {
+                var c = firstLine[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
+                if (valueWasFound)
+                {
+                    ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
+                }
+
+                if (c == CommonConstants.Quote)
+                {
+                    i = ReadOnlySpanMethods.SkipQuotedValue(firstLine, i);
+                    valueWasFound = true;
+                }
+                else
+                {
+                    i = ReadOnlySpanMethods.SkipTillStopChar(firstLine, i, null);
                     valueWasFound = true;
                 }
             }
 
-            return keyWasFound && valueWasFound;
-        } 
-                                
+            return valueWasFound;
+        }
+
         /// <summary>
         /// Check is string builder is "Key": {}
         /// </summary>
-        /// <param name="line">StringBuilder</param>
+        /// <param name="line">DotSerialStringBuilder</param>
         /// <returns>True, if string is an empty yaml object</returns>
-        internal static bool IsEmptyObject(StringBuilder line)
+        internal static bool IsEmptyObject(ReadOnlySpan<char> line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
             bool closedBracletFound = false;
 
-            for (int i = line.Length -1 ; i >= 0; i--)
+            for (int i = line.Length - 1; i >= 0; i--)
             {
                 char c = line[i];
 
@@ -407,19 +483,19 @@ namespace DotSerial.Yaml.Parser
                 {
                     continue;
                 }
-                else if (c == '}')
+                else if (c == CommonConstants.BracesEnd)
                 {
                     if (true == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     closedBracletFound = true;
                 }
-                else if (c == '{')
+                else if (c == CommonConstants.BracesStart)
                 {
                     if (false == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     return true;
@@ -436,15 +512,13 @@ namespace DotSerial.Yaml.Parser
         /// <summary>
         /// Check is string builder is "Key": []
         /// </summary>
-        /// <param name="line">StringBuilder</param>
+        /// <param name="line">DotSerialStringBuilder</param>
         /// <returns>True, if string is an empty yaml list</returns>
-        internal static bool IsEmptyList(StringBuilder line)
+        internal static bool IsEmptyList(ReadOnlySpan<char> line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-            
             bool closedBracletFound = false;
 
-            for (int i = line.Length -1 ; i >= 0; i--)
+            for (int i = line.Length - 1; i >= 0; i--)
             {
                 char c = line[i];
 
@@ -452,19 +526,19 @@ namespace DotSerial.Yaml.Parser
                 {
                     continue;
                 }
-                else if (c == ']')
+                else if (c == CommonConstants.BracketsEnd)
                 {
                     if (true == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
                     closedBracletFound = true;
                 }
-                else if (c == '[')
+                else if (c == CommonConstants.BracketsStart)
                 {
                     if (false == closedBracletFound)
                     {
-                        throw new NotImplementedException();
+                        ThrowHelper.ThrowUnexpectedNonWhiteSpaceCharException(i, c);
                     }
 
                     return true;
@@ -476,14 +550,18 @@ namespace DotSerial.Yaml.Parser
             }
 
             return false;
-        }  
+        }
 
         /// <summary>
         /// Removes the yaml start and end symbols if there.
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
-        /// <returns>MultiLineStringBuilder without start end symbols</returns>
-        internal static MultiLineStringBuilder RemoveStartStopSymbols(MultiLineStringBuilder lines)
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        /// <returns>MulitLineReadOnlySpan without start end symbols</returns>
+        internal static MulitLineParserBookmark RemoveStartStopSymbols(
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(lines);
             if (lines.Count == 0)
@@ -494,14 +572,14 @@ namespace DotSerial.Yaml.Parser
             int startIndex = 0;
             int endIndex = lines.Count - 1;
 
-            var firstLine = lines.GetLine(0);
-            if (firstLine.Equals(YamlConstants.YamlDocumentStart))
+            var firstLine = lines.GetLineContent(0, content);
+            if (firstLine.SequenceEqual(YamlConstants.YamlDocumentStart))
             {
                 startIndex++;
             }
 
-            var lastLine = lines.GetLine(lines.Count - 1);
-            if (lastLine.Equals(YamlConstants.YamlDocumentEnd))
+            var lastLine = lines.GetLineContent(lines.Count - 1, content);
+            if (lastLine.SequenceEqual(YamlConstants.YamlDocumentEnd))
             {
                 endIndex--;
             }
@@ -512,31 +590,36 @@ namespace DotSerial.Yaml.Parser
                 return lines;
             }
 
-            return lines.Slice(startIndex, endIndex);
-        }       
+            return lines.SliceFromTo(startIndex, endIndex);
+        }
 
         /// <summary>
         /// Gets the end index of an yaml object.
         /// </summary>
-        /// <param name="lines">MultiLineStringBuilder</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
         /// <param name="startIndex">Start index of the object</param>
+        /// <param name="content">Yaml content</param>
         /// <returns>End index</returns>
-        private static int GetEndIndexOfYamlObject(MultiLineStringBuilder lines, int startIndex)
+        private static int GetEndIndexOfYamlObject(
+            MulitLineParserBookmark lines,
+            int startIndex,
+            ReadOnlySpan<char> content
+        )
         {
             ArgumentNullException.ThrowIfNull(lines);
-
-            if (lines.Count - 1 < startIndex)
-            {
-                throw new NotImplementedException();
-            }
+            ArgumentOutOfRangeException.ThrowIfNegative(startIndex);
+            ArgumentOutOfRangeException.ThrowIfGreaterThan(startIndex, lines.Count - 1);
 
             int endIndex = -1;
-            int objLevel = LineLevel(lines.GetLine(startIndex));
+            int objLevel = ParseMethods.LineLevel(
+                lines.GetLineContent(startIndex, content),
+                YamlConstants.IndentationSize
+            );
 
             for (int i = startIndex + 1; i < lines.Count; i++)
             {
                 // Check if we reached the end of the object
-                int currLevel = LineLevel(lines.GetLine(i));
+                int currLevel = ParseMethods.LineLevel(lines.GetLineContent(i, content), YamlConstants.IndentationSize);
                 if (currLevel <= objLevel)
                 {
                     endIndex = i - 1;
@@ -550,72 +633,48 @@ namespace DotSerial.Yaml.Parser
             }
 
             return endIndex;
-        }          
+        }
 
         /// <summary>
         /// Extracts the key from a line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="lines">DotSerialStringBuilder-List</param>
         /// <returns>Key of the line</returns>
-        private static string ExtractKeyFromLine(StringBuilder line)
+        private static string ExtractKeyFromLine(ReadOnlySpan<char> line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
-            StringBuilder keyBuilder = new();
             for (int i = 0; i < line.Length; i++)
             {
                 var c = line[i];
+
+                if (char.IsWhiteSpace(c))
+                {
+                    continue;
+                }
+
                 if (c == CommonConstants.Quote)
                 {
-                    _ = ParseMethods.AppendStringValue(keyBuilder, i, line);
-                    // Remove ending quote
-                    keyBuilder.Remove(keyBuilder.Length - 1, 1);
-                     // Remove starting quote
-                    keyBuilder.Remove(0, 1);
-                    return keyBuilder.ToString();
-                }
-            }
-
-            throw new NotImplementedException();
-        }     
-
-        /// <summary>
-        /// Returns the indentation level of a line
-        /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
-        /// <returns>indentation level of a line</returns>
-        private static int LineLevel(StringBuilder line)
-        {
-            ArgumentNullException.ThrowIfNull(line);
-
-            int level = 0;
-            for (int i = 0; i < line.Length; i++)
-            {
-                var c = line[i];
-                if (c == CommonConstants.WhiteSpace)
-                {
-                    level++;
+                    int j = ReadOnlySpanMethods.SkipQuotedValue(line, i);
+                    return ReadOnlySpanMethods.SliceFromTo(line, i, j).ToString();
                 }
                 else
                 {
-                    break;
+                    int j = ReadOnlySpanMethods.SkipTillStopChar(line, i, YamlConstants.KeyValueSeperator);
+                    return ReadOnlySpanMethods.SliceFromTo(line, i, j).ToString();
                 }
             }
 
-            return level / YamlConstants.IndentationSize;
-        }  
+            ThrowHelper.ThrowKeyNodeNullException();
+            throw new Exception("Unreachable code");
+        }
 
         /// <summary>
         /// Check if line is a key line
         /// </summary>
-        /// <param name="lines">Stringbuilder-List</param>
+        /// <param name="lines">DotSerialStringBuilder-List</param>
         /// <returns>True, if line is key line</returns>
-        private static bool IsKeyLine(StringBuilder line)
+        private static bool IsKeyLine(ReadOnlySpan<char> line)
         {
-            ArgumentNullException.ThrowIfNull(line);
-
-            return line.EqualLastNoWhiteSpaceChar(YamlConstants.KeyValueSeperator);
-             
-        }                                                                          
+            return ReadOnlySpanMethods.EqualLastNoWhiteSpaceChar(line, YamlConstants.KeyValueSeperator);
+        }
     }
 }

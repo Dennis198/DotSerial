@@ -1,27 +1,5 @@
-#region License
-//Copyright (c) 2026 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using DotSerial.Common;
 using DotSerial.Tree.Deserialize;
+using DotSerial.Utilities;
 
 namespace DotSerial.Tree.Nodes
 {
@@ -29,49 +7,104 @@ namespace DotSerial.Tree.Nodes
     /// Inner node
     /// </summary>
     /// <param name="key">Key of the node</param>
-    public class InnerNode(string key) : IDSNode
+    /// <param name="parent">Parent node</param>
+    public class InnerNode(string key, IDSNode? parent) : IDSNode
     {
-        /// <inheritdoc/>
-        public string Key { get; private set; } = key;
-
         /// <summary>
         /// Children of the node
         /// </summary>
         private readonly List<IDSNode> _children = [];
 
         /// <inheritdoc/>
+        public int Count => _children.Count;
+
+        /// <inheritdoc/>
+        public bool IsQuoted => throw new DotSerialException($"{nameof(GetValue)} only for leaf implemented.");
+
+        /// <inheritdoc/>
+        public string Key { get; set; } = key;
+
+        /// <inheritdoc/>
+        public ICollection<string> Keys
+        {
+            get
+            {
+                ThrowHelper.ThrowIfNullException(_children);
+
+                var keys = new List<string>();
+
+                foreach (var child in _children)
+                {
+                    keys.Add(child.Key);
+                }
+
+                return keys;
+            }
+        }
+
+        /// <inheritdoc/>
+        public IDSNode? Parent { get; set; } = parent;
+
+        /// <inheritdoc/>
+        public ICollection<IDSNode> Values
+        {
+            get
+            {
+                ThrowHelper.ThrowIfNullException(_children);
+                return _children;
+            }
+        }
+
+        /// <inheritdoc/>
         public void AddChild(IDSNode? node)
         {
             ArgumentNullException.ThrowIfNull(node);
-
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
+            ThrowHelper.ThrowIfNullException(_children);
 
             string key = node.Key;
 
-            // Key is already taken
-            foreach (var child in _children)
+            if (ContainsKey(key))
             {
-                if (child.Key.Equals(key))
-                {
-                    throw new DotSerialException($"Child with the key {key} already present.");
-                }
+                ThrowHelper.ThrowDuplicateNodeKeyTypeException(key);
             }
 
             _children.Add(node);
         }
 
         /// <inheritdoc/>
+        public void Clear()
+        {
+            ThrowHelper.ThrowIfNullException(_children);
+            _children.Clear();
+        }
+
+        /// <inheritdoc/>
+        public bool ContainsKey(string key)
+        {
+            ArgumentNullException.ThrowIfNull(key);
+            ThrowHelper.ThrowIfNullException(_children);
+            foreach (var child in _children)
+            {
+                if (child.Key.Equals(key))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <inheritdoc/>
+        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        {
+            return visitor.VisitInnerNode(this, type);
+        }
+
+        /// <inheritdoc/>
         public IDSNode GetChild(string key)
         {
             ArgumentNullException.ThrowIfNull(key);
-
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
+            ThrowHelper.ThrowIfNullException(_children);
 
             foreach (var child in _children)
             {
@@ -81,17 +114,13 @@ namespace DotSerial.Tree.Nodes
                 }
             }
 
-            throw new NotImplementedException();
+            throw new ArgumentException($"Child with the key {key} not found.");
         }
 
         /// <inheritdoc/>
         public List<IDSNode> GetChildren()
         {
-            if (null == _children)
-            {
-                throw new DotSerialException($"{_children} can't be null.");
-            }
-
+            ThrowHelper.ThrowIfNullException(_children);
             return _children;
         }
 
@@ -104,18 +133,26 @@ namespace DotSerial.Tree.Nodes
         /// <inheritdoc/>
         public bool HasChildren()
         {
-            if (null == _children)
-            {
-                return false;
-            }
-
-            return _children.Count > 0;        
+            ThrowHelper.ThrowIfNullException(_children);
+            return _children.Count > 0;
         }
 
         /// <inheritdoc/>
-        public object? DeserializeAccept(INodeDeserializeVisitor visitor, Type? type)
+        public bool Remove(string key)
         {
-            return visitor.VisitInnerNode(this, type);
+            ArgumentNullException.ThrowIfNull(key);
+            ThrowHelper.ThrowIfNullException(_children);
+
+            for (int i = 0; i < _children.Count; i++)
+            {
+                if (_children[i].Key.Equals(key))
+                {
+                    _children.RemoveAt(i);
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

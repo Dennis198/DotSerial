@@ -1,32 +1,23 @@
-﻿#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using System.Collections;
+﻿using System.Collections;
 using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
+    /// <summary>
+    /// Class is used to verious helper methods.
+    /// </summary>
     internal static class HelperMethods
     {
+        /// <summary>
+        /// Converts Bool to Integer
+        /// </summary>
+        /// <param name="b">Bool</param>
+        /// <returns>Integer</returns>
+        internal static string BoolToString(bool b)
+        {
+            return b ? CommonConstants.TrueString : CommonConstants.FalseString;
+        }
+
         /// <summary>
         /// Check if Object implements IEnumerable
         /// </summary>
@@ -48,37 +39,6 @@ namespace DotSerial.Utilities
         {
             return typeof(IEnumerable).IsAssignableFrom(objType);
         }
-
-        /// <summary>
-        /// Converts Bool to Integer
-        /// </summary>
-        /// <param name="b">Bool</param>
-        /// <returns>Integer</returns>
-        internal static string BoolToString(bool b)
-        {
-            return b ? CommonConstants.TrueString : CommonConstants.FalseString;
-        }
-
-        /// <summary>
-        /// Converts Integer to Bool
-        /// </summary>
-        /// <param name="str">Integer</param>
-        /// <returns>Bool</returns>
-        internal static bool StringToBool(string str)
-        {
-            if (str.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
-            {
-                return true;
-            }
-            else if (str.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-            else
-            {
-                throw new InvalidOperationException("String is not a valid boolean representation.");
-            }
-        }    
 
         /// <summary>
         /// Converts primitive to string
@@ -121,11 +81,31 @@ namespace DotSerial.Utilities
 
             if (null == strValue)
             {
-                throw new InvalidOperationException("Could not convert primitive to string.");
+                ThrowHelper.ThrowWrongTypeException(type);
             }
 
             return strValue;
         }
 
+        /// <summary>
+        /// Converts Integer to Bool
+        /// </summary>
+        /// <param name="str">Integer</param>
+        /// <returns>Bool</returns>
+        internal static bool StringToBool(string str)
+        {
+            if (str.Equals(CommonConstants.TrueString, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            else if (str.Equals(CommonConstants.FalseString, StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+            else
+            {
+                throw new InvalidOperationException("String is not a valid boolean representation.");
+            }
+        }
     }
 }

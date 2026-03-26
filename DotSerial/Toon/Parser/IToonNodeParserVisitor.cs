@@ -1,0 +1,67 @@
+using DotSerial.Tree.Nodes;
+using DotSerial.Utilities;
+
+namespace DotSerial.Toon.Parser
+{
+    /// <summary>
+    /// Visitor interface for tree nodes (toon parser).
+    /// </summary>
+    internal interface IToonNodeParserVisitor
+    {
+        /// <summary>
+        /// Visitor for directory node
+        /// </summary>
+        /// <param name="node">Inner node</param>
+        /// <param name="lines">Lines</param>
+        /// <param name="content">Toon content</param>
+        /// <param name="isRootElement">True, if root element</param>
+        public abstract void VisitDictionaryNode(
+            DictionaryNode node,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content,
+            bool isRootElement = false
+        );
+
+        /// <summary>
+        /// Visitor for inner node
+        /// </summary>
+        /// <param name="node">Inner node</param>
+        /// <param name="lines">Lines</param>
+        /// <param name="content">Toon content</param>
+        /// <param name="isRootElement">True, if root element</param>
+        public abstract void VisitInnerNode(
+            InnerNode node,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content,
+            bool isRootElement = false
+        );
+
+        /// <summary>
+        /// Visitor for leaf node
+        /// </summary>
+        /// <param name="node">Leaf node</param>
+        /// <param name="lines">Lines</param>
+        /// <param name="content">Toon content</param>
+        /// <param name="isRootElement">True, if root element</param>
+        public abstract void VisitLeafNode(
+            LeafNode node,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content,
+            bool isRootElement = false
+        );
+
+        /// <summary>
+        /// Visitor for list node
+        /// </summary>
+        /// <param name="node">List node</param>
+        /// <param name="lines">Lines</param>
+        /// <param name="content">Toon content</param>
+        /// <param name="isRootElement">True, if root element</param>
+        public abstract void VisitListNode(
+            ListNode node,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content,
+            bool isRootElement = false
+        );
+    }
+}

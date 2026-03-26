@@ -1,28 +1,7 @@
-#region License
-//Copyright (c) 2025 Dennis Sölch
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the "Software"), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in all
-//copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-//SOFTWARE.
-#endregion
-
-using System.Text;
 using DotSerial.Common;
+using DotSerial.Common.Parser;
 using DotSerial.Tree;
+using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
 
@@ -31,113 +10,122 @@ namespace DotSerial.Yaml.Parser
     /// <summary>
     /// Implementation of the visitor for yaml parser.
     /// </summary>
-    internal class YamlParserVisitor : IYamlNodeParserVisitor
+    internal class YamlParserVisitor : IYamlNodeParserVisitor, IParserStrategy
     {
         /// <summary>Node factory</summary>
         private static readonly NodeFactory _nodeFactory = NodeFactory.Instance;
 
         /// <inheritdoc/>
-        public static DSYamlNode Parse(string yamlString)
+        public DSNode Parse(ReadOnlySpan<char> content)
         {
-            StringBuilder sb = new(yamlString);
+            IDSNode rootNode;
 
             // Create help object, which contains every line of the yaml file
-            var lines = new MultiLineStringBuilder(sb);
-
-            // Remove start stop symbols
-            lines = YamlParserHelper.RemoveStartStopSymbols(lines);
-
-            IDSNode rootNode;
+            var lines = new MulitLineParserBookmark(content);
 
             // Check if its an empty yaml file
             if (0 == lines.Count)
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
-                return new DSYamlNode(rootNode);   
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Yaml,
+                    CommonConstants.MainObjectKey,
+                    ParserBookmark.Empty,
+                    [],
+                    TreeNodeType.InnerNode,
+                    null
+                );
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
 
-            if (YamlParserHelper.IsYamlSingleValue(lines))
+            // Remove start stop symbols
+            lines = YamlParserHelper.RemoveStartStopSymbols(lines, content);
+
+            if (0 == lines.Count)
             {
-                rootNode = ParseMethods.ParsePrimitiveNode(lines.GetLine(0), 0, CommonConstants.MainObjectKey);
-                return new DSYamlNode(rootNode);
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Yaml,
+                    CommonConstants.MainObjectKey,
+                    ParserBookmark.Empty,
+                    [],
+                    TreeNodeType.InnerNode,
+                    null
+                );
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
             }
-            else if (YamlParserHelper.IsYamlObject(lines))
+
+            if (YamlParserHelper.IsYamlSingleValue(lines, content))
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.InnerNode);
-                if (YamlParserHelper.IsEmptyObject(lines.GetLine(0)))
+                rootNode = ParseMethods.ParsePrimitiveNode(
+                    SerializeStrategy.Yaml,
+                    content,
+                    lines.GetLine(0),
+                    CommonConstants.MainObjectKey,
+                    null
+                );
+                return new DSNode(rootNode, SerializeStrategy.Yaml);
+            }
+            else if (YamlParserHelper.IsYamlObject(lines, content))
+            {
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Yaml,
+                    CommonConstants.MainObjectKey,
+                    ParserBookmark.Empty,
+                    [],
+                    TreeNodeType.InnerNode,
+                    null
+                );
+                if (YamlParserHelper.IsEmptyObject(lines.GetLineContent(0, content)))
                 {
-                    return new DSYamlNode(rootNode);    
+                    return new DSNode(rootNode, SerializeStrategy.Yaml);
                 }
             }
-            else if (YamlParserHelper.IsYamlList(lines))
+            else if (YamlParserHelper.IsYamlList(lines, content))
             {
-                rootNode = _nodeFactory.CreateNode(CommonConstants.MainObjectKey, null, NodeType.ListNode);
-                if (YamlParserHelper.IsEmptyList(lines.GetLine(0)))
+                rootNode = _nodeFactory.CreateNodeFromString(
+                    SerializeStrategy.Yaml,
+                    CommonConstants.MainObjectKey,
+                    ParserBookmark.Empty,
+                    [],
+                    TreeNodeType.ListNode,
+                    null
+                );
+                if (YamlParserHelper.IsEmptyList(lines.GetLineContent(0, content)))
                 {
-                    return new DSYamlNode(rootNode);    
+                    return new DSNode(rootNode, SerializeStrategy.Yaml);
                 }
             }
             else
             {
-                throw new DSYamlException("Parse: String is not yaml.");
+                ThrowHelper.ThrowGenericParserException("String is not yaml.");
+                throw new Exception("Unreachable code");
             }
 
             if (lines.Count > 0)
             {
-                ParserAccept(rootNode, new YamlParserVisitor(), lines);
+                ParserAccept(rootNode, new YamlParserVisitor(), lines, content);
             }
 
-            return new DSYamlNode(rootNode);
+            return new DSNode(rootNode, SerializeStrategy.Yaml);
         }
 
-        /// <summary>
-        /// Parser for yaml
-        /// </summary>
-        /// <param name="node">IDSNode</param>
-        /// <param name="visitor">Visitor</param>
-        /// <param name="lines">MultiLineStringBuilder</param>    
-        private static void ParserAccept(IDSNode node, YamlParserVisitor visitor, MultiLineStringBuilder lines)
-        {
-            if (node is LeafNode leafNode)
-            {
-                visitor.VisitLeafNode(leafNode, lines);    
-            }
-            else if (node is InnerNode innerNode)
-            {
-                visitor.VisitInnerNode(innerNode, lines);    
-            }
-            else if (node is ListNode listNode)
-            {
-                visitor.VisitListNode(listNode, lines);    
-            }
-            else if (node is DictionaryNode dicNode)
-            {
-                visitor.VisitDictionaryNode(dicNode, lines);
-            }
-            else
-            {
-                throw new DSYamlException("Parse: Unknown node type.");
-            }   
-        }             
-
         /// <inheritdoc/>
-        public void VisitLeafNode(LeafNode node, MultiLineStringBuilder lines)
+        public void VisitDictionaryNode(DictionaryNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             // Currenlty not needed
             throw new NotImplementedException();
-        }        
+        }
 
         /// <inheritdoc/>
-        public void VisitInnerNode(InnerNode node, MultiLineStringBuilder lines)
+        public void VisitInnerNode(InnerNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
 
             // Check if helpObj is yaml-Object
-            if (YamlParserHelper.IsYamlObject(lines))
+            if (YamlParserHelper.IsYamlObject(lines, content))
             {
                 // Extract key, value pairs
-                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines);
+                var dic = YamlParserHelper.ExtractKeyValuePairsFromYamlObject(lines, content);
 
                 foreach (var keyValuePair in dic)
                 {
@@ -145,62 +133,90 @@ namespace DotSerial.Yaml.Parser
                     string key = keyValuePair.Key;
                     var value = keyValuePair.Value;
 
-                    if (YamlParserHelper.IsYamlPrimitiveLine(value))
+                    if (YamlParserHelper.IsYamlPrimitiveLine(value, content))
                     {
-                        string? strValue = YamlParserHelper.ExtractValueFromLine(value.GetLine(0));
-                        var childNode = _nodeFactory.CreateNode(key, strValue, NodeType.Leaf);
+                        var valueBookmark = YamlParserHelper.ExtractValueFromLine(value.GetLine(0), content);
+                        var childNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Yaml,
+                            key,
+                            valueBookmark,
+                            content,
+                            TreeNodeType.Leaf,
+                            node
+                        );
                         node.AddChild(childNode);
                     }
-                    else if (YamlParserHelper.IsYamlObject(value))
+                    else if (YamlParserHelper.IsYamlObject(value, content))
                     {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode);
+                        var innerNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Yaml,
+                            key,
+                            ParserBookmark.Empty,
+                            [],
+                            TreeNodeType.InnerNode,
+                            node
+                        );
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                            ParserAccept(innerNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (YamlParserHelper.IsYamlList(value))
+                    else if (YamlParserHelper.IsYamlList(value, content))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Yaml,
+                            key,
+                            ParserBookmark.Empty,
+                            [],
+                            TreeNodeType.ListNode,
+                            node
+                        );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
                         {
                             // Parse list node
-                            ParserAccept(listNode, new YamlParserVisitor(), value);
+                            ParserAccept(listNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
-                        node.AddChild(listNode);                        
+                        node.AddChild(listNode);
                     }
                     else
                     {
-                        throw new DSYamlException("Parse: String is not a yaml object.");
+                        ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
                     }
                 }
             }
             else
             {
-                throw new DSYamlException("Parse: String is not a yaml object.");
+                ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
             }
-        }        
+        }
 
         /// <inheritdoc/>
-        public void VisitListNode(ListNode node, MultiLineStringBuilder lines)
+        public void VisitLeafNode(LeafNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
+        {
+            // Currenlty not needed
+            throw new NotImplementedException();
+        }
+
+        /// <inheritdoc/>
+        public void VisitListNode(ListNode node, MulitLineParserBookmark lines, ReadOnlySpan<char> content)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(lines);
 
-            if (YamlParserHelper.IsYamlList(lines))
+            if (YamlParserHelper.IsYamlList(lines, content))
             {
                 // Extract object list
-                var items2 = YamlParserHelper.ExtractObjectList(lines);
+                var items2 = YamlParserHelper.ExtractObjectList(lines, content);
                 int index = 0;
                 foreach (var keyValuePair in items2)
                 {
@@ -208,62 +224,109 @@ namespace DotSerial.Yaml.Parser
                     string key = index.ToString();
                     var value = keyValuePair;
 
-                    if (YamlParserHelper.IsYamlSingleValue(value))
+                    if (YamlParserHelper.IsYamlSingleValue(value, content))
                     {
-                        var val = value.GetLine(0);
-                        val = val.Trim();
-                        var innerNode = ParseMethods.ParsePrimitiveNode(val, 0, key);
+                        var innerNode = ParseMethods.ParsePrimitiveNode(
+                            SerializeStrategy.Yaml,
+                            content,
+                            value.GetLine(0),
+                            key,
+                            node
+                        );
                         node.AddChild(innerNode);
-
                     }
-                    else if (YamlParserHelper.IsYamlObject(value))
-                    {       
+                    else if (YamlParserHelper.IsYamlObject(value, content))
+                    {
                         // Create inner node
-                        var innerNode = _nodeFactory.CreateNode(key, null, NodeType.InnerNode) as InnerNode ?? throw new NotImplementedException();
+                        var innerNode =
+                            _nodeFactory.CreateNodeFromString(
+                                SerializeStrategy.Yaml,
+                                key,
+                                ParserBookmark.Empty,
+                                [],
+                                TreeNodeType.InnerNode,
+                                node
+                            ) as InnerNode
+                            ?? throw new NotImplementedException();
 
-                        if (false == YamlParserHelper.IsEmptyObject(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyObject(value.GetLineContent(0, content)))
                         {
                             // Parse inner node
-                            ParserAccept(innerNode, new YamlParserVisitor(), value);
+                            ParserAccept(innerNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
                         node.AddChild(innerNode);
                     }
-                    else if (YamlParserHelper.IsYamlList(value))
+                    else if (YamlParserHelper.IsYamlList(value, content))
                     {
                         // Create list node
-                        var listNode = _nodeFactory.CreateNode(key, null, NodeType.ListNode);
+                        var listNode = _nodeFactory.CreateNodeFromString(
+                            SerializeStrategy.Yaml,
+                            key,
+                            ParserBookmark.Empty,
+                            [],
+                            TreeNodeType.ListNode,
+                            node
+                        );
 
-                        if (false == YamlParserHelper.IsEmptyList(value.GetLine(0)))
+                        if (false == YamlParserHelper.IsEmptyList(value.GetLineContent(0, content)))
                         {
                             // Parse list node
-                            ParserAccept(listNode, new YamlParserVisitor(), value);
+                            ParserAccept(listNode, new YamlParserVisitor(), value, content);
                         }
 
                         // Add inner node to parent
-                        node.AddChild(listNode); 
+                        node.AddChild(listNode);
                     }
                     else
                     {
-                        throw new DSYamlException("Parse: String is not a yaml object.");
-                    }       
+                        ThrowHelper.ThrowGenericParserException("String is not a yaml object.");
+                    }
 
-                    index++;  
-                }                
+                    index++;
+                }
             }
             else
             {
-                throw new DSYamlException("Parse: String is not a yaml list.");
+                ThrowHelper.ThrowGenericParserException("String is not a yaml list.");
             }
-        }        
+        }
 
-        /// <inheritdoc/>
-        public void VisitDictionaryNode(DictionaryNode node, MultiLineStringBuilder lines)
+        /// <summary>
+        /// Parser for yaml
+        /// </summary>
+        /// <param name="node">IDSNode</param>
+        /// <param name="visitor">Visitor</param>
+        /// <param name="lines">MulitLineReadOnlySpan</param>
+        /// <param name="content">Yaml content</param>
+        private static void ParserAccept(
+            IDSNode node,
+            YamlParserVisitor visitor,
+            MulitLineParserBookmark lines,
+            ReadOnlySpan<char> content
+        )
         {
-            // Currenlty not needed
-            throw new NotImplementedException();
-        }        
-                                
+            if (node is LeafNode leafNode)
+            {
+                visitor.VisitLeafNode(leafNode, lines, content);
+            }
+            else if (node is InnerNode innerNode)
+            {
+                visitor.VisitInnerNode(innerNode, lines, content);
+            }
+            else if (node is ListNode listNode)
+            {
+                visitor.VisitListNode(listNode, lines, content);
+            }
+            else if (node is DictionaryNode dicNode)
+            {
+                visitor.VisitDictionaryNode(dicNode, lines, content);
+            }
+            else
+            {
+                ThrowHelper.ThrowUnknownNodeTypeException();
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotSerial", "DotSerial.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotSerial.Tests", "..\DotSerial.Tests\DotSerial.Tests.csproj", "{67A90823-0426-471F-9628-B2EB23CF0F0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotSerial.Benchmarks", "..\DotSerial.Benchmarks\DotSerial.Benchmarks.csproj", "{0CF83082-DA70-47FF-8380-A06E97ADF44F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{67A90823-0426-471F-9628-B2EB23CF0F0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67A90823-0426-471F-9628-B2EB23CF0F0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67A90823-0426-471F-9628-B2EB23CF0F0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CF83082-DA70-47FF-8380-A06E97ADF44F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CF83082-DA70-47FF-8380-A06E97ADF44F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CF83082-DA70-47FF-8380-A06E97ADF44F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CF83082-DA70-47FF-8380-A06E97ADF44F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
