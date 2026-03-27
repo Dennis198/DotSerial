@@ -29,6 +29,11 @@ namespace DotSerial.Utilities
             {
                 return ConvertDeserializedListFromStack(list, type);
             }
+            // Handles case Queue.
+            else if (TypeCheckMethods.IsQueue(type))
+            {
+                return ConvertDeserializedListFromQueue(list, type);
+            }
 
             // Get Item type of list
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
@@ -138,6 +143,98 @@ namespace DotSerial.Utilities
             {
                 throw new InvalidCastException();
             }
+        }
+
+        private static object? ConvertDeserializedListFromQueue(List<object?>? list, Type type)
+        {
+            if (null == list)
+            {
+                return null;
+            }
+
+            if (false == TypeCheckMethods.IsQueue(type))
+            {
+                throw new InvalidCastException();
+            }
+
+            // Get Item type of list
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
+
+            // Check if type is supported
+            if (false == TypeCheckMethods.IsTypeSupported(itemType))
+            {
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+            }
+
+            // result object
+            object? result;
+
+            // Create initial object to fill.
+            result = CreateInstanceMethods.CreateInstanceGeneric(type);
+
+            var enqueueMethod = type.GetMethod("Enqueue") ?? throw new InvalidCastException();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+
+                if (TypeCheckMethods.IsDictionary(itemType))
+                {
+                    if (item is not Dictionary<object, object?> castedDictionaryItemObj)
+                    {
+                        throw new InvalidCastException();
+                    }
+                    object? itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        _ = enqueueMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
+                {
+                    if (item is not List<object?> castedListItemObj)
+                    {
+                        if (item != null)
+                        {
+                            _ = enqueueMethod.Invoke(result, [item]);
+                        }
+
+                        continue;
+                    }
+
+                    object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        _ = enqueueMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (itemType.IsEnum)
+                {
+                    ThrowHelper.ThrowIfNullException(item);
+
+#pragma warning disable CS8604
+                    object enumObj = ConvertEnumToObject(itemType, item);
+                    _ = enqueueMethod.Invoke(result, [enumObj]);
+#pragma warning restore CS8604
+                }
+                else if (
+                    TypeCheckMethods.IsClass(itemType)
+                    || TypeCheckMethods.IsStruct(itemType)
+                    || TypeCheckMethods.IsPrimitive(itemType)
+                    || TypeCheckMethods.IsSpecialParsableObject(itemType)
+                )
+                {
+                    _ = enqueueMethod.Invoke(result, [item]);
+                }
+                else
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+                }
+            }
+
+            return result;
         }
 
         private static object? ConvertDeserializedListFromStack(List<object?>? list, Type type)

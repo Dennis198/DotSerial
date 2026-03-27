@@ -505,6 +505,34 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassQueue : ITestable<ClassQueue>
+    {
+        [DotSerialName("1893")]
+        public Queue<int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static ClassQueue CreateTestDefault()
+        {
+            var tmp = new ClassQueue { Value0 = new Queue<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassQueue actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2645,12 +2673,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassQueue
-    {
-        [DotSerialName("1893")]
-        public Queue<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassLinkedList

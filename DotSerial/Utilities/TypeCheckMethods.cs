@@ -77,7 +77,7 @@ namespace DotSerial.Utilities
         {
             if (type == null)
                 return false;
-            return IsList(type) || IsArray(type) || IsStack(type);
+            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace DotSerial.Utilities
             if (o == null)
                 return false;
             Type type = o.GetType();
-            return IsList(type) || IsArray(type) || IsStack(type);
+            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type);
         }
 
         /// <summary>
@@ -315,6 +315,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
             return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
+        }
+
+        /// <summary>
+        /// Check if object is queue
+        /// </summary>
+        /// <param name="o">object</param>
+        /// <returns>True if queue</returns>
+        internal static bool IsQueue(object? o)
+        {
+            if (o == null)
+                return false;
+            return IsQueue(o.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is queue
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if queue</returns>
+        internal static bool IsQueue(Type type)
+        {
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
         }
 
         /// <summary>
