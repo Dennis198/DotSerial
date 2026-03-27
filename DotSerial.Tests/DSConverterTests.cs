@@ -381,13 +381,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeHashSet(SerializeStrategy strategy)
+        public void CreateSerializedObject_HashSetClass(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new HashSetClassNotSupported();
+            var tmp = HashSetClass.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<HashSetClass>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]

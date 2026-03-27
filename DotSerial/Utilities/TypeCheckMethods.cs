@@ -77,7 +77,12 @@ namespace DotSerial.Utilities
         {
             if (type == null)
                 return false;
-            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type) || IsLinkedList(type);
+            return IsList(type)
+                || IsArray(type)
+                || IsStack(type)
+                || IsQueue(type)
+                || IsLinkedList(type)
+                || IsHashSet(type);
         }
 
         /// <summary>
@@ -363,6 +368,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
             return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(LinkedList<>));
+        }
+
+        /// <summary>
+        /// Check if object is hash set
+        /// </summary>
+        /// <param name="o">object</param>
+        /// <returns>True if hash set</returns>
+        internal static bool IsHashSet(object? o)
+        {
+            if (o == null)
+                return false;
+            return IsHashSet(o.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is hash set
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if hash set</returns>
+        internal static bool IsHashSet(Type type)
+        {
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(HashSet<>));
         }
 
         /// <summary>

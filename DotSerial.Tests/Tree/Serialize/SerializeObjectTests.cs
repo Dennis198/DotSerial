@@ -415,13 +415,24 @@ namespace DotSerial.Tests.Tree.Serialize
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeHashSet()
+        public void CreateSerializedObject_HashSetClass()
         {
             // Arrange
-            var tmp = new HashSetClassNotSupported();
+            var tmp = HashSetClass.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(HashSetClass));
+            if (result is HashSetClass castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]

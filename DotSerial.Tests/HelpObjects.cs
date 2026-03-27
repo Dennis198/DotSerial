@@ -561,6 +561,34 @@ namespace DotSerial.Tests
         }
     }
 
+    public class HashSetClass : ITestable<HashSetClass>
+    {
+        [DotSerialName("1893")]
+        public HashSet<int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static HashSetClass CreateTestDefault()
+        {
+            var tmp = new HashSetClass { Value0 = new HashSet<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(HashSetClass actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First() != actual.Value0.First())
+                return false;
+            if (expected.Value0.ElementAt(1) != actual.Value0.ElementAt(1))
+                return false;
+            if (expected.Value0.ElementAt(2) != actual.Value0.ElementAt(2))
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2690,12 +2718,6 @@ namespace DotSerial.Tests
     #endregion
 
     #region CurrentlyNotSupported
-
-    public class HashSetClassNotSupported
-    {
-        [DotSerialName("1893")]
-        public HashSet<int>? Value0 { get; set; }
-    }
 
     public class NotSupportedTypeClassHashTable
     {
