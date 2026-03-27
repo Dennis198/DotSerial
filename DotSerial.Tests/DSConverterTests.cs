@@ -348,13 +348,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassSortedSet(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassSortedSet(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
+            var tmp = ClassSortedSet.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassSortedSet>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]

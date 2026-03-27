@@ -529,13 +529,24 @@ namespace DotSerial.Tests.Tree.Serialize
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassSortedSet()
+        public void CreateSerializedObject_ClassSortedSet()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
+            var tmp = ClassSortedSet.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassSortedSet));
+            if (result is ClassSortedSet castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]

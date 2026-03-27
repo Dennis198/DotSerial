@@ -589,6 +589,34 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassSortedSet : ITestable<ClassSortedSet>
+    {
+        [DotSerialName("1893")]
+        public SortedSet<int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static ClassSortedSet CreateTestDefault()
+        {
+            var tmp = new ClassSortedSet { Value0 = new SortedSet<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSortedSet actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First() != actual.Value0.First())
+                return false;
+            if (expected.Value0.ElementAt(1) != actual.Value0.ElementAt(1))
+                return false;
+            if (expected.Value0.ElementAt(2) != actual.Value0.ElementAt(2))
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2735,12 +2763,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public SortedList<int, int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassSortedSet
-    {
-        [DotSerialName("1893")]
-        public SortedSet<int>? Value0 { get; set; }
     }
 
     #endregion

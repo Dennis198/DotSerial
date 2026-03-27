@@ -39,7 +39,7 @@ namespace DotSerial.Utilities
                 return ConvertDeserializedListFromLinkedList(list, type);
             }
             // Handles case HashSet.
-            else if (TypeCheckMethods.IsHashSet(type))
+            else if (TypeCheckMethods.IsHashSet(type) || TypeCheckMethods.IsSortedSet(type))
             {
                 return ConvertDeserializedListFromHashSet(list, type);
             }
@@ -340,12 +340,13 @@ namespace DotSerial.Utilities
 
         private static object? ConvertDeserializedListFromHashSet(List<object?>? list, Type type)
         {
+            // TODO: Für ISET verallgemeinern.
             if (null == list)
             {
                 return null;
             }
 
-            if (false == TypeCheckMethods.IsHashSet(type))
+            if (false == TypeCheckMethods.IsHashSet(type) && false == TypeCheckMethods.IsSortedSet(type))
             {
                 throw new InvalidCastException();
             }

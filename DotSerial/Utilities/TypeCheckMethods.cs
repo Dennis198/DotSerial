@@ -82,7 +82,8 @@ namespace DotSerial.Utilities
                 || IsStack(type)
                 || IsQueue(type)
                 || IsLinkedList(type)
-                || IsHashSet(type);
+                || IsHashSet(type)
+                || IsSortedSet(type);
         }
 
         /// <summary>
@@ -392,6 +393,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
             return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(HashSet<>));
+        }
+
+        /// <summary>
+        /// Check if object is hash set
+        /// </summary>
+        /// <param name="o">object</param>
+        /// <returns>True if sorted set</returns>
+        internal static bool IsSortedSet(object? o)
+        {
+            if (o == null)
+                return false;
+            return IsSortedSet(o.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is sorted set
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if sorted set</returns>
+        internal static bool IsSortedSet(Type type)
+        {
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(SortedSet<>));
         }
 
         /// <summary>
