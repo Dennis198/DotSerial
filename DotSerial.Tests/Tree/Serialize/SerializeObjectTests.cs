@@ -477,13 +477,24 @@ namespace DotSerial.Tests.Tree.Serialize
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassLinkedList()
+        public void CreateSerializedObject_ClassLinkedList()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
+            var tmp = ClassLinkedList.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassLinkedList));
+            if (result is ClassLinkedList castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]

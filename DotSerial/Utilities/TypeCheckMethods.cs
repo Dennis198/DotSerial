@@ -65,7 +65,7 @@ namespace DotSerial.Utilities
             if (o == null)
                 return false;
             Type type = o.GetType();
-            return IsPrimitive(type) || IsSpecialParsableObject(type);
+            return IsLeafNodeCompatible(type);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace DotSerial.Utilities
         {
             if (type == null)
                 return false;
-            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type);
+            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type) || IsLinkedList(type);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace DotSerial.Utilities
             if (o == null)
                 return false;
             Type type = o.GetType();
-            return IsList(type) || IsArray(type) || IsStack(type) || IsQueue(type);
+            return IsListNodeCompatible(type);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace DotSerial.Utilities
             if (o == null)
                 return false;
             Type type = o.GetType();
-            return IsDictionary(type);
+            return IsDictionaryNodeCompatible(type);
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace DotSerial.Utilities
             if (o == null)
                 return false;
             Type type = o.GetType();
-            return IsClass(type) || IsStruct(type);
+            return IsInnerNodeCompatible(type);
         }
 
         /// <summary>
@@ -339,6 +339,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
             return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
+        }
+
+        /// <summary>
+        /// Check if object is linked list
+        /// </summary>
+        /// <param name="o">object</param>
+        /// <returns>True if linked list</returns>
+        internal static bool IsLinkedList(object? o)
+        {
+            if (o == null)
+                return false;
+            return IsLinkedList(o.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is linked list
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if linked list</returns>
+        internal static bool IsLinkedList(Type type)
+        {
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(LinkedList<>));
         }
 
         /// <summary>

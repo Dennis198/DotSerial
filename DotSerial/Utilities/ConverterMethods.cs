@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Globalization;
 using System.Net;
-using DotSerial.Common;
 
 namespace DotSerial.Utilities
 {
@@ -33,6 +32,11 @@ namespace DotSerial.Utilities
             else if (TypeCheckMethods.IsQueue(type))
             {
                 return ConvertDeserializedListFromQueue(list, type);
+            }
+            // Handles case LinkedList.
+            else if (TypeCheckMethods.IsLinkedList(type))
+            {
+                return ConvertDeserializedListFromLinkedList(list, type);
             }
 
             // Get Item type of list
@@ -227,6 +231,98 @@ namespace DotSerial.Utilities
                 )
                 {
                     _ = enqueueMethod.Invoke(result, [item]);
+                }
+                else
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+                }
+            }
+
+            return result;
+        }
+
+        private static object? ConvertDeserializedListFromLinkedList(List<object?>? list, Type type)
+        {
+            if (null == list)
+            {
+                return null;
+            }
+
+            if (false == TypeCheckMethods.IsLinkedList(type))
+            {
+                throw new InvalidCastException();
+            }
+
+            // Get Item type of list
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
+
+            // Check if type is supported
+            if (false == TypeCheckMethods.IsTypeSupported(itemType))
+            {
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+            }
+
+            // result object
+            object? result;
+
+            // Create initial object to fill.
+            result = CreateInstanceMethods.CreateInstanceGeneric(type);
+
+            var addLastMethod = type.GetMethod("AddLast", [itemType]) ?? throw new InvalidCastException();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                var item = list[i];
+
+                if (TypeCheckMethods.IsDictionary(itemType))
+                {
+                    if (item is not Dictionary<object, object?> castedDictionaryItemObj)
+                    {
+                        throw new InvalidCastException();
+                    }
+                    object? itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        _ = addLastMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
+                {
+                    if (item is not List<object?> castedListItemObj)
+                    {
+                        if (item != null)
+                        {
+                            _ = addLastMethod.Invoke(result, [item]);
+                        }
+
+                        continue;
+                    }
+
+                    object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        _ = addLastMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (itemType.IsEnum)
+                {
+                    ThrowHelper.ThrowIfNullException(item);
+
+#pragma warning disable CS8604
+                    object enumObj = ConvertEnumToObject(itemType, item);
+                    _ = addLastMethod.Invoke(result, [enumObj]);
+#pragma warning restore CS8604
+                }
+                else if (
+                    TypeCheckMethods.IsClass(itemType)
+                    || TypeCheckMethods.IsStruct(itemType)
+                    || TypeCheckMethods.IsPrimitive(itemType)
+                    || TypeCheckMethods.IsSpecialParsableObject(itemType)
+                )
+                {
+                    _ = addLastMethod.Invoke(result, [item]);
                 }
                 else
                 {

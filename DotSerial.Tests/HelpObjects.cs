@@ -533,6 +533,34 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassLinkedList : ITestable<ClassLinkedList>
+    {
+        [DotSerialName("1893")]
+        public LinkedList<int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static ClassLinkedList CreateTestDefault()
+        {
+            var tmp = new ClassLinkedList { Value0 = new LinkedList<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassLinkedList actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First.Value != actual.Value0.First.Value)
+                return false;
+            if (expected.Value0.First.Next.Value != actual.Value0.First.Next.Value)
+                return false;
+            if (expected.Value0.First.Next.Next.Value != actual.Value0.First.Next.Next.Value)
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2673,12 +2701,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassLinkedList
-    {
-        [DotSerialName("1893")]
-        public LinkedList<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassObservableCollection
