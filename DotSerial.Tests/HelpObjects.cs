@@ -477,6 +477,34 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassStack : ITestable<ClassStack>
+    {
+        [DotSerialName("1893")]
+        public Stack<int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static ClassStack CreateTestDefault()
+        {
+            var tmp = new ClassStack { Value0 = new Stack<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassStack actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2617,12 +2645,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassStack
-    {
-        [DotSerialName("1893")]
-        public Stack<int>? Value0 { get; set; }
     }
 
     public class NotSupportedTypeClassQueue

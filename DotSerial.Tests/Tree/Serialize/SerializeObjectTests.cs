@@ -428,10 +428,21 @@ namespace DotSerial.Tests.Tree.Serialize
         public void CreateSerializedObject_StackClass()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack();
+            var tmp = ClassStack.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassStack));
+            if (result is ClassStack castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]
@@ -439,16 +450,6 @@ namespace DotSerial.Tests.Tree.Serialize
         {
             // Arrange
             var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
-
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassStack()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));

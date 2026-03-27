@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Reflection;
 using DotSerial.Attributes;
-using DotSerial.Common;
 using DotSerial.Tree.Creation;
 using DotSerial.Tree.Nodes;
 using DotSerial.Utilities;
@@ -47,19 +46,19 @@ namespace DotSerial.Tree.Serialize
 
             IDSNode? result;
 
-            if (TypeCheckMethods.IsPrimitive(typeObj) || TypeCheckMethods.IsSpecialParsableObject(typeObj))
+            if (TypeCheckMethods.IsLeafNodeCompatible(typeObj))
             {
                 result = _nodeFactory.CreateNode(strategyType, objectID, obj, TreeNodeType.Leaf, null);
             }
-            else if (TypeCheckMethods.IsDictionary(typeObj))
+            else if (TypeCheckMethods.IsDictionaryNodeCompatible(typeObj))
             {
                 result = SerializeDictionary(obj, objectID, strategyType);
             }
-            else if (TypeCheckMethods.IsList(typeObj) || TypeCheckMethods.IsArray(typeObj))
+            else if (TypeCheckMethods.IsListNodeCompatible(typeObj))
             {
                 result = SerializeList(obj, objectID, strategyType);
             }
-            else if (TypeCheckMethods.IsClass(typeObj) || TypeCheckMethods.IsStruct(typeObj))
+            else if (TypeCheckMethods.IsInnerNodeCompatible(typeObj))
             {
                 result = SerializeClass(obj, objectID, strategyType);
             }
@@ -138,10 +137,7 @@ namespace DotSerial.Tree.Serialize
                     // Add ID and prop name to datastrcuture.
                     dicIdName.Add(dsPropName, propName);
 
-                    if (
-                        TypeCheckMethods.IsPrimitive(prop.PropertyType)
-                        || TypeCheckMethods.IsSpecialParsableObject(prop.PropertyType)
-                    )
+                    if (TypeCheckMethods.IsLeafNodeCompatible(prop.PropertyType))
                     {
                         // Primitive types || String
                         var childNode = _nodeFactory.CreateNode(
@@ -153,23 +149,21 @@ namespace DotSerial.Tree.Serialize
                         );
                         result.AddChild(childNode);
                     }
-                    else if (TypeCheckMethods.IsDictionary(prop.PropertyType))
+                    else if (TypeCheckMethods.IsDictionaryNodeCompatible(prop.PropertyType))
                     {
                         // Dictionary
                         var childNode = SerializeDictionary(value, dsPropName, strategyType);
                         childNode.Parent = result;
                         result.AddChild(childNode);
                     }
-                    else if (TypeCheckMethods.IsList(prop.PropertyType) || TypeCheckMethods.IsArray(prop.PropertyType))
+                    else if (TypeCheckMethods.IsListNodeCompatible(prop.PropertyType))
                     {
-                        // List || Array
+                        // List || Array || Stack
                         var childNode = SerializeList(value, dsPropName, strategyType);
                         childNode.Parent = result;
                         result.AddChild(childNode);
                     }
-                    else if (
-                        TypeCheckMethods.IsClass(prop.PropertyType) || TypeCheckMethods.IsStruct(prop.PropertyType)
-                    )
+                    else if (TypeCheckMethods.IsInnerNodeCompatible(prop.PropertyType))
                     {
                         // Class || Struct
                         var childNode = SerializeClass(value, dsPropName, strategyType);
@@ -267,10 +261,7 @@ namespace DotSerial.Tree.Serialize
                                 result
                             );
                         }
-                        else if (
-                            TypeCheckMethods.IsPrimitive(valueType)
-                            || TypeCheckMethods.IsSpecialParsableObject(valueType)
-                        )
+                        else if (TypeCheckMethods.IsLeafNodeCompatible(valueType))
                         {
                             keyValue = _nodeFactory.CreateNode(
                                 strategyType,
@@ -280,7 +271,7 @@ namespace DotSerial.Tree.Serialize
                                 result
                             );
                         }
-                        else if (TypeCheckMethods.IsDictionary(value))
+                        else if (TypeCheckMethods.IsDictionaryNodeCompatible(value))
                         {
                             // Dictionary
                             if (value is IDictionary castedValue)
@@ -316,9 +307,9 @@ namespace DotSerial.Tree.Serialize
                                 throw new InvalidCastException();
                             }
                         }
-                        else if (TypeCheckMethods.IsList(value) || TypeCheckMethods.IsArray(value))
+                        else if (TypeCheckMethods.IsListNodeCompatible(value))
                         {
-                            // List || Array
+                            // List || Array || Stack
 
                             if (value is IEnumerable castedValue)
                             {
@@ -344,7 +335,7 @@ namespace DotSerial.Tree.Serialize
                                 throw new InvalidCastException();
                             }
                         }
-                        else if (TypeCheckMethods.IsClass(valueType) || TypeCheckMethods.IsStruct(valueType))
+                        else if (TypeCheckMethods.IsInnerNodeCompatible(valueType))
                         {
                             keyValue = SerializeClass(value, keyString, strategyType);
                         }
@@ -405,7 +396,7 @@ namespace DotSerial.Tree.Serialize
                     ThrowHelper.ThrowTypeIsNotSupportedException(type);
                 }
 
-                if (TypeCheckMethods.IsPrimitive(type) || TypeCheckMethods.IsSpecialParsableObject(type))
+                if (TypeCheckMethods.IsLeafNodeCompatible(type))
                 {
                     // Primitive types | special parsable objects
                     int listID = 0;
@@ -423,9 +414,9 @@ namespace DotSerial.Tree.Serialize
                         listID++;
                     }
                 }
-                else if (TypeCheckMethods.IsList(type) || TypeCheckMethods.IsArray(type))
+                else if (TypeCheckMethods.IsListNodeCompatible(type))
                 {
-                    // List || Array
+                    // List || Array || Stack
                     int listID = 0;
                     foreach (var str in castedList)
                     {
@@ -436,7 +427,7 @@ namespace DotSerial.Tree.Serialize
                         listID++;
                     }
                 }
-                else if (TypeCheckMethods.IsDictionary(type))
+                else if (TypeCheckMethods.IsDictionaryNodeCompatible(type))
                 {
                     // Dictionary
                     int listID = 0;
@@ -449,7 +440,7 @@ namespace DotSerial.Tree.Serialize
                         listID++;
                     }
                 }
-                else if (TypeCheckMethods.IsClass(type) || TypeCheckMethods.IsStruct(type))
+                else if (TypeCheckMethods.IsInnerNodeCompatible(type))
                 {
                     // Class || Struct
                     int listID = 0;

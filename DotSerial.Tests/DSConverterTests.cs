@@ -352,13 +352,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassStack(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassStack(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
+            var tmp = ClassStack.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassStack>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -541,20 +546,6 @@ namespace DotSerial.Tests
             // Assert
             Assert.NotNull(result);
             Assert.True(tmp.AssertTest(result));
-        }
-
-        [Theory]
-        [InlineData(SerializeStrategy.Json)]
-        [InlineData(SerializeStrategy.Toon)]
-        [InlineData(SerializeStrategy.Xml)]
-        [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_StackClass(SerializeStrategy strategy)
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassStack();
-
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
         }
 
         [Theory]

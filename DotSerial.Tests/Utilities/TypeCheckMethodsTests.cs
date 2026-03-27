@@ -30,6 +30,7 @@ namespace DotSerial.Tests.Utilities
         [InlineData(typeof(List<int>))]
         [InlineData(typeof(int[]))]
         [InlineData(typeof(RecordClass))]
+        [InlineData(typeof(Stack<int>))]
         public void IsTypeSupported_True(Type t)
         {
             bool result = DotSerial.Utilities.TypeCheckMethods.IsTypeSupported(t);
@@ -40,7 +41,6 @@ namespace DotSerial.Tests.Utilities
         [InlineData(typeof(Collection<int>))]
         [InlineData(typeof(ISet<int>))]
         [InlineData(typeof(Hashtable))]
-        [InlineData(typeof(Stack<int>))]
         [InlineData(typeof(Queue<int>))]
         [InlineData(typeof(LinkedList<int>))]
         [InlineData(typeof(ObservableCollection<int>))]

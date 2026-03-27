@@ -25,7 +25,7 @@ namespace DotSerial.Utilities
 
             if (HelperMethods.ImplementsIEnumerable(t))
             {
-                if (IsDictionary(t) || IsList(t) || IsArray(t))
+                if (IsListNodeCompatible(t) || IsDictionaryNodeCompatible(t))
                 {
                     return true;
                 }
@@ -35,12 +35,112 @@ namespace DotSerial.Utilities
                 }
             }
 
-            if (IsClass(t) || IsStruct(t) || IsSpecialParsableObject(t))
+            if (IsInnerNodeCompatible(t) || IsSpecialParsableObject(t))
             {
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a leaf node (primitive types, string and special parsable objects)
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a leaf node</returns>
+        internal static bool IsLeafNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsPrimitive(type) || IsSpecialParsableObject(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a leaf node (primitive types, string and special parsable objects)
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to a leaf node</returns>
+        internal static bool IsLeafNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsPrimitive(type) || IsSpecialParsableObject(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a list node.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a list node</returns>
+        internal static bool IsListNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsList(type) || IsArray(type) || IsStack(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a list node.
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to a list node</returns>
+        internal static bool IsListNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsList(type) || IsArray(type) || IsStack(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a dictionary node.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a dictionary node</returns>
+        internal static bool IsDictionaryNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsDictionary(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a dictionary node.
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// /// <returns>True if the object can be serialized to a dictionary node</returns>
+        internal static bool IsDictionaryNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsDictionary(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to an inner node (class or struct)
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to an inner node</returns>
+        internal static bool IsInnerNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsClass(type) || IsStruct(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to an inner node (class or struct)
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to an inner node</returns>
+        internal static bool IsInnerNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsClass(type) || IsStruct(type);
         }
 
         /// <summary>
@@ -191,6 +291,30 @@ namespace DotSerial.Utilities
             if (type == null)
                 return false;
             return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+        }
+
+        /// <summary>
+        /// Check if object is stack
+        /// </summary>
+        /// <param name="o">object</param>
+        /// <returns>True if stack</returns>
+        internal static bool IsStack(object? o)
+        {
+            if (o == null)
+                return false;
+            return IsStack(o.GetType());
+        }
+
+        /// <summary>
+        /// Check if type is stack
+        /// </summary>
+        /// <param name="type">type</param>
+        /// <returns>True if stack</returns>
+        internal static bool IsStack(Type type)
+        {
+            if (type == null)
+                return false;
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
         }
 
         /// <summary>
