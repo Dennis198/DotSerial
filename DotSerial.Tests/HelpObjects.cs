@@ -482,8 +482,6 @@ namespace DotSerial.Tests
         [DotSerialName("1893")]
         public SortedList<int, int>? Value0 { get; set; }
 
-        // TODO list, null, usw.
-
         public static ClassSortedList CreateTestDefault()
         {
             var tmp = new ClassSortedList { Value0 = new SortedList<int, int>() };
@@ -542,8 +540,6 @@ namespace DotSerial.Tests
         [DotSerialName("1893")]
         public Stack<int>? Value0 { get; set; }
 
-        // TODO list, null, usw.
-
         public static ClassStack CreateTestDefault()
         {
             var tmp = new ClassStack { Value0 = new Stack<int>([1, 2, 3]) };
@@ -569,8 +565,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public Queue<int>? Value0 { get; set; }
-
-        // TODO list, null, usw.
 
         public static ClassQueue CreateTestDefault()
         {
@@ -598,8 +592,6 @@ namespace DotSerial.Tests
         [DotSerialName("1893")]
         public LinkedList<int>? Value0 { get; set; }
 
-        // TODO list, null, usw.
-
         public static ClassLinkedList CreateTestDefault()
         {
             var tmp = new ClassLinkedList { Value0 = new LinkedList<int>([1, 2, 3]) };
@@ -626,8 +618,6 @@ namespace DotSerial.Tests
         [DotSerialName("1893")]
         public HashSet<int>? Value0 { get; set; }
 
-        // TODO list, null, usw.
-
         public static HashSetClass CreateTestDefault()
         {
             var tmp = new HashSetClass { Value0 = new HashSet<int>([1, 2, 3]) };
@@ -653,8 +643,6 @@ namespace DotSerial.Tests
     {
         [DotSerialName("1893")]
         public SortedSet<int>? Value0 { get; set; }
-
-        // TODO list, null, usw.
 
         public static ClassSortedSet CreateTestDefault()
         {
