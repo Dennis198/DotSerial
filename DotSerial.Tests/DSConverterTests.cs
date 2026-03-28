@@ -268,27 +268,6 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassHashTable(SerializeStrategy strategy)
-        {
-            Assert.True(true);
-            return;
-            // Arrange
-            var tmp = NotSupportedTypeClassHashTable.CreateTestDefault();
-
-            // Act
-            var serializedObject = DSConverter.Serialize(tmp, strategy);
-            var result = DSConverter.Deserialize<NotSupportedTypeClassHashTable>(serializedObject, strategy);
-
-            // Assert
-            Assert.NotNull(result);
-            Assert.True(tmp.AssertTest(result));
-        }
-
-        [Theory]
-        [InlineData(SerializeStrategy.Json)]
-        [InlineData(SerializeStrategy.Toon)]
-        [InlineData(SerializeStrategy.Xml)]
-        [InlineData(SerializeStrategy.Yaml)]
         public void CreateSerializedObject_ClassLinkedList(SerializeStrategy strategy)
         {
             // Arrange

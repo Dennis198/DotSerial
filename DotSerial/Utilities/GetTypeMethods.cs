@@ -130,33 +130,5 @@
 
             return true;
         }
-
-        /// <summary>
-        /// Create the Type of a dictionary with the given key, value types.
-        /// </summary>
-        /// <param name="typeKey">Key type</param>
-        /// <param name="typeValue">Value type</param>
-        /// <returns>Type</returns>
-        internal static Type GetDictionaryTypeFromKeyValue(Type typeKey, Type typeValue)
-        {
-            ArgumentNullException.ThrowIfNull(typeKey);
-            ArgumentNullException.ThrowIfNull(typeValue);
-
-            return typeof(Dictionary<,>).MakeGenericType(typeKey, typeValue);
-        }
-
-        /// <summary>
-        /// Create the Type of an IDictionary with the given key, value types.
-        /// </summary>
-        /// <param name="typeKey">Key type</param>
-        /// <param name="typeValue">Value type</param>
-        /// <returns>Type</returns>
-        internal static Type GetIDictionaryTypeFromKeyValue(Type typeKey, Type typeValue)
-        {
-            ArgumentNullException.ThrowIfNull(typeKey);
-            ArgumentNullException.ThrowIfNull(typeValue);
-
-            return typeof(IDictionary<,>).MakeGenericType(typeKey, typeValue);
-        }
     }
 }
