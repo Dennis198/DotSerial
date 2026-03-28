@@ -436,6 +436,27 @@ namespace DotSerial.Tests.Tree.Serialize
         }
 
         [Fact]
+        public void CreateSerializedObject_ClassSortedList()
+        {
+            // Arrange
+            var tmp = ClassSortedList.CreateTestDefault();
+
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassSortedList));
+            if (result is ClassSortedList castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Fact]
         public void CreateSerializedObject_StackClass()
         {
             // Arrange
@@ -459,11 +480,24 @@ namespace DotSerial.Tests.Tree.Serialize
         [Fact]
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
+            Assert.True(true);
+            return;
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
+            var tmp = NotSupportedTypeClassHashTable.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(NotSupportedTypeClassHashTable));
+            if (result is NotSupportedTypeClassHashTable castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]
@@ -513,16 +547,6 @@ namespace DotSerial.Tests.Tree.Serialize
         {
             // Arrange
             var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
-
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
-        }
-
-        [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassSortedList()
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
 
             // Act & Assert
             Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));

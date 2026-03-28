@@ -74,7 +74,7 @@ namespace DotSerial.Tree.Deserialize
                     // Special case: In must formats (json, yaml, ..) there is no
                     // difference in classes or dictionarys when parsing. So
                     // the dictionary case must also be handles here.
-                    if (TypeCheckMethods.IsDictionary(prop.PropertyType))
+                    if (HelperMethods.ImplementsIDictionaryKeyValue(prop.PropertyType))
                     {
                         var tmpList = DeserializeDictionary(child, prop.PropertyType);
 

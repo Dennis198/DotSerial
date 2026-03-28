@@ -477,6 +477,66 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassSortedList : ITestable<ClassSortedList>
+    {
+        [DotSerialName("1893")]
+        public SortedList<int, int>? Value0 { get; set; }
+
+        // TODO list, null, usw.
+
+        public static ClassSortedList CreateTestDefault()
+        {
+            var tmp = new ClassSortedList { Value0 = new SortedList<int, int>() };
+            tmp.Value0.Add(1, 10);
+            tmp.Value0.Add(2, 20);
+            tmp.Value0.Add(3, 30);
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSortedList actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            if (expected.Value0[3] != actual.Value0[3])
+                return false;
+            return true;
+        }
+    }
+
+    public class NotSupportedTypeClassHashTable : ITestable<NotSupportedTypeClassHashTable>
+    {
+        [DotSerialName("1893")]
+        public Hashtable? Value0 { get; set; }
+
+        public static NotSupportedTypeClassHashTable CreateTestDefault()
+        {
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = new Hashtable() };
+            tmp.Value0.Add(1, 10);
+            tmp.Value0.Add(2, 20);
+            tmp.Value0.Add(3, 30);
+            return tmp;
+        }
+
+        public bool AssertTest(NotSupportedTypeClassHashTable actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            if (expected.Value0[3] != actual.Value0[3])
+                return false;
+            return true;
+        }
+    }
+
     public class ClassStack : ITestable<ClassStack>
     {
         [DotSerialName("1893")]
@@ -2747,22 +2807,10 @@ namespace DotSerial.Tests
 
     #region CurrentlyNotSupported
 
-    public class NotSupportedTypeClassHashTable
-    {
-        [DotSerialName("1893")]
-        public Hashtable? Value0 { get; set; }
-    }
-
     public class NotSupportedTypeClassObservableCollection
     {
         [DotSerialName("1893")]
         public ObservableCollection<int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassSortedList
-    {
-        [DotSerialName("1893")]
-        public SortedList<int, int>? Value0 { get; set; }
     }
 
     #endregion

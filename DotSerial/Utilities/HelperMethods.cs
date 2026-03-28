@@ -41,6 +41,52 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Check if Object implements IDictionary
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>True, if type implements IDictionary</returns>
+        internal static bool ImplementsIDictionary(object obj)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+            var oType = obj.GetType();
+            return ImplementsIDictionary(oType);
+        }
+
+        /// <summary>
+        /// Check if Type implements IDictionary
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True, if type implements IDictionary</returns>
+        internal static bool ImplementsIDictionary(Type objType)
+        {
+            return typeof(IDictionary).IsAssignableFrom(objType);
+        }
+
+        /// <summary>
+        /// Check if Object implements IDictionary<TKey, TValue>
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>True, if type implements IDictionary&lt;TKey, TValue&gt;</returns>
+        internal static bool ImplementsIDictionaryKeyValue(object obj)
+        {
+            ArgumentNullException.ThrowIfNull(obj);
+            var oType = obj.GetType();
+            return ImplementsIDictionaryKeyValue(oType);
+        }
+
+        /// <summary>
+        /// Check if Type implements IDictionary&lt;TKey, TValue&gt;
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True, if type implements IDictionary&lt;TKey, TValue&gt;</returns>
+        internal static bool ImplementsIDictionaryKeyValue(Type objType)
+        {
+            return objType
+                .GetInterfaces()
+                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IDictionary<,>));
+        }
+
+        /// <summary>
         /// Converts primitive to string
         /// </summary>
         /// <param name="value">Primitive obj</param>

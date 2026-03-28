@@ -35,6 +35,7 @@ namespace DotSerial.Tests.Utilities
         [InlineData(typeof(LinkedList<int>))]
         [InlineData(typeof(HashSet<int>))]
         [InlineData(typeof(SortedSet<int>))]
+        [InlineData(typeof(SortedList<int, int>))]
         public void IsTypeSupported_True(Type t)
         {
             bool result = DotSerial.Utilities.TypeCheckMethods.IsTypeSupported(t);
@@ -46,7 +47,6 @@ namespace DotSerial.Tests.Utilities
         [InlineData(typeof(ISet<int>))]
         [InlineData(typeof(Hashtable))]
         [InlineData(typeof(ObservableCollection<int>))]
-        [InlineData(typeof(SortedList<int, int>))]
         public void IsTypeSupported_False(Type t)
         {
             bool result = DotSerial.Utilities.TypeCheckMethods.IsTypeSupported(t);

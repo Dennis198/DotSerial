@@ -108,7 +108,7 @@ namespace DotSerial.Utilities
         {
             if (type == null)
                 return false;
-            return IsDictionary(type);
+            return HelperMethods.ImplementsIDictionaryKeyValue(type);
         }
 
         /// <summary>

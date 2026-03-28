@@ -538,6 +538,11 @@ namespace DotSerial.Utilities
                 return null;
             }
 
+            if (false == HelperMethods.ImplementsIDictionaryKeyValue(type))
+            {
+                ThrowHelper.ThrowWrongTypeException(type);
+            }
+
             // Get Item type of dictionary
             if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
             {
@@ -553,8 +558,10 @@ namespace DotSerial.Utilities
                 }
 
                 // result object
-                Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
-                object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
+                // Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
+                Type resultType = GetTypeMethods.GetIDictionaryTypeFromKeyValue(keyType, valueType);
+                // object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
+                object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
                 ThrowHelper.ThrowIfNullException(result);
 

@@ -86,7 +86,7 @@
         /// <returns>True, if succeeded</returns>
         internal static bool GetKeyValueTypeOfDictionary(object obj, out Type typeKey, out Type typeValue)
         {
-            if (false == TypeCheckMethods.IsDictionary(obj))
+            if (false == HelperMethods.ImplementsIDictionaryKeyValue(obj))
             {
                 ThrowHelper.ThrowWrongTypeException(obj.GetType());
             }
@@ -113,7 +113,7 @@
         /// <returns>True, if succeeded</returns>
         internal static bool GetKeyValueTypeOfDictionary(Type type, out Type typeKey, out Type typeValue)
         {
-            if (false == TypeCheckMethods.IsDictionary(type))
+            if (false == HelperMethods.ImplementsIDictionaryKeyValue(type))
             {
                 ThrowHelper.ThrowWrongTypeException(type);
             }
@@ -143,6 +143,20 @@
             ArgumentNullException.ThrowIfNull(typeValue);
 
             return typeof(Dictionary<,>).MakeGenericType(typeKey, typeValue);
+        }
+
+        /// <summary>
+        /// Create the Type of an IDictionary with the given key, value types.
+        /// </summary>
+        /// <param name="typeKey">Key type</param>
+        /// <param name="typeValue">Value type</param>
+        /// <returns>Type</returns>
+        internal static Type GetIDictionaryTypeFromKeyValue(Type typeKey, Type typeValue)
+        {
+            ArgumentNullException.ThrowIfNull(typeKey);
+            ArgumentNullException.ThrowIfNull(typeValue);
+
+            return typeof(IDictionary<,>).MakeGenericType(typeKey, typeValue);
         }
     }
 }
