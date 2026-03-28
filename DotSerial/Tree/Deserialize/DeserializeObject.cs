@@ -11,35 +11,20 @@ namespace DotSerial.Tree.Deserialize
     internal class DeserializeObject : INodeDeserializeVisitor
     {
         /// <inheritdoc/>
-        public object? VisitLeafNode(LeafNode node, Type? type)
+        /// <remarks>
+        /// Only use this methode if the deserialized object itself is a dictionary.
+        /// </remarks>
+        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);
 
-            string? strValue = node.GetValue();
+            var tmpList = DeserializeDictionaryNode(node, type);
 
-            if (null == strValue)
-            {
-                return null;
-            }
+            // Convert deserialzed dictionary.
+            object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
 
-            object? result;
-
-            if (TypeCheckMethods.IsPrimitive(type))
-            {
-                result = ConverterMethods.ConvertStringToPrimitive(strValue, type);
-            }
-            else if (TypeCheckMethods.IsSpecialParsableObject(type))
-            {
-                result = ConverterMethods.ConvertStringToSpecialParsableObject(strValue, type);
-            }
-            else
-            {
-                ThrowHelper.ThrowWrongNodeTypeException();
-                throw new Exception("Unreachable code.");
-            }
-
-            return result;
+            return tmpValue;
         }
 
         /// <inheritdoc/>
@@ -94,6 +79,38 @@ namespace DotSerial.Tree.Deserialize
         }
 
         /// <inheritdoc/>
+        public object? VisitLeafNode(LeafNode node, Type? type)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(type);
+
+            string? strValue = node.GetValue();
+
+            if (null == strValue)
+            {
+                return null;
+            }
+
+            object? result;
+
+            if (TypeCheckMethods.IsPrimitive(type))
+            {
+                result = ConverterMethods.ConvertStringToPrimitive(strValue, type);
+            }
+            else if (TypeCheckMethods.IsSpecialParsableObject(type))
+            {
+                result = ConverterMethods.ConvertStringToSpecialParsableObject(strValue, type);
+            }
+            else
+            {
+                ThrowHelper.ThrowWrongNodeTypeException();
+                throw new Exception("Unreachable code.");
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
         public object? VisitListNode(ListNode node, Type? type)
         {
             ArgumentNullException.ThrowIfNull(node);
@@ -122,23 +139,6 @@ namespace DotSerial.Tree.Deserialize
             var result = ConverterMethods.ConvertDeserializedList(tmpList, type);
 
             return result;
-        }
-
-        /// <inheritdoc/>
-        /// <remarks>
-        /// Only use this methode if the deserialized object itself is a dictionary.
-        /// </remarks>
-        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(type);
-
-            var tmpList = DeserializeDictionaryNode(node, type);
-
-            // Convert deserialzed dictionary.
-            object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
-
-            return tmpValue;
         }
 
         /// <summary>

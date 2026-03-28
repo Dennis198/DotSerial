@@ -98,5 +98,57 @@
             Assert.Equal(expected.GetType(), result.GetType());
             Assert.Equal(expected.ToString(), ((DateTime)(result)).ToString());
         }
+
+        [Fact]
+        public void BoolToString_True()
+        {
+            // Arrange
+            bool tmp = true;
+
+            // Act
+            string result = DotSerial.Utilities.ConverterMethods.BoolToString(tmp);
+
+            // Assert
+            Assert.Equal("true", result);
+        }
+
+        [Fact]
+        public void BoolToString_False()
+        {
+            // Arrange
+            bool tmp = false;
+
+            // Act
+            string result = DotSerial.Utilities.ConverterMethods.BoolToString(tmp);
+
+            // Assert
+            Assert.Equal("false", result);
+        }
+
+        [Fact]
+        public void StringToBool_False()
+        {
+            // Arrange
+            string tmp = "false";
+
+            // Act
+            bool result = DotSerial.Utilities.ConverterMethods.StringToBool(tmp);
+
+            // Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void StringToBool_True()
+        {
+            // Arrange
+            string tmp = "true";
+
+            // Act
+            bool result = DotSerial.Utilities.ConverterMethods.StringToBool(tmp);
+
+            // Assert
+            Assert.True(result);
+        }
     }
 }

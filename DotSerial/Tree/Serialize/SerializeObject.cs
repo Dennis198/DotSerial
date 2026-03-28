@@ -139,7 +139,6 @@ namespace DotSerial.Tree.Serialize
 
                     if (TypeCheckMethods.IsLeafNodeCompatible(prop.PropertyType))
                     {
-                        // Primitive types || String
                         var childNode = _nodeFactory.CreateNode(
                             strategyType,
                             dsPropName,
@@ -151,21 +150,18 @@ namespace DotSerial.Tree.Serialize
                     }
                     else if (TypeCheckMethods.IsDictionaryNodeCompatible(prop.PropertyType))
                     {
-                        // Dictionary
                         var childNode = SerializeDictionary(value, dsPropName, strategyType);
                         childNode.Parent = result;
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsListNodeCompatible(prop.PropertyType))
                     {
-                        // List || Array || Stack
                         var childNode = SerializeList(value, dsPropName, strategyType);
                         childNode.Parent = result;
                         result.AddChild(childNode);
                     }
                     else if (TypeCheckMethods.IsInnerNodeCompatible(prop.PropertyType))
                     {
-                        // Class || Struct
                         var childNode = SerializeClass(value, dsPropName, strategyType);
                         childNode.Parent = result;
                         result.AddChild(childNode);
@@ -233,7 +229,7 @@ namespace DotSerial.Tree.Serialize
 
                         if (TypeCheckMethods.IsPrimitive(keyType) || TypeCheckMethods.IsSpecialParsableObject(keyType))
                         {
-                            keyString = HelperMethods.PrimitiveToString(key);
+                            keyString = ConverterMethods.PrimitiveToString(key);
                         }
                         else
                         {
@@ -273,7 +269,6 @@ namespace DotSerial.Tree.Serialize
                         }
                         else if (TypeCheckMethods.IsDictionaryNodeCompatible(value))
                         {
-                            // Dictionary
                             if (value is IDictionary castedValue)
                             {
                                 if (GetTypeMethods.GetKeyValueTypeOfDictionary(dic, out Type innerKeyType, out Type _))
@@ -288,7 +283,7 @@ namespace DotSerial.Tree.Serialize
                                     foreach (DictionaryEntry str in castedValue)
                                     {
                                         string? innerDicID =
-                                            HelperMethods.PrimitiveToString(str.Key)
+                                            ConverterMethods.PrimitiveToString(str.Key)
                                             ?? throw new DotSerialException(
                                                 $"Serialize: Can't convert {str.Key} to string."
                                             );
@@ -309,8 +304,6 @@ namespace DotSerial.Tree.Serialize
                         }
                         else if (TypeCheckMethods.IsListNodeCompatible(value))
                         {
-                            // List || Array || Stack
-
                             if (value is IEnumerable castedValue)
                             {
                                 keyValue = _nodeFactory.CreateNode(
@@ -398,7 +391,6 @@ namespace DotSerial.Tree.Serialize
 
                 if (TypeCheckMethods.IsLeafNodeCompatible(type))
                 {
-                    // Primitive types | special parsable objects
                     int listID = 0;
                     foreach (var str in castedList)
                     {
@@ -416,7 +408,6 @@ namespace DotSerial.Tree.Serialize
                 }
                 else if (TypeCheckMethods.IsListNodeCompatible(type))
                 {
-                    // List || Array || Stack
                     int listID = 0;
                     foreach (var str in castedList)
                     {
@@ -429,7 +420,6 @@ namespace DotSerial.Tree.Serialize
                 }
                 else if (TypeCheckMethods.IsDictionaryNodeCompatible(type))
                 {
-                    // Dictionary
                     int listID = 0;
                     foreach (var str in castedList)
                     {
