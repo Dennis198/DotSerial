@@ -88,7 +88,7 @@ namespace DotSerial.Utilities
                 return ConvertDeserializedListFromQueue(list, type);
             }
             // Handles case Array.
-            else if (type.IsArray)
+            else if (TypeCheckMethods.IsArray(type))
             {
                 return ConvertDeserializedListFromArray(list, type);
             }
@@ -633,7 +633,7 @@ namespace DotSerial.Utilities
                 ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
             }
 
-            if (false == type.IsArray)
+            if (false == TypeCheckMethods.IsArray(type))
             {
                 throw new InvalidCastException();
             }
