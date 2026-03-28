@@ -9,7 +9,7 @@
             var tmp = new List<int>();
 
             // Act
-            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.TypeCheckMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.True(result);
@@ -22,7 +22,7 @@
             int tmp = 5;
 
             // Act
-            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.TypeCheckMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.False(result);
@@ -35,7 +35,7 @@
             Type tmp = typeof(List<int>);
 
             // Act
-            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.TypeCheckMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.True(result);
@@ -48,7 +48,7 @@
             Type tmp = typeof(int);
 
             // Act
-            var result = DotSerial.Utilities.HelperMethods.ImplementsIEnumerable(tmp);
+            var result = DotSerial.Utilities.TypeCheckMethods.ImplementsIEnumerable(tmp);
 
             // Assert
             Assert.False(result);

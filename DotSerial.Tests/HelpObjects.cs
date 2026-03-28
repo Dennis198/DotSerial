@@ -508,30 +508,30 @@ namespace DotSerial.Tests
         }
     }
 
-    public class NotSupportedTypeClassHashTable : ITestable<NotSupportedTypeClassHashTable>
+    public class ClassObservableCollection : ITestable<ClassObservableCollection>
     {
         [DotSerialName("1893")]
-        public Hashtable? Value0 { get; set; }
+        public ObservableCollection<int>? Value0 { get; set; }
 
-        public static NotSupportedTypeClassHashTable CreateTestDefault()
+        public static ClassObservableCollection CreateTestDefault()
         {
-            var tmp = new NotSupportedTypeClassHashTable { Value0 = new Hashtable() };
-            tmp.Value0.Add(1, 10);
-            tmp.Value0.Add(2, 20);
-            tmp.Value0.Add(3, 30);
+            var tmp = new ClassObservableCollection { Value0 = new ObservableCollection<int>() };
+            tmp.Value0.Add(1);
+            tmp.Value0.Add(2);
+            tmp.Value0.Add(3);
             return tmp;
         }
 
-        public bool AssertTest(NotSupportedTypeClassHashTable actual)
+        public bool AssertTest(ClassObservableCollection actual)
         {
             var expected = this;
             if (expected.Value0.Count != actual.Value0.Count)
                 return false;
+            if (expected.Value0[0] != actual.Value0[0])
+                return false;
             if (expected.Value0[1] != actual.Value0[1])
                 return false;
             if (expected.Value0[2] != actual.Value0[2])
-                return false;
-            if (expected.Value0[3] != actual.Value0[3])
                 return false;
             return true;
         }
@@ -2807,10 +2807,33 @@ namespace DotSerial.Tests
 
     #region CurrentlyNotSupported
 
-    public class NotSupportedTypeClassObservableCollection
+    public class NotSupportedTypeClassHashTable : ITestable<NotSupportedTypeClassHashTable>
     {
         [DotSerialName("1893")]
-        public ObservableCollection<int>? Value0 { get; set; }
+        public Hashtable? Value0 { get; set; }
+
+        public static NotSupportedTypeClassHashTable CreateTestDefault()
+        {
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = new Hashtable() };
+            tmp.Value0.Add(1, 10);
+            tmp.Value0.Add(2, 20);
+            tmp.Value0.Add(3, 30);
+            return tmp;
+        }
+
+        public bool AssertTest(NotSupportedTypeClassHashTable actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            if (expected.Value0[3] != actual.Value0[3])
+                return false;
+            return true;
+        }
     }
 
     #endregion

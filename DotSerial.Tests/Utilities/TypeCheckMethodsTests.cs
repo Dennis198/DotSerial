@@ -36,6 +36,9 @@ namespace DotSerial.Tests.Utilities
         [InlineData(typeof(HashSet<int>))]
         [InlineData(typeof(SortedSet<int>))]
         [InlineData(typeof(SortedList<int, int>))]
+        [InlineData(typeof(ISet<int>))]
+        [InlineData(typeof(ObservableCollection<int>))]
+        [InlineData(typeof(Collection<int>))]
         public void IsTypeSupported_True(Type t)
         {
             bool result = DotSerial.Utilities.TypeCheckMethods.IsTypeSupported(t);
@@ -43,10 +46,8 @@ namespace DotSerial.Tests.Utilities
         }
 
         [Theory]
-        [InlineData(typeof(Collection<int>))]
-        [InlineData(typeof(ISet<int>))]
         [InlineData(typeof(Hashtable))]
-        [InlineData(typeof(ObservableCollection<int>))]
+        [InlineData(typeof(IList))]
         public void IsTypeSupported_False(Type t)
         {
             bool result = DotSerial.Utilities.TypeCheckMethods.IsTypeSupported(t);
@@ -240,130 +241,130 @@ namespace DotSerial.Tests.Utilities
         #region List
 
         [Fact]
-        public void IsList_List_True()
+        public void ImplementsICollection_List_True()
         {
             // Arrange
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void IsList_ListT_True()
+        public void ImplementsICollection_ListT_True()
         {
             // Arrange
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp.GetType());
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp.GetType());
 
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void IsList_Array_False()
+        public void ImplementsICollection_Array_True()
         {
             // Arrange
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]
-        public void IsList_ArrayT_False()
+        public void ImplementsICollection_ArrayT_False()
         {
             // Arange
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp.GetType());
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp.GetType());
 
             // Assert
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]
-        public void IsList_Class_False()
+        public void ImplementsICollection_Class_False()
         {
             // Arrange
             SimpleClass tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsList_Struct_False()
+        public void ImplementsICollection_Struct_False()
         {
             // Arrange
             TestStruct tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsList_Record_False()
+        public void ImplementsICollection_Record_False()
         {
             // Arrange
             TestRecord tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsList_Dictionary_False()
+        public void ImplementsICollection_Dictionary_False()
         {
             // Arrange
             Dictionary<int, int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsList_HashSet_False()
+        public void ImplementsICollection_HashSet_True()
         {
             // Arrange
             HashSet<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
-            Assert.False(result);
+            Assert.True(result);
         }
 
         [Fact]
-        public void IsList_Null_False()
+        public void ImplementsICollection_Null_False()
         {
             // Arrange
             List<int>? tmp = null;
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsList(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollection(tmp);
 
             // Assert
             Assert.False(result);
@@ -374,130 +375,130 @@ namespace DotSerial.Tests.Utilities
         #region Dictionary
 
         [Fact]
-        public void IsDictionary_Dictionary_True()
+        public void DictionaryDictionary_True()
         {
             // Arrange
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void IsDictionary_DictionaryT_True()
+        public void DictionaryDictionaryT_True()
         {
             // Arrange
             Dictionary<int, string> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp.GetType());
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp.GetType());
 
             // Assert
             Assert.True(result);
         }
 
         [Fact]
-        public void IsDictionary_Array_False()
+        public void DictionaryArray_False()
         {
             // Arrange
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_ArrayT_False()
+        public void DictionaryArrayT_False()
         {
             // Arrange
             int[] tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp.GetType());
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp.GetType());
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_List_False()
+        public void DictionaryList_False()
         {
             // Arrange
             List<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_Class_False()
+        public void DictionaryClass_False()
         {
             // Arrange
             SimpleClass tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_Struct_False()
+        public void DictionaryStruct_False()
         {
             // Arrange
             TestStruct tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_Record_False()
+        public void DictionaryRecord_False()
         {
             // Arrange
             TestRecord tmp = new();
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_HashSet_False()
+        public void DictionaryHashSet_False()
         {
             // Arrange
             HashSet<int> tmp = [];
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);
         }
 
         [Fact]
-        public void IsDictionary_Null_False()
+        public void DictionaryNull_False()
         {
             // Arrange
             List<int>? tmp = null;
 
             // Act
-            bool result = DotSerial.Utilities.TypeCheckMethods.IsDictionary(tmp);
+            bool result = DotSerial.Utilities.TypeCheckMethods.ImplementsICollectionKeyValuePair(tmp);
 
             // Assert
             Assert.False(result);

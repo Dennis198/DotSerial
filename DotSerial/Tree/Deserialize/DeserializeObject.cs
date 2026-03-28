@@ -74,9 +74,9 @@ namespace DotSerial.Tree.Deserialize
                     // Special case: In must formats (json, yaml, ..) there is no
                     // difference in classes or dictionarys when parsing. So
                     // the dictionary case must also be handles here.
-                    if (HelperMethods.ImplementsIDictionaryKeyValue(prop.PropertyType))
+                    if (TypeCheckMethods.ImplementsICollectionKeyValuePair(prop.PropertyType))
                     {
-                        var tmpList = DeserializeDictionary(child, prop.PropertyType);
+                        var tmpList = DeserializeDictionaryNode(child, prop.PropertyType);
 
                         // Convert deserialzed dictionary.
                         object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, prop.PropertyType);
@@ -133,7 +133,7 @@ namespace DotSerial.Tree.Deserialize
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);
 
-            var tmpList = DeserializeDictionary(node, type);
+            var tmpList = DeserializeDictionaryNode(node, type);
 
             // Convert deserialzed dictionary.
             object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
@@ -147,7 +147,7 @@ namespace DotSerial.Tree.Deserialize
         /// <param name="node">Node</param>
         /// <param name="type">Type</param>
         /// <returns>Dictionary</returns>
-        private Dictionary<object, object?>? DeserializeDictionary(IDSNode node, Type type)
+        private Dictionary<object, object?>? DeserializeDictionaryNode(IDSNode node, Type type)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);

@@ -23,6 +23,12 @@ namespace DotSerial.Utilities
                 return null;
             }
 
+            // Node: Don't change the order of the if statements, because some types
+            // can implement multiple collection interfaces and the order determines
+            // which one is used for deserialization. For example, ObservableCollection
+            // implements both ICollection and IList, but it should be deserialized
+            // as ICollection to maintain the correct behavior.
+
             // Handles case Stack.
             if (TypeCheckMethods.IsStack(type))
             {
@@ -33,17 +39,25 @@ namespace DotSerial.Utilities
             {
                 return ConvertDeserializedListFromQueue(list, type);
             }
-            // Handles case LinkedList.
-            else if (TypeCheckMethods.IsLinkedList(type))
+            // Handles case Array.
+            else if (type.IsArray)
             {
-                return ConvertDeserializedListFromLinkedList(list, type);
+                return ConvertDeserializedListFromArray(list, type);
             }
-            // Handles case HashSet.
-            else if (TypeCheckMethods.IsHashSet(type) || TypeCheckMethods.IsSortedSet(type))
+            // Handles case ICollection.
+            else if (TypeCheckMethods.ImplementsICollection(type))
             {
-                return ConvertDeserializedListFromHashSet(list, type);
+                return ConvertDeserializedListFromICollection(list, type);
             }
+            else
+            {
+                ThrowHelper.ThrowWrongTypeException(type);
+                throw new Exception("Unreachable code.");
+            }
+        }
 
+        private static object? ConvertDeserializedListFromArray(List<object?> list, Type type)
+        {
             // Get Item type of list
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
 
@@ -53,27 +67,18 @@ namespace DotSerial.Utilities
                 ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
             }
 
-            // Check if type is array
-            bool isArray = type.IsArray;
-
+            if (false == type.IsArray)
+            {
+                throw new InvalidCastException();
+            }
             // result object
-            object? result;
-
-            // Create initial object to fill.
-            if (isArray)
-            {
-                result = CreateInstanceMethods.CreateInstanceArray(type, list.Count);
-            }
-            else
-            {
-                result = CreateInstanceMethods.CreateInstanceGeneric(type);
-            }
+            object? result = CreateInstanceMethods.CreateInstanceArray(type, list.Count);
 
             if (list is IList castedList && result is IList castedListResult)
             {
                 for (int i = 0; i < castedList.Count; i++)
                 {
-                    if (TypeCheckMethods.IsDictionary(itemType))
+                    if (TypeCheckMethods.IsDictionaryNodeCompatible(itemType))
                     {
                         object? itemResult;
                         if (castedList[i] is not Dictionary<object, object?> castedDictionaryItemObj)
@@ -84,23 +89,17 @@ namespace DotSerial.Utilities
 
                         if (itemResult != null)
                         {
-                            if (isArray)
-                                castedListResult[i] = itemResult;
-                            else
-                                castedListResult.Add(itemResult);
+                            castedListResult[i] = itemResult;
                         }
                     }
-                    else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
+                    else if (TypeCheckMethods.IsListNodeCompatible(itemType))
                     {
                         object? itemResult;
                         if (castedList[i] is not List<object?> castedListItemObj)
                         {
                             if (castedList[i] != null)
                             {
-                                if (isArray)
-                                    castedListResult[i] = castedList[i];
-                                else
-                                    castedListResult.Add(castedList[i]);
+                                castedListResult[i] = castedList[i];
                             }
 
                             continue;
@@ -110,10 +109,7 @@ namespace DotSerial.Utilities
 
                         if (itemResult != null)
                         {
-                            if (isArray)
-                                castedListResult[i] = itemResult;
-                            else
-                                castedListResult.Add(itemResult);
+                            castedListResult[i] = itemResult;
                         }
                     }
                     else if (itemType.IsEnum)
@@ -122,10 +118,7 @@ namespace DotSerial.Utilities
 
 #pragma warning disable CS8604
                         object enumObj = ConvertEnumToObject(itemType, castedList[i]);
-                        if (isArray)
-                            castedListResult[i] = enumObj;
-                        else
-                            castedListResult.Add(enumObj);
+                        castedListResult[i] = enumObj;
 #pragma warning restore CS8604
                     }
                     else if (
@@ -135,10 +128,7 @@ namespace DotSerial.Utilities
                         || TypeCheckMethods.IsSpecialParsableObject(itemType)
                     )
                     {
-                        if (isArray)
-                            castedListResult[i] = castedList[i];
-                        else
-                            castedListResult.Add(castedList[i]);
+                        castedListResult[i] = castedList[i];
                     }
                     else
                     {
@@ -152,6 +142,78 @@ namespace DotSerial.Utilities
             {
                 throw new InvalidCastException();
             }
+        }
+
+        private static object? ConvertDeserializedListFromICollection(List<object?> list, Type type)
+        {
+            var collectionInterface =
+                type.GetInterfaces()
+                    .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>))
+                ?? throw new InvalidCastException();
+            var addMethod = collectionInterface.GetMethod("Add") ?? throw new InvalidCastException();
+
+            object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (TypeCheckMethods.IsDictionaryNodeCompatible(itemType))
+                {
+                    if (list[i] is not Dictionary<object, object?> castedDictionaryItemObj)
+                    {
+                        throw new InvalidCastException();
+                    }
+                    object? itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        addMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (TypeCheckMethods.IsListNodeCompatible(itemType))
+                {
+                    if (list[i] is not List<object?> castedListItemObj)
+                    {
+                        if (list[i] != null)
+                        {
+                            addMethod.Invoke(result, [list[i]]);
+                        }
+
+                        continue;
+                    }
+
+                    object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
+
+                    if (itemResult != null)
+                    {
+                        addMethod.Invoke(result, [itemResult]);
+                    }
+                }
+                else if (itemType.IsEnum)
+                {
+                    ThrowHelper.ThrowIfNullException(list[i]);
+
+#pragma warning disable CS8604
+                    object enumObj = ConvertEnumToObject(itemType, list[i]);
+                    addMethod.Invoke(result, [enumObj]);
+#pragma warning restore CS8604
+                }
+                else if (
+                    TypeCheckMethods.IsClass(itemType)
+                    || TypeCheckMethods.IsStruct(itemType)
+                    || TypeCheckMethods.IsPrimitive(itemType)
+                    || TypeCheckMethods.IsSpecialParsableObject(itemType)
+                )
+                {
+                    addMethod.Invoke(result, [list[i]]);
+                }
+                else
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+                }
+            }
+
+            return result;
         }
 
         private static object? ConvertDeserializedListFromQueue(List<object?>? list, Type type)
@@ -187,7 +249,7 @@ namespace DotSerial.Utilities
             {
                 var item = list[i];
 
-                if (TypeCheckMethods.IsDictionary(itemType))
+                if (TypeCheckMethods.IsDictionaryNodeCompatible(itemType))
                 {
                     if (item is not Dictionary<object, object?> castedDictionaryItemObj)
                     {
@@ -200,7 +262,7 @@ namespace DotSerial.Utilities
                         _ = enqueueMethod.Invoke(result, [itemResult]);
                     }
                 }
-                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
+                else if (TypeCheckMethods.IsListNodeCompatible(itemType))
                 {
                     if (item is not List<object?> castedListItemObj)
                     {
@@ -246,191 +308,6 @@ namespace DotSerial.Utilities
             return result;
         }
 
-        private static object? ConvertDeserializedListFromLinkedList(List<object?>? list, Type type)
-        {
-            if (null == list)
-            {
-                return null;
-            }
-
-            if (false == TypeCheckMethods.IsLinkedList(type))
-            {
-                throw new InvalidCastException();
-            }
-
-            // Get Item type of list
-            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
-
-            // Check if type is supported
-            if (false == TypeCheckMethods.IsTypeSupported(itemType))
-            {
-                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
-            }
-
-            // result object
-            object? result;
-
-            // Create initial object to fill.
-            result = CreateInstanceMethods.CreateInstanceGeneric(type);
-
-            var addLastMethod = type.GetMethod("AddLast", [itemType]) ?? throw new InvalidCastException();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                var item = list[i];
-
-                if (TypeCheckMethods.IsDictionary(itemType))
-                {
-                    if (item is not Dictionary<object, object?> castedDictionaryItemObj)
-                    {
-                        throw new InvalidCastException();
-                    }
-                    object? itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
-
-                    if (itemResult != null)
-                    {
-                        _ = addLastMethod.Invoke(result, [itemResult]);
-                    }
-                }
-                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
-                {
-                    if (item is not List<object?> castedListItemObj)
-                    {
-                        if (item != null)
-                        {
-                            _ = addLastMethod.Invoke(result, [item]);
-                        }
-
-                        continue;
-                    }
-
-                    object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
-
-                    if (itemResult != null)
-                    {
-                        _ = addLastMethod.Invoke(result, [itemResult]);
-                    }
-                }
-                else if (itemType.IsEnum)
-                {
-                    ThrowHelper.ThrowIfNullException(item);
-
-#pragma warning disable CS8604
-                    object enumObj = ConvertEnumToObject(itemType, item);
-                    _ = addLastMethod.Invoke(result, [enumObj]);
-#pragma warning restore CS8604
-                }
-                else if (
-                    TypeCheckMethods.IsClass(itemType)
-                    || TypeCheckMethods.IsStruct(itemType)
-                    || TypeCheckMethods.IsPrimitive(itemType)
-                    || TypeCheckMethods.IsSpecialParsableObject(itemType)
-                )
-                {
-                    _ = addLastMethod.Invoke(result, [item]);
-                }
-                else
-                {
-                    ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
-                }
-            }
-
-            return result;
-        }
-
-        private static object? ConvertDeserializedListFromHashSet(List<object?>? list, Type type)
-        {
-            // TODO: Für ISET verallgemeinern.
-            if (null == list)
-            {
-                return null;
-            }
-
-            if (false == TypeCheckMethods.IsHashSet(type) && false == TypeCheckMethods.IsSortedSet(type))
-            {
-                throw new InvalidCastException();
-            }
-
-            // Get Item type of list
-            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
-
-            // Check if type is supported
-            if (false == TypeCheckMethods.IsTypeSupported(itemType))
-            {
-                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
-            }
-
-            // result object
-            object? result;
-
-            // Create initial object to fill.
-            result = CreateInstanceMethods.CreateInstanceGeneric(type);
-
-            var addMethod = type.GetMethod("Add") ?? throw new InvalidCastException();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                var item = list[i];
-
-                if (TypeCheckMethods.IsDictionary(itemType))
-                {
-                    if (item is not Dictionary<object, object?> castedDictionaryItemObj)
-                    {
-                        throw new InvalidCastException();
-                    }
-                    object? itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
-
-                    if (itemResult != null)
-                    {
-                        _ = addMethod.Invoke(result, [itemResult]);
-                    }
-                }
-                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
-                {
-                    if (item is not List<object?> castedListItemObj)
-                    {
-                        if (item != null)
-                        {
-                            _ = addMethod.Invoke(result, [item]);
-                        }
-
-                        continue;
-                    }
-
-                    object? itemResult = ConvertDeserializedList(castedListItemObj, itemType);
-
-                    if (itemResult != null)
-                    {
-                        _ = addMethod.Invoke(result, [itemResult]);
-                    }
-                }
-                else if (itemType.IsEnum)
-                {
-                    ThrowHelper.ThrowIfNullException(item);
-
-#pragma warning disable CS8604
-                    object enumObj = ConvertEnumToObject(itemType, item);
-                    _ = addMethod.Invoke(result, [enumObj]);
-#pragma warning restore CS8604
-                }
-                else if (
-                    TypeCheckMethods.IsClass(itemType)
-                    || TypeCheckMethods.IsStruct(itemType)
-                    || TypeCheckMethods.IsPrimitive(itemType)
-                    || TypeCheckMethods.IsSpecialParsableObject(itemType)
-                )
-                {
-                    _ = addMethod.Invoke(result, [item]);
-                }
-                else
-                {
-                    ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
-                }
-            }
-
-            return result;
-        }
-
         private static object? ConvertDeserializedListFromStack(List<object?>? list, Type type)
         {
             if (null == list)
@@ -465,7 +342,7 @@ namespace DotSerial.Utilities
             {
                 var item = list[i];
 
-                if (TypeCheckMethods.IsDictionary(itemType))
+                if (TypeCheckMethods.IsDictionaryNodeCompatible(itemType))
                 {
                     if (item is not Dictionary<object, object?> castedDictionaryItemObj)
                     {
@@ -478,7 +355,7 @@ namespace DotSerial.Utilities
                         _ = pushMethod.Invoke(result, [itemResult]);
                     }
                 }
-                else if (TypeCheckMethods.IsList(itemType) || TypeCheckMethods.IsArray(itemType))
+                else if (TypeCheckMethods.IsListNodeCompatible(itemType))
                 {
                     if (item is not List<object?> castedListItemObj)
                     {
@@ -538,7 +415,7 @@ namespace DotSerial.Utilities
                 return null;
             }
 
-            if (false == HelperMethods.ImplementsIDictionaryKeyValue(type))
+            if (false == TypeCheckMethods.ImplementsICollectionKeyValuePair(type))
             {
                 ThrowHelper.ThrowWrongTypeException(type);
             }
@@ -558,85 +435,70 @@ namespace DotSerial.Utilities
                 }
 
                 // result object
-                // Type resultType = GetTypeMethods.GetDictionaryTypeFromKeyValue(keyType, valueType);
-                Type resultType = GetTypeMethods.GetIDictionaryTypeFromKeyValue(keyType, valueType);
-                // object? result = CreateInstanceMethods.CreateInstanceGeneric(resultType);
                 object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
                 ThrowHelper.ThrowIfNullException(result);
 
-                if (dic is IDictionary castedDic && result is IDictionary castedDicResult)
+                // Get ICollection<KeyValuePair<TKey, TValue>> Add method
+                Type kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
+                Type collectionType = typeof(ICollection<>).MakeGenericType(kvpType);
+                var addMethod = collectionType.GetMethod("Add") ?? throw new InvalidCastException();
+
+                foreach (DictionaryEntry keyValuePair in (IDictionary)dic)
                 {
-                    foreach (DictionaryEntry keyValuePair in castedDic)
+                    object? convertedKey =
+                        (
+                            TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType)
+                        ) ?? throw new InvalidCastException();
+                    object? convertedValue;
+
+                    if (TypeCheckMethods.IsDictionaryNodeCompatible(valueType))
                     {
-                        if (TypeCheckMethods.IsDictionary(valueType))
+                        if (keyValuePair.Value is not Dictionary<object, object?> castedDictionaryItemObj)
                         {
-                            object? itemResult = null;
-                            if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
-                            {
-                                throw new InvalidCastException();
-                            }
-                            itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
-
-                            castedDicResult.Add(keyValuePair.Key, itemResult);
+                            throw new InvalidCastException();
                         }
-                        else if (TypeCheckMethods.IsList(valueType) || TypeCheckMethods.IsArray(valueType))
+                        convertedValue = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
+                    }
+                    else if (TypeCheckMethods.IsListNodeCompatible(valueType))
+                    {
+                        if (keyValuePair.Value is not List<object?> castedListItemObj)
                         {
-                            object? itemResult = null;
-                            if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)
-                            {
-                                throw new InvalidCastException();
-                            }
-
-                            itemResult = ConvertDeserializedList(castedListItemObj, valueType);
-
-                            castedDicResult.Add(keyValuePair.Key, itemResult);
+                            throw new InvalidCastException();
                         }
-                        else if (valueType.IsEnum)
-                        {
-                            ThrowHelper.ThrowIfNullException(castedDic[keyValuePair.Key]);
-
+                        convertedValue = ConvertDeserializedList(castedListItemObj, valueType);
+                    }
+                    else if (valueType.IsEnum)
+                    {
+                        ThrowHelper.ThrowIfNullException(keyValuePair.Value);
 #pragma warning disable CS8604
-                            castedDicResult.Add(
-                                keyValuePair.Key,
-                                ConvertEnumToObject(valueType, castedDic[keyValuePair.Key])
-                            );
+                        convertedValue = ConvertEnumToObject(valueType, keyValuePair.Value);
 #pragma warning restore CS8604
-                        }
-                        else if (
-                            TypeCheckMethods.IsClass(valueType)
-                            || TypeCheckMethods.IsStruct(valueType)
-                            || TypeCheckMethods.IsPrimitive(valueType)
-                        )
-                        {
-                            object? key = TypeCheckMethods.IsPrimitive(keyType)
-                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
-                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
-#pragma warning disable CS8604
-                            castedDicResult.Add(key, keyValuePair.Value);
-#pragma warning restore CS8604
-                        }
-                        else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
-                        {
-                            object? key = TypeCheckMethods.IsPrimitive(keyType)
-                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
-                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
-#pragma warning disable CS8604
-                            castedDicResult.Add(key, keyValuePair.Value);
-#pragma warning restore CS8604
-                        }
-                        else
-                        {
-                            ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
-                        }
+                    }
+                    else if (
+                        TypeCheckMethods.IsClass(valueType)
+                        || TypeCheckMethods.IsStruct(valueType)
+                        || TypeCheckMethods.IsPrimitive(valueType)
+                        || TypeCheckMethods.IsSpecialParsableObject(valueType)
+                    )
+                    {
+                        convertedValue = keyValuePair.Value;
+                    }
+                    else
+                    {
+                        ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                        throw new Exception("Unreachable code.");
                     }
 
-                    return castedDicResult;
+                    object kvp =
+                        Activator.CreateInstance(kvpType, convertedKey, convertedValue)
+                        ?? throw new InvalidCastException();
+                    addMethod.Invoke(result, [kvp]);
                 }
-                else
-                {
-                    throw new InvalidCastException();
-                }
+
+                return result;
             }
             else
             {

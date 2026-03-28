@@ -480,24 +480,11 @@ namespace DotSerial.Tests.Tree.Serialize
         [Fact]
         public void CreateSerializedObject_NotSupportedTypeClassHashTable()
         {
-            Assert.True(true);
-            return;
             // Arrange
-            var tmp = NotSupportedTypeClassHashTable.CreateTestDefault();
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
 
-            // Act
-            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
-            var result = node.DeserializeAccept(new DeserializeObject(), typeof(NotSupportedTypeClassHashTable));
-            if (result is NotSupportedTypeClassHashTable castedResult)
-            {
-                // Assert
-                Assert.NotNull(result);
-                tmp.AssertTest(castedResult);
-            }
-            else
-            {
-                Assert.Fail();
-            }
+            // Act & Assert
+            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
         }
 
         [Fact]
@@ -543,13 +530,24 @@ namespace DotSerial.Tests.Tree.Serialize
         }
 
         [Fact]
-        public void CreateSerializedObject_NotSupportedTypeClassObservableCollection()
+        public void CreateSerializedObject_ClassObservableCollection()
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
+            var tmp = ClassObservableCollection.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json));
+            // Act
+            var node = SerializeObject.Serialize(tmp, "0", SerializeStrategy.Json);
+            var result = node.DeserializeAccept(new DeserializeObject(), typeof(ClassObservableCollection));
+            if (result is ClassObservableCollection castedResult)
+            {
+                // Assert
+                Assert.NotNull(result);
+                tmp.AssertTest(castedResult);
+            }
+            else
+            {
+                Assert.Fail();
+            }
         }
 
         [Fact]

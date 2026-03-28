@@ -308,13 +308,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassObservableCollection(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassObservableCollection(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
+            var tmp = ClassObservableCollection.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassObservableCollection>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]

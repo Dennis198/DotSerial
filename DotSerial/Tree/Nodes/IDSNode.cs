@@ -60,7 +60,7 @@ namespace DotSerial.Tree.Nodes
                 // in parsing an dictionary node will be created as an inner node.
                 // So for the deserialization of an dictionaty type we habe to create an
                 // dictionary node which wraps the inner node.
-                if (HelperMethods.ImplementsIDictionaryKeyValue(typeof(U)) && nodeToSerialize is InnerNode)
+                if (TypeCheckMethods.ImplementsICollectionKeyValuePair(typeof(U)) && nodeToSerialize is InnerNode)
                 {
                     nodeToSerialize = NodeFactory.WrappNode(nodeToSerialize, TreeNodeType.DictionaryNode);
                 }
