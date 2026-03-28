@@ -34,94 +34,26 @@ namespace DotSerial.Utilities
                 return null;
             }
 
-            if (false == TypeCheckMethods.ImplementsICollectionKeyValuePair(type))
+            // Node: Don't change the order of the if statements, because some types
+            // can implement multiple collection interfaces and the order determines
+            // which one is used for deserialization. For example, ObservableCollection
+            // implements both ICollection and IList, but it should be deserialized
+            // as ICollection to maintain the correct behavior.
+
+            // Handles case Dictionary.
+            if (TypeCheckMethods.ImplementsGenericIDictionary(type))
             {
-                ThrowHelper.ThrowWrongTypeException(type);
+                return ConvertDeserializedDictionaryFromGenericIDictionary(dic, type);
             }
-
-            // Get Item type of dictionary
-            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            // Handles case ICollectionKeyValuePair.
+            else if (TypeCheckMethods.ImplementsICollectionKeyValuePair(type))
             {
-                // Check if type is supported
-                if (false == TypeCheckMethods.IsTypeSupported(keyType))
-                {
-                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
-                }
-                // Check if type is supported
-                if (false == TypeCheckMethods.IsTypeSupported(valueType))
-                {
-                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
-                }
-
-                // result object
-                object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
-
-                ThrowHelper.ThrowIfNullException(result);
-
-                // Get ICollection<KeyValuePair<TKey, TValue>> Add method
-                Type kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
-                Type collectionType = typeof(ICollection<>).MakeGenericType(kvpType);
-                var addMethod = collectionType.GetMethod("Add") ?? throw new InvalidCastException();
-
-                foreach (DictionaryEntry keyValuePair in (IDictionary)dic)
-                {
-                    object? convertedKey =
-                        (
-                            TypeCheckMethods.IsPrimitive(keyType)
-                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
-                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType)
-                        ) ?? throw new InvalidCastException();
-                    object? convertedValue;
-
-                    if (TypeCheckMethods.IsDictionaryNodeCompatible(valueType))
-                    {
-                        if (keyValuePair.Value is not Dictionary<object, object?> castedDictionaryItemObj)
-                        {
-                            throw new InvalidCastException();
-                        }
-                        convertedValue = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
-                    }
-                    else if (TypeCheckMethods.IsListNodeCompatible(valueType))
-                    {
-                        if (keyValuePair.Value is not List<object?> castedListItemObj)
-                        {
-                            throw new InvalidCastException();
-                        }
-                        convertedValue = ConvertDeserializedList(castedListItemObj, valueType);
-                    }
-                    else if (valueType.IsEnum)
-                    {
-                        ThrowHelper.ThrowIfNullException(keyValuePair.Value);
-#pragma warning disable CS8604
-                        convertedValue = ConvertEnumToObject(valueType, keyValuePair.Value);
-#pragma warning restore CS8604
-                    }
-                    else if (
-                        TypeCheckMethods.IsClass(valueType)
-                        || TypeCheckMethods.IsStruct(valueType)
-                        || TypeCheckMethods.IsPrimitive(valueType)
-                        || TypeCheckMethods.IsSpecialParsableObject(valueType)
-                    )
-                    {
-                        convertedValue = keyValuePair.Value;
-                    }
-                    else
-                    {
-                        ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
-                        throw new Exception("Unreachable code.");
-                    }
-
-                    object kvp =
-                        Activator.CreateInstance(kvpType, convertedKey, convertedValue)
-                        ?? throw new InvalidCastException();
-                    addMethod.Invoke(result, [kvp]);
-                }
-
-                return result;
+                return ConvertDeserializedDictionaryFromICollectionKeyValuePair(dic, type);
             }
             else
             {
-                throw new TypeAccessException();
+                ThrowHelper.ThrowWrongTypeException(type);
+                throw new Exception("Unreachable code.");
             }
         }
 
@@ -159,6 +91,10 @@ namespace DotSerial.Utilities
             else if (type.IsArray)
             {
                 return ConvertDeserializedListFromArray(list, type);
+            }
+            else if (TypeCheckMethods.ImplementsGenericIList(type))
+            {
+                return ConvertDeserializedListFromGenericIList(list, type);
             }
             // Handles case ICollection.
             else if (TypeCheckMethods.ImplementsICollection(type))
@@ -465,6 +401,222 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Converts the serialzed dictionary to object so "PropertyInfo.SetValue" can
+        /// set the value properly
+        /// </summary>
+        /// <param name="dic">Deserialzed Dictionary</param>
+        /// <param name="type">Type</param>
+        /// <returns>Converted dictionary</returns>
+        private static object? ConvertDeserializedDictionaryFromGenericIDictionary(
+            Dictionary<object, object?>? dic,
+            Type type
+        )
+        {
+            if (null == dic)
+            {
+                return null;
+            }
+
+            // Get Item type of dictionary
+            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            {
+                // Check if type is supported
+                if (false == TypeCheckMethods.IsTypeSupported(keyType))
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
+                }
+                // Check if type is supported
+                if (false == TypeCheckMethods.IsTypeSupported(valueType))
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                }
+
+                // result object
+                object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
+
+                ThrowHelper.ThrowIfNullException(result);
+
+                if (dic is IDictionary castedDic && result is IDictionary castedDicResult)
+                {
+                    foreach (DictionaryEntry keyValuePair in castedDic)
+                    {
+                        if (TypeCheckMethods.IsDictionaryNodeCompatible(valueType))
+                        {
+                            object? itemResult = null;
+                            if (castedDic[keyValuePair.Key] is not Dictionary<object, object?> castedDictionaryItemObj)
+                            {
+                                throw new InvalidCastException();
+                            }
+                            itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
+
+                            castedDicResult.Add(keyValuePair.Key, itemResult);
+                        }
+                        else if (TypeCheckMethods.IsListNodeCompatible(valueType))
+                        {
+                            object? itemResult = null;
+                            if (castedDic[keyValuePair.Key] is not List<object?> castedListItemObj)
+                            {
+                                throw new InvalidCastException();
+                            }
+
+                            itemResult = ConvertDeserializedList(castedListItemObj, valueType);
+
+                            castedDicResult.Add(keyValuePair.Key, itemResult);
+                        }
+                        else if (valueType.IsEnum)
+                        {
+                            ThrowHelper.ThrowIfNullException(castedDic[keyValuePair.Key]);
+
+#pragma warning disable CS8604
+                            castedDicResult.Add(
+                                keyValuePair.Key,
+                                ConvertEnumToObject(valueType, castedDic[keyValuePair.Key])
+                            );
+#pragma warning restore CS8604
+                        }
+                        else if (
+                            TypeCheckMethods.IsClass(valueType)
+                            || TypeCheckMethods.IsStruct(valueType)
+                            || TypeCheckMethods.IsPrimitive(valueType)
+                        )
+                        {
+                            object? key = TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+#pragma warning disable CS8604
+                            castedDicResult.Add(key, keyValuePair.Value);
+#pragma warning restore CS8604
+                        }
+                        else if (TypeCheckMethods.IsSpecialParsableObject(valueType))
+                        {
+                            object? key = TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType);
+#pragma warning disable CS8604
+                            castedDicResult.Add(key, keyValuePair.Value);
+#pragma warning restore CS8604
+                        }
+                        else
+                        {
+                            ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                        }
+                    }
+
+                    return castedDicResult;
+                }
+                else
+                {
+                    throw new InvalidCastException();
+                }
+            }
+            else
+            {
+                throw new TypeAccessException();
+            }
+        }
+
+        private static object? ConvertDeserializedDictionaryFromICollectionKeyValuePair(
+            Dictionary<object, object?>? dic,
+            Type type
+        )
+        {
+            if (null == dic)
+            {
+                return null;
+            }
+
+            if (false == TypeCheckMethods.ImplementsICollectionKeyValuePair(type))
+            {
+                ThrowHelper.ThrowWrongTypeException(type);
+            }
+
+            // Get Item type of dictionary
+            if (GetTypeMethods.GetKeyValueTypeOfDictionary(type, out Type keyType, out Type valueType))
+            {
+                // Check if type is supported
+                if (false == TypeCheckMethods.IsTypeSupported(keyType))
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(keyType);
+                }
+                // Check if type is supported
+                if (false == TypeCheckMethods.IsTypeSupported(valueType))
+                {
+                    ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                }
+
+                // result object
+                object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
+
+                ThrowHelper.ThrowIfNullException(result);
+
+                // Get ICollection<KeyValuePair<TKey, TValue>> Add method
+                Type kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
+                Type collectionType = typeof(ICollection<>).MakeGenericType(kvpType);
+                var addMethod = collectionType.GetMethod("Add") ?? throw new InvalidCastException();
+
+                foreach (DictionaryEntry keyValuePair in (IDictionary)dic)
+                {
+                    object? convertedKey =
+                        (
+                            TypeCheckMethods.IsPrimitive(keyType)
+                                ? ConvertStringToPrimitive(keyValuePair.Key.ToString(), keyType)
+                                : ConvertStringToSpecialParsableObject(keyValuePair.Key.ToString(), keyType)
+                        ) ?? throw new InvalidCastException();
+                    object? convertedValue;
+
+                    if (TypeCheckMethods.IsDictionaryNodeCompatible(valueType))
+                    {
+                        if (keyValuePair.Value is not Dictionary<object, object?> castedDictionaryItemObj)
+                        {
+                            throw new InvalidCastException();
+                        }
+                        convertedValue = ConvertDeserializedDictionary(castedDictionaryItemObj, valueType);
+                    }
+                    else if (TypeCheckMethods.IsListNodeCompatible(valueType))
+                    {
+                        if (keyValuePair.Value is not List<object?> castedListItemObj)
+                        {
+                            throw new InvalidCastException();
+                        }
+                        convertedValue = ConvertDeserializedList(castedListItemObj, valueType);
+                    }
+                    else if (valueType.IsEnum)
+                    {
+                        ThrowHelper.ThrowIfNullException(keyValuePair.Value);
+#pragma warning disable CS8604
+                        convertedValue = ConvertEnumToObject(valueType, keyValuePair.Value);
+#pragma warning restore CS8604
+                    }
+                    else if (
+                        TypeCheckMethods.IsClass(valueType)
+                        || TypeCheckMethods.IsStruct(valueType)
+                        || TypeCheckMethods.IsPrimitive(valueType)
+                        || TypeCheckMethods.IsSpecialParsableObject(valueType)
+                    )
+                    {
+                        convertedValue = keyValuePair.Value;
+                    }
+                    else
+                    {
+                        ThrowHelper.ThrowTypeIsNotSupportedException(valueType);
+                        throw new Exception("Unreachable code.");
+                    }
+
+                    object kvp =
+                        Activator.CreateInstance(kvpType, convertedKey, convertedValue)
+                        ?? throw new InvalidCastException();
+                    addMethod.Invoke(result, [kvp]);
+                }
+
+                return result;
+            }
+            else
+            {
+                throw new TypeAccessException();
+            }
+        }
+
+        /// <summary>
         /// Converts deserialized list to an array of the given type.
         /// </summary>
         /// <param name="list">Deserialized List</param>
@@ -543,6 +695,96 @@ namespace DotSerial.Utilities
                     )
                     {
                         castedListResult[i] = castedList[i];
+                    }
+                    else
+                    {
+                        ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+                    }
+                }
+
+                return castedListResult;
+            }
+            else
+            {
+                throw new InvalidCastException();
+            }
+        }
+
+        /// <summary>
+        /// Converts deserialized list to an array of the given type.
+        /// </summary>
+        /// <param name="list">Deserialized List</param>
+        /// <param name="type">Array type</param>
+        /// <returns>Converted array</returns>
+        private static object? ConvertDeserializedListFromGenericIList(List<object?> list, Type type)
+        {
+            // Get Item type of list
+            Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
+
+            // Check if type is supported
+            if (false == TypeCheckMethods.IsTypeSupported(itemType))
+            {
+                ThrowHelper.ThrowTypeIsNotSupportedException(itemType);
+            }
+
+            // result object
+            object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
+
+            if (list is IList castedList && result is IList castedListResult)
+            {
+                for (int i = 0; i < castedList.Count; i++)
+                {
+                    if (TypeCheckMethods.IsDictionaryNodeCompatible(itemType))
+                    {
+                        object? itemResult;
+                        if (castedList[i] is not Dictionary<object, object?> castedDictionaryItemObj)
+                        {
+                            throw new InvalidCastException();
+                        }
+                        itemResult = ConvertDeserializedDictionary(castedDictionaryItemObj, itemType);
+
+                        if (itemResult != null)
+                        {
+                            castedListResult.Add(itemResult);
+                        }
+                    }
+                    else if (TypeCheckMethods.IsListNodeCompatible(itemType))
+                    {
+                        object? itemResult;
+                        if (castedList[i] is not List<object?> castedListItemObj)
+                        {
+                            if (castedList[i] != null)
+                            {
+                                castedListResult.Add(castedList[i]);
+                            }
+
+                            continue;
+                        }
+
+                        itemResult = ConvertDeserializedList(castedListItemObj, itemType);
+
+                        if (itemResult != null)
+                        {
+                            castedListResult.Add(itemResult);
+                        }
+                    }
+                    else if (itemType.IsEnum)
+                    {
+                        ThrowHelper.ThrowIfNullException(castedList[i]);
+
+#pragma warning disable CS8604
+                        object enumObj = ConvertEnumToObject(itemType, castedList[i]);
+                        castedListResult.Add(enumObj);
+#pragma warning restore CS8604
+                    }
+                    else if (
+                        TypeCheckMethods.IsClass(itemType)
+                        || TypeCheckMethods.IsStruct(itemType)
+                        || TypeCheckMethods.IsPrimitive(itemType)
+                        || TypeCheckMethods.IsSpecialParsableObject(itemType)
+                    )
+                    {
+                        castedListResult.Add(castedList[i]);
                     }
                     else
                     {

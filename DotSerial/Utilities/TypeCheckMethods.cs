@@ -424,6 +424,56 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
+        /// Check if Type implements IList<T> (generic), but not non-generic IList.
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True if type implements IList<T> (generic), false if only non-generic IList or not at all.</returns>
+        internal static bool ImplementsGenericIList(Type objType)
+        {
+            if (objType == null)
+                return false;
+
+            // Check if the type itself is IList<>
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(IList<>))
+                return true;
+
+            // Check interfaces for IList<>
+            var interfaces = objType.GetInterfaces();
+            foreach (var iface in interfaces)
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IList<>))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if Type implements IDictionary<TKey, TValue> (generic), but not non-generic IDictionary.
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True if type implements IDictionary<TKey, TValue> (generic), false if only non-generic IDictionary or not at all.</returns>
+        internal static bool ImplementsGenericIDictionary(Type objType)
+        {
+            if (objType == null)
+                return false;
+
+            // Check if the type itself is IDictionary<,>
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                return true;
+
+            // Check interfaces for IDictionary<,>
+            var interfaces = objType.GetInterfaces();
+            foreach (var iface in interfaces)
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Check if Object implements ICollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;
         /// </summary>
         /// <param name="obj">Object</param>
