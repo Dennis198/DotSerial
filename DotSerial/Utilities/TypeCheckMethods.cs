@@ -23,9 +23,9 @@ namespace DotSerial.Utilities
                 return true;
             }
 
-            if (HelperMethods.ImplementsIEnumerable(t))
+            if (ImplementsIEnumerable(t))
             {
-                if (IsDictionary(t) || IsList(t) || IsArray(t))
+                if (IsListNodeCompatible(t) || IsDictionaryNodeCompatible(t))
                 {
                     return true;
                 }
@@ -35,12 +35,112 @@ namespace DotSerial.Utilities
                 }
             }
 
-            if (IsClass(t) || IsStruct(t) || IsSpecialParsableObject(t))
+            if (IsInnerNodeCompatible(t) || IsSpecialParsableObject(t))
             {
                 return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a leaf node (primitive types, string and special parsable objects)
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a leaf node</returns>
+        internal static bool IsLeafNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsPrimitive(type) || IsSpecialParsableObject(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a leaf node (primitive types, string and special parsable objects)
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to a leaf node</returns>
+        internal static bool IsLeafNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsLeafNodeCompatible(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a list node.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a list node</returns>
+        internal static bool IsListNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return ImplementsICollection(type) || IsArray(type) || IsStack(type) || IsQueue(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a list node.
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to a list node</returns>
+        internal static bool IsListNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsListNodeCompatible(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a dictionary node.
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to a dictionary node</returns>
+        internal static bool IsDictionaryNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return ImplementsICollectionKeyValuePair(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to a dictionary node.
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// /// <returns>True if the object can be serialized to a dictionary node</returns>
+        internal static bool IsDictionaryNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsDictionaryNodeCompatible(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to an inner node (class or struct)
+        /// </summary>
+        /// <param name="type">Type to check</param>
+        /// <returns>True if the type can be serialized to an inner node</returns>
+        internal static bool IsInnerNodeCompatible(Type type)
+        {
+            if (type == null)
+                return false;
+            return IsClass(type) || IsStruct(type);
+        }
+
+        /// <summary>
+        /// Types that can be serialized to an inner node (class or struct)
+        /// </summary>
+        /// <param name="o">Object to check</param>
+        /// <returns>True if the object can be serialized to an inner node</returns>
+        internal static bool IsInnerNodeCompatible(object? o)
+        {
+            if (o == null)
+                return false;
+            Type type = o.GetType();
+            return IsInnerNodeCompatible(type);
         }
 
         /// <summary>
@@ -146,51 +246,27 @@ namespace DotSerial.Utilities
         }
 
         /// <summary>
-        /// Check if object is list
-        /// </summary>
-        /// <param name="o">object</param>
-        /// <returns>True if list</returns>
-        internal static bool IsList(object? o)
-        {
-            if (o == null)
-                return false;
-            return o is IList && IsList(o.GetType());
-        }
-
-        /// <summary>
-        /// Check if type is list
+        /// Check if type is stack
         /// </summary>
         /// <param name="type">type</param>
-        /// <returns>True if list</returns>
-        internal static bool IsList(Type type)
+        /// <returns>True if stack</returns>
+        internal static bool IsStack(Type type)
         {
             if (type == null)
                 return false;
-            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(List<>));
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Stack<>));
         }
 
         /// <summary>
-        /// Check if object is dictioanry
-        /// </summary>
-        /// <param name="o">object</param>
-        /// <returns>True if list</returns>
-        internal static bool IsDictionary(object? o)
-        {
-            if (o == null)
-                return false;
-            return o is IDictionary && IsDictionary(o.GetType());
-        }
-
-        /// <summary>
-        /// Check if type is dictionary
+        /// Check if type is queue
         /// </summary>
         /// <param name="type">type</param>
-        /// <returns>True if dictionary</returns>
-        internal static bool IsDictionary(Type type)
+        /// <returns>True if queue</returns>
+        internal static bool IsQueue(Type type)
         {
             if (type == null)
                 return false;
-            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Dictionary<,>));
+            return type.IsGenericType && type.GetGenericTypeDefinition().IsAssignableFrom(typeof(Queue<>));
         }
 
         /// <summary>
@@ -228,7 +304,7 @@ namespace DotSerial.Utilities
                 return false;
             if (type == typeof(string))
                 return false;
-            if (HelperMethods.ImplementsIEnumerable(type))
+            if (ImplementsIEnumerable(type))
                 return false;
             if (IsSpecialParsableObject(type))
                 return false;
@@ -283,6 +359,155 @@ namespace DotSerial.Utilities
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// Check if Object implements IEnumerable
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>True, if type implements IEnumerable</returns>
+        internal static bool ImplementsIEnumerable(object? obj)
+        {
+            if (null == obj)
+                return false;
+            var oType = obj.GetType();
+            return ImplementsIEnumerable(oType);
+        }
+
+        /// <summary>
+        /// Check if Type implements IEnumerable
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True, if type implements IEnumerable</returns>
+        internal static bool ImplementsIEnumerable(Type objType)
+        {
+            return typeof(IEnumerable).IsAssignableFrom(objType);
+        }
+
+        /// <summary>
+        /// Check if Object implements ICollection&lt;T&gt;
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>True, if type implements ICollection&lt;T&gt;</returns>
+        internal static bool ImplementsICollection(object? obj)
+        {
+            if (null == obj)
+                return false;
+            var oType = obj.GetType();
+            return ImplementsICollection(oType);
+        }
+
+        /// <summary>
+        /// Check if Type implements ICollection&lt;T&gt;
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True, if type implements ICollection&lt;T&gt;</returns>
+        internal static bool ImplementsICollection(Type objType)
+        {
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(ICollection<>))
+            {
+                Type itemType = objType.GetGenericArguments()[0];
+                return !(itemType.IsGenericType && itemType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
+            }
+
+            return objType
+                .GetInterfaces()
+                .Any(i =>
+                    i.IsGenericType
+                    && i.GetGenericTypeDefinition() == typeof(ICollection<>)
+                    && !(
+                        i.GetGenericArguments()[0] is Type arg
+                        && arg.IsGenericType
+                        && arg.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
+                    )
+                );
+        }
+
+        /// <summary>
+        /// Check if Type implements IList<T> (generic), but not non-generic IList.
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True if type implements IList<T> (generic), false if only non-generic IList or not at all.</returns>
+        internal static bool ImplementsGenericIList(Type objType)
+        {
+            if (objType == null)
+                return false;
+
+            // Check if the type itself is IList<>
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(IList<>))
+                return true;
+
+            // Check interfaces for IList<>
+            var interfaces = objType.GetInterfaces();
+            foreach (var iface in interfaces)
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IList<>))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if Type implements IDictionary<TKey, TValue> (generic), but not non-generic IDictionary.
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True if type implements IDictionary<TKey, TValue> (generic), false if only non-generic IDictionary or not at all.</returns>
+        internal static bool ImplementsGenericIDictionary(Type objType)
+        {
+            if (objType == null)
+                return false;
+
+            // Check if the type itself is IDictionary<,>
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                return true;
+
+            // Check interfaces for IDictionary<,>
+            var interfaces = objType.GetInterfaces();
+            foreach (var iface in interfaces)
+            {
+                if (iface.IsGenericType && iface.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Check if Object implements ICollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;
+        /// </summary>
+        /// <param name="obj">Object</param>
+        /// <returns>True, if type implements ICollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;</returns>
+        internal static bool ImplementsICollectionKeyValuePair(object? obj)
+        {
+            if (null == obj)
+                return false;
+            var oType = obj.GetType();
+            return ImplementsICollectionKeyValuePair(oType);
+        }
+
+        /// <summary>
+        /// Check if Type implements ICollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;
+        /// </summary>
+        /// <param name="objType">Type</param>
+        /// <returns>True, if type implements ICollection&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;</returns>
+        internal static bool ImplementsICollectionKeyValuePair(Type objType)
+        {
+            if (objType.IsGenericType && objType.GetGenericTypeDefinition() == typeof(ICollection<>))
+            {
+                Type itemType = objType.GetGenericArguments()[0];
+                return itemType.IsGenericType && itemType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>);
+            }
+
+            return objType
+                .GetInterfaces()
+                .Any(i =>
+                    i.IsGenericType
+                    && i.GetGenericTypeDefinition() == typeof(ICollection<>)
+                    && i.GetGenericArguments()[0] is Type arg
+                    && arg.IsGenericType
+                    && arg.GetGenericTypeDefinition() == typeof(KeyValuePair<,>)
+                );
         }
     }
 }

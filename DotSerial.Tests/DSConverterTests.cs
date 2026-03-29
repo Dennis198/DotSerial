@@ -268,13 +268,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassHashTable(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassLinkedList(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassHashTable { Value0 = [] };
+            var tmp = ClassLinkedList.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassLinkedList>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -282,13 +287,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassLinkedList(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassObservableCollection(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassLinkedList { Value0 = new LinkedList<int>() };
+            var tmp = ClassObservableCollection.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassObservableCollection>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -296,13 +306,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassObservableCollection(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassQueue(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassObservableCollection { Value0 = [] };
+            var tmp = ClassQueue.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassQueue>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -310,13 +325,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassQueue(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassSortedSet(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassQueue { Value0 = new Queue<int>() };
+            var tmp = ClassSortedSet.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassSortedSet>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -324,13 +344,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassSortedList(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassStack(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedList { Value0 = [] };
+            var tmp = ClassStack.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassStack>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -338,13 +363,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassSortedSet(SerializeStrategy strategy)
+        public void CreateSerializedObject_HashSetClass(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassSortedSet { Value0 = [] };
+            var tmp = HashSetClass.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<HashSetClass>(serializedObject, strategy);
+
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -352,27 +382,18 @@ namespace DotSerial.Tests
         [InlineData(SerializeStrategy.Toon)]
         [InlineData(SerializeStrategy.Xml)]
         [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeClassStack(SerializeStrategy strategy)
+        public void CreateSerializedObject_ClassSortedList(SerializeStrategy strategy)
         {
             // Arrange
-            var tmp = new NotSupportedTypeClassStack { Value0 = new Stack<int>() };
+            var tmp = ClassSortedList.CreateTestDefault();
 
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
-        }
+            // Act
+            var serializedObject = DSConverter.Serialize(tmp, strategy);
+            var result = DSConverter.Deserialize<ClassSortedList>(serializedObject, strategy);
 
-        [Theory]
-        [InlineData(SerializeStrategy.Json)]
-        [InlineData(SerializeStrategy.Toon)]
-        [InlineData(SerializeStrategy.Xml)]
-        [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_NotSupportedTypeHashSet(SerializeStrategy strategy)
-        {
-            // Arrange
-            var tmp = new HashSetClassNotSupported();
-
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
+            // Assert
+            Assert.NotNull(result);
+            Assert.True(tmp.AssertTest(result));
         }
 
         [Theory]
@@ -541,20 +562,6 @@ namespace DotSerial.Tests
             // Assert
             Assert.NotNull(result);
             Assert.True(tmp.AssertTest(result));
-        }
-
-        [Theory]
-        [InlineData(SerializeStrategy.Json)]
-        [InlineData(SerializeStrategy.Toon)]
-        [InlineData(SerializeStrategy.Xml)]
-        [InlineData(SerializeStrategy.Yaml)]
-        public void CreateSerializedObject_StackClass(SerializeStrategy strategy)
-        {
-            // Arrange
-            var tmp = new NotSupportedTypeClassStack();
-
-            // Act & Assert
-            Assert.Throws<DotSerialException>(() => DSConverter.Serialize(tmp, strategy));
         }
 
         [Theory]

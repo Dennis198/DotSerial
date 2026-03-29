@@ -11,35 +11,20 @@ namespace DotSerial.Tree.Deserialize
     internal class DeserializeObject : INodeDeserializeVisitor
     {
         /// <inheritdoc/>
-        public object? VisitLeafNode(LeafNode node, Type? type)
+        /// <remarks>
+        /// Only use this methode if the deserialized object itself is a dictionary.
+        /// </remarks>
+        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);
 
-            string? strValue = node.GetValue();
+            var tmpList = DeserializeDictionaryNode(node, type);
 
-            if (null == strValue)
-            {
-                return null;
-            }
+            // Convert deserialzed dictionary.
+            object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
 
-            object? result;
-
-            if (TypeCheckMethods.IsPrimitive(type))
-            {
-                result = ConverterMethods.ConvertStringToPrimitive(strValue, type);
-            }
-            else if (TypeCheckMethods.IsSpecialParsableObject(type))
-            {
-                result = ConverterMethods.ConvertStringToSpecialParsableObject(strValue, type);
-            }
-            else
-            {
-                ThrowHelper.ThrowWrongNodeTypeException();
-                throw new Exception("Unreachable code.");
-            }
-
-            return result;
+            return tmpValue;
         }
 
         /// <inheritdoc/>
@@ -74,9 +59,9 @@ namespace DotSerial.Tree.Deserialize
                     // Special case: In must formats (json, yaml, ..) there is no
                     // difference in classes or dictionarys when parsing. So
                     // the dictionary case must also be handles here.
-                    if (TypeCheckMethods.IsDictionary(prop.PropertyType))
+                    if (TypeCheckMethods.ImplementsICollectionKeyValuePair(prop.PropertyType))
                     {
-                        var tmpList = DeserializeDictionary(child, prop.PropertyType);
+                        var tmpList = DeserializeDictionaryNode(child, prop.PropertyType);
 
                         // Convert deserialzed dictionary.
                         object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, prop.PropertyType);
@@ -88,6 +73,38 @@ namespace DotSerial.Tree.Deserialize
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
                     prop.SetValue(result, tmp);
                 }
+            }
+
+            return result;
+        }
+
+        /// <inheritdoc/>
+        public object? VisitLeafNode(LeafNode node, Type? type)
+        {
+            ArgumentNullException.ThrowIfNull(node);
+            ArgumentNullException.ThrowIfNull(type);
+
+            string? strValue = node.GetValue();
+
+            if (null == strValue)
+            {
+                return null;
+            }
+
+            object? result;
+
+            if (TypeCheckMethods.IsPrimitive(type))
+            {
+                result = ConverterMethods.ConvertStringToPrimitive(strValue, type);
+            }
+            else if (TypeCheckMethods.IsSpecialParsableObject(type))
+            {
+                result = ConverterMethods.ConvertStringToSpecialParsableObject(strValue, type);
+            }
+            else
+            {
+                ThrowHelper.ThrowWrongNodeTypeException();
+                throw new Exception("Unreachable code.");
             }
 
             return result;
@@ -124,30 +141,13 @@ namespace DotSerial.Tree.Deserialize
             return result;
         }
 
-        /// <inheritdoc/>
-        /// <remarks>
-        /// Only use this methode if the deserialized object itself is a dictionary.
-        /// </remarks>
-        public object? VisitDictionaryNode(DictionaryNode node, Type? type)
-        {
-            ArgumentNullException.ThrowIfNull(node);
-            ArgumentNullException.ThrowIfNull(type);
-
-            var tmpList = DeserializeDictionary(node, type);
-
-            // Convert deserialzed dictionary.
-            object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, type);
-
-            return tmpValue;
-        }
-
         /// <summary>
         /// Deserialize dictionary
         /// </summary>
         /// <param name="node">Node</param>
         /// <param name="type">Type</param>
         /// <returns>Dictionary</returns>
-        private Dictionary<object, object?>? DeserializeDictionary(IDSNode node, Type type)
+        private Dictionary<object, object?>? DeserializeDictionaryNode(IDSNode node, Type type)
         {
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);

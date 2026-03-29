@@ -477,6 +477,194 @@ namespace DotSerial.Tests
         }
     }
 
+    public class ClassSortedList : ITestable<ClassSortedList>
+    {
+        [DotSerialName("1893")]
+        public SortedList<int, int>? Value0 { get; set; }
+
+        public static ClassSortedList CreateTestDefault()
+        {
+            var tmp = new ClassSortedList { Value0 = new SortedList<int, int>() };
+            tmp.Value0.Add(1, 10);
+            tmp.Value0.Add(2, 20);
+            tmp.Value0.Add(3, 30);
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSortedList actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            if (expected.Value0[3] != actual.Value0[3])
+                return false;
+            return true;
+        }
+    }
+
+    public class ClassObservableCollection : ITestable<ClassObservableCollection>
+    {
+        [DotSerialName("1893")]
+        public ObservableCollection<int>? Value0 { get; set; }
+
+        public static ClassObservableCollection CreateTestDefault()
+        {
+            var tmp = new ClassObservableCollection { Value0 = new ObservableCollection<int>() };
+            tmp.Value0.Add(1);
+            tmp.Value0.Add(2);
+            tmp.Value0.Add(3);
+            return tmp;
+        }
+
+        public bool AssertTest(ClassObservableCollection actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[0] != actual.Value0[0])
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            return true;
+        }
+    }
+
+    public class ClassStack : ITestable<ClassStack>
+    {
+        [DotSerialName("1893")]
+        public Stack<int>? Value0 { get; set; }
+
+        public static ClassStack CreateTestDefault()
+        {
+            var tmp = new ClassStack { Value0 = new Stack<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassStack actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            if (expected.Value0.Pop() != actual.Value0.Pop())
+                return false;
+            return true;
+        }
+    }
+
+    public class ClassQueue : ITestable<ClassQueue>
+    {
+        [DotSerialName("1893")]
+        public Queue<int>? Value0 { get; set; }
+
+        public static ClassQueue CreateTestDefault()
+        {
+            var tmp = new ClassQueue { Value0 = new Queue<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassQueue actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            if (expected.Value0.Dequeue() != actual.Value0.Dequeue())
+                return false;
+            return true;
+        }
+    }
+
+    public class ClassLinkedList : ITestable<ClassLinkedList>
+    {
+        [DotSerialName("1893")]
+        public LinkedList<int>? Value0 { get; set; }
+
+        public static ClassLinkedList CreateTestDefault()
+        {
+            var tmp = new ClassLinkedList { Value0 = new LinkedList<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassLinkedList actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First.Value != actual.Value0.First.Value)
+                return false;
+            if (expected.Value0.First.Next.Value != actual.Value0.First.Next.Value)
+                return false;
+            if (expected.Value0.First.Next.Next.Value != actual.Value0.First.Next.Next.Value)
+                return false;
+            return true;
+        }
+    }
+
+    public class HashSetClass : ITestable<HashSetClass>
+    {
+        [DotSerialName("1893")]
+        public HashSet<int>? Value0 { get; set; }
+
+        public static HashSetClass CreateTestDefault()
+        {
+            var tmp = new HashSetClass { Value0 = new HashSet<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(HashSetClass actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First() != actual.Value0.First())
+                return false;
+            if (expected.Value0.ElementAt(1) != actual.Value0.ElementAt(1))
+                return false;
+            if (expected.Value0.ElementAt(2) != actual.Value0.ElementAt(2))
+                return false;
+            return true;
+        }
+    }
+
+    public class ClassSortedSet : ITestable<ClassSortedSet>
+    {
+        [DotSerialName("1893")]
+        public SortedSet<int>? Value0 { get; set; }
+
+        public static ClassSortedSet CreateTestDefault()
+        {
+            var tmp = new ClassSortedSet { Value0 = new SortedSet<int>([1, 2, 3]) };
+            return tmp;
+        }
+
+        public bool AssertTest(ClassSortedSet actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0.First() != actual.Value0.First())
+                return false;
+            if (expected.Value0.ElementAt(1) != actual.Value0.ElementAt(1))
+                return false;
+            if (expected.Value0.ElementAt(2) != actual.Value0.ElementAt(2))
+                return false;
+            return true;
+        }
+    }
+
     /// <summary>
     /// Genric IEnumerable Class
     /// </summary>
@@ -2607,52 +2795,33 @@ namespace DotSerial.Tests
 
     #region CurrentlyNotSupported
 
-    public class HashSetClassNotSupported
-    {
-        [DotSerialName("1893")]
-        public HashSet<int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassHashTable
+    public class NotSupportedTypeClassHashTable : ITestable<NotSupportedTypeClassHashTable>
     {
         [DotSerialName("1893")]
         public Hashtable? Value0 { get; set; }
-    }
 
-    public class NotSupportedTypeClassStack
-    {
-        [DotSerialName("1893")]
-        public Stack<int>? Value0 { get; set; }
-    }
+        public static NotSupportedTypeClassHashTable CreateTestDefault()
+        {
+            var tmp = new NotSupportedTypeClassHashTable { Value0 = new Hashtable() };
+            tmp.Value0.Add(1, 10);
+            tmp.Value0.Add(2, 20);
+            tmp.Value0.Add(3, 30);
+            return tmp;
+        }
 
-    public class NotSupportedTypeClassQueue
-    {
-        [DotSerialName("1893")]
-        public Queue<int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassLinkedList
-    {
-        [DotSerialName("1893")]
-        public LinkedList<int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassObservableCollection
-    {
-        [DotSerialName("1893")]
-        public ObservableCollection<int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassSortedList
-    {
-        [DotSerialName("1893")]
-        public SortedList<int, int>? Value0 { get; set; }
-    }
-
-    public class NotSupportedTypeClassSortedSet
-    {
-        [DotSerialName("1893")]
-        public SortedSet<int>? Value0 { get; set; }
+        public bool AssertTest(NotSupportedTypeClassHashTable actual)
+        {
+            var expected = this;
+            if (expected.Value0.Count != actual.Value0.Count)
+                return false;
+            if (expected.Value0[1] != actual.Value0[1])
+                return false;
+            if (expected.Value0[2] != actual.Value0[2])
+                return false;
+            if (expected.Value0[3] != actual.Value0[3])
+                return false;
+            return true;
+        }
     }
 
     #endregion
