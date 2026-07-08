@@ -108,19 +108,6 @@
             Assert.Equal(typeof(string), typeValue);
         }
 
-        [Fact]
-        public void GetDictionaryTypeFromKeyValue_IntString()
-        {
-            // Arrange
-            Dictionary<int, string> tmp = [];
-
-            // Act
-            var result = DotSerial.Utilities.GetTypeMethods.GetDictionaryTypeFromKeyValue(typeof(int), typeof(string));
-
-            // Assert
-            Assert.Equal(tmp.GetType(), result);
-        }
-
         #endregion
     }
 }

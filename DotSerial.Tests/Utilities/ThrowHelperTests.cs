@@ -5,7 +5,6 @@ namespace DotSerial.Tests.Utilities
         [Fact]
         public void ThrowArgumentNullException_ShouldThrowArgumentNullException()
         {
-            // todo
             // Arrange
             string jsonString = "{\"key\": \"value}";
 
@@ -18,7 +17,6 @@ namespace DotSerial.Tests.Utilities
         [Fact]
         public void ThrowArgumentNullException_ShouldThrowArgumentNullException2()
         {
-            // todo
             // Arrange
             string jsonString = "\"key\": \"value\"}";
 

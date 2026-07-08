@@ -109,7 +109,7 @@ namespace DotSerial.Yaml
                 return new LeafNode(key, null, false, parent);
             }
 
-            string? strValue = value != null ? HelperMethods.PrimitiveToString(value) : null;
+            string? strValue = value != null ? ConverterMethods.PrimitiveToString(value) : null;
             bool needQuotes = AreQuotesNeededForValue(value, strValue);
 
             return new LeafNode(key, strValue, needQuotes, parent);
