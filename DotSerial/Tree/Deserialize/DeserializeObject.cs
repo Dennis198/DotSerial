@@ -66,12 +66,12 @@ namespace DotSerial.Tree.Deserialize
                         // Convert deserialzed dictionary.
                         object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, prop.PropertyType);
 
-                        prop.SetValue(result, tmpValue);
+                        ExpressionCache.GetOrCreateSetter(type, prop.Name)(result, tmpValue);
                         continue;
                     }
 
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
-                    prop.SetValue(result, tmp);
+                    ExpressionCache.GetOrCreateSetter(type, prop.Name)(result, tmp);
                 }
             }
 

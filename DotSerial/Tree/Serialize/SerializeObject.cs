@@ -313,7 +313,7 @@ namespace DotSerial.Tree.Serialize
                     }
 
                     // Get Value of property
-                    object? value = prop.GetValue(classObj);
+                    object? value = ExpressionCache.GetOrCreateGetter(typeObj, prop.Name)(classObj);
                     // Get name of property
                     string propName = prop.Name;
 
