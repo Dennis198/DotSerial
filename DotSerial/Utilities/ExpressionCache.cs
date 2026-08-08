@@ -1,16 +1,24 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 
-public static class ExpressionCache
+/// <summary>
+/// Caches compiled expression trees for property getters, setters, and method invokers.
+/// </summary>
+internal static class ExpressionCache
 {
-    //TODO string methoden als konstanten definieren, um typos zu vermeiden
+    // https://github.com/JamesNK/Newtonsoft.Json/blob/4f73e74372445108d2c1bda37b36e6f5e43402e0/Src/Newtonsoft.Json/Utilities/DynamicReflectionDelegateFactory.cs#L307
     private static readonly ConcurrentDictionary<string, Func<object, object>> GetterCache = new();
-
     private static readonly ConcurrentDictionary<string, Action<object?, object?>> MethodCache = new();
-
     private static readonly ConcurrentDictionary<string, Action<object?, object?>> SetterCache = new();
 
-    public static Func<object, object> GetOrCreateGetter(Type type, string propertyName)
+    /// <summary>
+    /// Gets or creates a cached getter for the specified property.
+    /// </summary>
+    /// <param name="type">The type that contains the property.</param>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>A function that gets the property value from an instance of the type.</returns>
+    [Obsolete("Use Property.GetValue instead. Its currently faster than the compiled expression tree.")]
+    internal static Func<object, object> GetOrCreateGetter(Type type, string propertyName)
     {
         var key = $"{type.FullName}_{propertyName}";
 
@@ -36,7 +44,13 @@ public static class ExpressionCache
         );
     }
 
-    public static Action<object?, object?> GetOrCreateMethodInvoker(Type type, string methodName)
+    /// <summary>
+    /// Gets or creates a cached method invoker for the specified method.
+    /// </summary>
+    /// <param name="type">The type that contains the method.</param>
+    /// <param name="methodName">The name of the method.</param>
+    /// <returns>An action that invokes the method on an instance of the type with the specified argument.</returns>
+    internal static Action<object?, object?> GetOrCreateMethodInvoker(Type type, string methodName)
     {
         var key = $"{type.FullName}_{methodName}";
         return MethodCache.GetOrAdd(
@@ -56,7 +70,14 @@ public static class ExpressionCache
         );
     }
 
-    public static Action<object?, object?> GetOrCreateSetter(Type type, string propertyName)
+    /// <summary>
+    /// Gets or creates a cached setter for the specified property.
+    /// </summary>
+    /// <param name="type">The type that contains the property.</param>
+    /// <param name="propertyName">The name of the property.</param>
+    /// <returns>An action that sets the property value on an instance of the type.</returns>
+    [Obsolete("Use Property.SetValue instead. Its currently faster than the compiled expression tree.")]
+    internal static Action<object?, object?> GetOrCreateSetter(Type type, string propertyName)
     {
         var key = $"{type.FullName}_{propertyName}";
         return SetterCache.GetOrAdd(

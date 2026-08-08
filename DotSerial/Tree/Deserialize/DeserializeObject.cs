@@ -33,9 +33,6 @@ namespace DotSerial.Tree.Deserialize
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);
 
-            // Get type
-            // Type typeObj = obj.GetType();
-
             var result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
             // Get all Properties and iterate threw
@@ -66,12 +63,12 @@ namespace DotSerial.Tree.Deserialize
                         // Convert deserialzed dictionary.
                         object? tmpValue = ConverterMethods.ConvertDeserializedDictionary(tmpList, prop.PropertyType);
 
-                        ExpressionCache.GetOrCreateSetter(type, prop.Name)(result, tmpValue);
+                        prop.SetValue(result, tmpValue);
                         continue;
                     }
 
                     var tmp = child.DeserializeAccept(this, prop.PropertyType);
-                    ExpressionCache.GetOrCreateSetter(type, prop.Name)(result, tmp);
+                    prop.SetValue(result, tmp);
                 }
             }
 
