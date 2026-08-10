@@ -33,9 +33,6 @@ namespace DotSerial.Tree.Deserialize
             ArgumentNullException.ThrowIfNull(node);
             ArgumentNullException.ThrowIfNull(type);
 
-            // Get type
-            // Type typeObj = obj.GetType();
-
             var result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
             // Get all Properties and iterate threw

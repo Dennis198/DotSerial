@@ -552,7 +552,7 @@ namespace DotSerial.Utilities
                 // Get ICollection<KeyValuePair<TKey, TValue>> Add method
                 Type kvpType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
                 Type collectionType = typeof(ICollection<>).MakeGenericType(kvpType);
-                var addMethod = collectionType.GetMethod("Add") ?? throw new InvalidCastException();
+                var addInvoker = ExpressionCache.GetOrCreateMethodInvoker(collectionType, "Add");
 
                 foreach (DictionaryEntry keyValuePair in (IDictionary)dic)
                 {
@@ -605,7 +605,7 @@ namespace DotSerial.Utilities
                     object kvp =
                         Activator.CreateInstance(kvpType, convertedKey, convertedValue)
                         ?? throw new InvalidCastException();
-                    addMethod.Invoke(result, [kvp]);
+                    addInvoker(result, kvp);
                 }
 
                 return result;
@@ -812,7 +812,7 @@ namespace DotSerial.Utilities
                 type.GetInterfaces()
                     .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ICollection<>))
                 ?? throw new InvalidCastException();
-            var addMethod = collectionInterface.GetMethod("Add") ?? throw new InvalidCastException();
+            var addInvoker = ExpressionCache.GetOrCreateMethodInvoker(collectionInterface, "Add");
 
             object? result = CreateInstanceMethods.CreateInstanceGeneric(type);
             Type itemType = GetTypeMethods.GetItemTypeOfIEnumerable(type);
@@ -829,7 +829,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        addMethod.Invoke(result, [itemResult]);
+                        addInvoker(result, itemResult);
                     }
                 }
                 else if (TypeCheckMethods.IsListNodeCompatible(itemType))
@@ -838,7 +838,7 @@ namespace DotSerial.Utilities
                     {
                         if (list[i] != null)
                         {
-                            addMethod.Invoke(result, [list[i]]);
+                            addInvoker(result, list[i]);
                         }
 
                         continue;
@@ -848,7 +848,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        addMethod.Invoke(result, [itemResult]);
+                        addInvoker(result, itemResult);
                     }
                 }
                 else if (itemType.IsEnum)
@@ -857,7 +857,7 @@ namespace DotSerial.Utilities
 
 #pragma warning disable CS8604
                     object enumObj = ConvertEnumToObject(itemType, list[i]);
-                    addMethod.Invoke(result, [enumObj]);
+                    addInvoker(result, enumObj);
 #pragma warning restore CS8604
                 }
                 else if (
@@ -867,7 +867,7 @@ namespace DotSerial.Utilities
                     || TypeCheckMethods.IsSpecialParsableObject(itemType)
                 )
                 {
-                    addMethod.Invoke(result, [list[i]]);
+                    addInvoker(result, list[i]);
                 }
                 else
                 {
@@ -911,7 +911,7 @@ namespace DotSerial.Utilities
             // Create initial object to fill.
             result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
-            var enqueueMethod = type.GetMethod("Enqueue") ?? throw new InvalidCastException();
+            var enqueueInvoker = ExpressionCache.GetOrCreateMethodInvoker(type, "Enqueue");
 
             for (int i = 0; i < list.Count; i++)
             {
@@ -927,7 +927,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        _ = enqueueMethod.Invoke(result, [itemResult]);
+                        enqueueInvoker(result, itemResult);
                     }
                 }
                 else if (TypeCheckMethods.IsListNodeCompatible(itemType))
@@ -936,7 +936,7 @@ namespace DotSerial.Utilities
                     {
                         if (item != null)
                         {
-                            _ = enqueueMethod.Invoke(result, [item]);
+                            enqueueInvoker(result, item);
                         }
 
                         continue;
@@ -946,7 +946,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        _ = enqueueMethod.Invoke(result, [itemResult]);
+                        enqueueInvoker(result, itemResult);
                     }
                 }
                 else if (itemType.IsEnum)
@@ -955,7 +955,7 @@ namespace DotSerial.Utilities
 
 #pragma warning disable CS8604
                     object enumObj = ConvertEnumToObject(itemType, item);
-                    _ = enqueueMethod.Invoke(result, [enumObj]);
+                    enqueueInvoker(result, enumObj);
 #pragma warning restore CS8604
                 }
                 else if (
@@ -965,7 +965,7 @@ namespace DotSerial.Utilities
                     || TypeCheckMethods.IsSpecialParsableObject(itemType)
                 )
                 {
-                    _ = enqueueMethod.Invoke(result, [item]);
+                    enqueueInvoker(result, item);
                 }
                 else
                 {
@@ -1009,7 +1009,7 @@ namespace DotSerial.Utilities
             // Create initial object to fill.
             result = CreateInstanceMethods.CreateInstanceGeneric(type);
 
-            var pushMethod = type.GetMethod("Push") ?? throw new InvalidCastException();
+            var pushInvoker = ExpressionCache.GetOrCreateMethodInvoker(type, "Push");
 
             // Push in reverse order to maintain original stack order
             for (int i = list.Count - 1; i >= 0; i--)
@@ -1026,7 +1026,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        _ = pushMethod.Invoke(result, [itemResult]);
+                        pushInvoker(result, itemResult);
                     }
                 }
                 else if (TypeCheckMethods.IsListNodeCompatible(itemType))
@@ -1035,7 +1035,7 @@ namespace DotSerial.Utilities
                     {
                         if (item != null)
                         {
-                            _ = pushMethod.Invoke(result, [item]);
+                            pushInvoker(result, item);
                         }
 
                         continue;
@@ -1045,7 +1045,7 @@ namespace DotSerial.Utilities
 
                     if (itemResult != null)
                     {
-                        _ = pushMethod.Invoke(result, [itemResult]);
+                        pushInvoker(result, itemResult);
                     }
                 }
                 else if (itemType.IsEnum)
@@ -1054,7 +1054,7 @@ namespace DotSerial.Utilities
 
 #pragma warning disable CS8604
                     object enumObj = ConvertEnumToObject(itemType, item);
-                    _ = pushMethod.Invoke(result, [enumObj]);
+                    pushInvoker(result, enumObj);
 #pragma warning restore CS8604
                 }
                 else if (
@@ -1064,7 +1064,7 @@ namespace DotSerial.Utilities
                     || TypeCheckMethods.IsSpecialParsableObject(itemType)
                 )
                 {
-                    _ = pushMethod.Invoke(result, [item]);
+                    pushInvoker(result, item);
                 }
                 else
                 {
